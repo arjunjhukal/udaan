@@ -1,11 +1,11 @@
-import React from 'react'
+import React from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-import { PATH } from './PATH';
 import ResponsiveDrawer from '../components/pages/layout/sidebar';
+import { PATH } from './PATH';
 
 export default function Private() {
     const navigate = useNavigate();
-    const user = "arjun";
+    const user = "null";
     React.useEffect(() => {
         if (!user) {
             navigate(PATH.AUTH.LOGIN.ROOT);

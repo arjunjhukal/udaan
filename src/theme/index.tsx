@@ -1,5 +1,27 @@
 import type { ThemeOptions } from '@mui/material/styles';
-import { createTheme, } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
+
+// Extend the Palette and PaletteOptions interfaces
+declare module '@mui/material/styles' {
+    interface Palette {
+        button: Palette['primary'];
+        textField: {
+            border: string;
+            placeholder: string;
+            focusBorder: string;
+            label: string;
+        };
+    }
+    interface PaletteOptions {
+        button?: PaletteOptions['primary'];
+        textField?: {
+            border?: string;
+            placeholder?: string;
+            focusBorder?: string;
+            label?: string;
+        };
+    }
+}
 
 // Define color palettes
 const lightPalette = {
@@ -45,10 +67,10 @@ const lightPalette = {
         disabled: "#6B7280",  // Medium
     },
     textField: {
-        border: "#D1D5DB",
-        placeholder: "#F43F5E",
+        border: "#9CA3B0",
+        placeholder: "#9CA3B0",
         focusBorder: "#3B82F6",
-        label: "#71717A",
+        label: "#1F2937",
     },
     background: {
         default: "#FFFFFF",
@@ -56,7 +78,6 @@ const lightPalette = {
     },
     divider: "#E5E7EB",
 };
-
 
 const darkPalette = {
     primary: {
@@ -113,66 +134,109 @@ const darkPalette = {
     divider: "#374151",
 };
 
-
 // Common theme options
 const commonThemeOptions: ThemeOptions = {
     typography: {
         fontFamily: [
-            'Inter',
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
+            'Noto Sans',
             'sans-serif',
         ].join(','),
+        // Headings - Noto Sans
         h1: {
-            fontSize: '2.5rem',
-            fontWeight: 600,
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '64px',
+            fontWeight: 700, // Bold
+            lineHeight: '89.67px',
         },
         h2: {
-            fontSize: '2rem',
-            fontWeight: 600,
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '48px',
+            fontWeight: 600, // SemiBold
+            lineHeight: '67.25px',
         },
         h3: {
-            fontSize: '1.75rem',
-            fontWeight: 600,
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '32px',
+            fontWeight: 600, // SemiBold
+            lineHeight: '44.80px',
         },
         h4: {
-            fontSize: '1.5rem',
-            fontWeight: 600,
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '24px',
+            fontWeight: 600, // SemiBold
+            lineHeight: '33.60px',
         },
         h5: {
-            fontSize: '1.25rem',
-            fontWeight: 600,
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '20px',
+            fontWeight: 600, // SemiBold
+            lineHeight: '28.00px',
         },
         h6: {
-            fontSize: '1rem',
-            fontWeight: 600,
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '18px',
+            fontWeight: 500, // Medium
+            lineHeight: '25.20px',
+        },
+        // Body/Display - Noto Sans and Satoshi
+        body1: {
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '20px',
+            fontWeight: 500, // Medium
+            lineHeight: '28.00px',
+        },
+        body2: {
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '18px',
+            fontWeight: 500,
+            lineHeight: '25.20px',
+        },
+        subtitle1: {
+            fontFamily: 'Satoshi, sans-serif',
+            fontSize: '16px',
+            fontWeight: 500,
+            lineHeight: '22.40px',
+        },
+        subtitle2: {
+            fontFamily: 'Noto Sans, sans-serif',
+            fontSize: '14px',
+            fontWeight: 400, // Regular
+            lineHeight: '19.60px',
+        },
+        caption: {
+            fontFamily: 'Satoshi, sans-serif',
+            fontSize: '12px',
+            fontWeight: 400, // Regular
+            lineHeight: '16.80px',
+        },
+        overline: {
+            fontFamily: 'Satoshi, sans-serif',
+            fontSize: '8px',
+            fontWeight: 400, // Regular
+            lineHeight: '11.20px',
         },
         button: {
+            fontFamily: 'Noto Sans, sans-serif',
             textTransform: 'none',
             fontWeight: 500,
         },
-        body2: {
-            // color: '#000',
-            fontFamily: 'Satoshi',
-            fontSize: '12px',
-            fontStyle: 'normal',
-            fontWeight: 500,
-            lineHeight: 'normal',
-        }
     },
     shape: {
         borderRadius: 8,
     },
     components: {
+        MuiStack: {
+            styleOverrides: {
+                root: {
+                    flexDirection: "row"
+                }
+            }
+        },
         MuiButton: {
             styleOverrides: {
                 root: {
                     borderRadius: 8,
-                    padding: '8px 16px',
+                    padding: '10px 16px',
                 },
             },
         },
@@ -191,14 +255,28 @@ const commonThemeOptions: ThemeOptions = {
                 },
             },
         },
+        MuiInputLabel: {
+            styleOverrides: {
+                root: ({ theme }) => ({
+                    fontSize: "18px",
+                    color: theme.palette.textField.label,
+                    marginBottom: "8px",
+                    [theme.breakpoints.down('lg')]: {
+                        fontSize: "12px",
+                    },
+                })
+            }
+        },
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
-                    padding: "10px 12px",
+                    padding: "16px",
                     borderRadius: "8px",
+                    fontWeight: "500",
                 },
                 input: {
-                    padding: "0"
+                    padding: "0",
+                    fontSize: "16px",
                 },
                 notchedOutline: {
                     borderColor: '#C1C1C1',
@@ -210,7 +288,7 @@ const commonThemeOptions: ThemeOptions = {
                 root: {
                     padding: "0",
                     flexDirection: "column",
-                    justifyContent: "flex-start",
+                    justifyContent: "stretch",
                     alignItems: "stretch"
                 }
             }
