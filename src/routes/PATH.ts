@@ -18,9 +18,6 @@ export const PATH = {
     },
     ROLES: {
         ROOT: "/roles",
-        ALL_ROLES: {
-            ROOT: "all-roles"
-        },
         CREATE_ROLE: {
             ROOT: "/roles/create-role"
         },

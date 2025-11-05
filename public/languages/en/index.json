@@ -1,20 +1,51 @@
 {
     "menus": {
         "dashboard": "Dashboard",
-        "user": "User",
-        "create_user": "Create User",
-        "edit_user": "Edit User",
-        "delete_user": "Delete User",
-        "view_user": "View User",
-        "role": "Role",
-        "create_role": "Create Role",
-        "edit_role": "Edit Role",
-        "delete_role": "Delete Role",
-        "view_role": "View Role",
-        "course": "Course",
-        "create_course": "Create Course",
-        "edit_course": "Edit Course",
-        "delete_course": "Delete Course",
-        "view_course": "View Course"
+        "user": {
+            "root": "User",
+            "create_user": "Create User",
+            "edit_user": "Edit User",
+            "delete_user": "Delete User",
+            "view_user": "View User"
+        },
+        "role": {
+            "root": "Role",
+            "create_role": "Create Role",
+            "edit_role": "Edit Role",
+            "delete_role": "Delete Role",
+            "view_role": "View Role"
+        },
+        "course": {
+            "root": "Course",
+            "create_course": "Create Course",
+            "edit_course": "Edit Course",
+            "delete_course": "Delete Course",
+            "view_course": "View Course"
+        },
+        "teachers": {
+            "root": "Teachers"
+        },
+        "category_management": {
+            "root": "Category & Position",
+            "category": {
+                "root": "Category"
+            },
+            "mega_category": {
+                "root": "Mega Category"
+            },
+            "sub_category": {
+                "root": "Sub Category"
+            },
+            "position": {
+                "root": "Position"
+            }
+        },
+        "content": {
+            "root": "Content Management"
+        }
+    },
+    "messages": {
+        "overview": "Overview",
+        "master_data": "Master Data"
     }
 }

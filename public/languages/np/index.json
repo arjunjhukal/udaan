@@ -22,5 +22,8 @@
             "delete_course": "कोर्स मेटाउनुहोस्",
             "view_course": "कोर्स हेर्नुहोस्"
         }
+    },
+    "messages": {
+        "overview": "परिचय"
     }
 }

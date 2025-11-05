@@ -4,101 +4,115 @@ import { createTheme, } from '@mui/material/styles';
 // Define color palettes
 const lightPalette = {
     primary: {
-        main: '#1976d2',
-        light: '#42a5f5',
-        dark: '#1565c0',
-        contrastText: '#ffffff',
+        main: "#1D4ED8",      // Default
+        dark: "#3730A3",      // Hover
+        light: "#BFDBFE",     // Light
+        contrastText: "#FFFFFF",
     },
-    secondary: {
-        main: '#9c27b0',
-        light: '#ba68c8',
-        dark: '#7b1fa2',
-        contrastText: '#ffffff',
+    button: {
+        main: "#4F46E5",
+        dark: "#4338CA",
+        light: "#C7D2FE",
+        contrastText: "#FFFFFF",
     },
     error: {
-        main: '#d32f2f',
-        light: '#ef5350',
-        dark: '#c62828',
-        contrastText: '#ffffff',
-    },
-    warning: {
-        main: '#ed6c02',
-        light: '#ff9800',
-        dark: '#e65100',
-        contrastText: '#ffffff',
+        main: "#EF4444",      // Default
+        dark: "#B91C1C",      // Hover
+        light: "#FCA5A5",     // Light
+        contrastText: "#FFFFFF",
     },
     info: {
-        main: '#0288d1',
-        light: '#03a9f4',
-        dark: '#01579b',
-        contrastText: '#ffffff',
+        main: "#F59E0B",      // Default
+        dark: "#EA580C",      // Hover
+        light: "#FEF3C7",     // Light
+        contrastText: "#FFFFFF",
     },
     success: {
-        main: '#2e7d32',
-        light: '#4caf50',
-        dark: '#1b5e20',
-        contrastText: '#ffffff',
+        main: "#10B981",      // Default
+        dark: "#047857",      // Hover
+        light: "#A7F3D0",     // Light
+        contrastText: "#FFFFFF",
     },
-    background: {
-        default: '#f5f5f5',
-        paper: '#ffffff',
+    warning: {
+        main: "#FB923C",      // Default
+        dark: "#F97316",      // Hover
+        light: "#FED7AA",     // Light
+        contrastText: "#FFFFFF",
     },
     text: {
-        primary: 'rgba(0, 0, 0, 0.87)',
-        secondary: 'rgba(0, 0, 0, 0.6)',
-        disabled: 'rgba(0, 0, 0, 0.38)',
+        primary: "#111827",   // Dark
+        secondary: "#9CA3AF", // Light
+        disabled: "#6B7280",  // Medium
     },
-    divider: 'rgba(0, 0, 0, 0.12)',
+    textField: {
+        border: "#D1D5DB",
+        placeholder: "#F43F5E",
+        focusBorder: "#3B82F6",
+        label: "#71717A",
+    },
+    background: {
+        default: "#FFFFFF",
+        paper: "#F9FAFB",
+    },
+    divider: "#E5E7EB",
 };
+
 
 const darkPalette = {
     primary: {
-        main: '#90caf9',
-        light: '#e3f2fd',
-        dark: '#42a5f5',
-        contrastText: 'rgba(0, 0, 0, 0.87)',
+        main: "#93C5FD",
+        dark: "#60A5FA",
+        light: "#1E3A8A",
+        contrastText: "#000000",
     },
-    secondary: {
-        main: '#ce93d8',
-        light: '#f3e5f5',
-        dark: '#ab47bc',
-        contrastText: 'rgba(0, 0, 0, 0.87)',
+    button: {
+        main: "#818CF8",
+        dark: "#6366F1",
+        light: "#E0E7FF",
+        contrastText: "#000000",
     },
     error: {
-        main: '#f44336',
-        light: '#e57373',
-        dark: '#d32f2f',
-        contrastText: '#ffffff',
-    },
-    warning: {
-        main: '#ffa726',
-        light: '#ffb74d',
-        dark: '#f57c00',
-        contrastText: 'rgba(0, 0, 0, 0.87)',
+        main: "#F87171",
+        dark: "#DC2626",
+        light: "#FEE2E2",
+        contrastText: "#000000",
     },
     info: {
-        main: '#29b6f6',
-        light: '#4fc3f7',
-        dark: '#0288d1',
-        contrastText: 'rgba(0, 0, 0, 0.87)',
+        main: "#FBBF24",
+        dark: "#D97706",
+        light: "#FEF3C7",
+        contrastText: "#000000",
     },
     success: {
-        main: '#66bb6a',
-        light: '#81c784',
-        dark: '#388e3c',
-        contrastText: 'rgba(0, 0, 0, 0.87)',
+        main: "#6EE7B7",
+        dark: "#10B981",
+        light: "#ECFDF5",
+        contrastText: "#000000",
     },
-    background: {
-        default: '#121212',
-        paper: '#1e1e1e',
+    warning: {
+        main: "#FDBA74",
+        dark: "#EA580C",
+        light: "#FFF7ED",
+        contrastText: "#000000",
     },
     text: {
-        primary: '#ffffff',
-        secondary: 'rgba(255, 255, 255, 0.7)',
-        disabled: 'rgba(255, 255, 255, 0.5)',
+        primary: "#F9FAFB",   // Bright white
+        secondary: "#D1D5DB", // Light gray
+        disabled: "#9CA3AF",  // Muted gray
     },
-    divider: 'rgba(255, 255, 255, 0.12)',
+    textField: {
+        border: "#374151",
+        placeholder: "#FB7185",
+        focusBorder: "#60A5FA",
+        label: "#A1A1AA",
+    },
+    background: {
+        default: "#111827",
+        paper: "#1F2937",
+    },
+    divider: "#374151",
 };
+
 
 // Common theme options
 const commonThemeOptions: ThemeOptions = {
@@ -142,7 +156,7 @@ const commonThemeOptions: ThemeOptions = {
             fontWeight: 500,
         },
         body2: {
-            color: '#000',
+            // color: '#000',
             fontFamily: 'Satoshi',
             fontSize: '12px',
             fontStyle: 'normal',
@@ -194,27 +208,62 @@ const commonThemeOptions: ThemeOptions = {
         MuiListItem: {
             styleOverrides: {
                 root: {
-                    padding: "0"
+                    padding: "0",
+                    flexDirection: "column",
+                    justifyContent: "flex-start",
+                    alignItems: "stretch"
                 }
             }
         },
         MuiList: {
             styleOverrides: {
                 root: {
-                    padding: "0"
+                    padding: "0",
+                    "& .MuiList-root": {
+                        paddingLeft: "20px",
+                    },
                 }
             }
         },
         MuiListItemButton: {
             styleOverrides: {
-                root: {
+                root: ({ theme }) => ({
                     padding: "16px",
                     borderRadius: "14px",
                     fontSize: "16px",
                     fontWeight: 500,
                     lineHeight: "24px",
-                    gap: "8px"
-                }
+                    gap: "8px",
+                    transition: "all 0.2s ease-in-out",
+                    // Active state for top-level items
+                    "&.active": {
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+
+                        "& .MuiListItemIcon-root": {
+                            color: theme.palette.primary.contrastText,
+                        },
+
+                        "&:hover": {
+                            backgroundColor: theme.palette.primary.dark,
+                        }
+                    },
+
+                    // Active state for nested items
+                    "&.active-nested": {
+                        backgroundColor: theme.palette.primary.light,
+                        color: theme.palette.primary.main,
+
+                        "& .MuiListItemIcon-root": {
+                            color: theme.palette.primary.main,
+                        },
+
+                        "&:hover": {
+                            backgroundColor: theme.palette.primary.light,
+                            opacity: 0.9,
+                        }
+                    }
+                })
             }
         },
         MuiListItemIcon: {

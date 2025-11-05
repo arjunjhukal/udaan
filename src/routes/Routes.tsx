@@ -1,14 +1,14 @@
 import { Route, Routes } from "react-router-dom";
 import App from "../App";
-import Private from "./Private";
-import AuthRoot from "../components/pages/auth";
-import Login from "../components/pages/auth/login";
-import { PATH } from "./PATH";
-import Register from "../components/pages/auth/register";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import RoleManagementForm from "../components/pages/RoleManagement/RoleManagementForm";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
+import AuthRoot from "../components/pages/auth";
+import Login from "../components/pages/auth/login";
+import Register from "../components/pages/auth/register";
 import NotFound from "../components/pages/layout/NotFound";
+import { PATH } from "./PATH";
+import Private from "./Private";
 
 export default function GlobalRoutes() {
     return (
@@ -23,7 +23,7 @@ export default function GlobalRoutes() {
                 <Route path="/" element={<App />} />
                 <Route path={PATH.DASHBOARD.ROOT} element={<App />} />
                 <Route element={<RoleManagementRoot />}>
-                    <Route path={PATH.ROLES.ALL_ROLES.ROOT} element={<AllRoles />} />
+                    <Route path={PATH.ROLES.ROOT} element={<AllRoles />} />
                     <Route path={PATH.ROLES.CREATE_ROLE.ROOT} element={<RoleManagementForm />} />
                     <Route path={PATH.ROLES.EDIT_ROLE.ROOT} element={<RoleManagementForm />} />
                     <Route path="*" element={<NotFound />} />

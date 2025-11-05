@@ -1,73 +1,163 @@
-# React + TypeScript + Vite
+# Udaan
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React application built with TypeScript, Material-UI, and RTK Query for efficient state management and API handling.
 
-Currently, two official plugins are available:
+## 📋 Prerequisites
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Before you begin, ensure you have the following installed:
 
-## React Compiler
+- **Node.js**: v22.16.0 or higher
+- **npm**: 11.6.0 or higher
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Check your versions:
+```bash
+node -v
+npm -v
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Installation
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Clone the repository:
+```bash
+git clone git@gitlab.makuracreations.xyz:arjunjhukal/udaan.git ./
+cd udaan
 ```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+## 📁 Project Structure
+
+```
+udaan/
+├── public/
+│   └── languages/           # i18n translation files
+│       ├── en/
+│       ├── ne/
+│       └── ...
+├── src/
+│   ├── components/        # Reusable UI components
+│   ├── routes/           # Route definitions and path constants
+│   │   └── PATH.ts      # Centralized path configuration
+│   ├── services/         # RTK Query API services
+│   │   └── ...         # API endpoint definitions
+│   ├── slice/            # RTK Query slices for local state
+│   ├── theme/            # Theme configuration
+│   │   └── index.ts      # MUI theme setup and color palette
+│   ├── utils/         # Global handlers and utilities
+│   ├── styles/           # Pure CSS files
+│   └── App.tsx           # Main application component
+└── package.json
+```
+
+### Key Directories
+
+- **`public/languages/`**: Contains all internationalization (i18n) translation files organized by language
+- **`routes/`**: Route configuration and path constants for navigation
+- **`services/`**: RTK Query API services for handling all HTTP requests
+- **`slice/`**: Redux Toolkit slices for local state management
+- **`theme/`**: Material-UI theme customization including color palettes and component overrides
+- **`providers/`**: Global providers for theme, i18n, Redux store, etc.
+- **`handlers/`**: Global utility functions and event handlers
+
+## 🎨 Styling
+
+This project uses a combination of:
+- **Pure CSS**: Custom styles for specific components
+- **Material-UI (MUI)**: Component library with custom theming
+- **Theme Configuration**: Centralized in `theme/index.ts` for consistent design system
+
+## 🔌 State Management & API
+
+- **RTK Query**: Handles all API requests and server state
+- **Redux Toolkit Slices**: Manages local/client state
+- **Services Directory**: Contains all API endpoint definitions
+
+## 🌐 Internationalization
+
+The application supports multiple languages:
+- Translation files are located in `public/languages/`
+- Organized by language code (e.g., `en/`, `ne/`)
+
+## 📜 Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+```
+
+## 🛠️ Tech Stack
+
+- **React** - UI library
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **Material-UI** - Component library
+- **Redux Toolkit** - State management
+- **RTK Query** - Data fetching and caching
+- **React Router** - Routing
+- **i18next** - Internationalization
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_API_BASE_URL=your_api_url
+VITE_APP_URL=live_site_url
+```
+
+### Theme Customization
+
+Modify `src/theme/index.ts` to customize:
+- Color palette
+- Typography
+- Component styles
+- Breakpoints
+- Spacing
+
+## 📝 Development Guidelines
+
+### Adding New Routes
+
+1. Define path constants in `src/routes/paths.ts`
+2. Create route components
+3. Register routes in your router configuration
+
+### Creating API Services
+
+1. Define endpoints in `src/services/`
+2. Use RTK Query's `createApi` for type-safe API calls
+3. Export hooks for component usage
+
+### Managing State
+
+- **Server State**: Use RTK Query in `services/`
+- **Client State**: Create slices in `slice/` directory
+- **Global State**: Use Redux Toolkit
+
+## 🤝 Contributing
+
+1. Create a feature branch prefix with feature/
+2. Make your changes
+3. Ensure all tests pass
+4. Submit a pull request
+
+## 📄 License
+
+
+## 👥 Team
+
+
+
+For more information, please contact [arjunjhukal.makura@gmail.com]
