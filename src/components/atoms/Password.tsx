@@ -1,41 +1,76 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { IconButton, InputAdornment, InputLabel, OutlinedInput } from "@mui/material";
+import {
+	FormHelperText,
+	IconButton,
+	InputAdornment,
+	InputLabel,
+	OutlinedInput,
+} from "@mui/material";
 import { useState } from "react";
 
-export default function Password() {
-    const [showPassword, setShowPassword] = useState(false);
+interface PasswordProps {
+	id?: string;
+	name?: string;
+	value?: string;
+	onChange?: React.ChangeEventHandler<HTMLInputElement>;
+	onBlur?: React.FocusEventHandler<HTMLInputElement>;
+	error?: boolean;
+	helperText?: string;
+	placeholder?: string;
+}
 
-    const handleTogglePassword = () => {
-        setShowPassword(!showPassword);
-    };
+export default function Password({
+	id,
+	name = "password",
+	value,
+	onChange,
+	onBlur,
+	error = false,
+	helperText = "",
+	placeholder = "Enter your Password",
+}: PasswordProps) {
+	const [showPassword, setShowPassword] = useState(false);
 
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-    };
+	const handleTogglePassword = () => {
+		setShowPassword((prev) => !prev);
+	};
 
-    return (
-        <div className="input__field mb-6">
-            <InputLabel>Password</InputLabel>
-            <OutlinedInput
-                fullWidth
-                type={showPassword ? "text" : "password"}
-                placeholder="Enter your Password"
-                endAdornment={
-                    <InputAdornment position="end">
-                        <IconButton
-                            aria-label="toggle password visibility"
-                            onClick={handleTogglePassword}
-                            onMouseDown={handleMouseDownPassword}
-                            edge="end"
-                            sx={{
-                                p: 0
-                            }}
-                        >
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                    </InputAdornment>
-                }
-            />
-        </div>
-    );
+	const handleMouseDownPassword = (
+		event: React.MouseEvent<HTMLButtonElement>,
+	) => {
+		event.preventDefault();
+	};
+
+	return (
+		<>
+			<OutlinedInput
+				fullWidth
+				id={id || name}
+				name={name}
+				type={showPassword ? "text" : "password"}
+				value={value}
+				onChange={onChange}
+				onBlur={onBlur}
+				placeholder={placeholder}
+				error={error}
+				endAdornment={
+					<InputAdornment position="end">
+						<IconButton
+							aria-label="toggle password visibility"
+							onClick={handleTogglePassword}
+							onMouseDown={handleMouseDownPassword}
+							edge="end"
+							sx={{ p: 0 }}>
+							{showPassword ? <VisibilityOff /> : <Visibility />}
+						</IconButton>
+					</InputAdornment>
+				}
+			/>
+			{helperText && (
+				<FormHelperText error={error} sx={{ mt: 0.5 }}>
+					{helperText}
+				</FormHelperText>
+			)}
+		</>
+	);
 }

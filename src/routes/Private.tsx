@@ -1,25 +1,24 @@
-import React from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import ResponsiveDrawer from '../components/pages/layout/sidebar';
-import { PATH } from './PATH';
+import React from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import ResponsiveDrawer from "../components/pages/layout/sidebar";
+import { PATH } from "./PATH";
+import { useAppSelector } from "../store/hook";
 
 export default function Private() {
-    const navigate = useNavigate();
-    const user = "null";
-    React.useEffect(() => {
-        if (!user) {
-            navigate(PATH.AUTH.LOGIN.ROOT);
-        }
-    }, [user, navigate]);
+	const navigate = useNavigate();
+	const user = useAppSelector((state) => state.auth.user);
+	React.useEffect(() => {
+		if (!user) {
+			navigate(PATH.AUTH.LOGIN.ROOT);
+		}
+	}, [user, navigate]);
 
-
-    if (!user) return null;
-    return (
-
-        <div className='udaan__root'>
-            <ResponsiveDrawer >
-                <Outlet />
-            </ResponsiveDrawer>
-        </div>
-    );
+	if (!user) return null;
+	return (
+		<div className="udaan__root">
+			<ResponsiveDrawer>
+				<Outlet />
+			</ResponsiveDrawer>
+		</div>
+	);
 }

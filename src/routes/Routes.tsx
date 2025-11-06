@@ -10,26 +10,51 @@ import AuthLayout from "../components/pages/layout/AuthLayout";
 import NotFound from "../components/pages/layout/NotFound";
 import { PATH } from "./PATH";
 import Private from "./Private";
+import AuthRoot from "../components/pages/auth";
+import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
 
 export default function GlobalRoutes() {
-    return (
-        <Routes>
-            <Route path="*" element={<NotFound />} />
-            <Route element={<AuthLayout />}>
-                <Route path={PATH.AUTH.LOGIN.ROOT} element={<Login />}></Route>
-                <Route path={PATH.AUTH.REGISTER.ROOT} element={<Register />}></Route>
-                <Route path={PATH.AUTH.VERIFY_OTP.ROOT} element={<VerifyOTP />}></Route>
-            </Route>
-            <Route element={<Private />}>
-                <Route path="/" element={<App />} />
-                <Route path={PATH.DASHBOARD.ROOT} element={<App />} />
-                <Route element={<RoleManagementRoot />}>
-                    <Route path={PATH.ROLES.ROOT} element={<AllRoles />} />
-                    <Route path={PATH.ROLES.CREATE_ROLE.ROOT} element={<RoleManagementForm />} />
-                    <Route path={PATH.ROLES.EDIT_ROLE.ROOT} element={<RoleManagementForm />} />
-                    <Route path="*" element={<NotFound />} />
-                </Route>
-            </Route>
-        </Routes>
-    )
+	return (
+		<Routes>
+			<Route path="*" element={<NotFound />} />
+			<Route element={<AuthRoot />}>
+				<Route
+					path={PATH.AUTH.ADMIN_LOGIN.ROOT}
+					element={
+						<SingleFormAuthLayout>
+							<Login requirePassword={true} />
+						</SingleFormAuthLayout>
+					}
+				/>
+				<Route element={<AuthLayout />}>
+					<Route path={PATH.AUTH.LOGIN.ROOT} element={<Login />} />
+					<Route path={PATH.AUTH.REGISTER.ROOT} element={<Register />} />
+				</Route>
+				<Route
+					path={PATH.AUTH.VERIFY_OTP.ROOT}
+					element={
+						<SingleFormAuthLayout>
+							<VerifyOTP />
+						</SingleFormAuthLayout>
+					}
+				/>
+			</Route>
+			<Route element={<Private />}>
+				<Route path="/" element={<App />} />
+				<Route path={PATH.DASHBOARD.ROOT} element={<App />} />
+				<Route element={<RoleManagementRoot />}>
+					<Route path={PATH.ROLES.ROOT} element={<AllRoles />} />
+					<Route
+						path={PATH.ROLES.CREATE_ROLE.ROOT}
+						element={<RoleManagementForm />}
+					/>
+					<Route
+						path={PATH.ROLES.EDIT_ROLE.ROOT}
+						element={<RoleManagementForm />}
+					/>
+					<Route path="*" element={<NotFound />} />
+				</Route>
+			</Route>
+		</Routes>
+	);
 }
