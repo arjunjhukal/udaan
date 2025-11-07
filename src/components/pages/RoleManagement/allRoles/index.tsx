@@ -1,7 +1,9 @@
-import React from 'react'
+import PageHeader from '../../../organism/PageHeader'
 
 export default function AllRoles() {
     return (
-        <div>AllRoles</div>
+        <>
+            <PageHeader />
+        </>
     )
 }

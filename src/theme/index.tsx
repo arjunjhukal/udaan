@@ -295,7 +295,6 @@ const darkPalette = {
 const commonThemeOptions: ThemeOptions = {
     typography: {
         fontFamily: '"Helvetica Neue", sans-serif',
-
         h1: {
             fontWeight: 700,
             fontSize: "64px",
@@ -460,7 +459,9 @@ const commonThemeOptions: ThemeOptions = {
         MuiTypography: {
             styleOverrides: {
                 root: ({ theme }) => ({
-                    ...theme.typography.subtitle1,
+                    "&.MuiTypography-body1": {
+                        ...theme.typography.subtitle1,
+                    },
                 }),
             },
         },

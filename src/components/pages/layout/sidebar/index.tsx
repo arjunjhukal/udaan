@@ -105,7 +105,7 @@ export default function ResponsiveDrawer(props: Props) {
 					flexGrow: 1,
 					width: { sm: `calc(100% - ${drawerWidth}px)`, padding: "32px 24px" },
 				}}>
-				<Toolbar sx={{ height: 88 }} />
+				<Toolbar sx={{ height: 100 }} />
 				{props.children}
 			</Box>
 		</Box>
