@@ -3,15 +3,15 @@ import App from "../App";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import RoleManagementForm from "../components/pages/RoleManagement/RoleManagementForm";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
+import AuthRoot from "../components/pages/auth";
 import Login from "../components/pages/auth/login";
 import Register from "../components/pages/auth/register";
 import VerifyOTP from "../components/pages/auth/verifyOtp";
 import AuthLayout from "../components/pages/layout/AuthLayout";
 import NotFound from "../components/pages/layout/NotFound";
+import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
 import { PATH } from "./PATH";
 import Private from "./Private";
-import AuthRoot from "../components/pages/auth";
-import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
 
 export default function GlobalRoutes() {
 	return (

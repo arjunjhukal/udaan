@@ -19,13 +19,25 @@ export const PATH = {
 	DASHBOARD: {
 		ROOT: "/dashboard",
 	},
+	COURSE_MANAGEMENT: {
+		ROOT: "/course-management",
+		COURSES: {
+			ROOT: "/courses"
+		},
+		LIVE_CLASSES: {
+			ROOT: "/live-classes"
+		},
+		QUIZ: {
+			ROOT: "/quiz"
+		}
+	},
 	ROLES: {
-		ROOT: "/roles",
+		ROOT: "/role-management",
 		CREATE_ROLE: {
-			ROOT: "/roles/create-role",
+			ROOT: "/role-management/create-role",
 		},
 		EDIT_ROLE: {
-			ROOT: "/roles/:id",
+			ROOT: "/role-management/:id",
 		},
 	},
 };

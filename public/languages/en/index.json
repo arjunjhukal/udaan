@@ -8,25 +8,30 @@
             "delete_user": "Delete User",
             "view_user": "View User"
         },
-        "role": {
-            "root": "Role",
+        "role_permission": {
+            "root": "Role & Permission Management",
             "create_role": "Create Role",
             "edit_role": "Edit Role",
             "delete_role": "Delete Role",
             "view_role": "View Role"
         },
-        "course": {
-            "root": "Course",
-            "create_course": "Create Course",
-            "edit_course": "Edit Course",
-            "delete_course": "Delete Course",
-            "view_course": "View Course"
+        "course_management": {
+            "root": "Course Management",
+            "courses": {
+                "root": "Courses"
+            },
+            "live_classes": {
+                "root": "Live Classes"
+            },
+            "quiz": {
+                "root": "Quiz"
+            }
         },
         "teachers": {
             "root": "Teachers"
         },
         "category_management": {
-            "root": "Category & Position",
+            "root": "Category",
             "category": {
                 "root": "Category"
             },

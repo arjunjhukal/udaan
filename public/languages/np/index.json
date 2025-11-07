@@ -15,12 +15,8 @@
             "delete_role": "भूमिका मेटाउनुहोस्",
             "view_role": "भूमिका हेर्नुहोस्"
         },
-        "course": {
-            "root": "कोर्स",
-            "create_course": "कोर्स सिर्जना गर्नुहोस्",
-            "edit_course": "कोर्स सम्पादन गर्नुहोस्",
-            "delete_course": "कोर्स मेटाउनुहोस्",
-            "view_course": "कोर्स हेर्नुहोस्"
+        "course_management": {
+            "root": "कोर्स"
         }
     },
     "messages": {

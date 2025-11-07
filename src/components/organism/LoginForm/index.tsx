@@ -4,14 +4,15 @@ import {
 	InputLabel,
 	OutlinedInput,
 } from "@mui/material";
-import Password from "../../atoms/Password";
 import { useFormik } from "formik";
-import * as Yup from "yup";
-import { useLoginMutation } from "../../../services/authApi";
-import { setItem } from "../../../utils/localStorageUtil";
-import { useAppDispatch } from "../../../store/hook";
-import { showToast } from "../../../slice/toastSlice";
 import { useNavigate } from "react-router-dom";
+import * as Yup from "yup";
+import { PATH } from "../../../routes/PATH";
+import { useLoginMutation } from "../../../services/authApi";
+import { showToast } from "../../../slice/toastSlice";
+import { useAppDispatch } from "../../../store/hook";
+import { setItem } from "../../../utils/localStorageUtil";
+import Password from "../../atoms/Password";
 
 export default function LoginForm({
 	requirePassword = false,
@@ -48,7 +49,7 @@ export default function LoginForm({
 				);
 				setItem("user", response?.data?.user);
 				setItem("token", response?.data?.token);
-				navigate("/dashboard");
+				navigate(PATH.DASHBOARD.ROOT);
 			} catch (error) {
 				console.error("Login error:", error);
 			}
