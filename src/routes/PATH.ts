@@ -40,4 +40,7 @@ export const PATH = {
 			ROOT: "/role-management/:id",
 		},
 	},
+	USER: {
+		ROOT: "/users",
+	}
 };

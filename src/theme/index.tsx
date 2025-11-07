@@ -435,10 +435,10 @@ const commonThemeOptions: ThemeOptions = {
 
         MuiListItemButton: {
             styleOverrides: {
-                root: ({ theme }) => ({
+                root: () => ({
                     padding: "16px",
                     marginBottom: "4px",
-                    borderBottom: `1px solid ${theme.palette.seperator.darkest}`,
+                    borderBottom: `1px solid #4B4B4B`,
                     gap: "16px",
                     "&.active *": {
                         color: "#fff",
