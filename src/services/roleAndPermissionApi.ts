@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { PermissionList, PermissionProps, RoleList, RoleProps } from "../types/roleAndPermission";
+import type { GlobalResponse } from "../types/user";
 import { baseQuery } from "./baseQuery";
 
 export const roleAndPermissionApi = createApi({
@@ -65,7 +66,7 @@ export const roleAndPermissionApi = createApi({
             ],
         }),
         // Delete a role
-        deleteRole: builder.mutation<void, { id: string }>({
+        deleteRole: builder.mutation<GlobalResponse, { id: string }>({
             query: ({ id }) => ({
                 url: `/admin/roles/${id}`,
                 method: "DELETE",

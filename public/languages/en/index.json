@@ -85,5 +85,11 @@
             "invalid_email": "Please enter a valid email address.",
             "min_length": "Must be at least {min} characters long."
         }
+    },
+    "actions": {
+        "edit": "Edit",
+        "view": "View",
+        "delete": "Delete",
+        "cancel": "Cancel"
     }
 }
