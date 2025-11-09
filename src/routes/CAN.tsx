@@ -1,4 +1,5 @@
 import React from "react";
+import { useAppSelector } from "../store/hook";
 
 // roles.ts
 export type Role = "admin" | "editor" | "moderator" | "viewer" | "guest";
@@ -9,18 +10,9 @@ interface CanProps {
 }
 
 export default function CAN({ permissions, children }: CanProps) {
-	const user = {
-		role: "admin",
-		permissions: [
-			"create_user",
-			"edit_user",
-			"delete_user",
-			"view_user",
-			"create_role",
-		],
-	};
+	const user = useAppSelector(state => state.auth.user);
 
-	const userPermissions = user.permissions || [];
+	const userPermissions = user?.permissions || [];
 
 	const hasPermission = permissions.some((p) => userPermissions.includes(p));
 

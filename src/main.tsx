@@ -5,12 +5,11 @@ import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { Provider } from "react-redux";
-import { BrowserRouter } from "react-router-dom";
 import "./App.css";
+import Toast from "./components/organism/Toast/index.tsx";
 import GlobalRoutes from "./routes/Routes.tsx";
 import { store } from "./store/store.ts";
 import UdaanThemeProvider from "./ThemeProvider.tsx";
-import Toast from "./components/organism/Toast/index.tsx";
 i18n
 	.use(HttpApi)
 	.use(LanguageDetector)
@@ -35,18 +34,18 @@ i18n
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<Provider store={store}>
-			<BrowserRouter>
-				<I18nextProvider i18n={i18n}>
-					<Suspense fallback={<div>Loading...</div>}>
-						<UdaanThemeProvider>
-							{/* <ScreenProtection> */}
-							<GlobalRoutes />
-							<Toast />
-							{/* </ScreenProtection> */}
-						</UdaanThemeProvider>
-					</Suspense>
-				</I18nextProvider>
-			</BrowserRouter>
+			{/* <BrowserRouter> */}
+			<I18nextProvider i18n={i18n}>
+				<Suspense fallback={<div>Loading...</div>}>
+					<UdaanThemeProvider>
+						{/* <ScreenProtection> */}
+						<GlobalRoutes />
+						<Toast />
+						{/* </ScreenProtection> */}
+					</UdaanThemeProvider>
+				</Suspense>
+			</I18nextProvider>
+			{/* </BrowserRouter> */}
 		</Provider>
 	</StrictMode>,
 );

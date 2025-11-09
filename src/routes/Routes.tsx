@@ -1,4 +1,67 @@
-import { Route, Routes } from "react-router-dom";
+// import { Route, Routes } from "react-router-dom";
+// import App from "../App";
+// import RoleManagementRoot from "../components/pages/RoleManagement";
+// import AllRoles from "../components/pages/RoleManagement/allRoles";
+// import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
+// import AuthRoot from "../components/pages/auth";
+// import Login from "../components/pages/auth/login";
+// import Register from "../components/pages/auth/register";
+// import VerifyOTP from "../components/pages/auth/verifyOtp";
+// import AuthLayout from "../components/pages/layout/AuthLayout";
+// import NotFound from "../components/pages/layout/NotFound";
+// import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
+// import { PATH } from "./PATH";
+// import Private from "./Private";
+
+// export default function GlobalRoutes() {
+// 	return (
+// 		<Routes>
+// 			<Route path="*" element={<NotFound />} />
+// 			<Route element={<AuthRoot />}>
+// 				<Route
+// 					path={PATH.AUTH.ADMIN_LOGIN.ROOT}
+// 					element={
+// 						<SingleFormAuthLayout>
+// 							<Login requirePassword={true} />
+// 						</SingleFormAuthLayout>
+// 					}
+// 				/>
+// 				<Route element={<AuthLayout />}>
+// 					<Route path={PATH.AUTH.LOGIN.ROOT} element={<Login />} />
+// 					<Route path={PATH.AUTH.REGISTER.ROOT} element={<Register />} />
+// 				</Route>
+// 				<Route
+// 					path={PATH.AUTH.VERIFY_OTP.ROOT}
+// 					element={
+// 						<SingleFormAuthLayout>
+// 							<VerifyOTP />
+// 						</SingleFormAuthLayout>
+// 					}
+// 				/>
+// 			</Route>
+// 			<Route element={<Private />}>
+// 				<Route path="/" element={<App />} />
+// 				<Route path={PATH.DASHBOARD.ROOT} element={<App />} />
+// 				<Route element={<RoleManagementRoot />}>
+// 					<Route path={PATH.ROLES.ROOT} element={<AllRoles />} />
+// 					<Route
+// 						path={PATH.ROLES.CREATE_ROLE.ROOT}
+// 						element={<CreateRoleRoot />}
+// 					/>
+// 					<Route
+// 						path={PATH.ROLES.EDIT_ROLE.ROOT()}
+// 						element={<CreateRoleRoot />}
+// 					/>
+// 					<Route path="*" element={<NotFound />} />
+// 				</Route>
+// 			</Route>
+// 		</Routes>
+// 	);
+// }
+
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+
+// Pages & Layouts
 import App from "../App";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
@@ -10,51 +73,72 @@ import VerifyOTP from "../components/pages/auth/verifyOtp";
 import AuthLayout from "../components/pages/layout/AuthLayout";
 import NotFound from "../components/pages/layout/NotFound";
 import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
+import CAN from "./CAN";
 import { PATH } from "./PATH";
 import Private from "./Private";
 
+const router = createBrowserRouter([
+	{
+		element: <AuthRoot />,
+		children: [
+			{
+				path: PATH.AUTH.ADMIN_LOGIN.ROOT,
+				element: (
+					<SingleFormAuthLayout>
+						<Login requirePassword={true} />
+					</SingleFormAuthLayout>
+				),
+			},
+			{
+				element: <AuthLayout />,
+				children: [
+					{ index: true, path: PATH.AUTH.LOGIN.ROOT, element: <Login /> },
+					{ path: PATH.AUTH.REGISTER.ROOT, element: <Register /> },
+				],
+			},
+			{
+				path: PATH.AUTH.VERIFY_OTP.ROOT,
+				element: (
+					<SingleFormAuthLayout>
+						<VerifyOTP />
+					</SingleFormAuthLayout>
+				),
+			},
+		],
+	},
+
+	// 🔒 PRIVATE MODULE
+	{
+		element: <Private />,
+		children: [
+			{
+				index: true,
+				path: "/",
+				element: <App />,
+			},
+			{
+				path: PATH.DASHBOARD.ROOT,
+				element: <App />,
+			},
+			{
+				element: <CAN permissions={["add_roles", "edit_roles", "delete_roles", "view_roles"]}>
+					<RoleManagementRoot />
+				</CAN>,
+				children: [
+					{ path: PATH.ROLES.ROOT, element: <AllRoles /> },
+					{ path: PATH.ROLES.CREATE_ROLE.ROOT, element: <CAN permissions={["add_roles", "edit_roles"]}><CreateRoleRoot /> </CAN> },
+					{ path: PATH.ROLES.EDIT_ROLE.ROOT(), element: <CAN permissions={["add_roles", "edit_roles"]}><CreateRoleRoot /></CAN> },
+				],
+			},
+		],
+	},
+
+	{
+		path: "*",
+		element: <NotFound />,
+	},
+]);
+
 export default function GlobalRoutes() {
-	return (
-		<Routes>
-			<Route path="*" element={<NotFound />} />
-			<Route element={<AuthRoot />}>
-				<Route
-					path={PATH.AUTH.ADMIN_LOGIN.ROOT}
-					element={
-						<SingleFormAuthLayout>
-							<Login requirePassword={true} />
-						</SingleFormAuthLayout>
-					}
-				/>
-				<Route element={<AuthLayout />}>
-					<Route path={PATH.AUTH.LOGIN.ROOT} element={<Login />} />
-					<Route path={PATH.AUTH.REGISTER.ROOT} element={<Register />} />
-				</Route>
-				<Route
-					path={PATH.AUTH.VERIFY_OTP.ROOT}
-					element={
-						<SingleFormAuthLayout>
-							<VerifyOTP />
-						</SingleFormAuthLayout>
-					}
-				/>
-			</Route>
-			<Route element={<Private />}>
-				<Route path="/" element={<App />} />
-				<Route path={PATH.DASHBOARD.ROOT} element={<App />} />
-				<Route element={<RoleManagementRoot />}>
-					<Route path={PATH.ROLES.ROOT} element={<AllRoles />} />
-					<Route
-						path={PATH.ROLES.CREATE_ROLE.ROOT}
-						element={<CreateRoleRoot />}
-					/>
-					<Route
-						path={PATH.ROLES.EDIT_ROLE.ROOT()}
-						element={<CreateRoleRoot />}
-					/>
-					<Route path="*" element={<NotFound />} />
-				</Route>
-			</Route>
-		</Routes>
-	);
+	return <RouterProvider router={router} />;
 }

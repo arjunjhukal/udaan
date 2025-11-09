@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useFormik } from "formik";
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { PATH } from "../../../routes/PATH";
@@ -42,22 +42,14 @@ export default function RoleManagementForm() {
     });
     const [updateRole, { isLoading: updating }] = useEditRoleMutation();
 
-
-    const formik = useFormik({
+    // ✅ Properly type the initial values
+    const formik = useFormik<{
+        name: string;
+        permissions: PermissionProps[];
+    }>({
         initialValues: {
-            name: role?.data?.name || "",
-            permissions: data?.data?.map((perm: PermissionProps) => {
-                const matched = role?.data?.permissions?.find(
-                    (r: PermissionProps) => r.module === perm.module
-                );
-                return {
-                    ...perm,
-                    add: matched?.add ?? false,
-                    view: matched?.view ?? false,
-                    edit: matched?.edit ?? false,
-                    delete: matched?.delete ?? false,
-                };
-            }) || [],
+            name: "",
+            permissions: [],
         },
         validationSchema,
         enableReinitialize: true,
@@ -84,13 +76,7 @@ export default function RoleManagementForm() {
                 }
             }
             else {
-
                 try {
-                    // const payload = {
-                    //     ...values,
-                    //     permissions,
-                    // };
-
                     const response = await createRole(values).unwrap();
                     dispatch(
                         showToast({
@@ -112,17 +98,47 @@ export default function RoleManagementForm() {
         },
     });
 
-    const handlePermissionToggle = (
-        rowIndex: number,
-        field: keyof Pick<PermissionProps, "add" | "view" | "edit" | "delete">
-    ) => {
-        const updatedPermissions = [...formik.values.permissions];
-        updatedPermissions[rowIndex][field] = !updatedPermissions[rowIndex][field];
-        formik.setFieldValue("permissions", updatedPermissions);
-    };
+    // ✅ Use useEffect instead of useMemo to set formik values
+    useEffect(() => {
+        if (data?.data) {
+            const permissions = data.data.map((perm: PermissionProps) => {
+                const matched = role?.data?.permissions?.find(
+                    (r: PermissionProps) => r.module === perm.module
+                );
+                return {
+                    ...perm,
+                    add: matched?.add ?? false,
+                    view: matched?.view ?? false,
+                    edit: matched?.edit ?? false,
+                    delete: matched?.delete ?? false,
+                };
+            });
 
+            formik.setValues({
+                name: role?.data?.name || "",
+                permissions,
+            }, false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data, role]);
 
-    // ✅ Use backend field names directly
+    const handlePermissionToggle = useCallback(
+        (
+            rowIndex: number,
+            field: keyof Pick<PermissionProps, "add" | "view" | "edit" | "delete">
+        ) => {
+            const updatedPermissions: PermissionProps[] = [...formik.values.permissions];
+            if (updatedPermissions[rowIndex] && field in updatedPermissions[rowIndex]) {
+                updatedPermissions[rowIndex] = {
+                    ...updatedPermissions[rowIndex],
+                    [field]: !updatedPermissions[rowIndex][field]
+                };
+                formik.setFieldValue("permissions", updatedPermissions);
+            }
+        },
+        [formik]
+    );
+
     const columns = useMemo<ColumnDef<PermissionProps>[]>(
         () => [
             {
@@ -139,7 +155,7 @@ export default function RoleManagementForm() {
                 accessorKey: "add",
                 cell: (info) => (
                     <Checkbox
-                        checked={info.getValue() as boolean}
+                        checked={(info.getValue() as boolean) || false}
                         color="primary"
                         onChange={() =>
                             handlePermissionToggle(info.row.index, "add")
@@ -152,7 +168,7 @@ export default function RoleManagementForm() {
                 accessorKey: "view",
                 cell: (info) => (
                     <Checkbox
-                        checked={info.getValue() as boolean}
+                        checked={(info.getValue() as boolean) || false}
                         color="primary"
                         onChange={() =>
                             handlePermissionToggle(info.row.index, "view")
@@ -165,7 +181,7 @@ export default function RoleManagementForm() {
                 accessorKey: "edit",
                 cell: (info) => (
                     <Checkbox
-                        checked={info.getValue() as boolean}
+                        checked={(info.getValue() as boolean) || false}
                         color="primary"
                         onChange={() =>
                             handlePermissionToggle(info.row.index, "edit")
@@ -178,7 +194,7 @@ export default function RoleManagementForm() {
                 accessorKey: "delete",
                 cell: (info) => (
                     <Checkbox
-                        checked={info.getValue() as boolean}
+                        checked={(info.getValue() as boolean) || false}
                         color="primary"
                         onChange={() =>
                             handlePermissionToggle(info.row.index, "delete")
@@ -187,7 +203,7 @@ export default function RoleManagementForm() {
                 ),
             },
         ],
-        []
+        [handlePermissionToggle]
     );
 
     return (
@@ -219,7 +235,7 @@ export default function RoleManagementForm() {
             </div>
             <UdaanTable columns={columns} data={formik.values.permissions || []} loading={isLoading || loadingRole} />
             <Box
-                className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky bottom-[-20px]"
+                className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky -bottom-5"
                 sx={{
                     borderTop: `1px solid ${theme.palette.seperator.dark}`,
                     background: theme.palette.primary.contrastText,
@@ -238,7 +254,7 @@ export default function RoleManagementForm() {
                     variant="contained"
                     color="primary"
                     type="submit"
-                    disabled={creatingRole}
+                    disabled={creatingRole || updating}
                 >
                     <Typography variant="body2">
                         {id ? (updating ? "Updating" : "Update") : (creatingRole ? "Adding" : "Add")} Role & Permission
