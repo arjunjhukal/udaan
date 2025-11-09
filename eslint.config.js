@@ -34,6 +34,7 @@ export default tseslint.config(
         },
       ],
       'no-unused-vars': 'off', // Turn off base rule as it's handled by @typescript-eslint
+      "@typescript-eslint/no-explicit-any": "off"
     },
   },
 )

@@ -7,7 +7,6 @@ import { PATH } from "./PATH";
 export default function Private() {
 	const navigate = useNavigate();
 	const user = useAppSelector((state) => state.auth.user);
-	console.log("user data", user);
 	React.useEffect(() => {
 		if (!user) {
 			navigate(PATH.AUTH.LOGIN.ROOT);

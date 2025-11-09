@@ -118,14 +118,14 @@ declare module "@mui/material/styles" {
 
 const lightPalette = {
     primary: {
-        main: "#1D82F5", // Changed from 'default' to 'main'
+        main: "#1D82F5",
         hover: "#1755B6",
         light: "#D9F0FF",
         black: "#111827",
         white: "#FFFFFF",
     },
     button: {
-        main: "#1D82F5", // Changed from 'default' to 'main'
+        main: "#1D82F5",
         gray: "#6B7280",
         hover: "#1755B6",
         light: "#D9F0FF",
@@ -158,7 +158,7 @@ const lightPalette = {
     },
     seperator: {
         main: "#3B9AFF",
-        dark: "#D1D5DB",
+        dark: "#E5E7EB",
         darker: "#9CA3B0",
         darkest: "#6B7280",
     },
@@ -197,7 +197,7 @@ const lightPalette = {
         name: "#111827",
     },
     background: {
-        default: "#FFFFFF",
+        default: "#E5E7EB",
         paper: "#F9FAFB",
         sidebar: "#171F29",
     },
@@ -470,6 +470,32 @@ const commonThemeOptions: ThemeOptions = {
                 root: {
                     minWidth: "unset",
                 },
+            },
+        },
+        MuiTableCell: {
+            styleOverrides: {
+                root: ({ theme }) => ({
+                    borderColor: `${theme.palette.seperator.dark}`,
+                }),
+            },
+        },
+        MuiCheckbox: {
+            styleOverrides: {
+                root: ({ theme }) => ({
+                    padding: 0,
+                    color: theme.palette.seperator.dark,
+                    '& .MuiSvgIcon-root': {
+                        width: 24,
+                        height: 24,
+                    },
+                    '& .MuiSvgIcon-root path': {
+                        strokeWidth: '1px',
+                    },
+                    '& svg': {
+                        borderRadius: '8px',
+                        overflow: 'visible',
+                    },
+                }),
             },
         },
     },

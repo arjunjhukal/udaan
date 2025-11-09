@@ -51,6 +51,39 @@
     },
     "messages": {
         "overview": "Overview",
-        "master_data": "Master Data"
+        "master_data": "Master Data",
+        "empty_states": {
+            "roles": {
+                "title": "Roles & Permissions Not Found",
+                "description": "Start defining roles and permissions to manage user access. Use the button below to create one.",
+                "action": "Create Role & Management"
+            },
+            "users": {
+                "title": "No Users Found",
+                "description": "Start adding users to manage access and permissions.",
+                "action": "Create New User"
+            },
+            "courses": {
+                "title": "No Courses Available",
+                "description": "You haven’t created any courses yet. Start building your first course.",
+                "action": "Create Course"
+            }
+        },
+        "toasts": {
+            "success_create": "Successfully created!",
+            "success_update": "Successfully updated!",
+            "success_delete": "Deleted successfully!",
+            "error_general": "Something went wrong. Please try again.",
+            "error_network": "Network error. Check your connection."
+        },
+        "confirmations": {
+            "delete": "Are you sure you want to delete this item?",
+            "unsaved_changes": "You have unsaved changes. Do you want to continue without saving?"
+        },
+        "validation": {
+            "required": "This field is required.",
+            "invalid_email": "Please enter a valid email address.",
+            "min_length": "Must be at least {min} characters long."
+        }
     }
 }

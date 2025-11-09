@@ -1,8 +1,8 @@
 import { Route, Routes } from "react-router-dom";
 import App from "../App";
 import RoleManagementRoot from "../components/pages/RoleManagement";
-import RoleManagementForm from "../components/pages/RoleManagement/RoleManagementForm";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
+import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
 import AuthRoot from "../components/pages/auth";
 import Login from "../components/pages/auth/login";
 import Register from "../components/pages/auth/register";
@@ -46,11 +46,11 @@ export default function GlobalRoutes() {
 					<Route path={PATH.ROLES.ROOT} element={<AllRoles />} />
 					<Route
 						path={PATH.ROLES.CREATE_ROLE.ROOT}
-						element={<RoleManagementForm />}
+						element={<CreateRoleRoot />}
 					/>
 					<Route
-						path={PATH.ROLES.EDIT_ROLE.ROOT}
-						element={<RoleManagementForm />}
+						path={PATH.ROLES.EDIT_ROLE.ROOT()}
+						element={<CreateRoleRoot />}
 					/>
 					<Route path="*" element={<NotFound />} />
 				</Route>

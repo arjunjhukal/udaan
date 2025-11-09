@@ -1,5 +1,4 @@
 export type PermissionProps = string[];
-export type RoleProps = string[];
 export type Token = {
 	access_token: string;
 } | null;
@@ -24,7 +23,7 @@ export interface GlobalResponse {
 export interface User extends RegisterUserProps {
 	id: number;
 	permissions: PermissionProps;
-	role: RoleProps;
+	role: string[];
 }
 
 export interface UserResponse extends GlobalResponse {

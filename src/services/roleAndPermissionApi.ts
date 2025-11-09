@@ -1,0 +1,96 @@
+import { createApi } from "@reduxjs/toolkit/query/react";
+import type { QueryParams } from "../types";
+import type { PermissionList, PermissionProps, RoleList, RoleProps } from "../types/roleAndPermission";
+import { baseQuery } from "./baseQuery";
+
+export const roleAndPermissionApi = createApi({
+    reducerPath: "roleAndPermissionApi",
+    baseQuery: baseQuery,
+    tagTypes: ["Role", "Permission"],
+    endpoints: (builder) => ({
+        // Fetch all permissions
+        getAllPermissions: builder.query<PermissionList, void>({
+            query: () => ({
+                url: "/admin/permissions",
+                method: "GET",
+            }),
+            providesTags: (result) =>
+                result?.data
+                    ? [
+                        ...result.data.map((perm: PermissionProps) => ({ type: "Permission" as const, id: perm.id })),
+                        { type: "Permission", id: "LIST" },
+                    ]
+                    : [{ type: "Permission", id: "LIST" }],
+        }),
+        // Fetch all roles
+        getAllRoles: builder.query<RoleList, QueryParams>({
+            query: ({ pageIndex, pageSize }) => {
+                const params = new URLSearchParams();
+
+                params.append('page', (pageIndex).toString());
+                params.append('page_size', pageSize.toString());
+
+                return {
+                    url: `/admin/roles?${params.toString()}`,
+                    method: "GET",
+                };
+            },
+            providesTags: (result) =>
+                result?.data?.data
+                    ? [
+                        ...result.data.data.map((role) => ({ type: "Role" as const, id: role.id })),
+                        { type: "Role", id: "LIST" },
+                    ]
+                    : [{ type: "Role", id: "LIST" }],
+        }),
+        // Create a new role
+        createNewRole: builder.mutation<RoleProps & { message: string }, RoleProps>({
+            query: (body) => ({
+                url: "/admin/roles",
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: [{ type: "Role", id: "LIST" }],
+        }),
+        // Edit a role
+        editRole: builder.mutation<{ data: RoleProps, message: string }, { body: RoleProps; id: string }>({
+            query: ({ body, id }) => ({
+                url: `/admin/roles/${id}`,
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: "Role", id },
+                { type: "Role", id: "LIST" }
+            ],
+        }),
+        // Delete a role
+        deleteRole: builder.mutation<void, { id: string }>({
+            query: ({ id }) => ({
+                url: `/admin/roles/${id}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: "Role", id },
+                { type: "Role", id: "LIST" }
+            ],
+        }),
+        // Fetch a role by id
+        getRoleById: builder.query<{ data: RoleProps }, { id: string }>({
+            query: ({ id }) => ({
+                url: `/admin/roles/${id}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Role", id }],
+        }),
+    }),
+});
+
+export const {
+    useGetAllPermissionsQuery,
+    useCreateNewRoleMutation,
+    useGetAllRolesQuery,
+    useEditRoleMutation,
+    useDeleteRoleMutation,
+    useGetRoleByIdQuery
+} = roleAndPermissionApi;

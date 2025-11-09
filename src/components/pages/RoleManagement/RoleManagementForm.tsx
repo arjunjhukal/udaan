@@ -1,7 +1,250 @@
-import React from 'react'
+import {
+    Box,
+    Button,
+    Checkbox,
+    FormHelperText,
+    InputLabel,
+    OutlinedInput,
+    Typography,
+    useTheme,
+} from "@mui/material";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useFormik } from "formik";
+import { useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import * as Yup from "yup";
+import { PATH } from "../../../routes/PATH";
+import {
+    useCreateNewRoleMutation,
+    useEditRoleMutation,
+    useGetAllPermissionsQuery,
+    useGetRoleByIdQuery,
+} from "../../../services/roleAndPermissionApi";
+import { showToast } from "../../../slice/toastSlice";
+import { useAppDispatch } from "../../../store/hook";
+import type { PermissionProps } from "../../../types/roleAndPermission";
+import UdaanTable from "../../molecules/Table";
+
+const validationSchema = Yup.object({
+    name: Yup.string().required("Role name is required"),
+});
 
 export default function RoleManagementForm() {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const theme = useTheme();
+    const { id } = useParams();
+
+    const { data, isLoading } = useGetAllPermissionsQuery();
+    const [createRole, { isLoading: creatingRole }] = useCreateNewRoleMutation();
+    const { data: role, isLoading: loadingRole } = useGetRoleByIdQuery({ id: id || "" }, {
+        skip: !id,
+    });
+    const [updateRole, { isLoading: updating }] = useEditRoleMutation();
+
+
+    const formik = useFormik({
+        initialValues: {
+            name: role?.data?.name || "",
+            permissions: data?.data?.map((perm: PermissionProps) => {
+                const matched = role?.data?.permissions?.find(
+                    (r: PermissionProps) => r.module === perm.module
+                );
+                return {
+                    ...perm,
+                    add: matched?.add ?? false,
+                    view: matched?.view ?? false,
+                    edit: matched?.edit ?? false,
+                    delete: matched?.delete ?? false,
+                };
+            }) || [],
+        },
+        validationSchema,
+        enableReinitialize: true,
+        onSubmit: async (values) => {
+            if (id) {
+                try {
+                    const response = await updateRole({ body: values, id: id }).unwrap();
+                    console.log(response);
+                    dispatch(
+                        showToast({
+                            message: response?.message || "Role Updated Successfully",
+                            severity: "success",
+                        })
+                    );
+                    navigate(PATH.ROLES.ROOT);
+                }
+                catch (e: any) {
+                    dispatch(
+                        showToast({
+                            message: e.data.message || "Something went wrong",
+                            severity: "error",
+                        })
+                    );
+                }
+            }
+            else {
+
+                try {
+                    // const payload = {
+                    //     ...values,
+                    //     permissions,
+                    // };
+
+                    const response = await createRole(values).unwrap();
+                    dispatch(
+                        showToast({
+                            message: response.message || "Role Created Successfully",
+                            severity: "success",
+                        })
+                    );
+                    navigate(PATH.ROLES.ROOT);
+                } catch (e: any) {
+                    console.log(e);
+                    dispatch(
+                        showToast({
+                            message: e.data.message || "Something went wrong",
+                            severity: "error",
+                        })
+                    );
+                }
+            }
+        },
+    });
+
+    const handlePermissionToggle = (
+        rowIndex: number,
+        field: keyof Pick<PermissionProps, "add" | "view" | "edit" | "delete">
+    ) => {
+        const updatedPermissions = [...formik.values.permissions];
+        updatedPermissions[rowIndex][field] = !updatedPermissions[rowIndex][field];
+        formik.setFieldValue("permissions", updatedPermissions);
+    };
+
+
+    // ✅ Use backend field names directly
+    const columns = useMemo<ColumnDef<PermissionProps>[]>(
+        () => [
+            {
+                header: "Module",
+                accessorKey: "module",
+                cell: (info) => (
+                    <Typography fontWeight={500} className="capitalize">
+                        {info.getValue() as string}
+                    </Typography>
+                ),
+            },
+            {
+                header: "Add",
+                accessorKey: "add",
+                cell: (info) => (
+                    <Checkbox
+                        checked={info.getValue() as boolean}
+                        color="primary"
+                        onChange={() =>
+                            handlePermissionToggle(info.row.index, "add")
+                        }
+                    />
+                ),
+            },
+            {
+                header: "View",
+                accessorKey: "view",
+                cell: (info) => (
+                    <Checkbox
+                        checked={info.getValue() as boolean}
+                        color="primary"
+                        onChange={() =>
+                            handlePermissionToggle(info.row.index, "view")
+                        }
+                    />
+                ),
+            },
+            {
+                header: "Edit",
+                accessorKey: "edit",
+                cell: (info) => (
+                    <Checkbox
+                        checked={info.getValue() as boolean}
+                        color="primary"
+                        onChange={() =>
+                            handlePermissionToggle(info.row.index, "edit")
+                        }
+                    />
+                ),
+            },
+            {
+                header: "Delete",
+                accessorKey: "delete",
+                cell: (info) => (
+                    <Checkbox
+                        checked={info.getValue() as boolean}
+                        color="primary"
+                        onChange={() =>
+                            handlePermissionToggle(info.row.index, "delete")
+                        }
+                    />
+                ),
+            },
+        ],
+        []
+    );
+
     return (
-        <h1>Role Management Form</h1>
-    )
+        <form onSubmit={formik.handleSubmit}>
+            <div className="grid grid-cols-2">
+                <div className="col-span-2 md:col-span-1">
+                    <div className="input__field mb-6">
+                        <InputLabel htmlFor="name">Name of the role</InputLabel>
+                        <OutlinedInput
+                            fullWidth
+                            id="name"
+                            name="name"
+                            placeholder="Enter the name of the role"
+                            value={formik.values.name}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.name && Boolean(formik.errors.name)}
+                        />
+                        {formik.touched.name && formik.errors.name && (
+                            <FormHelperText error sx={{ mt: 0.5 }}>
+                                {formik.errors.name}
+                            </FormHelperText>
+                        )}
+                    </div>
+                    <Typography variant="h5" className="mb-4!">
+                        Permission
+                    </Typography>
+                </div>
+            </div>
+            <UdaanTable columns={columns} data={formik.values.permissions || []} loading={isLoading || loadingRole} />
+            <Box
+                className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky bottom-[-20px]"
+                sx={{
+                    borderTop: `1px solid ${theme.palette.seperator.dark}`,
+                    background: theme.palette.primary.contrastText,
+                }}
+            >
+                <Button
+                    variant="text"
+                    sx={{
+                        color: theme.palette.button.gray,
+                    }}
+                    onClick={() => navigate(PATH.ROLES.ROOT)}
+                >
+                    Cancel
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={creatingRole}
+                >
+                    <Typography variant="body2">
+                        {id ? (updating ? "Updating" : "Update") : (creatingRole ? "Adding" : "Add")} Role & Permission
+                    </Typography>
+                </Button>
+            </Box>
+        </form>
+    );
 }

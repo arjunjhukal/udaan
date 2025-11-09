@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import * as React from "react";
 
+import { useTheme } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import { Link } from "react-router-dom";
 import CustomAppbar from "../appbar";
@@ -22,7 +23,7 @@ export default function ResponsiveDrawer(props: Props) {
 	const { window } = props;
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	const [isClosing, setIsClosing] = React.useState(false);
-
+	const theme = useTheme();
 	const handleDrawerClose = () => {
 		setIsClosing(true);
 		setMobileOpen(false);
@@ -106,7 +107,13 @@ export default function ResponsiveDrawer(props: Props) {
 					width: { sm: `calc(100% - ${drawerWidth}px)`, padding: "32px 24px" },
 				}}>
 				<Toolbar sx={{ height: 100 }} />
-				{props.children}
+				<Box className="content p-8 rounded-2xl overflow-y-auto flex flex-col" sx={{
+					background: theme.palette.primary.contrastText,
+					height: "calc(100vh - 165px)"
+
+				}}>
+					{props.children}
+				</Box>
 			</Box>
 		</Box>
 	);
