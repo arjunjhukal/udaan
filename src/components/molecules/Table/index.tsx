@@ -10,7 +10,7 @@ import {
     TableHead,
     TableRow,
     Typography,
-    useTheme,
+    useTheme
 } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import {
@@ -127,6 +127,7 @@ export default function UdaanTable<T extends object>({
                     </TableBody>
                 </Table>
             </TableContainer>
+
         </Box>
     );
 }

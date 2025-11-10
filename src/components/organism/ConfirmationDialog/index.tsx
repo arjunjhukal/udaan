@@ -37,7 +37,9 @@ export default function ConfirmationDialog({ open, setOpen, icon, title, descrip
                     <Button fullWidth variant="contained" sx={{
                         background: theme.palette.seperator.dark,
                         color: theme.palette.text.middle
-                    }} >Cancel</Button>
+                    }}
+                        onClick={handleClose}
+                    >Cancel</Button>
                     <Button fullWidth variant="contained" color="primary" onClick={onSave}>Yes</Button>
                 </DialogActions>
             </DialogContent>

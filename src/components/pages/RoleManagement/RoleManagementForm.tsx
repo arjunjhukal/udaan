@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useFormik } from "formik";
-import { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { PATH } from "../../../routes/PATH";
@@ -24,6 +24,7 @@ import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
 import type { PermissionProps } from "../../../types/roleAndPermission";
 import UdaanTable from "../../molecules/Table";
+import ConfirmationDialog from "../../organism/ConfirmationDialog";
 
 const validationSchema = Yup.object({
     name: Yup.string().required("Role name is required"),
@@ -35,6 +36,7 @@ export default function RoleManagementForm() {
     const theme = useTheme();
     const { id } = useParams();
 
+    const [openConfirm, setOpenConfirm] = React.useState<boolean>(false);
     const { data, isLoading } = useGetAllPermissionsQuery();
     const [createRole, { isLoading: creatingRole }] = useCreateNewRoleMutation();
     const { data: role, isLoading: loadingRole } = useGetRoleByIdQuery({ id: id || "" }, {
@@ -42,7 +44,6 @@ export default function RoleManagementForm() {
     });
     const [updateRole, { isLoading: updating }] = useEditRoleMutation();
 
-    // ✅ Properly type the initial values
     const formik = useFormik<{
         name: string;
         permissions: PermissionProps[];
@@ -206,61 +207,74 @@ export default function RoleManagementForm() {
         [handlePermissionToggle]
     );
 
+    const handleComfirmationChange = () => {
+        setOpenConfirm((prev) => !prev)
+    }
+
     return (
-        <form onSubmit={formik.handleSubmit}>
-            <div className="grid grid-cols-2">
-                <div className="col-span-2 md:col-span-1">
-                    <div className="input__field mb-6">
-                        <InputLabel htmlFor="name">Name of the role</InputLabel>
-                        <OutlinedInput
-                            fullWidth
-                            id="name"
-                            name="name"
-                            placeholder="Enter the name of the role"
-                            value={formik.values.name}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            error={formik.touched.name && Boolean(formik.errors.name)}
-                        />
-                        {formik.touched.name && formik.errors.name && (
-                            <FormHelperText error sx={{ mt: 0.5 }}>
-                                {formik.errors.name}
-                            </FormHelperText>
-                        )}
+        <>
+            <form onSubmit={formik.handleSubmit}>
+                <div className="grid grid-cols-2">
+                    <div className="col-span-2 md:col-span-1">
+                        <div className="input__field mb-6">
+                            <InputLabel htmlFor="name">Name of the role</InputLabel>
+                            <OutlinedInput
+                                fullWidth
+                                id="name"
+                                name="name"
+                                placeholder="Enter the name of the role"
+                                value={formik.values.name}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.name && Boolean(formik.errors.name)}
+                            />
+                            {formik.touched.name && formik.errors.name && (
+                                <FormHelperText error sx={{ mt: 0.5 }}>
+                                    {formik.errors.name}
+                                </FormHelperText>
+                            )}
+                        </div>
+                        <Typography variant="h5" className="mb-4!">
+                            Permission
+                        </Typography>
                     </div>
-                    <Typography variant="h5" className="mb-4!">
-                        Permission
-                    </Typography>
                 </div>
-            </div>
-            <UdaanTable columns={columns} data={formik.values.permissions || []} loading={isLoading || loadingRole} />
-            <Box
-                className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky -bottom-5"
-                sx={{
-                    borderTop: `1px solid ${theme.palette.seperator.dark}`,
-                    background: theme.palette.primary.contrastText,
-                }}
-            >
-                <Button
-                    variant="text"
+                <UdaanTable columns={columns} data={formik.values.permissions || []} loading={isLoading || loadingRole} />
+                <Box
+                    className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky -bottom-5"
                     sx={{
-                        color: theme.palette.button.gray,
+                        borderTop: `1px solid ${theme.palette.seperator.dark}`,
+                        background: theme.palette.primary.contrastText,
                     }}
-                    onClick={() => navigate(PATH.ROLES.ROOT)}
                 >
-                    Cancel
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    disabled={creatingRole || updating}
-                >
-                    <Typography variant="body2">
-                        {id ? (updating ? "Updating" : "Update") : (creatingRole ? "Adding" : "Add")} Role & Permission
-                    </Typography>
-                </Button>
-            </Box>
-        </form>
+                    <Button
+                        variant="text"
+                        sx={{
+                            color: theme.palette.button.gray,
+                        }}
+                        onClick={handleComfirmationChange}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        disabled={creatingRole || updating}
+                    >
+                        <Typography variant="body2">
+                            {id ? (updating ? "Updating" : "Update") : (creatingRole ? "Adding" : "Add")} Role & Permission
+                        </Typography>
+                    </Button>
+                </Box>
+            </form>
+            <ConfirmationDialog
+                title="Cancel Role"
+                description="All the recent changes will be lost completely. Are you sure."
+                open={openConfirm}
+                setOpen={handleComfirmationChange}
+                onSave={() => { navigate(PATH.ROLES.ROOT) }}
+            />
+        </>
     );
 }

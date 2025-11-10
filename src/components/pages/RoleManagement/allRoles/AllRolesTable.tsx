@@ -10,6 +10,7 @@ import type { RoleProps } from '../../../../types/roleAndPermission';
 import { formatDateForDisplay } from '../../../../utils/dateFormat';
 import Actions from '../../../molecules/Action';
 import UdaanTable from '../../../molecules/Table';
+import TablePagination from '../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../organism/ConfirmationDialog';
 import TableFilter from '../../../organism/TableFilter';
 import EmptyRoles from '../EmptyRoles';
@@ -180,6 +181,12 @@ export default function AllRolesTable() {
                 columns={columns}
                 qp={qp}
                 setQp={setQp}
+            />
+
+            <TablePagination
+                qp={qp}
+                setQp={setQp}
+                totalPages={data?.data?.pagination?.total_pages || 0}
             />
 
             <ConfirmationDialog
