@@ -25,11 +25,14 @@ export const roleAndPermissionApi = createApi({
         }),
         // Fetch all roles
         getAllRoles: builder.query<RoleList, QueryParams>({
-            query: ({ pageIndex, pageSize }) => {
+            query: ({ pageIndex, pageSize, search }) => {
                 const params = new URLSearchParams();
 
                 params.append('page', (pageIndex).toString());
                 params.append('page_size', pageSize.toString());
+                if (search) {
+                    params.append('search', search.toString());
+                }
 
                 return {
                     url: `/admin/roles?${params.toString()}`,
@@ -66,13 +69,13 @@ export const roleAndPermissionApi = createApi({
             ],
         }),
         // Delete a role
-        deleteRole: builder.mutation<GlobalResponse, { id: string }>({
-            query: ({ id }) => ({
-                url: `/admin/roles/${id}`,
+        deleteRole: builder.mutation<GlobalResponse, { body: string[] }>({
+            query: ({ body }) => ({
+                url: `/admin/roles/`,
                 method: "DELETE",
+                body: { roles: body }
             }),
-            invalidatesTags: (_result, _error, { id }) => [
-                { type: "Role", id },
+            invalidatesTags: (_result, _error,) => [
                 { type: "Role", id: "LIST" }
             ],
         }),
