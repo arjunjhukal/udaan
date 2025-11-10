@@ -13,11 +13,11 @@ import AuthLayout from "../components/pages/layout/AuthLayout";
 import NotFound from "../components/pages/layout/NotFound";
 import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
 import UserManagementRoot from "../components/pages/userManagement";
+import AllUsers from "../components/pages/userManagement/allUsers";
+import CreateUser from "../components/pages/userManagement/createUser";
 import CAN from "./CAN";
 import { PATH } from "./PATH";
 import Private from "./Private";
-import AllUsers from "../components/pages/userManagement/allUsers";
-import CreateUser from "../components/pages/userManagement/createUser";
 
 const router = createBrowserRouter([
 	{
@@ -77,7 +77,7 @@ const router = createBrowserRouter([
 				children: [
 					{ path: PATH.USER_MANAGEMENT.ROOT, element: <AllUsers /> },
 					{ path: PATH.USER_MANAGEMENT.CREATE_USER.ROOT, element: <CreateUser /> },
-					{ path: PATH.USER_MANAGEMENT.EDIT_ROLE.ROOT(), element: <CreateUser /> },
+					{ path: PATH.USER_MANAGEMENT.EDIT_USER.ROOT(), element: <CreateUser /> },
 				],
 			},
 		],

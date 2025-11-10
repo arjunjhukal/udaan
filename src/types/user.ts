@@ -10,7 +10,7 @@ export interface RegisterUserProps {
 	name: string;
 	email: string;
 	phone: string;
-	user_role: string;
+	role: { name: string } | null;
 	password: string;
 	password_confirmation: string;
 	profile: File | null;
@@ -43,7 +43,7 @@ export interface GlobalResponse {
 
 export interface User extends RegisterUserProps {
 	permissions: PermissionProps;
-	role: string[];
+	// role: string[];
 }
 
 export interface UserResponse extends GlobalResponse {

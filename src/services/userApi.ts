@@ -58,7 +58,7 @@ export const userApi = createApi({
             query: ({ body }) => ({
                 url: `/admin/user/`,
                 method: "DELETE",
-                body: { user: body }
+                body: { users: body }
             }),
             invalidatesTags: (_result, _error,) => [
                 { type: "User", id: "LIST" }

@@ -21,7 +21,6 @@ import {
     getSortedRowModel,
     useReactTable
 } from "@tanstack/react-table";
-import type { QueryParams } from "../../../types";
 interface UdaanTableProps<T extends object> {
     data: T[];
     columns: ColumnDef<T, any>[];
@@ -30,8 +29,7 @@ interface UdaanTableProps<T extends object> {
     className?: string;
     loading?: boolean
     skeletonRows?: number,
-    qp?: QueryParams,
-    setQp?: (newValue: QueryParams) => void;
+
 }
 
 export default function UdaanTable<T extends object>({

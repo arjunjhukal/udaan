@@ -179,8 +179,6 @@ export default function AllRolesTable() {
                 loading={isLoading}
                 data={roles}
                 columns={columns}
-                qp={qp}
-                setQp={setQp}
             />
 
             <TablePagination

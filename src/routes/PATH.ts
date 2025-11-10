@@ -46,7 +46,7 @@ export const PATH = {
 		CREATE_USER: {
 			ROOT: "/user-management/create-user",
 		},
-		EDIT_ROLE: {
+		EDIT_USER: {
 			ROOT: (id?: string) =>
 				id ? `/user-management/${id}` : "/user-management/:id",
 		},
