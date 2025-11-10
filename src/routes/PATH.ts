@@ -41,7 +41,14 @@ export const PATH = {
 				id ? `/role-management/${id}` : "/role-management/:id",
 		},
 	},
-	USER: {
-		ROOT: "/users",
+	USER_MANAGEMENT: {
+		ROOT: "/user-management",
+		CREATE_USER: {
+			ROOT: "/user-management/create-user",
+		},
+		EDIT_ROLE: {
+			ROOT: (id?: string) =>
+				id ? `/user-management/${id}` : "/user-management/:id",
+		},
 	}
 };

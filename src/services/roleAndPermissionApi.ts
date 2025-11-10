@@ -28,8 +28,12 @@ export const roleAndPermissionApi = createApi({
             query: ({ pageIndex, pageSize, search }) => {
                 const params = new URLSearchParams();
 
-                params.append('page', (pageIndex).toString());
-                params.append('page_size', pageSize.toString());
+                if (pageIndex) {
+                    params.append('page', (pageIndex).toString());
+                }
+                if (pageSize) {
+                    params.append('page_size', pageSize.toString());
+                }
                 if (search) {
                     params.append('search', search.toString());
                 }

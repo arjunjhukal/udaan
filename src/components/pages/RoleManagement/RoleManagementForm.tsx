@@ -248,9 +248,10 @@ export default function RoleManagementForm() {
                     }}
                 >
                     <Button
-                        variant="text"
+                        variant="contained"
                         sx={{
-                            color: theme.palette.button.gray,
+                            background: theme.palette.seperator.dark,
+                            color: theme.palette.text.middle
                         }}
                         onClick={handleComfirmationChange}
                     >

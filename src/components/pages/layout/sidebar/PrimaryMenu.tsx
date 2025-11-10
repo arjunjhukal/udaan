@@ -11,6 +11,7 @@ import {
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
+import CAN from "../../../../routes/CAN";
 import { PATH } from "../../../../routes/PATH";
 
 export default function PrimaryMenu() {
@@ -99,38 +100,42 @@ export default function PrimaryMenu() {
                         </List>
                     </Collapse>
                 </ListItem>
-                <ListItem disablePadding className="menu__item">
-                    <ListItemButton
-                        onClick={() => navigate(PATH.ROLES.ROOT)}
-                        className={isChildActive(PATH.ROLES.ROOT) ? "active" : ""}>
-                        <ListItemIcon>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M15.1167 18.0166C14.3833 18.2333 13.5167 18.3333 12.5 18.3333H7.5C6.48333 18.3333 5.61667 18.2333 4.88334 18.0166C5.06667 15.85 7.29167 14.1416 10 14.1416C12.7083 14.1416 14.9333 15.85 15.1167 18.0166Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M12.5 1.66675H7.5C3.33333 1.66675 1.66667 3.33341 1.66667 7.50008V12.5001C1.66667 15.6501 2.61667 17.3751 4.88334 18.0167C5.06667 15.8501 7.29167 14.1417 10 14.1417C12.7083 14.1417 14.9333 15.8501 15.1167 18.0167C17.3833 17.3751 18.3333 15.6501 18.3333 12.5001V7.50008C18.3333 3.33341 16.6667 1.66675 12.5 1.66675ZM10 11.8084C8.35 11.8084 7.01667 10.4668 7.01667 8.81676C7.01667 7.16676 8.35 5.83341 10 5.83341C11.65 5.83341 12.9833 7.16676 12.9833 8.81676C12.9833 10.4668 11.65 11.8084 10 11.8084Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M12.9833 8.8166C12.9833 10.4666 11.65 11.8082 10 11.8082C8.35 11.8082 7.01667 10.4666 7.01667 8.8166C7.01667 7.1666 8.35 5.83325 10 5.83325C11.65 5.83325 12.9833 7.1666 12.9833 8.8166Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                        </ListItemIcon>
-                        <ListItemText primary={t("menus.role_permission.root")} />
-                    </ListItemButton>
-                </ListItem>
+                <CAN permissions={["add_roles", "edit_roles", "delete_roles", "view_roles"]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => navigate(PATH.ROLES.ROOT)}
+                            className={isChildActive(PATH.ROLES.ROOT) ? "active" : ""}>
+                            <ListItemIcon>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15.1167 18.0166C14.3833 18.2333 13.5167 18.3333 12.5 18.3333H7.5C6.48333 18.3333 5.61667 18.2333 4.88334 18.0166C5.06667 15.85 7.29167 14.1416 10 14.1416C12.7083 14.1416 14.9333 15.85 15.1167 18.0166Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M12.5 1.66675H7.5C3.33333 1.66675 1.66667 3.33341 1.66667 7.50008V12.5001C1.66667 15.6501 2.61667 17.3751 4.88334 18.0167C5.06667 15.8501 7.29167 14.1417 10 14.1417C12.7083 14.1417 14.9333 15.8501 15.1167 18.0167C17.3833 17.3751 18.3333 15.6501 18.3333 12.5001V7.50008C18.3333 3.33341 16.6667 1.66675 12.5 1.66675ZM10 11.8084C8.35 11.8084 7.01667 10.4668 7.01667 8.81676C7.01667 7.16676 8.35 5.83341 10 5.83341C11.65 5.83341 12.9833 7.16676 12.9833 8.81676C12.9833 10.4668 11.65 11.8084 10 11.8084Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M12.9833 8.8166C12.9833 10.4666 11.65 11.8082 10 11.8082C8.35 11.8082 7.01667 10.4666 7.01667 8.8166C7.01667 7.1666 8.35 5.83325 10 5.83325C11.65 5.83325 12.9833 7.1666 12.9833 8.8166Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </ListItemIcon>
+                            <ListItemText primary={t("menus.role_permission.root")} />
+                        </ListItemButton>
+                    </ListItem>
+                </CAN>
 
 
-                <ListItem disablePadding className="menu__item">
-                    <ListItemButton
-                        onClick={() => navigate(PATH.USER.ROOT)}
-                        className={isActive(PATH.USER.ROOT) ? "active" : ""}>
-                        <ListItemIcon>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M7.63333 9.05841C7.55 9.05008 7.45 9.05008 7.35833 9.05841C5.375 8.99175 3.8 7.36675 3.8 5.36675C3.8 3.32508 5.45 1.66675 7.5 1.66675C9.54167 1.66675 11.2 3.32508 11.2 5.36675C11.1917 7.36675 9.61667 8.99175 7.63333 9.05841Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M13.675 3.33325C15.2917 3.33325 16.5917 4.64159 16.5917 6.24992C16.5917 7.82492 15.3417 9.10825 13.7833 9.16659C13.7167 9.15825 13.6417 9.15825 13.5667 9.16659" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M3.46667 12.1333C1.45 13.4833 1.45 15.6833 3.46667 17.0249C5.75833 18.5583 9.51667 18.5583 11.8083 17.0249C13.825 15.6749 13.825 13.4749 11.8083 12.1333C9.525 10.6083 5.76667 10.6083 3.46667 12.1333Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                <path d="M15.2833 16.6667C15.8833 16.5417 16.45 16.3001 16.9167 15.9417C18.2167 14.9667 18.2167 13.3584 16.9167 12.3834C16.4583 12.0334 15.9 11.8001 15.3083 11.6667" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
+                <CAN permissions={["add_users", "edit_users", "delete_users", "view_users"]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => navigate(PATH.USER_MANAGEMENT.ROOT)}
+                            className={isActive(PATH.USER_MANAGEMENT.ROOT) ? "active" : ""}>
+                            <ListItemIcon>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7.63333 9.05841C7.55 9.05008 7.45 9.05008 7.35833 9.05841C5.375 8.99175 3.8 7.36675 3.8 5.36675C3.8 3.32508 5.45 1.66675 7.5 1.66675C9.54167 1.66675 11.2 3.32508 11.2 5.36675C11.1917 7.36675 9.61667 8.99175 7.63333 9.05841Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M13.675 3.33325C15.2917 3.33325 16.5917 4.64159 16.5917 6.24992C16.5917 7.82492 15.3417 9.10825 13.7833 9.16659C13.7167 9.15825 13.6417 9.15825 13.5667 9.16659" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M3.46667 12.1333C1.45 13.4833 1.45 15.6833 3.46667 17.0249C5.75833 18.5583 9.51667 18.5583 11.8083 17.0249C13.825 15.6749 13.825 13.4749 11.8083 12.1333C9.525 10.6083 5.76667 10.6083 3.46667 12.1333Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M15.2833 16.6667C15.8833 16.5417 16.45 16.3001 16.9167 15.9417C18.2167 14.9667 18.2167 13.3584 16.9167 12.3834C16.4583 12.0334 15.9 11.8001 15.3083 11.6667" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
 
-                        </ListItemIcon>
-                        <ListItemText primary={t("menus.user_management.root")} />
-                    </ListItemButton>
-                </ListItem>
+                            </ListItemIcon>
+                            <ListItemText primary={t("menus.user_management.root")} />
+                        </ListItemButton>
+                    </ListItem>
+                </CAN>
 
                 <ListItem disablePadding className="menu__item">
                     <ListItemButton

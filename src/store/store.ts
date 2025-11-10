@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "../services/authApi";
 import { roleAndPermissionApi } from "../services/roleAndPermissionApi";
+import { userApi } from "../services/userApi";
 import authReducer from "../slice/authSlice";
 import themeReducer from "../slice/themeSlice";
 import toastReducer from "../slice/toastSlice";
@@ -11,10 +12,12 @@ export const store = configureStore({
 		toast: toastReducer,
 		[authApi.reducerPath]: authApi.reducer,
 		[roleAndPermissionApi.reducerPath]: roleAndPermissionApi.reducer,
+		[userApi.reducerPath]: userApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(authApi.middleware)
-			.concat(roleAndPermissionApi.middleware),
+			.concat(roleAndPermissionApi.middleware)
+			.concat(userApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

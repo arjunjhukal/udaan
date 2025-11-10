@@ -1,12 +1,33 @@
+import type { Pagination } from "./roleAndPermission";
+
 export type PermissionProps = string[];
 export type Token = {
 	access_token: string;
 } | null;
 
 export interface RegisterUserProps {
+	id?: string;
 	name: string;
 	email: string;
-	phone_number: string;
+	phone: string;
+	user_role: string;
+	password: string;
+	password_confirmation: string;
+	profile: File | null;
+	profile_url: string;
+	designation: string;
+}
+
+export const RegisterUserInitialData = {
+	name: "",
+	email: "",
+	phone: "",
+	user_role: "",
+	password: "",
+	password_confirmation: "",
+	profile: null,
+	profile_url: "",
+	designation: "",
 }
 
 export interface LoginUserProps {
@@ -21,7 +42,6 @@ export interface GlobalResponse {
 }
 
 export interface User extends RegisterUserProps {
-	id: number;
 	permissions: PermissionProps;
 	role: string[];
 }
@@ -31,4 +51,12 @@ export interface UserResponse extends GlobalResponse {
 		user: User;
 		token: Token;
 	};
+}
+
+
+export interface UserList extends GlobalResponse {
+	data: {
+		data: RegisterUserProps[];
+		pagination: Pagination;
+	}
 }

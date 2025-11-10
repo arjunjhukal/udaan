@@ -12,9 +12,12 @@ import VerifyOTP from "../components/pages/auth/verifyOtp";
 import AuthLayout from "../components/pages/layout/AuthLayout";
 import NotFound from "../components/pages/layout/NotFound";
 import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
+import UserManagementRoot from "../components/pages/userManagement";
 import CAN from "./CAN";
 import { PATH } from "./PATH";
 import Private from "./Private";
+import AllUsers from "../components/pages/userManagement/allUsers";
+import CreateUser from "../components/pages/userManagement/createUser";
 
 const router = createBrowserRouter([
 	{
@@ -67,6 +70,14 @@ const router = createBrowserRouter([
 					{ path: PATH.ROLES.ROOT, element: <AllRoles /> },
 					{ path: PATH.ROLES.CREATE_ROLE.ROOT, element: <CAN permissions={["add_roles", "edit_roles"]}><CreateRoleRoot /> </CAN> },
 					{ path: PATH.ROLES.EDIT_ROLE.ROOT(), element: <CAN permissions={["add_roles", "edit_roles"]}><CreateRoleRoot /></CAN> },
+				],
+			},
+			{
+				element: <UserManagementRoot />,
+				children: [
+					{ path: PATH.USER_MANAGEMENT.ROOT, element: <AllUsers /> },
+					{ path: PATH.USER_MANAGEMENT.CREATE_USER.ROOT, element: <CreateUser /> },
+					{ path: PATH.USER_MANAGEMENT.EDIT_ROLE.ROOT(), element: <CreateUser /> },
 				],
 			},
 		],

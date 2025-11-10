@@ -388,6 +388,12 @@ const commonThemeOptions: ThemeOptions = {
                     [theme.breakpoints.down("lg")]: {
                         fontSize: "12px",
                     },
+                    "&.required::after": {
+                        content: '"*"',
+                        display: "inline-block",
+                        color: theme.palette.error.main,
+                        marginLeft: "4px",
+                    },
                 }),
             },
         },
@@ -406,6 +412,15 @@ const commonThemeOptions: ThemeOptions = {
                     borderColor: "#C1C1C1",
                 },
             },
+        },
+        MuiSelect: {
+            styleOverrides: {
+                root: {
+                    ".MuiSelect-select": {
+                        maxHeight: "24px"
+                    }
+                }
+            }
         },
         MuiList: {
             styleOverrides: {
