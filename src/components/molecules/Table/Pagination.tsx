@@ -24,7 +24,8 @@ export default function TablePagination({
 }: TablePaginationProps) {
     const pageSizeOptions = [8, 10, 20, 50, 100];
 
-    const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
+    const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+
         setQp({ ...qp, pageIndex: page });
     };
 
