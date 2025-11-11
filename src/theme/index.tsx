@@ -379,6 +379,16 @@ const commonThemeOptions: ThemeOptions = {
                 },
             },
         },
+        MuiIconButton: {
+            styleOverrides: {
+                root: ({ theme }) => ({
+                    "&.activate:hover svg path": {
+                        fill: theme.palette.success.dark,
+                    },
+                }),
+            },
+        },
+
         MuiInputLabel: {
             styleOverrides: {
                 root: ({ theme }) => ({
@@ -437,12 +447,39 @@ const commonThemeOptions: ThemeOptions = {
                     justifyContent: "stretch",
                     padding: 0,
 
-                    "&.menu__item *": {
+                    "&.menu__item:not(.action__item) *": {
                         color: theme.palette.text.light,
                         whiteSpace: "nowrap",
                         overflow: "hidden",
                         textOverflow: "ellipsis",
-                    }
+                    },
+
+                    "&.menu__item.action__item": {
+                        "& .MuiListItemButton-root": {
+                            transition: "all 0.2s ease-in-out",
+                            padding: "8px 12px",
+                            borderRadius: "4px"
+                        },
+
+                        ".MuiListItemText, .MuiListItemText ": {
+                            color: theme.palette.text.light,
+                        },
+
+                        "&:hover": {
+                            ".MuiListItemButton-root": {
+                                color: theme.palette.primary.main,
+                                backgroundColor: theme.palette.primary.light,
+
+                                "svg path": {
+                                    stroke: theme.palette.primary.main,
+                                },
+                                ".MuiListItemText, .MuiListItemText *": {
+                                    color: theme.palette.primary.main,
+                                    fill: theme.palette.primary.main,
+                                },
+                            },
+                        }
+                    },
                 }),
             },
         },
@@ -455,7 +492,7 @@ const commonThemeOptions: ThemeOptions = {
                     borderBottom: `1px solid #4B4B4B`,
                     gap: "16px",
                     "&.active *": {
-                        color: "#fff",
+                        color: "#fff !important",
 
                         "svg path": {
                             stroke: "#fff"
@@ -530,7 +567,22 @@ const commonThemeOptions: ThemeOptions = {
                     }
                 })
             }
-        }
+        },
+        MuiTooltip: {
+            styleOverrides: {
+                tooltip: ({ theme }) => ({
+                    backgroundColor: theme.palette.primary.black,
+                    color: theme.palette.primary.contrastText,
+                    fontSize: "16px",
+                    padding: "8px 14px",
+                    borderRadius: "4px",
+                }),
+                arrow: ({ theme }) => ({
+                    color: theme.palette.common.black,
+                }),
+            },
+        },
+
     },
 };
 

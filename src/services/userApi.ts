@@ -71,6 +71,16 @@ export const userApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "User", id }],
         }),
+        suspendUser: builder.mutation<GlobalResponse, { body: string[] }>({
+            query: ({ body }) => ({
+                url: `/admin/user/suspend`,
+                method: "DELETE",
+                body: { users: body }
+            }),
+            invalidatesTags: (_result, _error,) => [
+                { type: "User", id: "LIST" }
+            ],
+        }),
     })
 })
 
@@ -79,4 +89,6 @@ export const {
     useGetAllUserQuery,
     useEditUserMutation,
     useDeleteUserMutation,
-    useGetUserByIdQuery } = userApi;
+    useGetUserByIdQuery,
+    useSuspendUserMutation
+} = userApi;

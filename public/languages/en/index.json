@@ -90,6 +90,8 @@
         "edit": "Edit",
         "view": "View",
         "delete": "Delete",
-        "cancel": "Cancel"
+        "cancel": "Cancel",
+        "suspend": "Suspend",
+        "unsuspend": "Un Suspend"
     }
 }

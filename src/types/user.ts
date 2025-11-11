@@ -10,19 +10,23 @@ export interface RegisterUserProps {
 	name: string;
 	email: string;
 	phone: string;
-	role: { name: string } | null;
+	role: { name: string, id: string } | null;
 	password: string;
 	password_confirmation: string;
 	profile: File | null;
 	profile_url: string;
 	designation: string;
+	is_suspended?: boolean
 }
 
 export const RegisterUserInitialData = {
 	name: "",
 	email: "",
 	phone: "",
-	user_role: "",
+	role: {
+		name: "",
+		id: ""
+	},
 	password: "",
 	password_confirmation: "",
 	profile: null,

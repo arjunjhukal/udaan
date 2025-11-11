@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { PATH } from "../../../routes/PATH";
 import { useGetAllRolesQuery } from "../../../services/roleAndPermissionApi";
-import { useCreateUserMutation } from "../../../services/userApi";
+import { useCreateUserMutation, useEditUserMutation, useGetUserByIdQuery } from "../../../services/userApi";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
 import { RegisterUserInitialData } from "../../../types/user";
@@ -33,9 +33,7 @@ const validationSchema = (id?: string) => {
             .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits")
             .length(10, "Phone number must be exactly 10 digits"),
 
-        user_role: Yup.string()
-            .required("Role is required"),
-
+        role: Yup.mixed(),
         designation: Yup.string()
             .required("Designation is required"),
 
@@ -76,14 +74,15 @@ export default function UserManagementForm() {
     });
 
     const [createUser, { isLoading }] = useCreateUserMutation();
-
-
-
+    const { data: user } = useGetUserByIdQuery({ id: id || "" }, { skip: !id })
+    const [updateUser, { isLoading: updating }] = useEditUserMutation();
+    console.log(user?.data?.role);
     const formik = useFormik({
-        initialValues: RegisterUserInitialData,
+        initialValues: user?.data || RegisterUserInitialData,
         validationSchema: validationSchema(id),
         enableReinitialize: true,
         onSubmit: async (values) => {
+
             const formData = new FormData();
 
             if (values.name) {
@@ -95,8 +94,8 @@ export default function UserManagementForm() {
             if (values.phone) {
                 formData.append("phone", values.phone)
             }
-            if (values.user_role) {
-                formData.append("role", values.user_role)
+            if (values.role?.id) {
+                formData.append("role", values.role.id)
             }
             if (values.password) {
                 formData.append("password", values.password)
@@ -115,10 +114,13 @@ export default function UserManagementForm() {
             }
             if (id) {
                 try {
-
+                    const response = await updateUser({
+                        id: id || "",
+                        body: formData
+                    }).unwrap();
                     dispatch(
                         showToast({
-                            message: "User Updated Successfully",
+                            message: response.message || "User Updated Successfully",
                             severity: "success",
                         })
                     );
@@ -228,15 +230,19 @@ export default function UserManagementForm() {
                 <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-3 mb-6">
                     <div className="col-span-1">
                         <div className="input__field">
-                            <InputLabel className="required" htmlFor="user_role">Role</InputLabel>
+                            <InputLabel className="required" htmlFor="role">Role</InputLabel>
                             <Select
                                 fullWidth
-                                name="user_role"
-                                id="user_role"
-                                value={formik.values.user_role}
-                                onChange={formik.handleChange}
+                                name="role"
+                                id="role"
+                                value={formik.values.role?.id || ""}
+                                onChange={(e) => {
+
+                                    const selectedRole = roles?.data?.data?.find((r) => r.id === Number(e.target.value));
+                                    formik.setFieldValue("role", selectedRole || null);
+                                }}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.user_role && Boolean(formik.errors.user_role)}
+                                error={formik.touched.role && Boolean(formik.errors.role)}
                             >
                                 {roles?.data?.data?.map((item) => (
                                     <MenuItem key={item.id} value={item.id} className="capitalize">
@@ -244,8 +250,8 @@ export default function UserManagementForm() {
                                     </MenuItem>
                                 ))}
                             </Select>
-                            {formik.touched.user_role && formik.errors.user_role && (
-                                <FormHelperText error>{formik.errors.user_role}</FormHelperText>
+                            {formik.touched.role && formik.errors.role && (
+                                <FormHelperText error>{String(formik.errors.role)}</FormHelperText>
                             )}
                         </div>
                     </div>
@@ -351,7 +357,7 @@ export default function UserManagementForm() {
                         type="submit"
                     >
                         <Typography variant="body2">
-                            {id ? "Update User" : (isLoading ? "Adding User" : "Add User")}
+                            {id ? (updating ? "Updating User" : "Update User") : (isLoading ? "Adding User" : "Add User")}
                         </Typography>
                     </Button>
                 </Box>

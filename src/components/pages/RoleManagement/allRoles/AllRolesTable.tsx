@@ -12,8 +12,8 @@ import Actions from '../../../molecules/Action';
 import UdaanTable from '../../../molecules/Table';
 import TablePagination from '../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../organism/ConfirmationDialog';
+import EmptyRoles from '../../../organism/EmptyRoute';
 import TableFilter from '../../../organism/TableFilter';
-import EmptyRoles from '../EmptyRoles';
 
 export default function AllRolesTable() {
     const theme = useTheme();
@@ -162,9 +162,6 @@ export default function AllRolesTable() {
     ], [selectedRows, isAllSelected, isSomeSelected, theme])
 
 
-    if (!isLoading && !roles.length) {
-        return <EmptyRoles />
-    }
 
     return (
         <>
@@ -175,11 +172,11 @@ export default function AllRolesTable() {
                 selectedRows={selectedRows}
                 handleRoleDelete={openDeleteConfirmation} // Changed to open dialog instead
             />
-            <UdaanTable
+            {!isLoading && !roles.length ? <EmptyRoles /> : <UdaanTable
                 loading={isLoading}
                 data={roles}
                 columns={columns}
-            />
+            />}
 
             <TablePagination
                 qp={qp}
