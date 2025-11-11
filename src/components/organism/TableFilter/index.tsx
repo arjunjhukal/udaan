@@ -1,4 +1,4 @@
-import { Button, IconButton, OutlinedInput, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, IconButton, OutlinedInput, Stack, Typography, useTheme } from "@mui/material";
 import FilterIcon from "../../../icons/FilterIcon";
 import SearchIcon from "../../../icons/SearchIcon";
 
@@ -7,8 +7,12 @@ interface TableFilterProps {
     setSearch: (newValue: string) => void;
     selectedRows: Set<string | number>;
     handleRoleDelete: (selectedRoleIds: string[]) => void;
+    onFilter?: () => void;
+    layout?: "table" | "grid"
+    categoryLayout?: boolean;
+    title?: string;
 }
-export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete }: TableFilterProps) {
+export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title }: TableFilterProps) {
     const theme = useTheme();
 
     const handleDeleteClick = () => {
@@ -17,9 +21,13 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
         }
     };
     return (
-        <div className="md:grid md:grid-cols-12  items-center mb-8">
+        <Box className={`md:grid md:grid-cols-12  items-center mb-8 ${categoryLayout ? "pb-2 mb-6" : ""}`}
+            sx={{
+                borderBottom: categoryLayout ? `1px solid ${theme.palette.seperator.dark}` : ""
+            }}
+        >
             <div className="col-span-6">
-                <OutlinedInput
+                {!categoryLayout ? <OutlinedInput
                     placeholder="Search"
                     name="search"
                     id="search"
@@ -29,7 +37,8 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                     sx={{
                         gap: "8px"
                     }}
-                />
+                /> : <Typography variant="h5" color="text.dark">{title}</Typography>}
+
             </div>
             <div className="col-span-6">
                 <div className="flex justify-end items-center gap-3 filter__right">
@@ -44,12 +53,25 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                             <path d="M19.2302 8.14C18.9902 7.89 18.6602 7.75 18.3202 7.75H5.68024C5.34024 7.75 5.00024 7.89 4.77024 8.14C4.54024 8.39 4.41024 8.73 4.43024 9.08L5.05024 19.34C5.16024 20.86 5.30024 22.76 8.79024 22.76H15.2102C18.7002 22.76 18.8402 20.87 18.9502 19.34L19.5702 9.09C19.5902 8.73 19.4602 8.39 19.2302 8.14ZM13.6602 17.75H10.3302C9.92024 17.75 9.58024 17.41 9.58024 17C9.58024 16.59 9.92024 16.25 10.3302 16.25H13.6602C14.0702 16.25 14.4102 16.59 14.4102 17C14.4102 17.41 14.0702 17.75 13.6602 17.75ZM14.5002 13.75H9.50024C9.09024 13.75 8.75024 13.41 8.75024 13C8.75024 12.59 9.09024 12.25 9.50024 12.25H14.5002C14.9102 12.25 15.2502 12.59 15.2502 13C15.2502 13.41 14.9102 13.75 14.5002 13.75Z" fill="#111827" />
                         </svg>
                     </IconButton> : ""}
-                    <Button startIcon={<FilterIcon />} sx={{
+
+                    <OutlinedInput
+                        placeholder="Search"
+                        name="search"
+                        id="search"
+                        startAdornment={<SearchIcon />}
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        sx={{
+                            gap: "8px",
+                            padding: "8px 16px"
+                        }}
+                    />
+                    {onFilter ? <Button startIcon={<FilterIcon />} sx={{
                         border: `1px solid ${theme.palette.seperator.dark}`
                     }} className="py-2.5! px-3.5! rounded-md!">
                         <Typography variant="subtitle1" color="text.dark">Filter</Typography>
-                    </Button>
-                    <Stack >
+                    </Button> : ""}
+                    {layout ? <Stack >
                         <IconButton sx={{
                             border: `1px solid ${theme.palette.seperator.dark}`,
                             borderRadius: "8px 0 0 8px"
@@ -73,9 +95,9 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                                 <path d="M10.5 19.77V15.73C10.5 14.14 9.86 13.5 8.27 13.5H4.23C2.64 13.5 2 14.14 2 15.73V19.77C2 21.36 2.64 22 4.23 22H8.27C9.86 22 10.5 21.36 10.5 19.77Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
                         </IconButton>
-                    </Stack>
+                    </Stack> : ""}
                 </div>
             </div>
-        </div>
+        </Box>
     )
 }

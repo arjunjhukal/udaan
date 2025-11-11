@@ -2,6 +2,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // Pages & Layouts
 import App from "../App";
+import CategoryManagementRoot from "../components/pages/CategoryManagement";
+import AllCategories from "../components/pages/CategoryManagement/allCategory";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
@@ -12,6 +14,7 @@ import VerifyOTP from "../components/pages/auth/verifyOtp";
 import AuthLayout from "../components/pages/layout/AuthLayout";
 import NotFound from "../components/pages/layout/NotFound";
 import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
+import AllPositions from "../components/pages/positionManagement/allPositions";
 import UserManagementRoot from "../components/pages/userManagement";
 import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
@@ -75,9 +78,16 @@ const router = createBrowserRouter([
 			{
 				element: <UserManagementRoot />,
 				children: [
-					{ path: PATH.USER_MANAGEMENT.ROOT, element: <AllUsers /> },
+					{ index: true, path: PATH.USER_MANAGEMENT.ROOT, element: <AllUsers /> },
 					{ path: PATH.USER_MANAGEMENT.CREATE_USER.ROOT, element: <CreateUser /> },
 					{ path: PATH.USER_MANAGEMENT.EDIT_USER.ROOT(), element: <CreateUser /> },
+				],
+			},
+			{
+				element: <CategoryManagementRoot />,
+				children: [
+					{ path: PATH.CATEGORY_LEVEL_MANAGEMENT.CATEGORY.ROOT, element: <AllCategories /> },
+					{ path: PATH.CATEGORY_LEVEL_MANAGEMENT.LEVEL_POSITION.ROOT, element: <AllPositions /> },
 				],
 			},
 		],

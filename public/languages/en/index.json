@@ -30,19 +30,13 @@
         "teachers": {
             "root": "Teachers"
         },
-        "category_management": {
-            "root": "Category",
+        "category_level_management": {
+            "root": "Category & Level / Position ",
             "category": {
                 "root": "Category"
             },
-            "mega_category": {
-                "root": "Mega Category"
-            },
-            "sub_category": {
-                "root": "Sub Category"
-            },
-            "position": {
-                "root": "Position"
+            "level_position": {
+                "root": "Level / Position"
             }
         },
         "content": {
@@ -62,6 +56,11 @@
                 "title": "No Users Found",
                 "description": "Start adding users to manage access and permissions.",
                 "action": "Create New User"
+            },
+            "category": {
+                "title": "Category not found",
+                "description": "Start defining category to manage system. Use the button below to create one.",
+                "action": "Create Category"
             },
             "courses": {
                 "title": "No Courses Available",

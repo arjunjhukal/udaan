@@ -31,6 +31,15 @@ export const PATH = {
 			ROOT: "/quiz"
 		}
 	},
+	CATEGORY_LEVEL_MANAGEMENT: {
+		ROOT: "/category-level-management",
+		CATEGORY: {
+			ROOT: "/category"
+		},
+		LEVEL_POSITION: {
+			ROOT: "/position"
+		},
+	},
 	ROLES: {
 		ROOT: "/role-management",
 		CREATE_ROLE: {

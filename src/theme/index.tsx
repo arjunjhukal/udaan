@@ -376,6 +376,7 @@ const commonThemeOptions: ThemeOptions = {
                 root: {
                     borderRadius: 8,
                     padding: "10px 16px",
+                    boxShadow: "none"
                 },
             },
         },
