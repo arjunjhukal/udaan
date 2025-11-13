@@ -331,7 +331,7 @@ const commonThemeOptions: ThemeOptions = {
             lineHeight: "28px",
         },
         body2: {
-            fontWeight: 400,
+            fontWeight: 500,
             fontSize: "18px",
             lineHeight: "26px",
         },

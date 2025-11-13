@@ -18,13 +18,25 @@
         "course_management": {
             "root": "Course Management",
             "courses": {
-                "root": "Courses"
+                "root": "Courses",
+                "create_course": "Create Course",
+                "edit_course": "Edit Course",
+                "delete_course": "Delete Course",
+                "view_course": "View Course"
             },
             "live_classes": {
-                "root": "Live Classes"
+                "root": "Live Classes",
+                "create_live_class": "Create Live Class",
+                "edit_live_class": "Edit Live Class",
+                "delete_live_class": "Delete Live Class",
+                "view_live_class": "View Live Class"
             },
             "quiz": {
-                "root": "Quiz"
+                "root": "Quiz",
+                "create_quiz": "Create Quiz",
+                "edit_quiz": "Edit Quiz",
+                "delete_quiz": "Delete Quiz",
+                "view_quiz": "View Quiz"
             }
         },
         "teachers": {

@@ -22,13 +22,34 @@ export const PATH = {
 	COURSE_MANAGEMENT: {
 		ROOT: "/course-management",
 		COURSES: {
-			ROOT: "/courses"
+			ROOT: "/courses",
+			CREATE_COURSE: {
+				ROOT: "/courses/create-course",
+			},
+			EDIT_COURSE: {
+				ROOT: (id?: string) =>
+					id ? `/courses/${id}` : "/courses/:id",
+			},
 		},
 		LIVE_CLASSES: {
-			ROOT: "/live-classes"
+			ROOT: "/live-classes",
+			CREATE_LIVE_CLASS: {
+				ROOT: "/live-classes/create-live-class",
+			},
+			EDIT_LIVE_CLASS: {
+				ROOT: (id?: string) =>
+					id ? `/live-classes/${id}` : "/live-classes/:id",
+			},
 		},
 		QUIZ: {
-			ROOT: "/quiz"
+			ROOT: "/quiz",
+			CREATE_QUIZ: {
+				ROOT: "/quiz/create-quiz",
+			},
+			EDIT_QUIZ: {
+				ROOT: (id?: string) =>
+					id ? `/quiz/${id}` : "/quiz/:id",
+			},
 		}
 	},
 	CATEGORY_LEVEL_MANAGEMENT: {

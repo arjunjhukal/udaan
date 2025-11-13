@@ -4,6 +4,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "../App";
 import CategoryManagementRoot from "../components/pages/CategoryManagement";
 import AllCategories from "../components/pages/CategoryManagement/allCategory";
+import CourseManagementRoot from "../components/pages/CourseManagement";
+import AllCourse from "../components/pages/CourseManagement/allCourse";
+import CreateCourseRoot from "../components/pages/CourseManagement/createCourse";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
@@ -18,7 +21,6 @@ import AllPositions from "../components/pages/positionManagement/allPositions";
 import UserManagementRoot from "../components/pages/userManagement";
 import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
-import CAN from "./CAN";
 import { PATH } from "./PATH";
 import Private from "./Private";
 
@@ -66,13 +68,19 @@ const router = createBrowserRouter([
 				element: <App />,
 			},
 			{
-				element: <CAN permissions={["add_roles", "edit_roles", "delete_roles", "view_roles"]}>
-					<RoleManagementRoot />
-				</CAN>,
+				element: <CourseManagementRoot />,
+				children: [
+					{ path: PATH.COURSE_MANAGEMENT.COURSES.ROOT, element: <AllCourse /> },
+					{ path: PATH.COURSE_MANAGEMENT.COURSES.CREATE_COURSE.ROOT, element: <CreateCourseRoot /> },
+					{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(), element: <CreateCourseRoot /> },
+				],
+			},
+			{
+				element: <RoleManagementRoot />,
 				children: [
 					{ path: PATH.ROLES.ROOT, element: <AllRoles /> },
-					{ path: PATH.ROLES.CREATE_ROLE.ROOT, element: <CAN permissions={["add_roles", "edit_roles"]}><CreateRoleRoot /> </CAN> },
-					{ path: PATH.ROLES.EDIT_ROLE.ROOT(), element: <CAN permissions={["add_roles", "edit_roles"]}><CreateRoleRoot /></CAN> },
+					{ path: PATH.ROLES.CREATE_ROLE.ROOT, element: <CreateRoleRoot /> },
+					{ path: PATH.ROLES.EDIT_ROLE.ROOT(), element: <CreateRoleRoot /> },
 				],
 			},
 			{
