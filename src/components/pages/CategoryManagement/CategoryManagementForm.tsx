@@ -122,7 +122,9 @@ export default function CategoryManagementForm({
     });
 
     const handleComfirmationChange = () => {
-        setOpenConfirm((prev) => !prev)
+        if (formik.dirty) {
+            setOpenConfirm((prev) => !prev)
+        }
     }
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -265,7 +267,7 @@ export default function CategoryManagementForm({
                 </Box>
             </form>
             <ConfirmationDialog
-                title="Cancel Role"
+                title="Cancel Category"
                 description="All the recent changes will be lost completely. Are you sure."
                 open={openConfirm}
                 setOpen={handleComfirmationChange}

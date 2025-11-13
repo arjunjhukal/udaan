@@ -37,6 +37,7 @@ export default function AllCategories() {
 
     const [openCategories, setOpenCategories] = React.useState<Record<number | string, boolean>>({});
     const [selectedRows, setSelectedRows] = React.useState<Set<number | string>>(new Set());
+    const [categoriesToDelete, setCategoriesToDelete] = React.useState<string[]>([]);
 
     const { data, isLoading } = useGetAllCategoryQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: search });
     const [deleteCategory] = useDeleteCategoryMutation();
@@ -73,7 +74,7 @@ export default function AllCategories() {
 
     const handleCategoryDelete = async () => {
         try {
-            const response = await deleteCategory({ body: Array.from(selectedRows).map(String) }).unwrap();
+            const response = await deleteCategory({ body: categoriesToDelete }).unwrap();
 
             dispatch(
                 showToast({
@@ -94,6 +95,12 @@ export default function AllCategories() {
             );
         }
     };
+
+    const openDeleteConfirmation = (ids: string[]) => {
+        setCategoriesToDelete(ids);
+        setOpenConfirmDelete(true);
+    };
+
 
     // ✅ Recursive renderer
     const renderCategory = (cat: CategoryProps, level: number = 0) => {
@@ -155,7 +162,7 @@ export default function AllCategories() {
                     </div>
 
                     <ActionIconVisible
-                        setOpenConfirmDelete={setOpenConfirmDelete}
+                        onDelete={() => openDeleteConfirmation([cat.id?.toString() ?? ""])}
                         onEdit={() => handleCategoryEdit(cat)}
                     />
                 </Box>

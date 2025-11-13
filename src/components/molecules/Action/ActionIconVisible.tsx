@@ -1,6 +1,6 @@
 import { IconButton, useTheme } from "@mui/material";
 
-export default function ActionIconVisible({ setOpenConfirmDelete, onEdit }: { setOpenConfirmDelete: React.Dispatch<React.SetStateAction<boolean>>, onEdit: () => void }) {
+export default function ActionIconVisible({ onDelete, onEdit }: { onDelete: () => void, onEdit: () => void }) {
     const theme = useTheme();
     return (
         <div className="action__group flex justify-end gap-3">
@@ -26,7 +26,7 @@ export default function ActionIconVisible({ setOpenConfirmDelete, onEdit }: { se
                     color: theme.palette.primary.contrastText,
                     background: theme.palette.error.main
                 },
-            }} onClick={(e) => { e.stopPropagation(); setOpenConfirmDelete(true); }}>
+            }} onClick={(e) => { e.stopPropagation(); onDelete(); }}>
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M14 3.98665C11.78 3.76665 9.54667 3.65332 7.32 3.65332C6 3.65332 4.68 3.71999 3.36 3.85332L2 3.98665" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M5.66675 3.3135L5.81341 2.44016C5.92008 1.80683 6.00008 1.3335 7.12675 1.3335H8.87341C10.0001 1.3335 10.0867 1.8335 10.1867 2.44683L10.3334 3.3135" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
