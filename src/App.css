@@ -60,3 +60,11 @@
 body {
 	background-color: #fff;
 } */
+
+.category__content__wrapper+.category__content__wrapper {
+	margin-top: 16px;
+}
+
+.category__content__wrapper:last-child>.category__header {
+	border-bottom: none !important;
+}

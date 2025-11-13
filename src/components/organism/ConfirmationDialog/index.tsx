@@ -16,7 +16,8 @@ export default function ConfirmationDialog({ open, setOpen, icon, title, descrip
     return (
         <Dialog open={open} onClose={handleClose}>
             <DialogContent className="py-8! px-13! relative rounded-2xl" sx={{
-                boxShadow: "0 4px 20px 0 rgba(0, 8, 251, 0.20)"
+                boxShadow: "0 4px 20px 0 rgba(0, 8, 251, 0.20)",
+                maxWidth: "409px",
             }}>
                 <IconButton onClick={handleClose} className="absolute! right-4 top-4">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -45,7 +45,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                     {selectedRows.size > 0 ? <IconButton
                         sx={{
                             border: `1px solid ${theme.palette.seperator.dark}`
-                        }} className="py-2.5! px-3.5! rounded-md!"
+                        }} className={`rounded-md! ${categoryLayout ? "" : "py-2.5! px-3.5! "}`}
                         onClick={handleDeleteClick}
                     >
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

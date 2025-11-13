@@ -2,7 +2,7 @@ import { Autocomplete, Box, Button, FormHelperText, InputLabel, OutlinedInput, T
 import { useFormik } from "formik";
 import React from "react";
 import * as Yup from "yup";
-import { useCreateCategoryMutation } from "../../../services/categoryApi";
+import { useCreateCategoryMutation, useEditCategoryMutation } from "../../../services/categoryApi";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
 import type { CategoryProps } from "../../../types/category";
@@ -24,49 +24,54 @@ const generateSlug = (text: string): string => {
         .replace(/-+/g, '-'); // Replace multiple hyphens with single hyphen
 };
 
-// Flatten nested categories
-const flattenCategories = (categories: CategoryProps[]): CategoryProps[] => {
-    const flattened: CategoryProps[] = [];
+// Flatten nested categories but track level for indentation
+const flattenCategoriesWithLevels = (
+    categories: CategoryProps[],
+    level = 0
+): (CategoryProps & { level: number })[] => {
+    const flattened: (CategoryProps & { level: number })[] = [];
 
-    categories.forEach(category => {
-        const { sub_category, ...parentCategory } = category;
-        flattened.push(parentCategory);
+    categories.forEach((category) => {
+        const { sub_category, ...rest } = category;
 
-        if (sub_category && sub_category.length > 0) {
-            sub_category.forEach(subCat => {
-                flattened.push({
-                    ...subCat,
-                    parent_id: category.id?.toString() || null,
-                });
-            });
+        // Always push current category
+        flattened.push({ ...rest, level });
+
+        // Only go one level deep
+        if (level < 1 && sub_category && sub_category.length > 0) {
+            flattened.push(...flattenCategoriesWithLevels(sub_category, level + 1));
         }
     });
 
     return flattened;
 };
 
+
 export default function CategoryManagementForm({
     category,
     data,
-    onReset
+    setCategory
 }: {
     category: CategoryProps,
     data: CategoryProps[],
-    onReset?: () => void
+    setCategory: (newValue: CategoryProps) => void
 }) {
     const dispatch = useAppDispatch();
     const theme = useTheme();
     const [openConfirm, setOpenConfirm] = React.useState<boolean>(false);
     const [isSlugManuallyEdited, setIsSlugManuallyEdited] = React.useState<boolean>(false);
+
+
     const [createCategory, { isLoading }] = useCreateCategoryMutation();
+    const [updateCategory, { isLoading: isUpdating }] = useEditCategoryMutation();
 
-    // Flatten the nested category structure
-    const flattenedData = React.useMemo(() => flattenCategories(data), [data]);
 
-    // Check if we're in edit mode
+    const flattenedData = React.useMemo(() => flattenCategoriesWithLevels(data), [data]);
+
+
     const isEditMode = Boolean(category.id);
 
-    // Reset slug edit flag when category changes
+
     React.useEffect(() => {
         setIsSlugManuallyEdited(false);
     }, [category.id]);
@@ -76,22 +81,43 @@ export default function CategoryManagementForm({
         validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            try {
-                const response = await createCategory(values).unwrap();
-                dispatch(
-                    showToast({
-                        message: response?.message || "Category created Successfully",
-                        severity: "success"
-                    })
-                )
-            } catch (e: any) {
-                dispatch(
-                    showToast({
-                        message: e?.data?.message || "Unable to create category",
-                        severity: "error"
-                    })
-                )
+            if (isEditMode) {
+                try {
+                    const response = await updateCategory({ body: values, id: category.id?.toString() || "" }).unwrap();
+                    dispatch(
+                        showToast({
+                            message: response?.message || "Updated created Successfully",
+                            severity: "success"
+                        })
+                    )
+                } catch (e: any) {
+                    dispatch(
+                        showToast({
+                            message: e?.data?.message || "Unable to updated category",
+                            severity: "error"
+                        })
+                    )
+                }
             }
+            else {
+                try {
+                    const response = await createCategory(values).unwrap();
+                    dispatch(
+                        showToast({
+                            message: response?.message || "Category created Successfully",
+                            severity: "success"
+                        })
+                    )
+                } catch (e: any) {
+                    dispatch(
+                        showToast({
+                            message: e?.data?.message || "Unable to create category",
+                            severity: "error"
+                        })
+                    )
+                }
+            }
+            setCategory({ id: undefined, name: "", slug: "", parent_id: null });
         },
     });
 
@@ -159,6 +185,20 @@ export default function CategoryManagementForm({
                         isOptionEqualToValue={(option, value) =>
                             option.id?.toString() === value?.id?.toString()
                         }
+                        renderOption={(props, option) => (
+                            <li
+                                {...props}
+                                style={{
+                                    paddingLeft: `${option.level * 16}px`,
+                                    display: "flex",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <Typography variant="body2" color="text.primary">
+                                    {option.name}
+                                </Typography>
+                            </li>
+                        )}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -167,6 +207,7 @@ export default function CategoryManagementForm({
                             />
                         )}
                     />
+
                     {formik.touched.parent_id && formik.errors.parent_id && (
                         <FormHelperText error>{formik.errors.parent_id}</FormHelperText>
                     )}
@@ -218,7 +259,7 @@ export default function CategoryManagementForm({
                         disabled={isLoading}
                     >
                         <Typography variant="body2">
-                            {(isLoading ? "Creating" : "Create")} Category
+                            {isEditMode ? (isUpdating ? "Updating" : "Update") : (isLoading ? "Creating" : "Create")} Category
                         </Typography>
                     </Button>
                 </Box>
@@ -228,7 +269,10 @@ export default function CategoryManagementForm({
                 description="All the recent changes will be lost completely. Are you sure."
                 open={openConfirm}
                 setOpen={handleComfirmationChange}
-                onSave={handleComfirmationChange}
+                onSave={() => {
+                    setCategory({ id: undefined, name: "", slug: "", parent_id: null })
+                    handleComfirmationChange();
+                }}
             />
         </>
     );

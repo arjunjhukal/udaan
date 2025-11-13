@@ -56,6 +56,10 @@ export default function TablePagination({
         }
     };
 
+    if (totalPages === 0) {
+        return null;
+    }
+
     return (
         <Box
             sx={{

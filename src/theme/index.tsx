@@ -583,7 +583,27 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
+        MuiAutocomplete: {
+            styleOverrides: {
+                // popper: {
+                //     "& .MuiAutocomplete-paper": {
+                //         padding: "8px 12px",
+                //         borderRadius: "8px",
+                //     },
+                // },
+                option: ({ theme }) => ({
+                    ...theme.typography.body1,
+                    padding: "8px 12px",
+                    color: theme.palette.text.primary,
+                    '&[aria-selected="true"]': {
+                        backgroundColor: theme.palette.action.selected,
+                    },
+                    '&[data-focus="true"]': {
+                        backgroundColor: theme.palette.action.hover,
+                    },
+                }),
+            },
+        },
     },
 };
 
