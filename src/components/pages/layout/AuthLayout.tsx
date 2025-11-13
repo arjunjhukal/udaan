@@ -4,12 +4,12 @@ import { Outlet } from "react-router-dom";
 export default function AuthLayout() {
 	return (
 		<Box
-			sx={{
-				width: {
-					xs: "100%",
-					xl: "62%",
-				},
-			}}
+			// sx={{
+			// 	width: {
+			// 		xs: "100%",
+			// 		xl: "62%",
+			// 	},
+			// }}
 			className="lg:grid lg:grid-cols-2 lg:gap-10 2xl:gap-20">
 			<div className="auth__image__wrapper col-span-1 hidden lg:block">
 				<img

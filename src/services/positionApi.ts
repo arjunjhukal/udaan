@@ -11,7 +11,6 @@ export const positionApi = createApi({
     baseQuery: baseQuery,
     tagTypes: ["Position"],
     endpoints: (builder) => ({
-        // 🔹 Get all position
         getAllPosition: builder.query<positionList, QueryParams>({
             query: ({ pageIndex, pageSize, search }) => {
                 const params = new URLSearchParams();
@@ -37,7 +36,6 @@ export const positionApi = createApi({
                     : [{ type: "Position", id: "LIST" }],
         }),
 
-        // 🔹 Get position by ID
         getPositionById: builder.query<{ data: positionProps }, { id: string }>({
             query: ({ id }) => ({
                 url: `/admin/position/${id}`,
@@ -46,7 +44,6 @@ export const positionApi = createApi({
             providesTags: (_res, _err, { id }) => [{ type: "Position", id }],
         }),
 
-        // 🔹 Create new position
         createPosition: builder.mutation<{ data: positionProps; message: string }, positionProps>({
             query: (body) => ({
                 url: "/admin/position",
@@ -56,7 +53,6 @@ export const positionApi = createApi({
             invalidatesTags: [{ type: "Position", id: "LIST" }],
         }),
 
-        // 🔹 Update existing position
         updatePosition: builder.mutation<
             { data: positionProps; message: string },
             { id: string; body: positionProps }
@@ -72,7 +68,6 @@ export const positionApi = createApi({
             ],
         }),
 
-        // 🔹 Delete position(s)
         deletePosition: builder.mutation<GlobalResponse, { body: string[] }>({
             query: ({ body }) => ({
                 url: `/admin/position`,

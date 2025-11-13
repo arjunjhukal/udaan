@@ -54,7 +54,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                         </svg>
                     </IconButton> : ""}
 
-                    <OutlinedInput
+                    {layout ? <OutlinedInput
                         placeholder="Search"
                         name="search"
                         id="search"
@@ -65,13 +65,13 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                             gap: "8px",
                             padding: "8px 16px"
                         }}
-                    />
+                    /> : ""}
                     {onFilter ? <Button startIcon={<FilterIcon />} sx={{
                         border: `1px solid ${theme.palette.seperator.dark}`
                     }} className="py-2.5! px-3.5! rounded-md!">
                         <Typography variant="subtitle1" color="text.dark">Filter</Typography>
                     </Button> : ""}
-                    {layout ? <Stack >
+                    {categoryLayout ? <Stack >
                         <IconButton sx={{
                             border: `1px solid ${theme.palette.seperator.dark}`,
                             borderRadius: "8px 0 0 8px"

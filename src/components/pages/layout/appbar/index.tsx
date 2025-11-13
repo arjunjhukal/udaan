@@ -1,9 +1,6 @@
-import ContrastIcon from "@mui/icons-material/Contrast";
 import EmailIcon from "@mui/icons-material/Email";
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
-import SettingsIcon from "@mui/icons-material/Settings";
-import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import {
 	AppBar,
 	Box,
@@ -11,9 +8,11 @@ import {
 	OutlinedInput,
 	Stack,
 	Toolbar,
+	useTheme
 } from "@mui/material";
-import { setMode, ThemeMode } from "../../../../slice/themeSlice";
-import { useAppDispatch, useAppSelector } from "../../../../store/hook";
+import SearchIcon from "../../../../icons/SearchIcon";
+import Profile from "./Profile";
+import Setting from "./Setting";
 const drawerWidth = 356;
 
 export default function CustomAppbar({
@@ -21,8 +20,8 @@ export default function CustomAppbar({
 }: {
 	handleDrawerToggle: () => void;
 }) {
-	const dispatch = useAppDispatch();
-	const mode = useAppSelector((state) => state.theme.mode);
+	const theme = useTheme();
+
 	return (
 		<AppBar
 			position="fixed"
@@ -52,16 +51,33 @@ export default function CustomAppbar({
 						justifyContent: "space-between",
 						width: "100%",
 					}}>
-					<OutlinedInput />
+					<OutlinedInput
+						placeholder="Search"
+						name="search"
+						id="search"
+						startAdornment={<SearchIcon />}
+						sx={{
+							gap: "8px"
+						}}
+					/>
 
-					<Box>
-						<IconButton>
+					<Box className="flex gap-4">
+						<IconButton sx={{
+							background: theme.palette.seperator.dark,
+							minWidth: "44px",
+						}}>
 							<NotificationsNoneIcon />
 						</IconButton>
-						<IconButton>
+						<IconButton sx={{
+							background: theme.palette.seperator.dark,
+							minWidth: "44px",
+						}}>
 							<EmailIcon />
 						</IconButton>
-						<IconButton>
+						{/* <IconButton sx={{
+							background: theme.palette.seperator.dark,
+							minWidth: "44px",
+						}}>
 							<SettingsIcon />
 						</IconButton>
 						<IconButton
@@ -74,7 +90,9 @@ export default function CustomAppbar({
 							}}
 							color="inherit">
 							{mode !== "dark" ? <ContrastIcon /> : <WbSunnyIcon />}
-						</IconButton>
+						</IconButton> */}
+						<Setting />
+						<Profile />
 					</Box>
 				</Stack>
 			</Toolbar>
