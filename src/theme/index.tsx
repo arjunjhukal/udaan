@@ -186,7 +186,7 @@ const lightPalette = {
         main: "#3B9AFF",
         dark: "#111827",
         light: "#9CA3B0",
-        lightest: "#9CA3B0",
+        lightest: "#F9FAFB",
         middle: "#6B7280",
     },
     textField: {
@@ -396,6 +396,7 @@ const commonThemeOptions: ThemeOptions = {
                     fontSize: "18px",
                     color: theme.palette.textField.name,
                     marginBottom: "8px",
+                    fontWeight: 400,
                     [theme.breakpoints.down("lg")]: {
                         fontSize: "12px",
                     },
@@ -419,9 +420,9 @@ const commonThemeOptions: ThemeOptions = {
                     padding: "0",
                     fontSize: "16px",
                 },
-                notchedOutline: {
-                    borderColor: "#C1C1C1",
-                },
+                notchedOutline: ({ theme }) => ({
+                    borderColor: theme.palette.textField.border,
+                }),
             },
         },
         MuiSelect: {

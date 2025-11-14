@@ -68,3 +68,23 @@ body {
 .category__content__wrapper:last-child>.category__header {
 	border-bottom: none !important;
 }
+
+.ck-powered-by-balloon {
+	display: none !important;
+}
+
+.editor__wrapper .ck-editor__editable {
+	min-height: 175px;
+}
+
+.editor__wrapper .ck-editor__editable {
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.ck-sticky-panel__content {
+	border-top: none !important;
+	border-left: none !important;
+	border-right: none !important;
+	border-bottom: 1px solid #D9D7D7 !important;
+}
