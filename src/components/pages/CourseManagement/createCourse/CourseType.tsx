@@ -1,9 +1,13 @@
-import { Box, Checkbox, Typography } from '@mui/material';
-import React from 'react';
+import { Box, Checkbox, Typography, useTheme } from '@mui/material';
+import React, { Activity } from 'react';
+import ExpiryCourseType from './CourseTypes/ExpiryCourseType';
+import FreeCourseType from './CourseTypes/FreeCourseType';
+import SubscriptionCourseType from './CourseTypes/SubscriptionCourseType';
 
 export type CourseTypeProps = "free" | "subscription" | "expiry";
 
 export default function CourseType() {
+    const theme = useTheme();
     const [currentType, setCurrentType] = React.useState<CourseTypeProps>("free");
 
     const types = [
@@ -29,17 +33,22 @@ export default function CourseType() {
 
     return (
         <div className="course__type__wrapper">
-            <Typography variant="h4" className="mb-1!">
-                Course Type
-            </Typography>
+
 
             <div className="grid grid-cols-12 gap-4">
-                <div className="col-span-4 space-y-4">
+                <div className="col-span-4">
+                    <Typography variant="h4" className="mb-1!">
+                        Course Type
+                    </Typography>
                     {types.map((item) => (
-                        <div
+                        <Box
                             key={item.key}
-                            className="tab__item flex items-start gap-2 cursor-pointer"
+                            className={`tab__item flex items-start gap-2 cursor-pointer py-6 px-4 rounded-md ${currentType === item.key ? 'active' : ''}`}
                             onClick={() => setCurrentType(item.key)}
+
+                            sx={{
+                                background: currentType === item.key ? theme.palette.primary.light : ""
+                            }}
                         >
                             <Checkbox
                                 color="primary"
@@ -49,11 +58,11 @@ export default function CourseType() {
 
                             <div className="tab__label__content">
                                 <Typography variant="h6">{item.title}</Typography>
-                                <Typography variant="caption" color="text.middle">
+                                <p style={{ color: theme.palette.text.light, }} className='text-[12px] leading-[16.8px]'>
                                     {item.description}
-                                </Typography>
+                                </p>
                             </div>
-                        </div>
+                        </Box>
                     ))}
                 </div>
 
@@ -66,24 +75,26 @@ export default function CourseType() {
 }
 
 function ActivityBlock({ currentType }: { currentType: CourseTypeProps }) {
+    const theme = useTheme();
     return (
         <Box
+            className="py-6 px-8 rounded-2xl"
             sx={{
-                padding: 3,
-                borderRadius: 2,
-                background: "#F3F4F6",
-                border: "1px solid #E5E7EB",
+                background: theme.palette.gray.gray1
             }}
         >
-            <Typography variant="h5" fontWeight="bold">
-                {currentType === "free" && "Free Course Settings"}
-                {currentType === "subscription" && "Subscription Course Settings"}
-                {currentType === "expiry" && "Expiry Course Settings"}
-            </Typography>
+            {currentType === "free" &&
+                <Activity>
+                    <FreeCourseType />
+                </Activity>}
+            {currentType === "subscription" && <Activity>
+                <SubscriptionCourseType />
+            </Activity>}
+            {currentType === "expiry" && <Activity>
+                <ExpiryCourseType />
+            </Activity>}
 
-            <Typography variant="body2" color="text.secondary" mt={1}>
-                Showing settings for <strong>{currentType}</strong>
-            </Typography>
+
         </Box>
     );
 }

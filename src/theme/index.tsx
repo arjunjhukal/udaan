@@ -140,7 +140,7 @@ const lightPalette = {
     },
     gray: {
         main: "#3B9AFF",
-        gray1: "#E5E7EB",
+        gray1: "#F3F4F6",
         gray2: "#FFF0F1 ",
         gray3: "#9CA3B0",
     },
@@ -354,6 +354,8 @@ const commonThemeOptions: ThemeOptions = {
             fontWeight: 400,
             fontSize: "8px",
             lineHeight: "11.2px",
+            textTransform: "unset",
+            letterSpacing: "0px",
         },
         button: {
             fontWeight: 400,
@@ -411,11 +413,12 @@ const commonThemeOptions: ThemeOptions = {
         },
         MuiOutlinedInput: {
             styleOverrides: {
-                root: {
+                root: ({ theme }) => ({
+                    ...theme.typography.subtitle1,
                     padding: "16px",
                     borderRadius: "8px",
                     fontWeight: "500",
-                },
+                }),
                 input: {
                     padding: "0",
                     fontSize: "16px",
@@ -534,20 +537,54 @@ const commonThemeOptions: ThemeOptions = {
             },
         },
         MuiCheckbox: {
+            defaultProps: {
+                size: 'small',
+                icon: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M4.66654 1.33398C2.82559 1.33398 1.33321 2.82637 1.33321 4.66732V11.334C1.33321 13.1749 2.82559 14.6673 4.66654 14.6673H11.3332C13.1742 14.6673 14.6665 13.1749 14.6665 11.334V4.66732C14.6665 2.82637 13.1742 1.33398 11.3332 1.33398H4.66654ZM4.99987 2.33398C3.52711 2.33398 2.33321 3.52789 2.33321 5.00065V11.0006C2.33321 12.4734 3.52711 13.6673 4.99987 13.6673H10.9999C12.4726 13.6673 13.6665 12.4734 13.6665 11.0006V5.00065C13.6665 3.52789 12.4726 2.33398 10.9999 2.33398H4.99987Z"
+                            fill="#9CA3B0"
+                        />
+                    </svg>
+                ),
+                checkedIcon: (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <rect x="1.33" y="1.33" width="13.34" height="13.34" rx="3.33" fill="currentColor" />
+                        <path
+                            d="M11.5 5.5L6.75 10.25L4.5 8"
+                            stroke="white"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                        />
+                    </svg>
+                ),
+            },
+            styleOverrides: {
+                root: {
+                    padding: '4px',
+                    '&:hover': {
+                        backgroundColor: 'transparent',
+                    },
+                    '& .MuiSvgIcon-root': {
+                        fontSize: '1.25rem',
+                    },
+                },
+            },
+        },
+
+        MuiFormControlLabel: {
             styleOverrides: {
                 root: ({ theme }) => ({
-                    padding: 0,
-                    color: theme.palette.seperator.dark,
-                    '& .MuiSvgIcon-root': {
-                        width: 24,
-                        height: 24,
-                    },
-                    '& .MuiSvgIcon-root path': {
-                        strokeWidth: '1px',
-                    },
-                    '& svg': {
-                        borderRadius: '8px',
-                        overflow: 'visible',
+                    margin: 0,
+                    alignItems: "flex-start",
+                    '& .MuiFormControlLabel-label': {
+                        fontSize: '0.875rem',
+                        fontWeight: 400,
+                        lineHeight: 1.57,
+                        color: theme.palette.text.middle
                     },
                 }),
             },

@@ -20,3 +20,8 @@ export interface CategroyList extends GlobalResponse {
         pagination: Pagination;
     }
 }
+
+export interface CategoryTypeResponse extends GlobalResponse {
+    data: CategoryProps[];
+
+}

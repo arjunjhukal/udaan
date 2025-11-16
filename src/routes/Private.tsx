@@ -7,6 +7,8 @@ import { PATH } from "./PATH";
 export default function Private() {
 	const navigate = useNavigate();
 	const user = useAppSelector((state) => state.auth.user);
+	const token = useAppSelector((state) => state.auth.token);
+	console.log("Private Route - User:", user, "Token:", token);
 	React.useEffect(() => {
 		if (!user) {
 			navigate(PATH.AUTH.LOGIN.ROOT);

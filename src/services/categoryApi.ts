@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
-import type { CategoryProps, CategroyList } from "../types/category";
+import type { CategoryProps, CategoryTypeResponse, CategroyList } from "../types/category";
 import type { GlobalResponse } from "../types/user";
 import { baseQuery } from "./baseQuery";
 
@@ -72,7 +72,37 @@ export const categoryApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Category", id }],
         }),
+        getAllMegaCategory: builder.query<CategoryTypeResponse, void>({
+            query: () => ({
+                url: `/admin/course/category`,
+                method: "GET",
+            }),
+            providesTags: () => [{ type: "Category", id: "LIST" }],
+        }),
+        getAllCategoryRelatedToMegaCategory: builder.query<CategoryTypeResponse, { currentCategory: string }>({
+            query: ({ currentCategory }) => ({
+                url: `/admin/course/category/children?category=${currentCategory}`,
+                method: "GET",
+            }),
+            providesTags: () => [{ type: "Category", id: "LIST" }],
+        }),
+        getAllSubCategoryRelatedToCategory: builder.query<CategoryTypeResponse, { currentCategory: string }>({
+            query: ({ currentCategory }) => ({
+                url: `/admin/course/category/sub-children?category=${currentCategory}`,
+                method: "GET",
+            }),
+            providesTags: () => [{ type: "Category", id: "LIST" }],
+        }),
     })
 })
 
-export const { useCreateCategoryMutation, useGetAllCategoryQuery, useEditCategoryMutation, useDeleteCategoryMutation, useGetCategoryByIdQuery } = categoryApi;
+export const {
+    useCreateCategoryMutation,
+    useGetAllCategoryQuery,
+    useEditCategoryMutation,
+    useDeleteCategoryMutation,
+    useGetCategoryByIdQuery,
+    useGetAllMegaCategoryQuery,
+    useGetAllCategoryRelatedToMegaCategoryQuery,
+    useGetAllSubCategoryRelatedToCategoryQuery
+} = categoryApi;

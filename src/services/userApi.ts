@@ -16,8 +16,8 @@ export const userApi = createApi({
             }),
             invalidatesTags: [{ type: "User", id: "LIST" }]
         }),
-        getAllUser: builder.query<UserList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => {
+        getAllUser: builder.query<UserList, QueryParams & { role?: string }>({
+            query: ({ pageIndex, pageSize, search, role }) => {
                 const params = new URLSearchParams();
 
                 if (pageIndex) {
@@ -28,6 +28,9 @@ export const userApi = createApi({
                 }
                 if (search) {
                     params.append('search', search.toString());
+                }
+                if (role) {
+                    params.append('role', role.toString());
                 }
 
                 return {

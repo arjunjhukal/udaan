@@ -88,3 +88,11 @@ body {
 	border-right: none !important;
 	border-bottom: 1px solid #D9D7D7 !important;
 }
+
+.styled__list {
+	padding-left: 20px !important;
+}
+
+.styled__list li {
+	list-style-type: disc !important;
+}
