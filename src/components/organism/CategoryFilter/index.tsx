@@ -76,7 +76,7 @@ export default function CategoryFilter({
                 <Box sx={{ border: `1px solid ${theme.palette.seperator.dark}`, borderRadius: "8px", padding: "8px" }}>
                     <Typography variant="caption" color="success.main" className="w-full text-center block mb-2.5!" sx={{ padding: "8px 24px", background: theme.palette.success.light, borderRadius: "8px", }}> Categories </Typography>
                     <div className="item__listing">
-                        {selectedMegaCategories.length === 0 ? (
+                        {categories.length === 0 ? (
                             <p className="text-center" style={{ fontWeight: 400, fontSize: "12px", lineHeight: "16.2px", }}>Please Select Megacategories to get Categories</p>
                         ) : (
                             categories?.map((item) => (
