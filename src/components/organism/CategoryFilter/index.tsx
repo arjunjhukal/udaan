@@ -159,19 +159,18 @@ export default function CategoryFilter({
                                     <Divider className="mb-1.5!" />
                                     {megaCategory.sub_category?.length
                                         ? megaCategory.sub_category.map((cat) => {
-                                            const selected = megaCategory.id ?
-                                                selections.category[Number(megaCategory.id)] : [];
+                                            const selectedCategory = selections.category[Number(megaCategory.id)] || [];
                                             return (
                                                 <FormControlLabel
                                                     key={cat.id}
                                                     control={
                                                         <Checkbox
                                                             sx={{ color: theme.palette.success.main }}
-                                                            checked={selected.includes(Number(cat.id))}
+                                                            checked={selectedCategory.includes(Number(cat.id))}
                                                             onChange={() =>
                                                                 onChange(
                                                                     "category",
-                                                                    toggleArray(selected, Number(cat.id)),
+                                                                    toggleArray(selectedCategory, Number(cat.id)),
                                                                     Number(megaCategory.id)
                                                                 )
                                                             }
@@ -251,19 +250,18 @@ export default function CategoryFilter({
                                     <Divider className="mb-1.5!" />
                                     {cat.sub_category?.length
                                         ? cat.sub_category.map((subCat) => {
-                                            const selected = cat.id ?
-                                                selections.sub_category[Number(cat.id)] : [];
+                                            const selectedSubCategory = selections.sub_category[Number(cat.id)] || [];
                                             return (
                                                 <FormControlLabel
                                                     key={subCat.id}
                                                     control={
                                                         <Checkbox
                                                             sx={{ color: theme.palette.warning.main }}
-                                                            checked={selected.includes(Number(subCat.id))}
+                                                            checked={selectedSubCategory.includes(Number(subCat.id))}
                                                             onChange={() =>
                                                                 onChange(
                                                                     "sub",
-                                                                    toggleArray(selected, Number(subCat.id)),
+                                                                    toggleArray(selectedSubCategory, Number(subCat.id)),
                                                                     Number(cat.id)
                                                                 )
                                                             }

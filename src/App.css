@@ -108,3 +108,7 @@ body {
 	display: flex;
 	flex-direction: column;
 }
+
+.MuiPickersSectionList-section * {
+	font-size: 16px;
+}

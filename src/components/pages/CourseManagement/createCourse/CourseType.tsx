@@ -88,7 +88,12 @@ function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, 
         >
             {currentType === "free" &&
                 <Activity>
-                    <FreeCourseType />
+                    <FreeCourseType
+                        value={formik.values.free_type_description}
+                        onChange={(value) => formik.setFieldValue("free_type_description", value)}
+                        onBlur={(value) => formik.setFieldValue("free_type_description", value)}
+                        error={formik.errors.free_type_description}
+                    />
                 </Activity>}
             {currentType === "subscription" && <Activity>
                 <SubscriptionCourseType />
