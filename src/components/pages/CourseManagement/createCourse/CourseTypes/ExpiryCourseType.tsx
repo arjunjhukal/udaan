@@ -12,8 +12,7 @@ export default function ExpiryCourseType({ formik }: { formik: FormikProps<Cours
     return (
         <div className="course__type__record expire__course__record">
             <Typography variant='h5' className='pb-2'>Expiry</Typography>
-            <Divider className='mb-8' />
-
+            <Divider className='mb-8!' />
             <div className="grid grid-cols-2 gap-y-4 gap-x-6">
                 {/* Start Date */}
                 <div className="col-span-2 lg:col-span-1">
