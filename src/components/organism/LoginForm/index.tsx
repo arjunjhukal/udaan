@@ -50,8 +50,14 @@ export default function LoginForm({
 				setItem("user", response?.data?.user);
 				setItem("token", response?.data?.token);
 				navigate(PATH.DASHBOARD.ROOT);
-			} catch (error) {
+			} catch (error: any) {
 				console.error("Login error:", error);
+				dispatch(
+					showToast({
+						message: error?.data?.message || "Unable to Login",
+						severity: "error",
+					}),
+				);
 			}
 		},
 	});

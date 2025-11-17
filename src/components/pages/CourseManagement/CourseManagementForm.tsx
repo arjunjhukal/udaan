@@ -68,16 +68,16 @@ const validationSchema = Yup.object().shape({
             }
         ),
 
-    // selections: Yup.object().shape({
-    //     mega_category: Yup.array()
-    //         .of(Yup.number())
-    //         .min(1, "Please select at least one mega category"),
-    //     category: Yup.object(),
-    //     sub_category: Yup.object(),
-    //     position_ids: Yup.array()
-    //         .of(Yup.number())
-    //         .min(1, "Please select at least one position/level"),
-    // }),
+    selections: Yup.object().shape({
+        mega_category: Yup.array()
+            .of(Yup.number())
+            .min(1, "Please select at least one mega category"),
+        category: Yup.object(),
+        sub_category: Yup.object(),
+        position_ids: Yup.array()
+            .of(Yup.number())
+            .min(1, "Please select at least one position/level"),
+    }),
 
     about_this_course_np: Yup.string()
         .required("About this course is required")
@@ -129,30 +129,14 @@ export default function CourseManagementForm() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
-    const [selectedMegaCategories, setSelectedMegaCategories] = React.useState<string[]>([]);
-    const [selectedCategories, setSelectedCategories] = React.useState<string[]>([]);
-    const [selectedSubCategories, setSelectedSubCategories] = React.useState<string[]>([]);
-    const [selectedPosition, setSelectedPosition] = React.useState<string[]>([]);
+
     const [selectedTeachers, setSelectedTeachers] = React.useState<RegisterUserProps[]>([]);
-    const selectedMegaCategoriesString = React.useMemo(
-        () => selectedMegaCategories.join(","),
-        [selectedMegaCategories]
-    );
-    const selectedCategoriesString = React.useMemo(
-        () => selectedCategories.join(","),
-        [selectedCategories]
-    );
+
 
     const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
 
-    const { data: categories } = useGetAllCategoryRelatedToMegaCategoryQuery(
-        { currentCategory: selectedMegaCategoriesString },
-        { skip: selectedMegaCategories.length === 0 }
-    );
-    const { data: subCategories } = useGetAllSubCategoryRelatedToCategoryQuery(
-        { currentCategory: selectedCategoriesString },
-        { skip: selectedCategories.length === 0 }
-    );
+
+
     const [searchTeacher, setSearchTeacher] = React.useState("")
     const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
     const { data: teachers } = useGetAllUserQuery({ pageIndex: 1, pageSize: 20, search: searchTeacher, role: "teacher" });
@@ -162,22 +146,31 @@ export default function CourseManagementForm() {
     const { data } = useGetCourseByIdQuery({ id: id || "" }, { skip: !id });
     console.log(data);
 
-    const handleCategoryChange = (type: "mega" | "category" | "sub" | "position", ids: string[]) => {
+    const handleCategoryChange = (
+        type: "mega" | "category" | "sub" | "position",
+        ids: number[],
+        parentId?: number
+    ) => {
         switch (type) {
             case "mega":
-                setSelectedMegaCategories(ids);
+                formik.setFieldValue("selections.mega_category", ids);
+                // Reset child selection when mega changes:
+                formik.setFieldValue("selections.category", {});
+                formik.setFieldValue("selections.sub_category", {});
                 break;
             case "category":
-                setSelectedCategories(ids);
+                formik.setFieldValue(`selections.category.${parentId}`, ids);
+                formik.setFieldValue("selections.sub_category", {});
                 break;
             case "sub":
-                setSelectedSubCategories(ids);
+                formik.setFieldValue(`selections.sub_category.${parentId}`, ids);
                 break;
             case "position":
-                setSelectedPosition(ids);
+                formik.setFieldValue("selections.position_ids", ids);
                 break;
         }
     };
+
 
     const handleTeacherSelection = (newValue: RegisterUserProps) => {
         const updatedTeachers = [...selectedTeachers, newValue];
@@ -215,15 +208,39 @@ export default function CourseManagementForm() {
                 navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)
             }
             catch (e: any) {
+                console.log(e);
                 dispatch(
                     showToast({
-                        message: e?.data?.message || "Course Created Successfully",
+                        message: e?.data?.message || "Unable to Create Course",
                         severity: "error"
                     })
                 )
             }
         }
     })
+
+    const { data: categories } = useGetAllCategoryRelatedToMegaCategoryQuery(
+        {
+            currentCategory: (formik?.values?.selections?.mega_category || [])
+                .join(","),
+        },
+        {
+            skip: !formik?.values?.selections?.mega_category?.length,
+        }
+    );
+    const { data: subCategories } = useGetAllSubCategoryRelatedToCategoryQuery(
+        {
+            currentCategory: (formik?.values?.selections?.category
+                ? Object.values(formik.values.selections.category)
+                    .flat()
+                    .join(",")
+                : ""),
+        },
+        {
+            skip: !formik?.values?.selections?.category ||
+                !Object.values(formik.values.selections.category).length,
+        }
+    );
 
     const handleFileChange = (file: File | null) => {
         formik.setFieldValue("thumbnail", file);
@@ -322,12 +339,9 @@ export default function CourseManagementForm() {
                         categories={categories?.data || []}
                         subCategories={subCategories?.data || []}
                         positions={positions?.data?.data || []}
-                        selectedMegaCategories={selectedMegaCategories}
-                        loadingMegaCategory={loadingMegaCategory}
-                        selectedCategories={selectedCategories}
-                        selectedSubCategories={selectedSubCategories}
-                        selectedPosition={selectedPosition}
+                        selections={formik.values.selections}
                         onChange={handleCategoryChange}
+                        loadingMegaCategory={loadingMegaCategory}
                     />
                 </div>
                 <Divider sx={{ marginTop: "36px", marginBottom: "36px" }} />
