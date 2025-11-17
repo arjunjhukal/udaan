@@ -1,10 +1,12 @@
-import { Divider, InputLabel, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
+import { Divider, FormHelperText, InputLabel, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
+import type { FormikProps } from 'formik';
 import React from 'react';
+import type { CourseProps } from '../../../../../types/course';
 import MakuraDatePicker from '../../../../atoms/MakuraDatePicker';
 
-export default function ExpiryCourseType() {
+export default function ExpiryCourseType({ formik }: { formik: FormikProps<CourseProps> }) {
     const [startDate, setStartDate] = React.useState<Dayjs | null>(dayjs());
     return (
         <div className="course__type__record expire__course__record">
@@ -20,6 +22,12 @@ export default function ExpiryCourseType() {
                             value={startDate}
                             onChange={setStartDate}
                         />
+                        {formik.touched.course_expiry?.start_date &&
+                            formik.errors.course_expiry?.start_date && (
+                                <FormHelperText error>
+                                    {formik.errors.course_expiry.start_date}
+                                </FormHelperText>
+                            )}
                     </div>
                 </div>
                 <div className="col-span-2 lg:col-span-1">

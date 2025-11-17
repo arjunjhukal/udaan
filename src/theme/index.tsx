@@ -1,9 +1,6 @@
 import type { ThemeOptions } from "@mui/material/styles";
 import { createTheme } from "@mui/material/styles";
 
-// Extend the Palette and PaletteOptions interfaces
-// Extend the Palette and PaletteOptions interfaces
-// Extend the Palette and PaletteOptions interfaces
 declare module "@mui/material/styles" {
     interface Palette {
         button: {
@@ -106,7 +103,6 @@ declare module "@mui/material/styles" {
         black?: string;
         white?: string;
     }
-    // Extend the existing TypeText interface
     interface TypeText {
         main: string;
         dark: string;
@@ -133,7 +129,7 @@ const lightPalette = {
         contrastText: "#FFFFFF",
     },
     error: {
-        main: "#E21D48", // Changed from 'default' to 'main'
+        main: "#E21D48",
         hover: "#A1123A",
         light: "#FFF0F1",
         contrastText: "#FFFFFF",
@@ -388,6 +384,12 @@ const commonThemeOptions: ThemeOptions = {
                     "&.activate:hover svg path": {
                         fill: theme.palette.success.dark,
                     },
+                    "&.active__layout": {
+                        background: theme.palette.icon.black,
+                        "svg path": {
+                            fill: theme.palette.primary.contrastText
+                        }
+                    }
                 }),
             },
         },
@@ -642,6 +644,7 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
+
     },
 };
 

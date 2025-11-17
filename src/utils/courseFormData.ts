@@ -1,0 +1,68 @@
+import type { CourseProps } from "../types/course";
+
+export const createCourseFormData = (values: CourseProps): FormData => {
+    const formData = new FormData();
+
+    // Basic text fields
+    formData.append("name", values.name);
+    formData.append("slug", values.slug);
+    formData.append("description", values.description);
+    formData.append("about_this_course_np", values.about_this_course_np);
+    formData.append("course_type", values.course_type);
+
+    // Duration object
+    formData.append("duration[hours]", values.duration.hours.toString());
+    formData.append("duration[minutes]", values.duration.minutes.toString());
+
+    // Thumbnail file (only if present)
+    if (values.thumbnail) {
+        formData.append("thumbnail", values.thumbnail);
+    }
+    if (values.thumbnail_url) {
+        formData.append("thumbnail_url", values.thumbnail_url);
+    }
+
+    // if (values.course_type === "subscription" && values.price) {
+    //     formData.append("price", values.price);
+    // }
+
+    // Course expiry details (only for expiry type)
+    if (values.course_type === "expiry") {
+        formData.append("course_expiry[start_date]", values.course_expiry.start_date);
+        formData.append("course_expiry[end_date]", values.course_expiry.end_date);
+        formData.append("course_expiry[price]", values.course_expiry.price);
+        formData.append("course_expiry[discount]", values.course_expiry.discount.toString());
+        formData.append("course_expiry[discount_type]", values.course_expiry.discount_type);
+    }
+
+    // Selections - mega categories array
+    values.selections.mega_category.forEach((id, index) => {
+        formData.append(`selections[mega_category][${index}]`, id.toString());
+    });
+
+    // Selections - categories grouped by mega category
+    Object.entries(values.selections.category).forEach(([megaId, categoryIds]) => {
+        categoryIds.forEach((catId, index) => {
+            formData.append(`selections[category][${megaId}][${index}]`, catId.toString());
+        });
+    });
+
+    // Selections - sub categories grouped by category
+    Object.entries(values.selections.sub_category).forEach(([catId, subCatIds]) => {
+        subCatIds.forEach((subId, index) => {
+            formData.append(`selections[sub_category][${catId}][${index}]`, subId.toString());
+        });
+    });
+
+    // Selections - positions/levels array
+    values.selections.position_ids.forEach((id, index) => {
+        formData.append(`selections[position_ids][${index}]`, id.toString());
+    });
+
+    // Teachers/instructors array
+    values.teacher.forEach((id, index) => {
+        formData.append(`teacher[${index}]`, id.toString());
+    });
+
+    return formData;
+};

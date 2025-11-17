@@ -7,6 +7,7 @@ import themeReducer from "../slice/themeSlice";
 import toastReducer from "../slice/toastSlice";
 import { categoryApi } from "../services/categoryApi";
 import { positionApi } from "../services/positionApi";
+import { courseApi } from "../services/courseApi";
 export const store = configureStore({
 	reducer: {
 		theme: themeReducer,
@@ -17,6 +18,7 @@ export const store = configureStore({
 		[userApi.reducerPath]: userApi.reducer,
 		[categoryApi.reducerPath]: categoryApi.reducer,
 		[positionApi.reducerPath]: positionApi.reducer,
+		[courseApi.reducerPath]: courseApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(authApi.middleware)
@@ -24,6 +26,7 @@ export const store = configureStore({
 			.concat(userApi.middleware)
 			.concat(categoryApi.middleware)
 			.concat(positionApi.middleware)
+			.concat(courseApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

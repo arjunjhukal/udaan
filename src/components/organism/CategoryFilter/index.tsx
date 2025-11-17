@@ -46,7 +46,7 @@ export default function CategoryFilter({
                     <div className="item__listing">
                         {loadingMegaCategory
                             ? Array.from({ length: 4 }).map((_, i) => (
-                                <Box key={i} sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
+                                <Box key={i.toString()} sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
                                     <Skeleton variant="rectangular" width={20} height={20} />
                                     <Skeleton variant="text" width="80%" />
                                 </Box>
@@ -77,7 +77,12 @@ export default function CategoryFilter({
                     <Typography variant="caption" color="success.main" className="w-full text-center block mb-2.5!" sx={{ padding: "8px 24px", background: theme.palette.success.light, borderRadius: "8px", }}> Categories </Typography>
                     <div className="item__listing">
                         {categories.length === 0 ? (
-                            <p className="text-center" style={{ fontWeight: 400, fontSize: "12px", lineHeight: "16.2px", }}>Please Select Megacategories to get Categories</p>
+                            <div className="text-center">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-1.5">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.66658 1.3335C2.82564 1.3335 1.33325 2.82588 1.33325 4.66683V11.3335C1.33325 13.1744 2.82564 14.6668 4.66658 14.6668H11.3333C13.1742 14.6668 14.6666 13.1744 14.6666 11.3335V4.66683C14.6666 2.82588 13.1742 1.3335 11.3333 1.3335H4.66658ZM7.90992 10.1635L11.0766 6.99683C11.3033 6.77016 11.3033 6.4035 11.0766 6.17016C10.8499 5.9435 10.4766 5.9435 10.2499 6.17016L7.49658 8.9235L6.32992 7.75683C6.10325 7.53016 5.72992 7.53016 5.50325 7.75683C5.27658 7.9835 5.27658 8.35016 5.50325 8.5835L7.08992 10.1635C7.20325 10.2768 7.34992 10.3302 7.49658 10.3302C7.64992 10.3302 7.79658 10.2768 7.90992 10.1635Z" fill="#059467" />
+                                </svg>
+                                <p className="text-center" style={{ fontWeight: 400, fontSize: "12px", lineHeight: "16.2px", }}>Please Select Megacategories to get Categories</p>
+                            </div>
                         ) : (
                             categories?.map((item) => (
                                 <div className="category__item" key={item.id}>
@@ -98,7 +103,6 @@ export default function CategoryFilter({
                                                     }
                                                     label={subItem.name}
                                                 />
-
                                             </div>
                                         ))
                                     }
@@ -114,7 +118,12 @@ export default function CategoryFilter({
                     <Typography variant="caption" color="warning.main" className="w-full text-center block mb-2.5!" sx={{ padding: "8px 24px", background: theme.palette.warning.light, borderRadius: "8px", }}> Sub- Categories </Typography>
                     <div className="item__listing">
                         {subCategories.length === 0 ? (
-                            <p className="text-center" style={{ fontWeight: 400, fontSize: "12px", lineHeight: "16.2px", }}>Please Select Category to get Categories</p>
+                           <div>
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" className="mx-auto mb-1.5">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M4.66658 1.3335C2.82564 1.3335 1.33325 2.82588 1.33325 4.66683V11.3335C1.33325 13.1744 2.82564 14.6668 4.66658 14.6668H11.3333C13.1742 14.6668 14.6666 13.1744 14.6666 11.3335V4.66683C14.6666 2.82588 13.1742 1.3335 11.3333 1.3335H4.66658ZM7.90992 10.1635L11.0766 6.99683C11.3033 6.77016 11.3033 6.4035 11.0766 6.17016C10.8499 5.9435 10.4766 5.9435 10.2499 6.17016L7.49658 8.9235L6.32992 7.75683C6.10325 7.53016 5.72992 7.53016 5.50325 7.75683C5.27658 7.9835 5.27658 8.35016 5.50325 8.5835L7.08992 10.1635C7.20325 10.2768 7.34992 10.3302 7.49658 10.3302C7.64992 10.3302 7.79658 10.2768 7.90992 10.1635Z" fill="#F97415" />
+                                </svg>
+                                <p className="text-center" style={{ fontWeight: 400, fontSize: "12px", lineHeight: "16.2px", }}>Please Select Category to get Categories</p>
+                            </div>
                         ) : (
                             subCategories?.map((item) => (
                                 <div className="category__item" key={item.id}>

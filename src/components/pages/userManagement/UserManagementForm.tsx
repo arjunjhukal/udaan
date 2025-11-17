@@ -76,7 +76,6 @@ export default function UserManagementForm() {
     const [createUser, { isLoading }] = useCreateUserMutation();
     const { data: user } = useGetUserByIdQuery({ id: id || "" }, { skip: !id })
     const [updateUser, { isLoading: updating }] = useEditUserMutation();
-    console.log(user?.data?.role);
     const formik = useFormik({
         initialValues: user?.data || RegisterUserInitialData,
         validationSchema: validationSchema(id),

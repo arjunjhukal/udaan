@@ -27,8 +27,7 @@ export default function AllRolesTable() {
         pageSize: 8,
     })
     const [openConfirm, setOpenConfirm] = React.useState(false);
-    const [rolesToDelete, setRolesToDelete] = React.useState<string[]>([]); // Store IDs to delete
-
+    const [rolesToDelete, setRolesToDelete] = React.useState<string[]>([]);
     const { data, isLoading } = useGetAllRolesQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch });
     const [deleteRole, { isLoading: deleting }] = useDeleteRoleMutation();
 

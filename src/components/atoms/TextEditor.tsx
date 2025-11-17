@@ -7,11 +7,13 @@ export default function TextEditor({
     error,
     value,
     onChange,
+    onBlur
 }: {
     label?: string;
     error?: string;
     value?: string;
     onChange?: (value: string) => void;
+    onBlur?: (value: string) => void;
 }) {
     const [data, setData] = useState(value || "");
 
@@ -42,6 +44,11 @@ export default function TextEditor({
                         const val = editor.getData();
                         setData(val);
                         onChange?.(val);
+                    }}
+                    onBlur={(_, editor) => {
+                        const val = editor.getData();
+                        setData(val);
+                        onBlur?.(val);
                     }}
 
                 />

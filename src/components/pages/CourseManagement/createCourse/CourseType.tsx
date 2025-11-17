@@ -1,14 +1,17 @@
 import { Box, Checkbox, Typography, useTheme } from '@mui/material';
-import React, { Activity } from 'react';
+import type { FormikProps } from 'formik';
+import { Activity } from 'react';
+import type { CourseProps, CourseTypeProps } from '../../../../types/course';
 import ExpiryCourseType from './CourseTypes/ExpiryCourseType';
 import FreeCourseType from './CourseTypes/FreeCourseType';
 import SubscriptionCourseType from './CourseTypes/SubscriptionCourseType';
 
-export type CourseTypeProps = "free" | "subscription" | "expiry";
+interface Props {
+    formik: FormikProps<CourseProps>
+}
 
-export default function CourseType() {
+export default function CourseType({ formik }: Props) {
     const theme = useTheme();
-    const [currentType, setCurrentType] = React.useState<CourseTypeProps>("free");
 
     const types = [
         {
@@ -43,17 +46,17 @@ export default function CourseType() {
                     {types.map((item) => (
                         <Box
                             key={item.key}
-                            className={`tab__item flex items-start gap-2 cursor-pointer py-6 px-4 rounded-md ${currentType === item.key ? 'active' : ''}`}
-                            onClick={() => setCurrentType(item.key)}
+                            className={`tab__item flex items-start gap-2 cursor-pointer py-6 px-4 rounded-md ${formik.values.course_type === item.key ? 'active' : ''}`}
+                            onClick={() => formik.setFieldValue("course_type", item.key)}
 
                             sx={{
-                                background: currentType === item.key ? theme.palette.primary.light : ""
+                                background: formik.values.course_type === item.key ? theme.palette.primary.light : ""
                             }}
                         >
                             <Checkbox
                                 color="primary"
-                                checked={currentType === item.key}
-                                onChange={() => setCurrentType(item.key)}
+                                checked={formik.values.course_type === item.key}
+                                onChange={() => formik.setFieldValue("course_type", item.key)}
                             />
 
                             <div className="tab__label__content">
@@ -67,14 +70,14 @@ export default function CourseType() {
                 </div>
 
                 <div className="col-span-8">
-                    <ActivityBlock currentType={currentType} />
+                    <ActivityBlock currentType={formik.values.course_type} formik={formik} />
                 </div>
             </div>
         </div>
     );
 }
 
-function ActivityBlock({ currentType }: { currentType: CourseTypeProps }) {
+function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, formik: FormikProps<CourseProps> }) {
     const theme = useTheme();
     return (
         <Box
@@ -91,7 +94,7 @@ function ActivityBlock({ currentType }: { currentType: CourseTypeProps }) {
                 <SubscriptionCourseType />
             </Activity>}
             {currentType === "expiry" && <Activity>
-                <ExpiryCourseType />
+                <ExpiryCourseType formik={formik} />
             </Activity>}
 
 

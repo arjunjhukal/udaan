@@ -1,18 +1,21 @@
 import { Box, Button, IconButton, OutlinedInput, Stack, Typography, useTheme } from "@mui/material";
+import type { Dispatch, SetStateAction } from "react";
 import FilterIcon from "../../../icons/FilterIcon";
 import SearchIcon from "../../../icons/SearchIcon";
 
+export type LayoutProps = "table" | "grid"
 interface TableFilterProps {
     search: string;
     setSearch: (newValue: string) => void;
     selectedRows: Set<string | number>;
     handleRoleDelete: (selectedRoleIds: string[]) => void;
     onFilter?: () => void;
-    layout?: "table" | "grid"
+    layout?: LayoutProps
+    setLayout?: Dispatch<SetStateAction<LayoutProps>>;
     categoryLayout?: boolean;
     title?: string;
 }
-export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title }: TableFilterProps) {
+export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout }: TableFilterProps) {
     const theme = useTheme();
 
     const handleDeleteClick = () => {
@@ -74,9 +77,10 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                     {layout ? <Stack >
                         <IconButton sx={{
                             border: `1px solid ${theme.palette.seperator.dark}`,
-                            borderRadius: "8px 0 0 8px"
-
-                        }} className="py-2.5! px-3.5! ">
+                            borderRadius: "8px 0 0 8px",
+                        }} className={`py-2.5! px-3.5! ${layout === "table" ? "active__layout" : ""}`}
+                            onClick={() => setLayout && setLayout("table")}
+                        >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22 7.74995H9.75V1.94995H16.19C19.83 1.94995 22 4.11995 22 7.74995Z" fill="#9CA3B0" />
                                 <path d="M22 16.25C21.95 19.82 19.79 21.95 16.19 21.95H9.75V16.25H22Z" fill="#9CA3B0" />
@@ -86,8 +90,10 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                         </IconButton>
                         <IconButton sx={{
                             border: `1px solid ${theme.palette.seperator.dark}`,
-                            borderRadius: "0 8px 8px 0"
-                        }} className="py-2.5! px-3.5! ">
+                            borderRadius: "0 8px 8px 0",
+                        }} className={`py-2.5! px-3.5! ${layout === "grid" ? "active__layout" : ""}`}
+                            onClick={() => setLayout && setLayout("grid")}
+                        >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M22 8.52V3.98C22 2.57 21.36 2 19.77 2H15.73C14.14 2 13.5 2.57 13.5 3.98V8.51C13.5 9.93 14.14 10.49 15.73 10.49H19.77C21.36 10.5 22 9.93 22 8.52Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                                 <path d="M22 19.77V15.73C22 14.14 21.36 13.5 19.77 13.5H15.73C14.14 13.5 13.5 14.14 13.5 15.73V19.77C13.5 21.36 14.14 22 15.73 22H19.77C21.36 22 22 21.36 22 19.77Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />

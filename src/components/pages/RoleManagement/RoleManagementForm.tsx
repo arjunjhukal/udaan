@@ -58,7 +58,6 @@ export default function RoleManagementForm() {
             if (id) {
                 try {
                     const response = await updateRole({ body: values, id: id }).unwrap();
-                    console.log(response);
                     dispatch(
                         showToast({
                             message: response?.message || "Role Updated Successfully",
@@ -87,7 +86,6 @@ export default function RoleManagementForm() {
                     );
                     navigate(PATH.ROLES.ROOT);
                 } catch (e: any) {
-                    console.log(e);
                     dispatch(
                         showToast({
                             message: e.data.message || "Something went wrong",

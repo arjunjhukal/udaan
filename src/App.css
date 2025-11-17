@@ -82,6 +82,11 @@ body {
 	box-shadow: none !important;
 }
 
+.ck.ck-editor__main>.ck-editor__editable,
+.ck.ck-toolbar {
+	background-color: transparent !important;
+}
+
 .ck-sticky-panel__content {
 	border-top: none !important;
 	border-left: none !important;
@@ -95,4 +100,9 @@ body {
 
 .styled__list li {
 	list-style-type: disc !important;
+}
+
+.item__listing {
+	max-height: calc(100% - 60px);
+	overflow: auto;
 }

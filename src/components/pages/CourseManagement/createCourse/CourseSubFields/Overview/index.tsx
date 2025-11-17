@@ -3,12 +3,15 @@
 import {
     Autocomplete,
     Box,
+    FormHelperText,
     IconButton,
     InputLabel,
     TextField,
     Typography,
     useTheme,
 } from "@mui/material";
+import type { FormikProps } from "formik";
+import type { CourseProps } from "../../../../../../types/course";
 import type { RegisterUserProps } from "../../../../../../types/user";
 import TextEditor from "../../../../../atoms/TextEditor";
 
@@ -19,6 +22,7 @@ interface Props {
     selectedTeachers: RegisterUserProps[];
     search: string;
     setSearch: (newvalue: string) => void;
+    formik: FormikProps<CourseProps>;
 }
 
 export default function CourseOverviewForm({
@@ -27,7 +31,8 @@ export default function CourseOverviewForm({
     handleTeacherRemoval,
     search,
     setSearch,
-    selectedTeachers
+    selectedTeachers,
+    formik
 }: Props) {
     const theme = useTheme();
 
@@ -37,7 +42,14 @@ export default function CourseOverviewForm({
         <div className="overview__form">
             <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2 lg:col-span-1">
-                    <TextEditor />
+                    <TextEditor
+                        value={formik.values.about_this_course_np}
+                        onChange={(value) => formik.setFieldValue("about_this_course_np", value)}
+                        onBlur={() => formik.setFieldTouched("about_this_course_np")}
+                    />
+                    {formik.touched.about_this_course_np && formik.errors.about_this_course_np && (
+                        <FormHelperText error>{formik.errors.about_this_course_np}</FormHelperText>
+                    )}
                 </div>
 
                 <div className="col-span-2 lg:col-span-1 flex flex-col">
@@ -71,7 +83,9 @@ export default function CourseOverviewForm({
                                 }
                             }}
                             renderInput={(params) => (
-                                <TextField {...params} placeholder="Select Instructor" />
+                                <TextField {...params} placeholder="Select Instructor"
+                                    error={formik.touched.teacher && Boolean(formik.errors.teacher)}
+                                />
                             )}
                             // Filter out already selected teachers from options
                             filterOptions={(options) =>
@@ -80,6 +94,11 @@ export default function CourseOverviewForm({
                                 )
                             }
                         />
+                        {formik.touched.teacher && formik.errors.teacher && (
+                            <FormHelperText error sx={{ mt: 1 }}>
+                                {formik.errors.teacher as string}
+                            </FormHelperText>
+                        )}
 
                         {/* SELECTED CAPSULES */}
                         <div className="selected__teachers flex flex-wrap mt-4 gap-3">
