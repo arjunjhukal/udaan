@@ -7,6 +7,8 @@ export default function CourseNotes() {
     const handleNoteAddition = () => {
         setOpen((prev) => !prev);
     }
+
+    console.log(open);
     return (
         <>
             <PageHeader
