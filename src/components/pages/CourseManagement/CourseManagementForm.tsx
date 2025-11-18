@@ -10,13 +10,16 @@ import { useGetAllPositionQuery } from "../../../services/positionApi";
 import { useGetAllUserQuery } from "../../../services/userApi";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
-import { initialCourseState } from "../../../types/course";
+import { initialCourseState, type courseTabType } from "../../../types/course";
 import type { RegisterUserProps } from "../../../types/user";
 import { createCourseFormData } from "../../../utils/courseFormData";
 import TextEditor from "../../atoms/TextEditor";
 import FileDragDrop from "../../molecules/FileDragDrop";
 import FooterAction from "../../molecules/FooterAction";
+import TabController from "../../molecules/TabController";
 import CategoryFilter from "../../organism/CategoryFilter";
+import CourseCurriculumForm from "./createCourse/CourseSubFields/Curriculum";
+import CourseNotes from "./createCourse/CourseSubFields/Notes";
 import CourseOverviewForm from "./createCourse/CourseSubFields/Overview";
 import CourseType from "./createCourse/CourseType";
 
@@ -136,7 +139,7 @@ export default function CourseManagementForm() {
     const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
 
 
-
+    const [activeTab, setActiveTab] = React.useState<courseTabType>("overview");
     const [searchTeacher, setSearchTeacher] = React.useState("")
     const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
     const { data: teachers } = useGetAllUserQuery({ pageIndex: 1, pageSize: 20, search: searchTeacher, role: "teacher" });
@@ -349,7 +352,8 @@ export default function CourseManagementForm() {
                     formik={formik}
                 />
                 <Divider sx={{ marginTop: "36px", marginBottom: "36px" }} />
-                <CourseOverviewForm
+                <TabController setActiveTab={setActiveTab} currentActive={activeTab} />
+                {activeTab === "overview" ? <CourseOverviewForm
                     teachers={teachers?.data?.data || []}
                     selectedTeachers={selectedTeachers}
                     handleTeacherSelection={handleTeacherSelection}
@@ -357,9 +361,11 @@ export default function CourseManagementForm() {
                     setSearch={setSearchTeacher}
                     handleTeacherRemoval={handleTeacherRemoval}
                     formik={formik}
-                />
+                /> : ""}
+                {activeTab === "curriculum" ? <CourseCurriculumForm /> : ""}
+                {activeTab === "notes" ? <CourseNotes /> : ""}
                 <FooterAction
-                    handleComfirmationChange={() => { }}
+                    handleComfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
                     isLoading={isLoading}
                     isUpdating={false}
                     isEditMode={false}

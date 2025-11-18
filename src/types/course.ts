@@ -84,3 +84,33 @@ export interface CourseList extends GlobalResponse {
         pagination: Pagination;
     }
 }
+
+
+export type courseTabType = "overview" | "curriculum" | "notes" | "test" | "audios" | "videos"
+
+export const CourseTabs: { label: string; value: courseTabType }[] = [
+    {
+        label: "Overview",
+        value: "overview"
+    },
+    {
+        label: "Curriculum",
+        value: "curriculum"
+    },
+    {
+        label: "Notes",
+        value: "notes"
+    },
+    {
+        label: "Test",
+        value: "test"
+    },
+    {
+        label: "Audios",
+        value: "audios"
+    },
+    {
+        label: "Videos",
+        value: "videos"
+    }
+]
