@@ -22,9 +22,15 @@ export const createCourseFormData = (values: CourseProps): FormData => {
         formData.append("thumbnail_url", values.thumbnail_url);
     }
 
-    // if (values.course_type === "subscription" && values.price) {
-    //     formData.append("price", values.price);
-    // }
+    // Course subscription details (only for subscription type)
+    if (values.course_type === "subscription" && values.course_subscription && values.course_subscription.length > 0) {
+        values.course_subscription.forEach((subscription, index) => {
+            formData.append(`course_subscription[${index}][subscription_id]`, subscription.subscription_id.toString());
+            formData.append(`course_subscription[${index}][price]`, subscription.price);
+            formData.append(`course_subscription[${index}][billing_cycle]`, subscription.billing_cycle);
+            formData.append(`course_subscription[${index}][number]`, subscription.number.toString());
+        });
+    }
 
     // Course expiry details (only for expiry type)
     if (values.course_type === "expiry") {

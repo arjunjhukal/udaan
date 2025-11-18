@@ -1,8 +1,7 @@
 import { Box, Divider, Typography, useTheme } from '@mui/material';
 import ActionIconVisible from '../../molecules/Action/ActionIconVisible';
-import type { CourseSubscription } from '../../../types/course';
 
-export default function SubscriptionCard({item}:{item:CourseSubscription}) {
+export default function SubscriptionCard({ item }: { item: any }) {
     const theme = useTheme();
 
     return (

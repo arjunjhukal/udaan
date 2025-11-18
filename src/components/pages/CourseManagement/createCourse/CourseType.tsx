@@ -2,7 +2,7 @@ import { Box, Checkbox, Typography, useTheme } from '@mui/material';
 import type { FormikProps } from 'formik';
 import React, { Activity } from 'react';
 import type { CourseProps, CourseTypeProps } from '../../../../types/course';
-import SubscriptionFormDialog from '../../../organism/SubscriptionFormDialog';
+import SubscriptionManagementForm from '../../SubscriptionManagement/SubscriptionManagementForm';
 import ExpiryCourseType from './CourseTypes/ExpiryCourseType';
 import FreeCourseType from './CourseTypes/FreeCourseType';
 import SubscriptionCourseType from './CourseTypes/SubscriptionCourseType';
@@ -37,8 +37,6 @@ export default function CourseType({ formik }: Props) {
 
     return (
         <div className="course__type__wrapper">
-
-
             <div className="grid grid-cols-12 gap-4">
                 <div className="col-span-4">
                     <Typography variant="h4" className="mb-1!">
@@ -82,16 +80,14 @@ function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, 
     const theme = useTheme();
 
     const [open, setOpen] = React.useState(false);
-    const onSave = () => {
 
-    }
     console.log("open value at course type", open);
     const handleClick = () => {
         setOpen(true);
     }
     return (
         <Box
-            className="py-6 px-8 rounded-2xl"
+            className="py-6 px-8 rounded-2xl h-full"
             sx={{
                 background: theme.palette.gray.gray1
             }}
@@ -111,11 +107,9 @@ function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, 
                         formik={formik}
                         handleClick={handleClick}
                     />
-                    <SubscriptionFormDialog
+                    <SubscriptionManagementForm
                         open={open}
                         setOpen={setOpen}
-                        onSave={onSave}
-                        formik={formik}
                     />
                 </>
             </Activity>}

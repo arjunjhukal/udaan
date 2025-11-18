@@ -24,8 +24,7 @@ export interface CourseExpiry {
 }
 
 export interface CourseSubscription {
-    name: string;
-    description: string;
+    subscription_id: number;
     price: string;
     billing_cycle: BillingCycle
     number: number;
@@ -46,7 +45,7 @@ export interface CourseProps {
     free_type_description?: string;
     subjects?: number;
     created_at?: string;
-    course_subscription?: CourseSubscription[]| null;
+    course_subscription?: CourseSubscription[] | null;
 }
 
 export const initialCourseState: CourseProps = {
@@ -76,7 +75,7 @@ export const initialCourseState: CourseProps = {
         discount_type: "percentage",
     },
     free_type_description: "",
-    course_subscription: null
+    course_subscription: [],
 };
 
 export interface CourseList extends GlobalResponse {
