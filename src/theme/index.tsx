@@ -362,6 +362,42 @@ const commonThemeOptions: ThemeOptions = {
         borderRadius: 8,
     },
     components: {
+        MuiCssBaseline: {
+            styleOverrides: (theme) => ({
+                ".subscription__description": {
+                    "ul": {
+                        display: "flex",
+                        gap: "16px",
+                        "li": {
+                            ...theme.typography.subtitle2,
+                            color: theme.palette.text.dark,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+
+                            /* Custom SVG Bullet */
+                            "&::before": {
+                                content: '""',
+                                display: "inline-block",
+                                width: "14px",
+                                height: "14px",
+                                backgroundImage: `url("data:image/svg+xml,${encodeURIComponent(
+                                    `<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.99984 1.16699C3.78567 1.16699 1.1665 3.78616 1.1665 7.00033C1.1665 10.2145 3.78567 12.8337 6.99984 12.8337C10.214 12.8337 12.8332 10.2145 12.8332 7.00033C12.8332 3.78616 10.214 1.16699 6.99984 1.16699ZM9.78817 5.65866L6.48067 8.96616C6.399 9.04783 6.28817 9.09449 6.1715 9.09449C6.05484 9.09449 5.944 9.04783 5.86234 8.96616L4.2115 7.31533C4.04234 7.14616 4.04234 6.86616 4.2115 6.69699C4.38067 6.52783 4.66067 6.52783 4.82984 6.69699L6.1715 8.03866L9.16984 5.04033C9.339 4.87116 9.61901 4.87116 9.78817 5.04033C9.95734 5.20949 9.95734 5.48366 9.78817 5.65866Z" fill="#1D82F5"/>
+</svg>
+`
+                                )}")`,
+                                backgroundSize: "14px 14px",
+                            }
+                        }
+                    },
+                    "p": {
+                        marginBottom: "8px",
+                        ...theme.typography.subtitle2,
+                    }
+                }
+            })
+        },
         MuiStack: {
             styleOverrides: {
                 root: {
@@ -422,8 +458,9 @@ const commonThemeOptions: ThemeOptions = {
                     fontWeight: "500",
                 }),
                 input: {
-                    padding: "0",
+                    padding: "2px",
                     fontSize: "16px",
+                    height: "unset"
                 },
                 notchedOutline: ({ theme }) => ({
                     borderColor: theme.palette.textField.border,
@@ -646,6 +683,7 @@ const commonThemeOptions: ThemeOptions = {
         },
 
     },
+
 };
 
 // Create theme function

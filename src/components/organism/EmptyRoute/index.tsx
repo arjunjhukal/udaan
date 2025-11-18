@@ -2,7 +2,6 @@ import { Add } from "@mui/icons-material";
 import { Box, Button, Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { PATH } from "../../../routes/PATH";
 
 interface Props {
     icon?: React.ReactNode;
@@ -11,10 +10,11 @@ interface Props {
     cta?: {
         url: string;
         label: string
-    }
+    };
+    handleClick?: () => void;
 }
 
-export default function EmptyRoute({ icon, title, message, cta }: Props) {
+export default function EmptyRoute({ icon, title, message, cta, handleClick }: Props) {
     const theme = useTheme();
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -34,10 +34,15 @@ export default function EmptyRoute({ icon, title, message, cta }: Props) {
                 </Box>
                 <div className="content">
                     <Typography variant="h4" className="mb-2!">{title || t("messages.empty_states.roles.title")}</Typography>
-                    <Typography variant="subtitle1">{message || t("messages.empty_states.roles.description")}</Typography>
+                    <Typography variant="subtitle1" color="text.middle">{message || t("messages.empty_states.roles.description")}</Typography>
                 </div>
                 {cta ? <Button variant="contained" color="primary" startIcon={<Add />} onClick={() => {
-                    navigate(cta?.url || PATH.ROLES.CREATE_ROLE.ROOT)
+                    if (handleClick) {
+                        return handleClick()
+                    }
+                    else {
+                        navigate(cta?.url || "")
+                    }
                 }}>{cta.label || t("messages.empty_states.roles.action")}</Button> : ""}
             </div>
         </div>

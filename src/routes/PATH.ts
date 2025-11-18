@@ -27,7 +27,7 @@ export const PATH = {
 				ROOT: "/courses/create-course",
 			},
 			EDIT_COURSE: {
-				ROOT: (id?: string) =>
+				ROOT: (id?: number) =>
 					id ? `/courses/${id}` : "/courses/:id",
 			},
 		},
@@ -37,7 +37,7 @@ export const PATH = {
 				ROOT: "/live-classes/create-live-class",
 			},
 			EDIT_LIVE_CLASS: {
-				ROOT: (id?: string) =>
+				ROOT: (id?: number) =>
 					id ? `/live-classes/${id}` : "/live-classes/:id",
 			},
 		},
@@ -80,5 +80,8 @@ export const PATH = {
 			ROOT: (id?: string) =>
 				id ? `/user-management/${id}` : "/user-management/:id",
 		},
+	},
+	SUBSCRIPTION_PLAN_MANAGEMENT: {
+		ROOT: "/subscription-management"
 	}
 };

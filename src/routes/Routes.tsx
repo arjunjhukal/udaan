@@ -10,6 +10,7 @@ import CreateCourseRoot from "../components/pages/CourseManagement/createCourse"
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
+import SubscriptionManagementRoot from "../components/pages/SubscriptionManagement";
 import AuthRoot from "../components/pages/auth";
 import Login from "../components/pages/auth/login";
 import Register from "../components/pages/auth/register";
@@ -97,6 +98,10 @@ const router = createBrowserRouter([
 					{ path: PATH.CATEGORY_LEVEL_MANAGEMENT.CATEGORY.ROOT, element: <AllCategories /> },
 					{ path: PATH.CATEGORY_LEVEL_MANAGEMENT.LEVEL_POSITION.ROOT, element: <AllPositions /> },
 				],
+			},
+			{
+				path: PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT,
+				element: <SubscriptionManagementRoot />,
 			},
 		],
 	},

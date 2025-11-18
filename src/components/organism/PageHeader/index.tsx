@@ -10,12 +10,13 @@ interface Props {
         url?: string;
         openInNewTab?: boolean
     }
+    handleOpenPopup?: () => void
 }
 
 export default function PageHeader(props: Props) {
     const navigate = useNavigate();
     const theme = useTheme();
-    const { breadcrumb, cta, description } = props;
+    const { breadcrumb, cta, description, handleOpenPopup } = props;
     return (
         <Box className="page__header lg:grid lg:grid-cols-12  pb-4 mb-8 items-center" sx={{
             borderBottom: `1px solid ${theme.palette.seperator.dark}`
@@ -70,8 +71,11 @@ export default function PageHeader(props: Props) {
                 </Stack>
                 {description ? <Typography variant="subtitle1">{description}</Typography> : ""}
             </div>
-            {cta ? <div className="text-end lg:col-span-3">
+            {cta || handleOpenPopup ? <div className="text-end lg:col-span-3">
                 <Button variant="contained" color="primary" startIcon={cta && cta?.icon || <Add />} onClick={() => {
+                    if (handleOpenPopup) {
+                        return handleOpenPopup()
+                    }
                     navigate(cta?.url || "")
                 }}>{cta?.label}</Button>
             </div> : ""}

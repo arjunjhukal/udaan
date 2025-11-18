@@ -1,7 +1,8 @@
 import { Box, Checkbox, Typography, useTheme } from '@mui/material';
 import type { FormikProps } from 'formik';
-import { Activity } from 'react';
+import React, { Activity } from 'react';
 import type { CourseProps, CourseTypeProps } from '../../../../types/course';
+import SubscriptionFormDialog from '../../../organism/SubscriptionFormDialog';
 import ExpiryCourseType from './CourseTypes/ExpiryCourseType';
 import FreeCourseType from './CourseTypes/FreeCourseType';
 import SubscriptionCourseType from './CourseTypes/SubscriptionCourseType';
@@ -79,6 +80,15 @@ export default function CourseType({ formik }: Props) {
 
 function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, formik: FormikProps<CourseProps> }) {
     const theme = useTheme();
+
+    const [open, setOpen] = React.useState(false);
+    const onSave = () => {
+
+    }
+    console.log("open value at course type", open);
+    const handleClick = () => {
+        setOpen(true);
+    }
     return (
         <Box
             className="py-6 px-8 rounded-2xl"
@@ -96,11 +106,24 @@ function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, 
                     />
                 </Activity>}
             {currentType === "subscription" && <Activity>
-                <SubscriptionCourseType />
+                <>
+                    <SubscriptionCourseType
+                        formik={formik}
+                        handleClick={handleClick}
+                    />
+                    <SubscriptionFormDialog
+                        open={open}
+                        setOpen={setOpen}
+                        onSave={onSave}
+                        formik={formik}
+                    />
+                </>
             </Activity>}
-            {currentType === "expiry" && <Activity>
-                <ExpiryCourseType formik={formik} />
-            </Activity>}
+            {currentType === "expiry" &&
+                <Activity>
+                    <ExpiryCourseType formik={formik} />
+                </Activity>
+            }
 
 
         </Box>

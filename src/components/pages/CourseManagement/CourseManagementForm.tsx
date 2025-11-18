@@ -205,7 +205,7 @@ export default function CourseManagementForm() {
                         severity: "success"
                     })
                 );
-                navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)
+                navigate(response.data && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(response.data.id))
             }
             catch (e: any) {
                 console.log(e);

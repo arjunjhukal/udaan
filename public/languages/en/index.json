@@ -53,6 +53,9 @@
         },
         "content": {
             "root": "Content Management"
+        },
+        "subscription_plan": {
+            "root": "Subscription & Plans"
         }
     },
     "messages": {
@@ -78,6 +81,11 @@
                 "title": "No Courses Available",
                 "description": "You haven’t created any courses yet. Start building your first course.",
                 "action": "Create Course"
+            },
+            "subscription_plan": {
+                "title": "No Plans Available",
+                "description": "You haven’t created any plans yet. Start building your first plan.",
+                "action": "Create SUbscription Plan"
             }
         },
         "toasts": {

@@ -10,7 +10,7 @@ export interface SelectionType {
 
 export type CourseTypeProps = "free" | "expiry" | "subscription"
 export type DiscountTypeProps = "percentage" | "amount"
-
+export type BillingCycle = "days" | "months" | "years"
 export interface DurationProps {
     hours: number;
     minutes: number;
@@ -21,6 +21,14 @@ export interface CourseExpiry {
     price: string;
     discount: number
     discount_type: DiscountTypeProps;
+}
+
+export interface CourseSubscription {
+    name: string;
+    description: string;
+    price: string;
+    billing_cycle: BillingCycle
+    number: number;
 }
 export interface CourseProps {
     id?: number;
@@ -38,6 +46,7 @@ export interface CourseProps {
     free_type_description?: string;
     subjects?: number;
     created_at?: string;
+    course_subscription?: CourseSubscription[]| null;
 }
 
 export const initialCourseState: CourseProps = {
@@ -66,7 +75,8 @@ export const initialCourseState: CourseProps = {
         discount: 0,
         discount_type: "percentage",
     },
-    free_type_description: ""
+    free_type_description: "",
+    course_subscription: null
 };
 
 export interface CourseList extends GlobalResponse {
