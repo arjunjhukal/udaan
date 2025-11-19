@@ -1,4 +1,5 @@
 import React from 'react';
+import SelectFromMedia from '../../../../../molecules/MediaFileDragDrop/SelectFromMedia';
 import EmptyRoute from '../../../../../organism/EmptyRoute';
 import PageHeader from '../../../../../organism/PageHeader';
 
@@ -37,6 +38,7 @@ export default function CourseNotes() {
                 </svg>)}
                 handleClick={handleNoteAddition}
             />
+            <SelectFromMedia open={open} setOpen={setOpen} />
         </>
     )
 }
