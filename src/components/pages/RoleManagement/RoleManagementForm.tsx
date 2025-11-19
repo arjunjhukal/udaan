@@ -239,7 +239,7 @@ export default function RoleManagementForm() {
                 </div>
                 <UdaanTable columns={columns} data={formik.values.permissions || []} loading={isLoading || loadingRole} />
                 <Box
-                    className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky -bottom-5"
+                    className="footer__action flex justify-end items-center gap-2 py-6 mt-8 sticky -bottom-5"
                     sx={{
                         borderTop: `1px solid ${theme.palette.seperator.dark}`,
                         background: theme.palette.primary.contrastText,

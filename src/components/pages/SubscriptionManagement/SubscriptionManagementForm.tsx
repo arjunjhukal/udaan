@@ -47,7 +47,7 @@ export default function SubscriptionManagementForm({ open, setOpen, selectedPlan
 
                     dispatch(
                         showToast({
-                            message: response.message || "Something went wrong",
+                            message: response.message || "Plan Created Successfully",
                             severity: "success",
                         })
                     );

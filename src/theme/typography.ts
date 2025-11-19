@@ -1,0 +1,22 @@
+export const Typography = {
+    fontFamily: '"Helvetica Neue", sans-serif',
+    h1: { fontWeight: 700, fontSize: "64px", lineHeight: "89.67px" },
+    h2: { fontWeight: 500, fontSize: "48px", lineHeight: "67.25px" },
+    h3: { fontWeight: 500, fontSize: "32px", lineHeight: "44.8px" },
+    h4: { fontWeight: 500, fontSize: "24px", lineHeight: "33.6px" },
+    h5: { fontWeight: 500, fontSize: "20px", lineHeight: "28px" },
+    h6: { fontWeight: 500, fontSize: "18px", lineHeight: "25.2px" },
+    body1: { fontWeight: 500, fontSize: "20px", lineHeight: "28px" },
+    body2: { fontWeight: 500, fontSize: "18px", lineHeight: "26px" },
+    subtitle1: { fontWeight: 400, fontSize: "16px", lineHeight: "22.4px" },
+    subtitle2: { fontWeight: 400, fontSize: "14px", lineHeight: "19.6px" },
+    caption: { fontWeight: 400, fontSize: "12px", lineHeight: "16.8px" },
+    overline: {
+        fontWeight: 400,
+        fontSize: "8px",
+        lineHeight: "11.2px",
+        textTransform: "unset",
+        letterSpacing: "0px",
+    },
+    button: { fontWeight: 400, textTransform: "none" },
+};

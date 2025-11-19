@@ -114,3 +114,58 @@ export const CourseTabs: { label: string; value: courseTabType }[] = [
         value: "videos"
     }
 ]
+
+
+export type CurriculumCommonProps = {
+    id?: number;
+    name: string;
+    description: string;
+}
+export type CurriculumCommonMediaProps = {
+    video_url: string;
+    note_id: number[];
+    audio_id: number[];
+}
+
+export interface ChildLessonProps
+    extends CurriculumCommonProps, CurriculumCommonMediaProps { }
+
+export interface LessonProps
+    extends CurriculumCommonProps, CurriculumCommonMediaProps {
+    child_lessons: ChildLessonProps[];
+}
+
+export interface UnitProps
+    extends CurriculumCommonProps, CurriculumCommonMediaProps {
+    lessons: LessonProps[];
+}
+
+export interface ChapterProps
+    extends CurriculumCommonProps, CurriculumCommonMediaProps {
+    units: UnitProps[];
+}
+
+export interface SubjectProps
+    extends CurriculumCommonProps, CurriculumCommonMediaProps {
+    chapters: ChapterProps[];
+}
+
+
+export interface CurriculumProps extends SubjectProps {
+}
+
+export interface CurriculumList extends GlobalResponse {
+    data: {
+        data: CurriculumProps[],
+        pagination: Pagination
+    }
+}
+export const initialCurriculumInitialState: CurriculumProps = {
+    id: undefined,
+    name: "",
+    description: "",
+    video_url: "",
+    note_id: [],
+    audio_id: [],
+    chapters: []
+};

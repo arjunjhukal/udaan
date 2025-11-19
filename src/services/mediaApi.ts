@@ -10,7 +10,6 @@ export const mediaApi = createApi({
             query: () => ({
                 url: "",
                 method: "POST",
-
             })
         })
     })

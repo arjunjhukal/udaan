@@ -100,31 +100,31 @@ const validationSchema = Yup.object().shape({
     //     otherwise: (schema) => schema.notRequired(),
     // }),
 
-    // course_expiry: Yup.object().when("course_type", {
-    //     is: "expiry",
-    //     then: (schema) => schema.shape({
-    //         start_date: Yup.string().required("Start date is required"),
-    //         end_date: Yup.string()
-    //             .required("End date is required")
-    //             .test(
-    //                 "end-date-after-start",
-    //                 "End date must be after start date",
-    //                 function (value) {
-    //                     const { start_date } = this.parent;
-    //                     if (!start_date || !value) return true;
-    //                     return new Date(value) > new Date(start_date);
-    //                 }
-    //             ),
-    //         price: Yup.string().required("Price is required for expiry courses"),
-    //         discount: Yup.number()
-    //             .min(0, "Discount must be at least 0")
-    //             .max(100, "Discount must not exceed 100"),
-    //         discount_type: Yup.string()
-    //             .oneOf(["percentage", "amount"], "Invalid discount type")
-    //             .required("Discount type is required"),
-    //     }),
-    //     otherwise: (schema) => schema.notRequired(),
-    // }),
+    course_expiry: Yup.object().when("course_type", {
+        is: "expiry",
+        then: (schema) => schema.shape({
+            start_date: Yup.string().required("Start date is required"),
+            end_date: Yup.string()
+                .required("End date is required")
+                .test(
+                    "end-date-after-start",
+                    "End date must be after start date",
+                    function (value) {
+                        const { start_date } = this.parent;
+                        if (!start_date || !value) return true;
+                        return new Date(value) > new Date(start_date);
+                    }
+                ),
+            price: Yup.string().required("Price is required for expiry courses"),
+            discount: Yup.number()
+                .min(0, "Discount must be at least 0")
+                .max(100, "Discount must not exceed 100"),
+            discount_type: Yup.string()
+                .oneOf(["percentage", "amount"], "Invalid discount type")
+                .required("Discount type is required"),
+        }),
+        otherwise: (schema) => schema.notRequired(),
+    }),
 });
 
 export default function CourseManagementForm() {
@@ -368,7 +368,7 @@ export default function CourseManagementForm() {
                     handleComfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
                     isLoading={isLoading}
                     isUpdating={false}
-                    isEditMode={false}
+                    isEditMode={!!id}
                 />
             </form >
         </div >
