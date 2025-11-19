@@ -1,5 +1,5 @@
 import { CheckBox } from "@mui/icons-material";
-import { Box, Dialog, DialogContent, Divider, IconButton, Typography, useTheme } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, Divider, IconButton, Typography, useTheme } from "@mui/material";
 import MediaFileDragDrop from ".";
 import { useAppDispatch } from "../../../store/hook";
 import MediaCard from "../../organism/Cards/MediaCard";
@@ -64,6 +64,32 @@ export default function SelectFromMedia({ open, setOpen }: Props) {
                             </div>
                         </div>
                     </div>
+                    <Box
+                        className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky -bottom-5"
+                        sx={{
+                            borderTop: `1px solid ${theme.palette.seperator.dark}`,
+                            background: theme.palette.primary.contrastText,
+                        }}
+                    >
+                        <Button
+                            variant="contained"
+                            sx={{
+                                background: theme.palette.seperator.dark,
+                                color: theme.palette.text.middle
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                        >
+                            <Typography variant="body2">
+                                Add Notes
+                            </Typography>
+                        </Button>
+                    </Box>
                 </Box>
             </DialogContent>
         </Dialog>
