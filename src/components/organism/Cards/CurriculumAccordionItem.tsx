@@ -5,8 +5,8 @@ import type { ChapterProps, ChildLessonProps, LessonProps, SubjectProps, UnitPro
 import { renderHtml } from "../../../utils/renderHtml";
 import CustomCollapseIcon from "../../atoms/CustomCollapseIcon";
 import ActionIconVisible from "../../molecules/Action/ActionIconVisible";
-import type { CurriculumType } from "../../pages/CourseManagement/createCourse/CourseSubFields/Curriculum";
 import MediaCard from "./MediaCard";
+import type { CurriculumType } from "../../pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
 
 interface CurriculumItemProps {
     item: SubjectProps | ChapterProps | UnitProps | LessonProps | ChildLessonProps;

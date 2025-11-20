@@ -1,36 +1,37 @@
-import { Add } from "@mui/icons-material";
-import { Checkbox, Stack, Typography } from "@mui/material";
-import type { ColumnDef } from "@tanstack/react-table";
-import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { PATH } from "../../../../routes/PATH";
-import { useDeleteCourseMutation, useGetAllCourseQuery } from "../../../../services/courseApi";
-import { showToast } from "../../../../slice/toastSlice";
-import { useAppDispatch } from "../../../../store/hook";
-import type { CourseProps } from "../../../../types/course";
-import { formatDate } from "../../../../utils/dateFormat";
-import Actions from "../../../molecules/Action";
-import UdaanTable from "../../../molecules/Table";
-import TablePagination from "../../../molecules/Table/Pagination";
-import ConfirmationDialog from "../../../organism/ConfirmationDialog";
-import PageHeader from "../../../organism/PageHeader";
-import TableFilter, { type LayoutProps } from "../../../organism/TableFilter";
+import { useAppDispatch } from "../../../../../store/hook";
+import { useMemo, useState } from "react";
+import type { LayoutProps } from "../../../../organism/TableFilter";
+import { useDeleteCourseMutation, useGetAllCourseQuery } from "../../../../../services/courseApi";
+import { showToast } from "../../../../../slice/toastSlice";
+import type { ColumnDef } from "@tanstack/react-table";
+import type { CourseProps } from "../../../../../types/course";
+import PageHeader from "../../../../organism/PageHeader";
+import TableFilter from "../../../../organism/TableFilter";
+import UdaanTable from "../../../../molecules/Table";
 import AllCourseGrid from "./AllCourseGrid";
+import TablePagination from "../../../../molecules/Table/Pagination";
+import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
+import { Add } from "@mui/icons-material";
+import { PATH } from "../../../../../routes/PATH";
+import { Checkbox, Stack, Typography } from "@mui/material";
+import { formatDate } from "../../../../../utils/dateFormat";
+import Actions from "../../../../molecules/Action";
 
 export default function AllCourse() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
-    const [search, setSearch] = React.useState<string>("");
-    const [qp, setQp] = React.useState({
+    const [search, setSearch] = useState<string>("");
+    const [qp, setQp] = useState({
         pageIndex: 1,
         pageSize: 8,
     })
-    const [openConfirm, setOpenConfirm] = React.useState(false);
-    const [coursesToDelete, setCoursesToDelete] = React.useState<string[]>([]);
-    const [layout, setLayout] = React.useState<LayoutProps>("table");
+    const [openConfirm, setOpenConfirm] = useState(false);
+    const [coursesToDelete, setCoursesToDelete] = useState<string[]>([]);
+    const [layout, setLayout] = useState<LayoutProps>("table");
 
 
 

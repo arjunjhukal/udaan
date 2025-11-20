@@ -1,5 +1,5 @@
-import type { CourseProps } from "../../../../types/course";
-import CourseCard from "../../../organism/Cards/CourseCard";
+import type { CourseProps } from "../../../../../types/course";
+import CourseCard from "../../../../organism/Cards/CourseCard";
 
 export default function AllCourseGrid({ data }: { data: CourseProps[] }) {
 

@@ -2,8 +2,8 @@ import { Autocomplete, Divider, FormHelperText, InputLabel, OutlinedInput, TextF
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import type { FormikProps } from 'formik';
-import type { CourseProps, DiscountTypeProps } from '../../../../../types/course';
-import MakuraDatePicker from '../../../../atoms/MakuraDatePicker';
+import type { CourseProps, DiscountTypeProps } from '../../../../../../types/course';
+import MakuraDatePicker from '../../../../../atoms/MakuraDatePicker';
 
 export default function ExpiryCourseType({ formik }: { formik: FormikProps<CourseProps> }) {
 

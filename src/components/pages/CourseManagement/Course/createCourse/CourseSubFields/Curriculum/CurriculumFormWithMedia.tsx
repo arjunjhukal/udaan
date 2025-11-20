@@ -3,13 +3,13 @@ import { useFormik } from 'formik';
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import * as Yup from "yup";
-import { useAddCurriculumMutation } from '../../../../../../services/courseApi';
-import { showToast } from '../../../../../../slice/toastSlice';
-import { useAppDispatch } from '../../../../../../store/hook';
-import { initialCurriculumInitialState, type courseTabType, type CurriculumProps } from '../../../../../../types/course';
-import TextEditor from '../../../../../atoms/TextEditor';
-import FooterAction from '../../../../../molecules/FooterAction';
-import SelectFromMedia from '../../../../../molecules/MediaFileDragDrop/SelectFromMedia';
+import { useAddCurriculumMutation } from '../../../../../../../services/courseApi';
+import { showToast } from '../../../../../../../slice/toastSlice';
+import { useAppDispatch } from '../../../../../../../store/hook';
+import { initialCurriculumInitialState, type courseTabType, type CurriculumProps } from '../../../../../../../types/course';
+import TextEditor from '../../../../../../atoms/TextEditor';
+import FooterAction from '../../../../../../molecules/FooterAction';
+import SelectFromMedia from '../../../../../../molecules/MediaFileDragDrop/SelectFromMedia';
 
 type CurriculumType = "subject" | "chapter" | "unit" | "lesson" | "child_lesson";
 

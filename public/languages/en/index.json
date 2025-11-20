@@ -82,6 +82,11 @@
                 "description": "You haven’t created any courses yet. Start building your first course.",
                 "action": "Create Course"
             },
+            "live_class": {
+                "title": "No Live Class Available",
+                "description": "You haven’t created any live class yet. Start building your first live class.",
+                "action": "Create Live Class"
+            },
             "subscription_plan": {
                 "title": "No Plans Available",
                 "description": "You haven’t created any plans yet. Start building your first plan.",

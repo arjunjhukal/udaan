@@ -1,8 +1,8 @@
 import { Box, Checkbox, Typography, useTheme } from '@mui/material';
 import type { FormikProps } from 'formik';
 import React, { Activity } from 'react';
-import type { CourseProps, CourseTypeProps } from '../../../../types/course';
-import SubscriptionManagementForm from '../../SubscriptionManagement/SubscriptionManagementForm';
+import type { CourseProps, CourseTypeProps } from '../../../../../types/course';
+import SubscriptionManagementForm from '../../../SubscriptionManagement/SubscriptionManagementForm';
 import ExpiryCourseType from './CourseTypes/ExpiryCourseType';
 import FreeCourseType from './CourseTypes/FreeCourseType';
 import SubscriptionCourseType from './CourseTypes/SubscriptionCourseType';

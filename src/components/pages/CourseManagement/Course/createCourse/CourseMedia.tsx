@@ -1,12 +1,12 @@
 import { Box, Skeleton } from "@mui/material";
 import React from "react";
-import { useAddCourseMediaByTypeMutation, useGetCourseMediaByTypeQuery } from "../../../../services/courseApi";
-import { showToast } from "../../../../slice/toastSlice";
-import { useAppDispatch } from "../../../../store/hook";
-import SelectFromMedia from "../../../molecules/MediaFileDragDrop/SelectFromMedia";
-import MediaCard from "../../../organism/Cards/MediaCard";
-import EmptyRoute from "../../../organism/EmptyRoute";
-import PageHeader from "../../../organism/PageHeader";
+import { useAddCourseMediaByTypeMutation, useGetCourseMediaByTypeQuery } from "../../../../../services/courseApi";
+import { showToast } from "../../../../../slice/toastSlice";
+import { useAppDispatch } from "../../../../../store/hook";
+import SelectFromMedia from "../../../../molecules/MediaFileDragDrop/SelectFromMedia";
+import MediaCard from "../../../../organism/Cards/MediaCard";
+import EmptyRoute from "../../../../organism/EmptyRoute";
+import PageHeader from "../../../../organism/PageHeader";
 
 type MediaType = "audios" | "notes" | "videos";
 

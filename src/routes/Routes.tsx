@@ -4,9 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "../App";
 import CategoryManagementRoot from "../components/pages/CategoryManagement";
 import AllCategories from "../components/pages/CategoryManagement/allCategory";
-import CourseManagementRoot from "../components/pages/CourseManagement";
-import AllCourse from "../components/pages/CourseManagement/allCourse";
-import CreateCourseRoot from "../components/pages/CourseManagement/createCourse";
+
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
@@ -24,6 +22,9 @@ import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
 import { PATH } from "./PATH";
 import Private from "./Private";
+import CourseManagementRoot from "../components/pages/CourseManagement/Course";
+import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
+import CreateCourseRoot from "../components/pages/CourseManagement/Course/createCourse";
 
 const router = createBrowserRouter([
 	{

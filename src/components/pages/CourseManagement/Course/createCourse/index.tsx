@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { PATH } from "../../../../routes/PATH";
-import PageHeader from "../../../organism/PageHeader";
+import { PATH } from "../../../../../routes/PATH";
+import PageHeader from "../../../../organism/PageHeader";
 import CourseManagementForm from "../CourseManagementForm";
 
 export default function CreateCourseRoot() {

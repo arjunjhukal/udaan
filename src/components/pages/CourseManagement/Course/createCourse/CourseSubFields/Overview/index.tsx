@@ -11,9 +11,9 @@ import {
     useTheme,
 } from "@mui/material";
 import type { FormikProps } from "formik";
-import type { CourseProps } from "../../../../../../types/course";
-import type { RegisterUserProps } from "../../../../../../types/user";
-import TextEditor from "../../../../../atoms/TextEditor";
+import type { CourseProps } from "../../../../../../../types/course";
+import type { RegisterUserProps } from "../../../../../../../types/user";
+import TextEditor from "../../../../../../atoms/TextEditor";
 
 interface Props {
     teachers: RegisterUserProps[];

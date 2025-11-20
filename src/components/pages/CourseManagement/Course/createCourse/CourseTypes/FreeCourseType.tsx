@@ -1,5 +1,5 @@
 import { Divider, Typography } from '@mui/material';
-import TextEditor from '../../../../atoms/TextEditor';
+import TextEditor from '../../../../../atoms/TextEditor';
 interface Props {
     error?: string;
     value?: string;

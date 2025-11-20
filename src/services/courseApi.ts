@@ -1,11 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { CurriculumType } from "../components/pages/CourseManagement/createCourse/CourseSubFields/Curriculum";
 import type { QueryParams } from "../types";
 import type { CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
 import type { MediaList } from "../types/media";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
+import type { CurriculumType } from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
 
 export const courseApi = createApi({
     reducerPath: "courseApi",
