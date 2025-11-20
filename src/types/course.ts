@@ -46,6 +46,8 @@ export interface CourseProps {
     subjects?: number;
     created_at?: string;
     course_subscription?: CourseSubscription[] | null;
+    marked_price?: string,
+    sale_price?: string,
 }
 
 export const initialCourseState: CourseProps = {
@@ -123,8 +125,9 @@ export type CurriculumCommonProps = {
 }
 export type CurriculumCommonMediaProps = {
     video_url: string;
-    note_id: number[];
-    audio_id: number[];
+    note_id: number | null;
+    audio_id: number | null;
+    parent_id: number | null;
 }
 
 export interface ChildLessonProps
@@ -147,7 +150,7 @@ export interface ChapterProps
 
 export interface SubjectProps
     extends CurriculumCommonProps, CurriculumCommonMediaProps {
-    chapters: ChapterProps[];
+    chapters: ChapterProps[] | null;
 }
 
 
@@ -165,7 +168,8 @@ export const initialCurriculumInitialState: CurriculumProps = {
     name: "",
     description: "",
     video_url: "",
-    note_id: [],
-    audio_id: [],
-    chapters: []
+    note_id: null,
+    audio_id: null,
+    chapters: null,
+    parent_id: null
 };

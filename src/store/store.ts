@@ -1,14 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "../services/authApi";
+import { categoryApi } from "../services/categoryApi";
+import { courseApi } from "../services/courseApi";
+import { mediaApi } from "../services/mediaApi";
+import { positionApi } from "../services/positionApi";
 import { roleAndPermissionApi } from "../services/roleAndPermissionApi";
+import { subscriptionPlanApi } from "../services/subscriptionPlanApi";
 import { userApi } from "../services/userApi";
 import authReducer from "../slice/authSlice";
 import themeReducer from "../slice/themeSlice";
 import toastReducer from "../slice/toastSlice";
-import { categoryApi } from "../services/categoryApi";
-import { positionApi } from "../services/positionApi";
-import { courseApi } from "../services/courseApi";
-import { subscriptionPlanApi } from "../services/subscriptionPlanApi";
 export const store = configureStore({
 	reducer: {
 		theme: themeReducer,
@@ -21,6 +22,7 @@ export const store = configureStore({
 		[positionApi.reducerPath]: positionApi.reducer,
 		[courseApi.reducerPath]: courseApi.reducer,
 		[subscriptionPlanApi.reducerPath]: subscriptionPlanApi.reducer,
+		[mediaApi.reducerPath]: mediaApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(authApi.middleware)
@@ -30,6 +32,7 @@ export const store = configureStore({
 			.concat(positionApi.middleware)
 			.concat(courseApi.middleware)
 			.concat(subscriptionPlanApi.middleware)
+			.concat(mediaApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

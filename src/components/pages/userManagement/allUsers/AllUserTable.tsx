@@ -213,7 +213,6 @@ export default function AllUserTable() {
 
     return (
         <>
-
             <TableFilter
                 search={search}
                 setSearch={setSearch}

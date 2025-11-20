@@ -1,12 +1,13 @@
+import type { CourseProps } from "../../../../types/course";
 import CourseCard from "../../../organism/Cards/CourseCard";
 
-export default function AllCourseGrid() {
+export default function AllCourseGrid({ data }: { data: CourseProps[] }) {
 
     return (
         <div className="course__grid__wrapper">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map((_, index) => (
-                    <CourseCard key={index} />
+                {data.map((course, index) => (
+                    <CourseCard key={index} course={course} />
                 ))}
             </div>
         </div>

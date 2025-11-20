@@ -18,8 +18,8 @@ import FileDragDrop from "../../molecules/FileDragDrop";
 import FooterAction from "../../molecules/FooterAction";
 import TabController from "../../molecules/TabController";
 import CategoryFilter from "../../organism/CategoryFilter";
+import CourseMedia from "./createCourse/CourseMedia";
 import CourseCurriculumForm from "./createCourse/CourseSubFields/Curriculum";
-import CourseNotes from "./createCourse/CourseSubFields/Notes";
 import CourseOverviewForm from "./createCourse/CourseSubFields/Overview";
 import CourseType from "./createCourse/CourseType";
 
@@ -363,7 +363,10 @@ export default function CourseManagementForm() {
                     formik={formik}
                 /> : ""}
                 {activeTab === "curriculum" ? <CourseCurriculumForm /> : ""}
-                {activeTab === "notes" ? <CourseNotes /> : ""}
+                {activeTab === "notes" ? <CourseMedia type="notes" /> : ""}
+                {activeTab === "audios" ? <CourseMedia type="audios" /> : ""}
+                {activeTab === "videos" ? <CourseMedia type="audios" /> : ""}
+                {activeTab === "test" ? <CourseMedia type="notes" /> : ""}
                 <FooterAction
                     handleComfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
                     isLoading={isLoading}

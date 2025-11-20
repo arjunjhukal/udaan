@@ -7,8 +7,9 @@ interface Props {
     icon?: React.ReactNode;
     title?: string;
     description?: string;
+    isLoading?: boolean;
 }
-export default function ConfirmationDialog({ open, setOpen, icon, title, description, onSave }: Props) {
+export default function ConfirmationDialog({ open, setOpen, icon, title, description, onSave, isLoading }: Props) {
     const handleClose = () => {
         setOpen(false);
     }
@@ -41,7 +42,7 @@ export default function ConfirmationDialog({ open, setOpen, icon, title, descrip
                     }}
                         onClick={handleClose}
                     >Cancel</Button>
-                    <Button fullWidth variant="contained" color="primary" onClick={onSave}>Yes</Button>
+                    <Button fullWidth variant="contained" color="primary" onClick={onSave}>{isLoading ? "Saving" : "Yes"}</Button>
                 </DialogActions>
             </DialogContent>
         </Dialog>

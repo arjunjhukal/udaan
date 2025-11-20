@@ -1,4 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
+import type { CurriculumType } from "../components/pages/CourseManagement/createCourse/CourseSubFields/Curriculum";
 import type { QueryParams } from "../types";
 import type { CourseList, CourseProps, CurriculumList, CurriculumProps } from "../types/course";
 import type { GlobalResponse } from "../types/user";
@@ -72,9 +73,9 @@ export const courseApi = createApi({
                 { type: "Course", id: "LIST" }
             ],
         }),
-        addCurriculum: builder.mutation<GlobalResponse, { body: CurriculumProps, id: number }>({
-            query: ({ body, id }) => ({
-                url: `/admin/course/curriculum/${id}`,
+        addCurriculum: builder.mutation<GlobalResponse, { body: CurriculumProps, id: number, type: CurriculumType }>({
+            query: ({ body, id, type }) => ({
+                url: `/admin/course/curriculum/${id}?type=${type}`,
                 method: "POST",
                 body
             }),
@@ -112,12 +113,16 @@ export const courseApi = createApi({
                 url: `/admin/course/curriculum/${id}`,
                 method: "GET",
             }),
+            providesTags: (_result, _error, { id }) => [{ type: "Curriculum", id }],
         }),
-        deleteCourseCurriculum: builder.mutation<GlobalResponse, { id: number }>({
-            query: ({ id }) => ({
-                url: `/admin/course/curriculum/${id}`,
-                method: "POST",
+        deleteCourseCurriculum: builder.mutation<GlobalResponse, { id: number, type: CurriculumType, idToDelete: number }>({
+            query: ({ id, type, idToDelete }) => ({
+                url: `/admin/course/curriculum/${id}?type=${type}&ids=${idToDelete}`,
+                method: "DELETE",
             }),
+            invalidatesTags: (_result, _error,) => [
+                { type: "Curriculum", id: "LIST" }
+            ],
         })
     })
 })

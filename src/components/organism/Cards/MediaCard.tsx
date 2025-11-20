@@ -1,11 +1,13 @@
 import { Box, Divider, Typography, useTheme } from '@mui/material';
+import type { MediaProps } from '../../../types/media';
+import { convertToMb } from '../../../utils/convertToMb';
 
-export default function MediaCard() {
+export default function MediaCard({ media }: { media: MediaProps }) {
     const theme = useTheme();
     return (
         <Box sx={{ border: `1px solid ${theme.palette.textField.border}` }} className="p-3 rounded-md flex items-center gap-3">
 
-            <Box className="w-12.5 h-12.5 rounded-md flex items-center justify-center" sx={{
+            <Box className="min-w-12.5 h-12.5 rounded-md flex items-center justify-center" sx={{
                 background: theme.palette.warning.main
             }}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -14,9 +16,9 @@ export default function MediaCard() {
                 </svg>
             </Box>
             <div className="content">
-                <Typography variant='subtitle2' fontWeight={500}>Introduction to OOPS</Typography>
+                <Typography variant='subtitle2' fontWeight={500}>{media.file_name}</Typography>
                 <Divider className='my-1.5!' />
-                <Typography color='text.middle' className='text-[12px]!'>45.5 MB</Typography>
+                <Typography color='text.middle' className='text-[12px]!'>{convertToMb(media.size)} MB</Typography>
 
             </div>
         </Box>

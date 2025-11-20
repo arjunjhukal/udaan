@@ -146,3 +146,7 @@ body {
 .general__content strong {
 	font-weight: 600;
 }
+
+.curriculum__content+.curriculum__content {
+	margin-top: 16px;
+}

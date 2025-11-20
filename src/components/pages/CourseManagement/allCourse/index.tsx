@@ -205,13 +205,17 @@ export default function AllCourse() {
                         columns={columns}
                         loading={isLoading}
                     />
-                    <TablePagination
-                        qp={qp}
-                        setQp={setQp}
-                        totalPages={data?.data?.pagination?.total_pages || 0}
-                    />
+
                 </> :
-                <AllCourseGrid />}
+                <AllCourseGrid
+                    data={data?.data?.data || []}
+
+                />}
+            <TablePagination
+                qp={qp}
+                setQp={setQp}
+                totalPages={data?.data?.pagination?.total_pages || 0}
+            />
 
             <ConfirmationDialog
                 open={openConfirm}
