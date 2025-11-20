@@ -1,7 +1,8 @@
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { FormHelperText, InputLabel } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
 export default function TextEditor({
     label,
     error,
@@ -16,9 +17,18 @@ export default function TextEditor({
     onBlur?: (value: string) => void;
 }) {
     const [data, setData] = useState(value || "");
+    const prevValueRef = useRef(value);
+
+    // Synchronize local state when value prop changes (Formik reinitializes or tab changes)
+    useEffect(() => {
+        if (value !== prevValueRef.current) {
+            setData(value || "");
+            prevValueRef.current = value;
+        }
+    }, [value]);
 
     return (
-        <div className="input__field" >
+        <div className="input__field">
             <InputLabel className="required">
                 {label || "Description"}
             </InputLabel>
@@ -43,14 +53,12 @@ export default function TextEditor({
                     onChange={(_, editor) => {
                         const val = editor.getData();
                         setData(val);
-                        onChange?.(val);
+                        if (onChange) onChange(val);
                     }}
                     onBlur={(_, editor) => {
                         const val = editor.getData();
-                        setData(val);
-                        onBlur?.(val);
+                        if (onBlur) onBlur(val);
                     }}
-
                 />
             </div>
 

@@ -92,6 +92,7 @@ export default function CurriculumFormWithMedia({
                         severity: "success",
                     })
                 );
+                formik.resetForm();
                 handleClose();
             }
             catch (e: any) {
@@ -283,6 +284,7 @@ export default function CurriculumFormWithMedia({
                             isLoading={isLoading}
                             isEditMode={!!selectedCurriculum?.id}
                             handleComfirmationChange={handleClose}
+                            buttonLabel={"Curriculum"}
                         />
                     </form>
                 </DialogContent>

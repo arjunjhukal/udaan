@@ -1,7 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { Checkbox, Stack, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
@@ -22,15 +22,26 @@ export default function AllCourse() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const [search, setSearch] = React.useState("");
+    const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
+    const [search, setSearch] = React.useState<string>("");
     const [qp, setQp] = React.useState({
         pageIndex: 1,
         pageSize: 8,
     })
-    const [layout, setLayout] = React.useState<LayoutProps>("table");
-    const [selectedRows, setSelectedRows] = React.useState<Set<number | string>>(new Set());
     const [openConfirm, setOpenConfirm] = React.useState(false);
     const [coursesToDelete, setCoursesToDelete] = React.useState<string[]>([]);
+    const [layout, setLayout] = React.useState<LayoutProps>("table");
+
+
+
+
+
+    const { data, isLoading } = useGetAllCourseQuery({ ...qp, search: search });
+    const [deleteCourse, { isLoading: deleting }] = useDeleteCourseMutation();
+
+
+    const courses = data?.data?.data || [];
+
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
@@ -51,12 +62,40 @@ export default function AllCourse() {
         setSelectedRows(newSelected);
     };
 
+    const isAllSelected = courses.length > 0 && selectedRows.size === courses.length;
+    const isSomeSelected = selectedRows.size > 0 && selectedRows.size < courses.length;
 
-    const { data, isLoading } = useGetAllCourseQuery({ ...qp, search: search });
-    const [deleteCourse, { isLoading: deleting }] = useDeleteCourseMutation();
+    const openDeleteConfirmation = (selectedCourseIds: string[]) => {
+        setCoursesToDelete(selectedCourseIds);
+        setOpenConfirm(true);
+    };
 
+    const handleCourseDeletion = async () => {
+        try {
+            const response = await deleteCourse({
+                body: coursesToDelete,
+            }).unwrap();
 
-    const courses = data?.data?.data || [];
+            dispatch(
+                showToast({
+                    message: response.message || "Course deleted successfully",
+                    severity: "success",
+                })
+            );
+            setSelectedRows(new Set());
+            setOpenConfirm(false);
+            setCoursesToDelete([]);
+        } catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to delete course.",
+                    severity: "error",
+                })
+            );
+            setOpenConfirm(false);
+        }
+    }
+
     const columns = useMemo<ColumnDef<CourseProps>[]>(() => [
         {
             header: () => (
@@ -134,42 +173,15 @@ export default function AllCourse() {
                 />
             ),
         },
-    ], [selectedRows, search])
-
-    const isAllSelected = courses.length > 0 && selectedRows.size === courses.length;
-    const isSomeSelected = selectedRows.size > 0 && selectedRows.size < courses.length;
+    ], [selectedRows, isAllSelected, isSomeSelected])
 
 
-    const openDeleteConfirmation = (selectedUserIds: string[]) => {
-        setCoursesToDelete(selectedUserIds);
-        setOpenConfirm(true);
-    };
 
-    const handleCourseDeletion = async () => {
-        try {
-            const response = await deleteCourse({
-                body: coursesToDelete,
-            }).unwrap();
+    console.log({
+        selectedRows, coursesToDelete
+    })
 
-            dispatch(
-                showToast({
-                    message: response.message || "Course deleted successfully",
-                    severity: "success",
-                })
-            );
-            setSelectedRows(new Set());
-            setOpenConfirm(false);
-            setCoursesToDelete([]);
-        } catch (e: any) {
-            dispatch(
-                showToast({
-                    message: e?.data?.message || "Unable to delete course.",
-                    severity: "error",
-                })
-            );
-            setOpenConfirm(false);
-        }
-    }
+
     return (
         <div className="course__root">
             <PageHeader
@@ -194,7 +206,7 @@ export default function AllCourse() {
                 search={search}
                 setSearch={setSearch}
                 selectedRows={selectedRows}
-                handleRoleDelete={handleCourseDeletion}
+                handleRoleDelete={openDeleteConfirmation}
                 layout={layout}
                 setLayout={setLayout}
             />

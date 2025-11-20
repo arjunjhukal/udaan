@@ -84,7 +84,7 @@ export default function CourseOverviewForm({
                             }}
                             renderInput={(params) => (
                                 <TextField {...params} placeholder="Select Instructor"
-                                    error={formik.touched.teacher && Boolean(formik.errors.teacher)}
+                                    error={formik.touched.teachers && Boolean(formik.errors.teachers)}
                                 />
                             )}
                             // Filter out already selected teachers from options
@@ -94,9 +94,9 @@ export default function CourseOverviewForm({
                                 )
                             }
                         />
-                        {formik.touched.teacher && formik.errors.teacher && (
+                        {formik.touched.teachers && formik.errors.teachers && (
                             <FormHelperText error sx={{ mt: 1 }}>
-                                {formik.errors.teacher as string}
+                                {formik.errors.teachers as string}
                             </FormHelperText>
                         )}
 

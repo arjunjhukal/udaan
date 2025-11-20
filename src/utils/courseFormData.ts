@@ -66,8 +66,8 @@ export const createCourseFormData = (values: CourseProps): FormData => {
     });
 
     // Teachers/instructors array
-    values.teacher.forEach((id, index) => {
-        formData.append(`teacher[${index}]`, id.toString());
+    values.teachers.forEach((id, index) => {
+        formData.append(`teachers[${index}]`, id.toString());
     });
 
     return formData;

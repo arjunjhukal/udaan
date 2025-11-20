@@ -40,7 +40,7 @@ export interface CourseProps {
     thumbnail_url?: string;
     selections: SelectionType;
     about_this_course_np: string;
-    teacher: number[];
+    teachers: number[];
     course_type: CourseTypeProps
     course_expiry: CourseExpiry;
     free_type_description?: string;
@@ -68,7 +68,7 @@ export const initialCourseState: CourseProps = {
         position_ids: [],
     },
     about_this_course_np: "",
-    teacher: [],
+    teachers: [],
     course_type: "free",
     course_expiry: {
         start_date: "",

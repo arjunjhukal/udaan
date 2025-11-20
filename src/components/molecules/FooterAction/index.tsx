@@ -5,6 +5,7 @@ interface FooterActionProps {
     isLoading?: boolean;
     isUpdating?: boolean;
     isEditMode?: boolean;
+    buttonLabel?: string;
 }
 
 export default function FooterAction({
@@ -12,6 +13,7 @@ export default function FooterAction({
     isLoading = false,
     isUpdating = false,
     isEditMode = false,
+    buttonLabel
 }: FooterActionProps) {
     const theme = useTheme();
 
@@ -45,11 +47,11 @@ export default function FooterAction({
                 <Typography variant="body2">
                     {isEditMode
                         ? isUpdating
-                            ? "Updating Course"
-                            : "Update Course"
+                            ? "Updating "
+                            : `Update ${buttonLabel}`
                         : isLoading
-                            ? "Creating Course"
-                            : "Create Course"}
+                            ? "Creating "
+                            : `Create ${buttonLabel}`}
                 </Typography>
             </Button>
         </Box>

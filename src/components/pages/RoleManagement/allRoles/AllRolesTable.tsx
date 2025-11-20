@@ -162,6 +162,9 @@ export default function AllRolesTable() {
 
 
 
+    console.log({
+        rolesToDelete,selectedRows
+    })
     return (
         <>
 

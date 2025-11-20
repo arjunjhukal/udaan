@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { PATH } from "../../../routes/PATH";
 import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery, useGetAllSubCategoryRelatedToCategoryQuery } from "../../../services/categoryApi";
-import { useCreateCourseMutation, useGetCourseByIdQuery } from "../../../services/courseApi";
+import { useCreateCourseMutation, useEditCourseMutation, useGetCourseByIdQuery } from "../../../services/courseApi";
 import { useGetAllPositionQuery } from "../../../services/positionApi";
 import { useGetAllUserQuery } from "../../../services/userApi";
 import { showToast } from "../../../slice/toastSlice";
@@ -23,7 +23,7 @@ import CourseCurriculumForm from "./createCourse/CourseSubFields/Curriculum";
 import CourseOverviewForm from "./createCourse/CourseSubFields/Overview";
 import CourseType from "./createCourse/CourseType";
 
-const validationSchema = Yup.object().shape({
+const validationSchema = (id?: string) => Yup.object().shape({
     name: Yup.string()
         .required("Course name is required")
         .min(3, "Course name must be at least 3 characters")
@@ -51,25 +51,27 @@ const validationSchema = Yup.object().shape({
         .required("Course description is required")
         .min(10, "Description must be at least 10 characters"),
 
-    thumbnail: Yup.mixed()
-        .required("Course thumbnail is required")
-        .test(
-            "fileSize",
-            "File size must be less than 5MB",
-            (value) => {
-                if (!value) return false;
-                return (value as File).size <= 5 * 1024 * 1024;
-            }
-        )
-        .test(
-            "fileType",
-            "Only image files are allowed (jpg, jpeg, png, webp)",
-            (value) => {
-                if (!value) return false;
-                const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-                return validTypes.includes((value as File).type);
-            }
-        ),
+    thumbnail: id ?
+        Yup.mixed().notRequired()
+        : Yup.mixed()
+            .required("Course thumbnail is required")
+            .test(
+                "fileSize",
+                "File size must be less than 5MB",
+                (value) => {
+                    if (!value) return false;
+                    return (value as File).size <= 5 * 1024 * 1024;
+                }
+            )
+            .test(
+                "fileType",
+                "Only image files are allowed (jpg, jpeg, png, webp)",
+                (value) => {
+                    if (!value) return false;
+                    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+                    return validTypes.includes((value as File).type);
+                }
+            ),
 
     selections: Yup.object().shape({
         mega_category: Yup.array()
@@ -86,7 +88,7 @@ const validationSchema = Yup.object().shape({
         .required("About this course is required")
         .min(10, "About course must be at least 10 characters"),
 
-    teacher: Yup.array()
+    teachers: Yup.array()
         .of(Yup.number())
         .min(1, "Please select at least one instructor"),
 
@@ -94,11 +96,7 @@ const validationSchema = Yup.object().shape({
         .oneOf(["free", "subscription", "expiry"], "Invalid course type")
         .required("Course type is required"),
 
-    // price: Yup.string().when("course_type", {
-    //     is: (val: string) => val === "subscription",
-    //     then: (schema) => schema.required("Price is required for subscription courses"),
-    //     otherwise: (schema) => schema.notRequired(),
-    // }),
+
 
     course_expiry: Yup.object().when("course_type", {
         is: "expiry",
@@ -141,14 +139,27 @@ export default function CourseManagementForm() {
 
     const [activeTab, setActiveTab] = React.useState<courseTabType>("overview");
     const [searchTeacher, setSearchTeacher] = React.useState("")
-    
+
     const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
     const { data: teachers } = useGetAllUserQuery({ pageIndex: 1, pageSize: 20, search: searchTeacher, role: "teacher" });
 
 
-    const [createCourse, { isLoading }] = useCreateCourseMutation();
     const { data } = useGetCourseByIdQuery({ id: id || "" }, { skip: !id });
-    console.log(data);
+    const [createCourse, { isLoading }] = useCreateCourseMutation();
+    const [updateCourse, { isLoading: updating }] = useEditCourseMutation();
+
+
+    React.useEffect(() => {
+        if (data?.data?.teachers && teachers?.data?.data) {
+            const selected = data.data.teachers
+                .map((id: number) =>
+                    teachers.data.data.find((t: RegisterUserProps) => Number(t.id) === Number(id))
+                )
+                .filter((t): t is RegisterUserProps => !!t);
+            setSelectedTeachers(selected);
+
+        }
+    }, [data?.data?.teachers, teachers?.data?.data]);
 
     const handleCategoryChange = (
         type: "mega" | "category" | "sub" | "position",
@@ -180,7 +191,7 @@ export default function CourseManagementForm() {
         const updatedTeachers = [...selectedTeachers, newValue];
         setSelectedTeachers(updatedTeachers);
         formik.setFieldValue(
-            "teacher",
+            "teachers",
             updatedTeachers.map(t => parseInt(t.id || "0", 10))
         );
     };
@@ -189,36 +200,61 @@ export default function CourseManagementForm() {
         const filteredTeachers = selectedTeachers.filter((item) => item.id !== teacherId);
         setSelectedTeachers(filteredTeachers);
         formik.setFieldValue(
-            "teacher",
+            "teachers",
             filteredTeachers.map(t => parseInt(t.id || "0", 10))
         );
     };
 
     const formik = useFormik({
-        initialValues: initialCourseState,
-        validationSchema,
+        initialValues: data?.data || initialCourseState,
+        validationSchema: validationSchema(id),
         enableReinitialize: true,
         onSubmit: async (values) => {
             console.log(values);
-            try {
-                const formattedData = createCourseFormData(values);
-                const response = await createCourse({ body: formattedData }).unwrap();
-                dispatch(
-                    showToast({
-                        message: response?.message || "Course Created Successfully",
-                        severity: "success"
-                    })
-                );
-                navigate(response.data && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(response.data.id))
+            if (id) {
+                try {
+                    const formattedData = createCourseFormData(values);
+                    const response = await updateCourse({ body: formattedData, id: Number(id) }).unwrap();
+
+                    dispatch(
+                        showToast({
+                            message: response?.message || "Course Updated Successfully",
+                            severity: "success"
+                        })
+                    );
+
+                }
+                catch (e: any) {
+                    dispatch(
+                        showToast({
+                            message: e?.data?.message || "Unable to Update Course",
+                            severity: "error"
+                        })
+                    )
+                }
             }
-            catch (e: any) {
-                console.log(e);
-                dispatch(
-                    showToast({
-                        message: e?.data?.message || "Unable to Create Course",
-                        severity: "error"
-                    })
-                )
+            else {
+
+                try {
+                    const formattedData = createCourseFormData(values);
+                    const response = await createCourse({ body: formattedData }).unwrap();
+                    dispatch(
+                        showToast({
+                            message: response?.message || "Course Created Successfully",
+                            severity: "success"
+                        })
+                    );
+                    navigate(response.data && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(response.data.id))
+                }
+                catch (e: any) {
+                    console.log(e);
+                    dispatch(
+                        showToast({
+                            message: e?.data?.message || "Unable to Create Course",
+                            severity: "error"
+                        })
+                    )
+                }
             }
         }
     })
@@ -371,8 +407,9 @@ export default function CourseManagementForm() {
                 <FooterAction
                     handleComfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
                     isLoading={isLoading}
-                    isUpdating={false}
+                    isUpdating={updating}
                     isEditMode={!!id}
+                    buttonLabel="Course"
                 />
             </form >
         </div >
