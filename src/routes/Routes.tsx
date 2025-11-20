@@ -5,6 +5,12 @@ import App from "../App";
 import CategoryManagementRoot from "../components/pages/CategoryManagement";
 import AllCategories from "../components/pages/CategoryManagement/allCategory";
 
+import CourseManagementRoot from "../components/pages/CourseManagement/Course";
+import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
+import CreateCourseRoot from "../components/pages/CourseManagement/Course/createCourse";
+import LiveClassRoot from "../components/pages/CourseManagement/LiveClass";
+import AllLiveClass from "../components/pages/CourseManagement/LiveClass/allLiveClass";
+import CreateLiveClassRoot from "../components/pages/CourseManagement/LiveClass/createLiveClass";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
@@ -22,9 +28,6 @@ import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
 import { PATH } from "./PATH";
 import Private from "./Private";
-import CourseManagementRoot from "../components/pages/CourseManagement/Course";
-import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
-import CreateCourseRoot from "../components/pages/CourseManagement/Course/createCourse";
 
 const router = createBrowserRouter([
 	{
@@ -75,6 +78,14 @@ const router = createBrowserRouter([
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.ROOT, element: <AllCourse /> },
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.CREATE_COURSE.ROOT, element: <CreateCourseRoot /> },
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(), element: <CreateCourseRoot /> },
+				],
+			},
+			{
+				element: <LiveClassRoot />,
+				children: [
+					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT, element: <AllLiveClass /> },
+					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT, element: <CreateLiveClassRoot /> },
+					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(), element: <CreateLiveClassRoot /> },
 				],
 			},
 			{

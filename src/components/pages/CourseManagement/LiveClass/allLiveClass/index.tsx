@@ -22,7 +22,7 @@ export default function AllLiveClass() {
                 cta={
                     {
                         icon: <Add />,
-                        url: PATH.ROLES.CREATE_ROLE.ROOT,
+                        url: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT,
                         label: t("messages.empty_states.live_class.action"),
                     }
                 }

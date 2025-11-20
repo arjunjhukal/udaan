@@ -84,7 +84,7 @@ export default function PrimaryMenu() {
                                     onClick={() => navigate(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT)}
                                     className={isActive(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT) ? "active-nested" : ""}>
                                     <ListItemText
-                                        primary={t("menus.course_management.courses.root")}
+                                        primary={t("menus.course_management.live_classes.root")}
                                     />
                                 </ListItemButton>
                             </ListItem>
