@@ -19,7 +19,7 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
     const theme = useTheme();
     const [search, setSearch] = React.useState("");
     const [selectedItems, setSelectedItems] = React.useState<Set<number>>(new Set());
-    const [qp, setQp] = React.useState({
+    const [qp] = React.useState({
         pageIndex: 1,
         pageSize: 50,
     });

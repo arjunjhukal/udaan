@@ -23,7 +23,6 @@ interface CurriculumItemProps {
 
 export default function CurriculumItem({
     item,
-    itemType,
     isExpanded,
     onToggle,
     onEdit,

@@ -22,7 +22,7 @@ export default function MediaFileDragDrop({
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const [uploadMedia, { isLoading }] = useUploadMediaMutation();
-  const [isDragging, setIsDragging] = useState(false);
+  const [_isDragging, setIsDragging] = useState(false);
 
   const getAcceptTypes = (): Accept => {
     switch (type) {
