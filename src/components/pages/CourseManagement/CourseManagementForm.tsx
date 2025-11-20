@@ -141,6 +141,7 @@ export default function CourseManagementForm() {
 
     const [activeTab, setActiveTab] = React.useState<courseTabType>("overview");
     const [searchTeacher, setSearchTeacher] = React.useState("")
+    
     const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
     const { data: teachers } = useGetAllUserQuery({ pageIndex: 1, pageSize: 20, search: searchTeacher, role: "teacher" });
 
@@ -363,10 +364,10 @@ export default function CourseManagementForm() {
                     formik={formik}
                 /> : ""}
                 {activeTab === "curriculum" ? <CourseCurriculumForm /> : ""}
-                {activeTab === "notes" ? <CourseMedia type="notes" /> : ""}
-                {activeTab === "audios" ? <CourseMedia type="audios" /> : ""}
-                {activeTab === "videos" ? <CourseMedia type="audios" /> : ""}
-                {activeTab === "test" ? <CourseMedia type="notes" /> : ""}
+                {activeTab === "notes" ? <CourseMedia type="notes" id={id} /> : ""}
+                {activeTab === "audios" ? <CourseMedia type="audios" id={id} /> : ""}
+                {activeTab === "videos" ? <CourseMedia type="videos" id={id} /> : ""}
+                {activeTab === "test" ? <CourseMedia type="notes" id={id} /> : ""}
                 <FooterAction
                     handleComfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
                     isLoading={isLoading}

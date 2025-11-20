@@ -1,14 +1,16 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CurriculumType } from "../components/pages/CourseManagement/createCourse/CourseSubFields/Curriculum";
 import type { QueryParams } from "../types";
-import type { CourseList, CourseProps, CurriculumList, CurriculumProps } from "../types/course";
+import type { CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
+import type { MediaList } from "../types/media";
 import type { GlobalResponse } from "../types/user";
+import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
 
 export const courseApi = createApi({
     reducerPath: "courseApi",
     baseQuery: baseQuery,
-    tagTypes: ["Course", "Curriculum", "Notes", "Audio", "Videos"],
+    tagTypes: ["Course", "Curriculum", "Media"],
     endpoints: (builder) => ({
         createCourse: builder.mutation<{ data: CourseProps, message: string }, { body: FormData }>({
             query: ({ body }) => ({
@@ -105,8 +107,11 @@ export const courseApi = createApi({
                     ? [
                         ...result.data.data.map((curriculum) => ({ type: "Curriculum" as const, id: curriculum.id })),
                         { type: "Curriculum", id: "LIST" },
+                        { type: "Media", id: "LIST" }
                     ]
-                    : [{ type: "Curriculum", id: "LIST" }],
+                    : [{ type: "Curriculum", id: "LIST" },
+                    { type: "Media", id: "LIST" }
+                    ],
         }),
         getCourseCurriculumById: builder.query<{ data: CurriculumProps }, { id: number }>({
             query: ({ id }) => ({
@@ -116,14 +121,51 @@ export const courseApi = createApi({
             providesTags: (_result, _error, { id }) => [{ type: "Curriculum", id }],
         }),
         deleteCourseCurriculum: builder.mutation<GlobalResponse, { id: number, type: CurriculumType, idToDelete: number }>({
-            query: ({ id, type, idToDelete }) => ({
-                url: `/admin/course/curriculum/${id}?type=${type}&ids=${idToDelete}`,
-                method: "DELETE",
-            }),
+            query: ({ id, type, idToDelete }) => {
+
+                return {
+                    url: `/admin/course/curriculum/${id}?type=${type}&ids=${idToDelete}`,
+                    method: "DELETE",
+                }
+            },
             invalidatesTags: (_result, _error,) => [
-                { type: "Curriculum", id: "LIST" }
+                { type: "Curriculum", id: "LIST" },
+                { type: "Media", id: "LIST" }
             ],
-        })
+        }),
+        getCourseMediaByType: builder.query<MediaList, { id: string | null; type: courseTabType }>({
+            query: ({ id, type }) => {
+                const queryString = buildQueryParams({ type });
+
+                return {
+                    url: `/admin/course/${id}/media?${queryString}`,
+                    method: "GET",
+                };
+            },
+            providesTags: (result) =>
+                result?.data?.data
+                    ? [
+                        ...result.data.data.map((curriculum) => ({ type: "Media" as const, id: curriculum.id })),
+                        { type: "Media", id: "LIST" },
+                    ]
+                    : [{ type: "Media", id: "LIST" }],
+        }),
+        addCourseMediaByType: builder.mutation<GlobalResponse, { id: string | null; type: courseTabType, body: number[] }>({
+            query: ({ id, type, body }) => {
+                const queryString = buildQueryParams({ type });
+                return {
+                    url: `/admin/course/${id}/media?${queryString}`,
+                    method: "POST",
+                    body: {
+                        media_ids: body
+                    }
+                };
+            },
+            invalidatesTags: (_result, _error,) => [
+                { type: "Media", id: "LIST" }
+            ],
+
+        }),
     })
 })
 
@@ -136,5 +178,7 @@ export const {
     useAddCurriculumMutation,
     useGetAllCurriculumQuery,
     useGetCourseCurriculumByIdQuery,
-    useDeleteCourseCurriculumMutation
+    useDeleteCourseCurriculumMutation,
+    useGetCourseMediaByTypeQuery,
+    useAddCourseMediaByTypeMutation
 } = courseApi;

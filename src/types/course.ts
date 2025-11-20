@@ -1,3 +1,4 @@
+import type { MediaProps } from "./media";
 import type { Pagination } from "./roleAndPermission";
 import type { GlobalResponse } from "./user";
 
@@ -128,6 +129,9 @@ export type CurriculumCommonMediaProps = {
     note_id: number | null;
     audio_id: number | null;
     parent_id: number | null;
+    note?: MediaProps
+    audio?: MediaProps
+    video?: MediaProps
 }
 
 export interface ChildLessonProps
@@ -171,5 +175,5 @@ export const initialCurriculumInitialState: CurriculumProps = {
     note_id: null,
     audio_id: null,
     chapters: null,
-    parent_id: null
+    parent_id: null,
 };

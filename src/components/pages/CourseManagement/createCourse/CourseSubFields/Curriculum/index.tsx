@@ -161,7 +161,7 @@ export default function CourseCurriculumForm() {
                                     <Box
                                         key={subject.id}
                                         sx={{
-                                            background: theme.palette.textField.border,
+                                            background: theme.palette.gray.gray1,
                                             border: `1px solid ${theme.palette.gray.gray2}`
                                         }}
                                         className="rounded-md py-5 px-6"
@@ -184,7 +184,7 @@ export default function CourseCurriculumForm() {
 
                                         <Collapse in={expanded[subjectKey]} timeout="auto" unmountOnExit>
                                             <div className="curriculum__content">
-                                                <Divider />
+                                                <Divider className="mt-3! mb-6!" />
                                                 <div className="curriculum__description general__content">
                                                     {renderHtml(subject.description)}
                                                 </div>
@@ -209,7 +209,7 @@ export default function CourseCurriculumForm() {
                                                         onDelete={() => chapter.id && handleDeleteClick(chapter.id, 'chapter')}
                                                         onAddChild={() => handleOpenForm('unit', chapter.id)}
                                                         addChildLabel="Add Unit"
-                                                        backgroundColor="white"
+                                                        backgroundColor={theme.palette.primary.contrastText}
                                                     >
                                                         {/* Units */}
                                                         {chapter?.units?.map((unit: UnitProps) => (
@@ -223,7 +223,7 @@ export default function CourseCurriculumForm() {
                                                                 onDelete={() => unit.id && handleDeleteClick(unit.id, 'unit')}
                                                                 onAddChild={() => handleOpenForm('lesson', unit.id)}
                                                                 addChildLabel="Add Lesson"
-                                                                backgroundColor="#e5e7eb"
+                                                                backgroundColor={theme.palette.gray.gray1}
                                                             >
                                                                 {/* Lessons */}
                                                                 {unit?.lessons?.map((lesson: LessonProps) => (
@@ -237,7 +237,7 @@ export default function CourseCurriculumForm() {
                                                                         onDelete={() => lesson.id && handleDeleteClick(lesson.id, 'lesson')}
                                                                         onAddChild={() => handleOpenForm('child_lesson', lesson.id)}
                                                                         addChildLabel="Add Child Lesson"
-                                                                        backgroundColor="white"
+                                                                        backgroundColor={theme.palette.primary.contrastText}
                                                                     >
                                                                         {/* Child Lessons */}
                                                                         {lesson?.child_lessons?.map((child: ChildLessonProps) => (
@@ -249,7 +249,7 @@ export default function CourseCurriculumForm() {
                                                                                 onToggle={() => toggleExpanded(`child-lesson-${child.id}`)}
                                                                                 onEdit={() => handleEditClick(child, 'child_lesson', lesson.id)}
                                                                                 onDelete={() => child.id && handleDeleteClick(child.id, 'child_lesson')}
-                                                                                backgroundColor="#f3f4f6"
+                                                                                backgroundColor={theme.palette.gray.gray1}
                                                                             />
                                                                         ))}
                                                                     </CurriculumItem>

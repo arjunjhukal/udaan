@@ -1,5 +1,10 @@
+import { Box, Skeleton } from "@mui/material";
 import React from "react";
+import { useAddCourseMediaByTypeMutation, useGetCourseMediaByTypeQuery } from "../../../../services/courseApi";
+import { showToast } from "../../../../slice/toastSlice";
+import { useAppDispatch } from "../../../../store/hook";
 import SelectFromMedia from "../../../molecules/MediaFileDragDrop/SelectFromMedia";
+import MediaCard from "../../../organism/Cards/MediaCard";
 import EmptyRoute from "../../../organism/EmptyRoute";
 import PageHeader from "../../../organism/PageHeader";
 
@@ -10,7 +15,7 @@ interface MediaConfig {
     description: string;
     emptyTitle: string;
     emptyMessage: string;
-    buttonLabel: string;
+    buttonLabel?: string;
     variant: "success" | "error";
     icon: React.ReactNode;
 }
@@ -21,7 +26,7 @@ const mediaConfigs: Record<MediaType, MediaConfig> = {
         description: "Add audios for this course so that you can manage the audio you wanted deeply.",
         emptyTitle: "No Audio found",
         emptyMessage: "Oops your audio is empty. Please add audio to help student gain knowledge.",
-        buttonLabel: "Add Audio",
+
         variant: "success",
         icon: (
             <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,15 +49,15 @@ const mediaConfigs: Record<MediaType, MediaConfig> = {
         )
     },
     videos: {
-        title: "Notes",
-        description: "Add notes for this course so that you can manage the notes you wanted deeply.",
-        emptyTitle: "No Notes found",
-        emptyMessage: "Oops your notes is empty. Please add notes to help student gain knowledge.",
-        buttonLabel: "Add Notes",
+        title: "Videos",
+        description: "Add videos for this course so that you can manage the videos you wanted deeply.",
+        emptyTitle: "No Videos found",
+        emptyMessage: "Oops your video is empty. Please add video to help student gain knowledge.",
         variant: "error",
         icon: (
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21.3333 2.66699H10.6667C6 2.66699 4 5.33366 4 9.33366V22.667C4 26.667 6 29.3337 10.6667 29.3337H21.3333C26 29.3337 28 26.667 28 22.667V9.33366C28 5.33366 26 2.66699 21.3333 2.66699ZM10.6667 16.3337H16C16.5467 16.3337 17 16.787 17 17.3337C17 17.8803 16.5467 18.3337 16 18.3337H10.6667C10.12 18.3337 9.66667 17.8803 9.66667 17.3337C9.66667 16.787 10.12 16.3337 10.6667 16.3337ZM21.3333 23.667H10.6667C10.12 23.667 9.66667 23.2137 9.66667 22.667C9.66667 22.1203 10.12 21.667 10.6667 21.667H21.3333C21.88 21.667 22.3333 22.1203 22.3333 22.667C22.3333 23.2137 21.88 23.667 21.3333 23.667ZM24.6667 12.3337H22C19.9733 12.3337 18.3333 10.6937 18.3333 8.66699V6.00033C18.3333 5.45366 18.7867 5.00033 19.3333 5.00033C19.88 5.00033 20.3333 5.45366 20.3333 6.00033V8.66699C20.3333 9.58699 21.08 10.3337 22 10.3337H24.6667C25.2133 10.3337 25.6667 10.787 25.6667 11.3337C25.6667 11.8803 25.2133 12.3337 24.6667 12.3337Z" fill="#F97415" />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 8L16 12L22 16V8Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M14 6H4C2.89543 6 2 6.89543 2 8V16C2 17.1046 2.89543 18 4 18H14C15.1046 18 16 17.1046 16 16V8C16 6.89543 15.1046 6 14 6Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
         )
     }
@@ -60,17 +65,53 @@ const mediaConfigs: Record<MediaType, MediaConfig> = {
 
 interface Props {
     type: MediaType;
+    id?: string;
 }
 
-export default function CourseMedia({ type }: Props) {
+export default function CourseMedia({ type, id }: Props) {
+    const dispatch = useAppDispatch();
+
     const [open, setOpen] = React.useState(false);
+
 
     const config = mediaConfigs[type];
 
     const handleMediaAddition = () => {
         setOpen((prev) => !prev);
     };
+    const { data, isLoading } = useGetCourseMediaByTypeQuery({ type, id: id || null }, { skip: !id || !type });
+    const [addMediaToCourse] = useAddCourseMediaByTypeMutation();
 
+    const handleMediaAssign = async (ids: number[]) => {
+
+        if (!ids.length) {
+            return dispatch(
+                showToast({
+                    message: `Please select at least one ${type}`,
+                    severity: "error",
+                })
+            );
+        }
+        try {
+            const response = await addMediaToCourse({ id: id || null, type, body: ids }).unwrap();
+            dispatch(
+                showToast({
+                    message: response?.message || `Successfully assigned ${type}`,
+                    severity: "success"
+                })
+            )
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || `Unable to assign ${type}`,
+                    severity: "error"
+                })
+            )
+        }
+    }
+
+    const medias = data?.data?.data || [];
     return (
         <>
             <PageHeader
@@ -80,24 +121,40 @@ export default function CourseMedia({ type }: Props) {
                     }
                 ]}
                 description={config.description}
-                cta={{
+                cta={config.buttonLabel ? {
                     label: config.buttonLabel,
                     url: ""
-                }}
-                handleOpenPopup={handleMediaAddition}
+                } : undefined}
+                handleOpenPopup={config.buttonLabel ? handleMediaAddition : undefined}
             />
-            <EmptyRoute
+            {!isLoading && !medias?.length && <EmptyRoute
                 title={config.emptyTitle}
                 message={config.emptyMessage}
-                cta={{
+                cta={config.buttonLabel ? {
                     label: config.buttonLabel,
                     url: ""
-                }}
+                } : undefined}
                 variant={config.variant}
                 icon={config.icon}
-                handleClick={handleMediaAddition}
-            />
-            <SelectFromMedia open={open} setOpen={setOpen} type={type} />
+                handleClick={config.buttonLabel ? handleMediaAddition : undefined}
+            />}
+            <div className="flex flex-col gap-4 md:grid grid-cols-2 xl:grid-cols-3 2xl:gap-9">
+                {isLoading ? (
+                    [...Array(6)].map((_, idx) => (
+                        <div key={idx} className="col-span-1">
+                            <div className="flex gap-3 items-center">
+                                <Box className="w-full">
+                                    <Skeleton variant="rectangular" height={120} className="rounded-xl" />
+                                </Box>
+                            </div>
+                        </div>
+                    ))
+                ) :
+                    (medias.map((media) => (
+                        <MediaCard media={media} key={media.id} type={type} />
+                    )))}
+            </div>
+            <SelectFromMedia open={open} setOpen={setOpen} type={type} onSelect={(ids) => handleMediaAssign(ids)} />
         </>
     );
 }

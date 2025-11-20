@@ -32,17 +32,7 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
         setSelectedItems(new Set());
     };
 
-    // const handleToggleItem = (id: number) => {
-    //     setSelectedItems(prev => {
-    //         const newSet = new Set(prev);
-    //         if (newSet.has(id)) {
-    //             newSet.delete(id);
-    //         } else {
-    //             newSet.add(id);
-    //         }
-    //         return newSet;
-    //     });
-    // };
+    console.log("selected meida", selectedItems)
     const handleToggleItem = (id: number) => {
         setSelectedItems(prev => {
             const newSet = new Set(prev);

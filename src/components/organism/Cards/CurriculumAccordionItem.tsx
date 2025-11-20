@@ -6,6 +6,7 @@ import { renderHtml } from "../../../utils/renderHtml";
 import CustomCollapseIcon from "../../atoms/CustomCollapseIcon";
 import ActionIconVisible from "../../molecules/Action/ActionIconVisible";
 import type { CurriculumType } from "../../pages/CourseManagement/createCourse/CourseSubFields/Curriculum";
+import MediaCard from "./MediaCard";
 
 interface CurriculumItemProps {
     item: SubjectProps | ChapterProps | UnitProps | LessonProps | ChildLessonProps;
@@ -54,10 +55,25 @@ export default function CurriculumItem({
             </div>
 
             <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                <Divider className="mb-4" />
+                <Divider className="mt-3! mb-6!" />
                 <div className="curriculum__description general__content">
                     {renderHtml(item.description)}
                 </div>
+
+                {item.audio || item.note || item.video_url ? <div className="media__listing flex flex-col gap-4 md:gap-6 md:grid md:grid-cols-3 2xl:grid-cols-5 mt-4 lg:mt-6">
+                    {item.audio ?
+                        <div className="col-span-1">
+                            <MediaCard media={item.audio} type="audios" />
+                        </div>
+                        : ""}
+                    {item.note ? <div className="col-span-1">
+                        <MediaCard media={item.note} type="notes" />
+                    </div> : ""}
+                    {item.video ? <div className="col-span-1">
+                        <MediaCard media={item.video} type="videos" />
+                    </div> : ""}
+
+                </div> : ""}
 
                 {onAddChild && addChildLabel && (
                     <Button
