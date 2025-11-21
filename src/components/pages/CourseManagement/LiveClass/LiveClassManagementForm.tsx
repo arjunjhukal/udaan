@@ -432,7 +432,7 @@ export default function LiveClassManagementForm() {
                                 <Autocomplete
                                     options={registrationOptions}
                                     getOptionLabel={(option) => option.label}
-                                    value={registrationOptions.find(opt => opt.value === formik.values.registration_type) || null}
+                                    value={registrationOptions.find(opt => opt.value === formik.values?.registration_type) || null}
                                     onChange={(_e, v) => formik.setFieldValue("registration_type", v?.value || 1)}
                                     renderInput={(p) => (
                                         <TextField
@@ -464,7 +464,7 @@ export default function LiveClassManagementForm() {
                             options={teachers?.data?.data || []}
                             getOptionLabel={(option) => option.name || ""}
                             value={(teachers?.data?.data || []).filter(teacher =>
-                                formik.values.teacher_ids.includes(Number(teacher.id))
+                                formik.values?.teacher_ids.includes(Number(teacher.id))
                             )}
                             onChange={(_e, v) => formik.setFieldValue("teacher_ids", v.map(t => t.id))}
                             renderInput={(p) => (
@@ -499,7 +499,7 @@ export default function LiveClassManagementForm() {
                             options={courses?.data?.data || []}
                             getOptionLabel={(option) => option.name || ""}
                             value={(courses?.data?.data || []).filter(course =>
-                                formik.values.courses.includes(Number(course.id))
+                                formik.values?.courses?.includes(Number(course.id))
                             )}
                             onChange={(_e, v) => formik.setFieldValue("courses", v.map(c => c.id))}
                             renderInput={(p) => (
