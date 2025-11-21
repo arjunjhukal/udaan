@@ -150,3 +150,7 @@ body {
 .curriculum__content+.curriculum__content {
 	margin-top: 16px;
 }
+
+.MuiPickersSectionList-root {
+	padding: 14px 0 !important;
+}

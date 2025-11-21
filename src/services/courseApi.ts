@@ -1,11 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { QueryParams } from "../types";
+import type { CurriculumType } from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
+import type { CategoryFilterParams, QueryParams } from "../types";
 import type { CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
 import type { MediaList } from "../types/media";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
-import type { CurriculumType } from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
 
 export const courseApi = createApi({
     reducerPath: "courseApi",
@@ -20,22 +20,30 @@ export const courseApi = createApi({
             }),
             invalidatesTags: [{ type: "Course", id: "LIST" }]
         }),
-        getAllCourse: builder.query<CourseList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => {
-                const params = new URLSearchParams();
-
-                if (pageIndex) {
-                    params.append('page', (pageIndex).toString());
-                }
-                if (pageSize) {
-                    params.append('page_size', pageSize.toString());
-                }
-                if (search) {
-                    params.append('search', search.toString());
-                }
+        getAllCourse: builder.query<CourseList, QueryParams & { categoryFilter?: CategoryFilterParams }>({
+            query: ({ pageIndex, pageSize, search, categoryFilter }) => {
+                // const params = new URLSearchParams();
+                const queryString = buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search,
+                    mega_categories: categoryFilter?.mega_category,
+                    categories: categoryFilter?.category,
+                    sub_categories: categoryFilter?.sub_category,
+                    positions: categoryFilter?.positions,
+                })
+                // if (pageIndex) {
+                //     params.append('page', (pageIndex).toString());
+                // }
+                // if (pageSize) {
+                //     params.append('page_size', pageSize.toString());
+                // }
+                // if (search) {
+                //     params.append('search', search.toString());
+                // }
 
                 return {
-                    url: `/admin/course?${params.toString()}`,
+                    url: `/course?${queryString}`,
                     method: "GET",
                 };
             },

@@ -74,21 +74,21 @@ export const categoryApi = createApi({
         }),
         getAllMegaCategory: builder.query<CategoryTypeResponse, void>({
             query: () => ({
-                url: `/admin/course/category`,
+                url: `/course/category`,
                 method: "GET",
             }),
             providesTags: () => [{ type: "Category", id: "LIST" }],
         }),
         getAllCategoryRelatedToMegaCategory: builder.query<CategoryTypeResponse, { currentCategory: string }>({
             query: ({ currentCategory }) => ({
-                url: `/admin/course/category/children?category=${currentCategory}`,
+                url: `/course/category/children?category=${currentCategory}`,
                 method: "GET",
             }),
             providesTags: () => [{ type: "Category", id: "LIST" }],
         }),
         getAllSubCategoryRelatedToCategory: builder.query<CategoryTypeResponse, { currentCategory: string }>({
             query: ({ currentCategory }) => ({
-                url: `/admin/course/category/sub-children?category=${currentCategory}`,
+                url: `/course/category/sub-children?category=${currentCategory}`,
                 method: "GET",
             }),
             providesTags: () => [{ type: "Category", id: "LIST" }],

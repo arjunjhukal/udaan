@@ -1,23 +1,23 @@
+import { Add } from "@mui/icons-material";
+import { Checkbox, Stack, Typography } from "@mui/material";
+import type { ColumnDef } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../../../../../store/hook";
-import { useMemo, useState } from "react";
-import type { LayoutProps } from "../../../../organism/TableFilter";
+import { PATH } from "../../../../../routes/PATH";
 import { useDeleteCourseMutation, useGetAllCourseQuery } from "../../../../../services/courseApi";
 import { showToast } from "../../../../../slice/toastSlice";
-import type { ColumnDef } from "@tanstack/react-table";
+import { useAppDispatch } from "../../../../../store/hook";
 import type { CourseProps } from "../../../../../types/course";
-import PageHeader from "../../../../organism/PageHeader";
-import TableFilter from "../../../../organism/TableFilter";
-import UdaanTable from "../../../../molecules/Table";
-import AllCourseGrid from "./AllCourseGrid";
-import TablePagination from "../../../../molecules/Table/Pagination";
-import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
-import { Add } from "@mui/icons-material";
-import { PATH } from "../../../../../routes/PATH";
-import { Checkbox, Stack, Typography } from "@mui/material";
 import { formatDate } from "../../../../../utils/dateFormat";
 import Actions from "../../../../molecules/Action";
+import UdaanTable from "../../../../molecules/Table";
+import TablePagination from "../../../../molecules/Table/Pagination";
+import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
+import PageHeader from "../../../../organism/PageHeader";
+import type { LayoutProps } from "../../../../organism/TableFilter";
+import TableFilter from "../../../../organism/TableFilter";
+import AllCourseGrid from "./AllCourseGrid";
 
 export default function AllCourse() {
     const { t } = useTranslation();
@@ -32,10 +32,6 @@ export default function AllCourse() {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [coursesToDelete, setCoursesToDelete] = useState<string[]>([]);
     const [layout, setLayout] = useState<LayoutProps>("table");
-
-
-
-
 
     const { data, isLoading } = useGetAllCourseQuery({ ...qp, search: search });
     const [deleteCourse, { isLoading: deleting }] = useDeleteCourseMutation();
@@ -175,12 +171,6 @@ export default function AllCourse() {
             ),
         },
     ], [selectedRows, isAllSelected, isSomeSelected])
-
-
-
-    console.log({
-        selectedRows, coursesToDelete
-    })
 
 
     return (

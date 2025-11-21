@@ -1,252 +1,607 @@
+
 import {
     Autocomplete,
     Checkbox,
     Divider,
     FormControlLabel,
+    FormHelperText,
     InputLabel,
     OutlinedInput,
-    Switch,
     TextField,
     Typography
 } from "@mui/material";
-import { useState } from "react";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import { useFormik } from "formik";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { PATH } from "../../../../routes/PATH";
+import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery, useGetAllSubCategoryRelatedToCategoryQuery } from "../../../../services/categoryApi";
+import { useGetAllCourseQuery } from "../../../../services/courseApi";
+import { useCreateLiveClassMutation, useEditLiveClassMutation, useGetLiveClassByIdQuery } from "../../../../services/liveClass";
+import { useGetAllPositionQuery } from "../../../../services/positionApi";
+import { useGetAllUserQuery } from "../../../../services/userApi";
+import { showToast } from "../../../../slice/toastSlice";
+import { useAppDispatch } from "../../../../store/hook";
+import { initialLiveClassState, liveClassValidationSchema } from "../../../../types/liveClass";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
 import TextEditor from "../../../atoms/TextEditor";
+import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FooterAction from "../../../molecules/FooterAction";
+import CategoryFilter from "../../../organism/CategoryFilter";
+
 
 export default function LiveClassManagementForm() {
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const { id } = useParams();
 
-    // State
-    const [recurring, setRecurring] = useState(false);
-    const [interval, setInterval] = useState("");
-    const [recording, setRecording] = useState("");
-    const [zoomAccount, setZoomAccount] = useState("");
-    const [registrationType, setRegistrationType] = useState("");
-    const [linkedCourse, setLinkedCourse] = useState("");
+    // Local state for category filtering (not part of form submission)
+    const [categoryFilters, setCategoryFilters] = useState<{
+        mega_category: number[];
+        category: Record<number, number[]>;
+        sub_category: Record<number, number[]>;
+        position_ids: number[];
+    }>({
+        mega_category: [],
+        category: {},
+        sub_category: {},
+        position_ids: []
+    });
 
-    // Dummy Options
-    const zoomOptions = ["Zoom Account 1", "Zoom Account 2", "Zoom Account 3"];
-    const intervalOptions = ["Daily", "Weekly", "Monthly"];
-    const registrationOptions = ["Free", "Paid", "Pre-Approval"];
-    const coursesOptions = ["React Course", "Node Course", "Python Course"];
-    const weekOptions = ["1st Week", "2nd Week", "3rd Week", "4th Week"];
-    const daysOptions = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const recordingOptions = ["Local", "Cloud", "None"];
+    const [qp, _setQp] = useState({
+        pageIndex: 1,
+        pageSize: 10
+    });
+    // const [search, setSearch] = useState("")
+    const formik = useFormik({
+        initialValues: initialLiveClassState,
+        validationSchema: liveClassValidationSchema,
+        enableReinitialize: true,
+        onSubmit: async (values) => {
+            console.log(values);
+            if (id) {
+                try {
+                    await updateLiveClass({ id: Number(id), body: values }).unwrap();
+                    dispatch(showToast({
+                        message: "Live Class Updated Successfully",
+                        severity: "success"
+                    }));
+                    formik.resetForm();
+                    navigate(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT);
+                } catch (e: any) {
+                    dispatch(showToast({
+                        message: e?.data?.message || "Unable to update live class. Try again later.",
+                        severity: "error"
+                    }));
+                }
+            } else {
+                try {
+                    await createLiveClass({ body: values }).unwrap();
+                    dispatch(showToast({
+                        message: "Live Class Created Successfully",
+                        severity: "success"
+                    }));
+                    formik.resetForm();
+                    navigate(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT);
+                } catch (e: any) {
+                    dispatch(showToast({
+                        message: e?.data?.message || "Unable to create live class. Try again later.",
+                        severity: "error"
+                    }));
+                }
+            }
+        }
+    });
+
+    const [createLiveClass, { isLoading }] = useCreateLiveClassMutation();
+    const [updateLiveClass, { isLoading: updating }] = useEditLiveClassMutation();
+    const { data: liveClassData } = useGetLiveClassByIdQuery({ id: Number(id) }, { skip: !id });
+
+    // Fetch zoom accounts (assuming you have a query for this)
+    const zoomAccounts = {
+        data: {
+            data: [{ name: "Zoom 01", id: 1 }]
+        }
+    }
+
+    const { data: teachers } = useGetAllUserQuery({
+        pageIndex: 1,
+        pageSize: 100,
+        role: "teacher",
+    });
+
+    const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
+
+    const { data: categories } = useGetAllCategoryRelatedToMegaCategoryQuery(
+        {
+            currentCategory: (categoryFilters?.mega_category || []).join(","),
+        },
+        {
+            skip: !categoryFilters?.mega_category?.length,
+        }
+    );
+
+    const { data: subCategories } = useGetAllSubCategoryRelatedToCategoryQuery(
+        {
+            currentCategory: (categoryFilters?.category
+                ? Object.values(categoryFilters.category).flat().join(",")
+                : ""),
+        },
+        {
+            skip: !categoryFilters?.category || !Object.values(categoryFilters.category).length,
+        }
+    );
+
+    // Build course filter params from categoryFilters
+    const courseFilterParams = {
+        mega_category: categoryFilters?.mega_category || [],
+        category: categoryFilters?.category
+            ? Object.values(categoryFilters.category).flat()
+            : [],
+        sub_category: categoryFilters?.sub_category
+            ? Object.values(categoryFilters.sub_category).flat()
+            : [],
+        positions: categoryFilters?.position_ids
+            ? Object.values(categoryFilters.position_ids).flat()
+            : [],
+    };
+
+    console.log(courseFilterParams)
+
+    const { data: courses } = useGetAllCourseQuery({
+        categoryFilter: courseFilterParams,
+        pageIndex: qp.pageIndex,
+        pageSize: qp.pageSize,
+        search: ""
+    });
+    const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
+    useEffect(() => {
+        if (liveClassData?.data) {
+            formik.setValues({
+                ...liveClassData.data,
+                weekly_days: liveClassData.data.weekly_days || [],
+                end_date: liveClassData.data.end_date || null,
+            });
+        }
+    }, [liveClassData]);
+
+    const handleCategoryChange = (
+        type: "mega" | "category" | "sub" | "position",
+        ids: number[],
+        parentId?: number
+    ) => {
+        switch (type) {
+            case "mega":
+                setCategoryFilters((prev) => ({
+                    ...prev,
+                    mega_category: ids,
+                    category: [],
+                    sub_category: []
+                }));
+                break;
+            case "category":
+                setCategoryFilters(prev => ({
+                    ...prev,
+                    category: { ...prev.category, [parentId!]: ids },
+                    sub_category: {}
+                }));
+                break;
+            case "sub":
+                setCategoryFilters(prev => ({
+                    ...prev,
+                    sub_category: { ...prev.sub_category, [parentId!]: ids }
+                }));
+                break;
+            case "position":
+                setCategoryFilters(prev => ({
+                    ...prev,
+                    position_ids: ids
+                }));
+                break;
+        }
+    };
+
+
+    const intervalOptions = [
+        { label: "Daily", value: 1 },
+        { label: "Weekly", value: 2 },
+        { label: "Monthly", value: 3 }
+    ];
+
+    const registrationOptions = [
+        { label: "Register Once (Attend All Occurrences)", value: 1 },
+        { label: "Register for Each Occurrence Separately", value: 2 },
+        { label: "Register for One Occurrence Only", value: 3 }
+    ];
+
+
+    const daysOptions = [
+        { label: "Sunday", value: 1 },
+        { label: "Monday", value: 2 },
+        { label: "Tuesday", value: 3 },
+        { label: "Wednesday", value: 4 },
+        { label: "Thursday", value: 5 },
+        { label: "Friday", value: 6 },
+        { label: "Saturday", value: 7 }
+    ];
+
+    const recordingOptions = [
+        { label: "Local", value: "local" },
+        { label: "Cloud", value: "cloud" },
+        { label: "None", value: "none" }
+    ];
 
     return (
-        <form>
-            <Typography variant="body1" className="mb-4! font-medium!">
-                Basic Information
-            </Typography>
+        <div className="live__class__form">
+            <form onSubmit={formik.handleSubmit}>
+                <Typography variant="body1" className="mb-4! font-medium!">
+                    Basic Information
+                </Typography>
 
-            <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
-                {/* CLASS NAME */}
-                <div className="col-span-1">
-                    <InputLabel>Name of the class</InputLabel>
-                    <OutlinedInput fullWidth name="name" placeholder="Enter the name of the class" />
-                </div>
-
-                {/* ZOOM ACCOUNT */}
-                <div className="col-span-1">
-                    <InputLabel>Zoom Account</InputLabel>
-                    <Autocomplete
-                        options={zoomOptions}
-                        value={zoomAccount}
-                        onChange={(e, v) => setZoomAccount(v || "")}
-                        renderInput={(params) => (
-                            <TextField {...params} placeholder="Select Zoom Account" />
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
+                    {/* CLASS NAME */}
+                    <div className="col-span-1">
+                        <InputLabel className="required">Name of the class</InputLabel>
+                        <OutlinedInput
+                            fullWidth
+                            name="name"
+                            placeholder="Enter the name of the class"
+                            value={formik.values.name}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.name && Boolean(formik.errors.name)}
+                        />
+                        {formik.touched.name && formik.errors.name && (
+                            <Typography color="error" variant="caption">{formik.errors.name}</Typography>
                         )}
-                    />
-                </div>
+                    </div>
 
-                {/* AGENDA */}
-                <div className="col-span-1">
-                    <TextEditor label="Agenda" />
-                </div>
+                    {/* ZOOM ACCOUNT */}
+                    <div className="col-span-1">
+                        <InputLabel className="required">Zoom Account</InputLabel>
+                        <Autocomplete
+                            disableClearable
+                            options={zoomAccounts?.data?.data || []}
+                            getOptionLabel={(option) => option.name || ""}
+                            value={zoomAccounts?.data?.data?.find(acc => acc.id === formik.values.account_id) || undefined}
+                            onChange={(_e, v) => formik.setFieldValue("account_id", v?.id || null)}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    placeholder="Select Zoom Account"
+                                    error={formik.touched.account_id && Boolean(formik.errors.account_id)}
+                                    helperText={formik.touched.account_id && formik.errors.account_id}
+                                />
+                            )}
+                        />
+                    </div>
 
-                {/* DESCRIPTION */}
-                <div className="col-span-1">
-                    <TextEditor label="Description" />
-                </div>
-            </div>
+                    {/* AGENDA */}
+                    <div className="col-span-1">
+                        <TextEditor
+                            label="Agenda"
+                            value={formik.values.agenda}
+                            onChange={(value) => formik.setFieldValue("agenda", value)}
+                        // error={formik.touched.agenda && formik.errors.agenda}
+                        />
+                    </div>
 
-            <Divider className="my-6!" />
-
-            {/* SCHEDULE & DURATION */}
-            <Typography variant="body1" className="mb-4! font-medium!">
-                Schedule & Duration
-            </Typography>
-
-            <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
-                {/* Start Day & Time */}
-                <div className="col-span-1">
-                    <InputLabel>Start Day & Time</InputLabel>
-                    <MakuraDatePicker />
-                </div>
-
-                {/* Duration */}
-                <div className="col-span-1">
-                    <InputLabel>Duration</InputLabel>
-                    <OutlinedInput fullWidth name="duration" placeholder="Select Duration" />
-                </div>
-
-                {/* RECURRING SWITCH */}
-                <div className="col-span-2">
-                    <div className="flex items-center gap-4">
-                        <Typography variant="subtitle1" color="text.middle">
-                            Do you want to make this live class recurring?
-                        </Typography>
-                        <Switch checked={recurring} onChange={(e) => setRecurring(e.target.checked)} />
+                    {/* DESCRIPTION */}
+                    <div className="col-span-1">
+                        <TextEditor
+                            label="Description"
+                            required={false}
+                            value={formik.values.description || ""}
+                            onChange={(value) => formik.setFieldValue("description", value)}
+                        />
                     </div>
                 </div>
 
-                {/* Show only if recurring = true */}
-                {recurring && (
-                    <>
-                        {/* Time Interval */}
-                        <div className="col-span-1">
-                            <InputLabel>Time Interval</InputLabel>
-                            <Autocomplete
-                                options={intervalOptions}
-                                value={interval}
-                                onChange={(e, v) => setInterval(v || "")}
-                                renderInput={(p) => <TextField {...p} placeholder="Select Interval" />}
+                <Divider className="my-6!" />
+
+                {/* SCHEDULE & DURATION */}
+                <Typography variant="body1" className="mb-4! font-medium!">
+                    Schedule & Duration
+                </Typography>
+
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
+                    {/* Start Day & Time */}
+                    <div className="col-span-1">
+                        <InputLabel className="required">Start Day & Time</InputLabel>
+                        <MakuraDatePicker
+                            value={formik.values.schedule_date ? dayjs(formik.values.schedule_date) : null}
+                            onChange={(date: Dayjs | null) => formik.setFieldValue("schedule_date", date ? date.toISOString() : "")}
+                        />
+                    </div>
+
+                    {/* Duration */}
+                    <div className="col-span-1">
+                        <InputLabel className="required">Duration (minutes)</InputLabel>
+                        <OutlinedInput
+                            fullWidth
+                            name="duration"
+                            type="number"
+                            placeholder="Enter duration in minutes"
+                            value={formik.values.duration}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.duration && Boolean(formik.errors.duration)}
+                        />
+                        {formik.touched.duration && formik.errors.duration && (
+                            <FormHelperText color="error" >{formik.errors.duration}</FormHelperText>
+                        )}
+                    </div>
+
+                    {/* RECURRING SWITCH */}
+                    <div className="col-span-2">
+                        <div className="flex items-center gap-4">
+                            <Typography variant="subtitle1" color="textField.name">
+                                Do you want to make this live class recurring?
+                            </Typography>
+                            <YesNoSwitch
+                                checked={formik.values.is_recurring}
+                                onChange={(e) =>
+                                    formik.setFieldValue("is_recurring", e.target.checked)
+                                }
                             />
                         </div>
+                    </div>
 
-                        {/* Conditional Fields Based on Interval */}
-                        <div className="col-span-1">
-                            <div className="flex gap-6">
-
-                                {/* DAILY → only End Date */}
-                                {interval === "Daily" && (
-                                    <div className="input_field w-full">
-                                        <InputLabel>End Date</InputLabel>
-                                        <MakuraDatePicker />
-                                    </div>
-                                )}
-
-                                {/* WEEKLY → Day + End Date */}
-                                {interval === "Weekly" && (
-                                    <>
-                                        <div className="input_field w-full">
-                                            <InputLabel>Day</InputLabel>
-                                            <Autocomplete
-                                                options={daysOptions}
-                                                renderInput={(p) => <TextField {...p} placeholder="Select Day" fullWidth />}
-                                            />
-                                        </div>
-
-                                        <div className="input_field w-full">
-                                            <InputLabel>End Date</InputLabel>
-                                            <MakuraDatePicker />
-                                        </div>
-                                    </>
-                                )}
-
-                                {/* MONTHLY → Week + Day + End Date */}
-                                {interval === "Monthly" && (
-                                    <>
-                                        <div className="input_field w-full">
-                                            <InputLabel>Week</InputLabel>
-                                            <Autocomplete
-                                                options={weekOptions}
-                                                renderInput={(p) => <TextField {...p} placeholder="Week" fullWidth />}
-                                            />
-                                        </div>
-
-                                        <div className="input_field">
-                                            <InputLabel>Day</InputLabel>
-                                            <Autocomplete
-                                                options={daysOptions}
-                                                renderInput={(p) => <TextField {...p} placeholder="Day" fullWidth />}
-                                            />
-                                        </div>
-
-                                        <div className="input_field">
-                                            <InputLabel>End Date</InputLabel>
-                                            <MakuraDatePicker />
-                                        </div>
-                                    </>
-                                )}
+                    {/* Show only if recurring = true */}
+                    {formik.values.is_recurring && (
+                        <>
+                            {/* Time Interval */}
+                            <div className="col-span-1">
+                                <InputLabel className="required">Time Interval</InputLabel>
+                                <Autocomplete
+                                    options={intervalOptions}
+                                    getOptionLabel={(option) => option.label}
+                                    value={intervalOptions.find(opt => opt.value === formik.values.recurring_type) || null}
+                                    onChange={(e, v) => {
+                                        formik.setFieldValue("recurring_type", v?.value || 1);
+                                        formik.setFieldValue("weekly_days", []);
+                                        formik.setFieldValue("monthly_day", null);
+                                    }}
+                                    renderInput={(p) => (
+                                        <TextField
+                                            {...p}
+                                            placeholder="Select Interval"
+                                            error={formik.touched.recurring_type && Boolean(formik.errors.recurring_type)}
+                                            helperText={formik.touched.recurring_type && formik.errors.recurring_type}
+                                        />
+                                    )}
+                                />
                             </div>
-                        </div>
 
-                        {/* Registration Type */}
-                        <div className="col-span-1">
-                            <InputLabel>Registration Type</InputLabel>
-                            <Autocomplete
-                                options={registrationOptions}
-                                value={registrationType}
-                                onChange={(e, v) => setRegistrationType(v || "")}
-                                renderInput={(p) => <TextField {...p} placeholder="Select Registration Type" fullWidth />}
-                            />
-                        </div>
-                    </>
-                )}
-            </div>
+                            {/* End Date */}
+                            <div className="col-span-1">
+                                <div className="flex gap-6 items-start">
+                                    {formik.values.recurring_type === 3 && (
+                                        <div className="input__field w-full">
+                                            <InputLabel className="required">Weeks</InputLabel>
+                                            <OutlinedInput
+                                                fullWidth
+                                                name="monthly_day"
+                                                type="number"
+                                                placeholder="Enter day (1-31)"
+                                                value={formik.values.monthly_day || ""}
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                error={formik.touched.monthly_day && Boolean(formik.errors.monthly_day)}
+                                            />
+                                            {formik.touched.monthly_day && formik.errors.monthly_day && (
+                                                <Typography color="error" variant="caption">{formik.errors.monthly_day}</Typography>
+                                            )}
+                                        </div>
+                                    )}
+                                    {formik.values.recurring_type === 2 && (
+                                        <div className="input__field w-full">
+                                            <InputLabel className="required">Select Days</InputLabel>
+                                            <Autocomplete
+                                                disableClearable
 
-            <Divider className="my-6!" />
+                                                options={daysOptions}
+                                                getOptionLabel={(option) => option.label}
+                                                value={daysOptions.find(opt => opt.value === formik.values.registration_type) || undefined}
+                                                onChange={(_e, v) => formik.setFieldValue("weekly_days", v?.value || 1)}
+                                                renderInput={(p) => (
+                                                    <TextField
+                                                        {...p}
+                                                        placeholder="Select Days"
+                                                        error={formik.touched.weekly_days && Boolean(formik.errors.weekly_days)}
+                                                        helperText={formik.touched.weekly_days && formik.errors.weekly_days}
+                                                    />
+                                                )}
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="input_field w-full">
+                                        <InputLabel className="required">End Date</InputLabel>
+                                        <MakuraDatePicker
+                                            value={formik.values.end_date ? dayjs(formik.values.end_date) : null}
+                                            onChange={(date: Dayjs | null) => formik.setFieldValue("end_date", date ? date.toISOString() : null)}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
 
-            {/* Assignments */}
-            <Typography variant="body1" className="mb-4! font-medium!">
-                Assignments
-            </Typography>
-
-            <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
-                <div className="col-span-1">{/* Category Filter If Needed */}</div>
-
-                <div className="col-span-1">
-                    <InputLabel>Link Courses</InputLabel>
-                    <Autocomplete
-                        options={coursesOptions}
-                        value={linkedCourse}
-                        onChange={(e, v) => setLinkedCourse(v || "")}
-                        renderInput={(p) => <TextField {...p} placeholder="Select Course" />}
-                    />
+                            {/* Registration Type (only for weekly) */}
+                            <div className="col-span-1">
+                                <InputLabel className="required">Registration Type</InputLabel>
+                                <Autocomplete
+                                    options={registrationOptions}
+                                    getOptionLabel={(option) => option.label}
+                                    value={registrationOptions.find(opt => opt.value === formik.values.registration_type) || null}
+                                    onChange={(_e, v) => formik.setFieldValue("registration_type", v?.value || 1)}
+                                    renderInput={(p) => (
+                                        <TextField
+                                            {...p}
+                                            placeholder="Select Registration Type"
+                                            error={formik.touched.registration_type && Boolean(formik.errors.registration_type)}
+                                            helperText={formik.touched.registration_type && formik.errors.registration_type}
+                                        />
+                                    )}
+                                />
+                            </div>
+                        </>
+                    )}
                 </div>
-            </div>
 
-            <Divider className="my-6!" />
+                <Divider className="my-6!" />
 
-            {/* Settings */}
-            <Typography variant="body1" className="mb-4! font-medium!">
-                Live Class Setting
-            </Typography>
+                {/* Assignments */}
+                <Typography variant="body1" className="mb-4! font-medium!">
+                    Assignments
+                </Typography>
 
-            <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
-                {/* Max Attendee */}
-                <div className="col-span-1">
-                    <InputLabel>Max Attendee</InputLabel>
-                    <OutlinedInput fullWidth placeholder="Enter max attendees" />
-                </div>
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
+                    {/* Teachers */}
+                    <div className="col-span-2">
+                        <InputLabel className="required">Assign Teachers</InputLabel>
+                        <Autocomplete
+                            multiple
+                            options={teachers?.data?.data || []}
+                            getOptionLabel={(option) => option.name || ""}
+                            value={(teachers?.data?.data || []).filter(teacher =>
+                                formik.values.teacher_ids.includes(Number(teacher.id))
+                            )}
+                            onChange={(_e, v) => formik.setFieldValue("teacher_ids", v.map(t => t.id))}
+                            renderInput={(p) => (
+                                <TextField
+                                    {...p}
+                                    placeholder="Select Teachers"
+                                    error={formik.touched.teacher_ids && Boolean(formik.errors.teacher_ids)}
+                                    helperText={formik.touched.teacher_ids && formik.errors.teacher_ids}
+                                />
+                            )}
+                        />
+                    </div>
 
-                {/* Auto Recording */}
-                <div className="col-span-1">
-                    <InputLabel>Auto Recording</InputLabel>
-                    <Autocomplete
-                        options={recordingOptions}
-                        value={recording}
-                        onChange={(e, v) => setRecording(v || "")}
-                        renderInput={(p) => <TextField {...p} placeholder="Select Recording Option" />}
-                    />
-                </div>
+                    {/* Category Filter for Courses */}
+                    <div className="col-span-1">
+                        <CategoryFilter
+                            megaCategories={megaCategories?.data || []}
+                            categories={categories?.data || []}
+                            subCategories={subCategories?.data || []}
+                            positions={positions?.data?.data || []}
+                            selections={categoryFilters}
+                            onChange={handleCategoryChange}
+                            loadingMegaCategory={loadingMegaCategory}
+                        />
+                    </div>
 
-                {/* Interactive Features */}
-                <div className="col-span-2">
-                    <InputLabel>Interactive Features</InputLabel>
-
-                    <div className="flex justify-start items-center gap-6 lg:gap-12">
-                        <FormControlLabel control={<Checkbox color="primary" />} label="Enable Q/A" />
-                        <FormControlLabel control={<Checkbox color="primary" />} label="Enable Chat" />
-                        <FormControlLabel control={<Checkbox color="primary" />} label="Registration Required" />
+                    {/* Link Courses */}
+                    <div className="col-span-1">
+                        <InputLabel className="required">Link Courses</InputLabel>
+                        <Autocomplete
+                            multiple
+                            options={courses?.data?.data || []}
+                            getOptionLabel={(option) => option.name || ""}
+                            value={(courses?.data?.data || []).filter(course =>
+                                formik.values.courses.includes(Number(course.id))
+                            )}
+                            onChange={(_e, v) => formik.setFieldValue("courses", v.map(c => c.id))}
+                            renderInput={(p) => (
+                                <TextField
+                                    {...p}
+                                    placeholder="Select Courses"
+                                    error={formik.touched.courses && Boolean(formik.errors.courses)}
+                                    helperText={formik.touched.courses && formik.errors.courses}
+                                />
+                            )}
+                        />
                     </div>
                 </div>
-            </div>
-            <FooterAction
-                handleComfirmationChange={() => { }}
-                buttonLabel="Live Class"
-            />
-        </form>
+
+                <Divider className="my-6!" />
+
+                {/* Settings */}
+                <Typography variant="body1" className="mb-4! font-medium!">
+                    Live Class Setting
+                </Typography>
+
+                <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
+                    <div className="col-span-1">
+                        <InputLabel >Max Attendee</InputLabel>
+                        <OutlinedInput
+                            fullWidth
+                            placeholder="Enter the max. attendees"
+                            name="attendee"
+                            value={formik.values.attendee}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            error={formik.touched.attendee && Boolean(formik.errors.attendee)}
+                        />
+                        {formik.touched.attendee && formik.errors.attendee && (
+                            <FormHelperText color="error" >{formik.errors.attendee}</FormHelperText>
+                        )}
+                    </div>
+                    {/* Recording Toggle */}
+                    <div className="col-span-1">
+                        <FormControlLabel
+                            label="Enable Auto Recording"
+                            control={
+                                <Checkbox
+                                    value={formik.values.is_enable_recording}
+                                    onChange={() =>
+                                        formik.setFieldValue(
+                                            "is_enable_recording",
+                                            !formik.values.is_enable_recording
+                                        )
+                                    }
+                                />
+                            } />
+
+                        <Autocomplete
+                            disableClearable
+                            options={recordingOptions || []}
+                            getOptionLabel={(option) => option.label || ""}
+                            disabled={formik.values.is_enable_recording}
+                            value={recordingOptions?.find(acc => acc.value === formik.values.auto_recording) || undefined}
+                            onChange={(_e, v) => formik.setFieldValue("auto_recording", v?.value || null)}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    placeholder="Select Zoom Account"
+                                    error={formik.touched.auto_recording && Boolean(formik.errors.auto_recording)}
+                                    helperText={formik.touched.auto_recording && formik.errors.auto_recording}
+                                />
+                            )}
+                        />
+                    </div>
+
+                    {/* Interactive Feature */}
+                    <div className="col-span-2">
+                        <div className="flex justify-start items-center gap-8 lg:gap-12">
+                            <FormControlLabel
+                                label="Enable QA"
+                                control={
+                                    <Checkbox />
+                                } />
+                            <FormControlLabel
+                                label="Enable Chat"
+                                control={
+                                    <Checkbox />
+                                } />
+                            <FormControlLabel
+                                label="Registration Required"
+                                control={
+                                    <Checkbox />
+                                } />
+                        </div>
+                    </div>
+
+                </div>
+
+                <FooterAction
+                    handleComfirmationChange={formik.handleSubmit}
+                    buttonLabel={id ? " Live Class" : " Live Class"}
+                    isLoading={isLoading}
+                    isEditMode={!!id}
+                    isUpdating={updating}
+                />
+            </form>
+        </div>
     );
 }

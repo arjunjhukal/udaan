@@ -175,6 +175,11 @@ const commonThemeOptions: ThemeOptions = {
                         marginBottom: "8px",
                         ...theme.typography.subtitle2,
                     }
+                },
+                ".live__class__form": {
+                    ".MuiFormControlLabel-label": {
+                        color: `${theme.palette.textField.name} !important`
+                    }
                 }
             })
         },
@@ -397,7 +402,7 @@ const commonThemeOptions: ThemeOptions = {
             },
             styleOverrides: {
                 root: {
-                    padding: '4px',
+                    padding: '0',
                     '&:hover': {
                         backgroundColor: 'transparent',
                     },
@@ -412,6 +417,7 @@ const commonThemeOptions: ThemeOptions = {
             styleOverrides: {
                 root: ({ theme }) => ({
                     margin: 0,
+                    gap: "10px",
                     alignItems: "flex-start",
                     '& .MuiFormControlLabel-label': {
                         fontSize: '0.875rem',

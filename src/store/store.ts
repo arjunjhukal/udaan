@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "../services/authApi";
 import { categoryApi } from "../services/categoryApi";
 import { courseApi } from "../services/courseApi";
+import { liveClassApi } from "../services/liveClass";
 import { mediaApi } from "../services/mediaApi";
 import { positionApi } from "../services/positionApi";
 import { roleAndPermissionApi } from "../services/roleAndPermissionApi";
@@ -23,6 +24,7 @@ export const store = configureStore({
 		[courseApi.reducerPath]: courseApi.reducer,
 		[subscriptionPlanApi.reducerPath]: subscriptionPlanApi.reducer,
 		[mediaApi.reducerPath]: mediaApi.reducer,
+		[liveClassApi.reducerPath]: liveClassApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(authApi.middleware)
@@ -33,6 +35,7 @@ export const store = configureStore({
 			.concat(courseApi.middleware)
 			.concat(subscriptionPlanApi.middleware)
 			.concat(mediaApi.middleware)
+			.concat(liveClassApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;

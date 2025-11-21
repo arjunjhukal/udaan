@@ -9,9 +9,9 @@ import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import { PATH } from "../../../routes/PATH";
 import { useLoginMutation } from "../../../services/authApi";
+import { setCredentials } from "../../../slice/authSlice";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
-import { setItem } from "../../../utils/localStorageUtil";
 import Password from "../../atoms/Password";
 
 export default function LoginForm({
@@ -47,8 +47,14 @@ export default function LoginForm({
 						severity: "success",
 					}),
 				);
-				setItem("user", response?.data?.user);
-				setItem("token", response?.data?.token);
+				// setItem("user", response?.data?.user);
+				// setItem("token", response?.data?.token);
+				dispatch(
+					setCredentials({
+						user: response?.data?.user,
+						token: response?.data?.token
+					})
+				)
 				navigate(PATH.DASHBOARD.ROOT);
 			} catch (error: any) {
 				console.error("Login error:", error);

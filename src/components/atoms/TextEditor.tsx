@@ -9,12 +9,14 @@ export default function TextEditor({
     value,
     onChange,
     onBlur
+    ,required
 }: {
     label?: string;
     error?: string;
     value?: string;
     onChange?: (value: string) => void;
     onBlur?: (value: string) => void;
+    required?:boolean
 }) {
     const [data, setData] = useState(value || "");
     const prevValueRef = useRef(value);

@@ -3,25 +3,25 @@ import { useFormik } from "formik";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
+import { PATH } from "../../../../routes/PATH";
+import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery, useGetAllSubCategoryRelatedToCategoryQuery } from "../../../../services/categoryApi";
+import { useCreateCourseMutation, useEditCourseMutation, useGetCourseByIdQuery } from "../../../../services/courseApi";
+import { useGetAllPositionQuery } from "../../../../services/positionApi";
+import { useGetAllUserQuery } from "../../../../services/userApi";
+import { showToast } from "../../../../slice/toastSlice";
+import { useAppDispatch } from "../../../../store/hook";
+import { initialCourseState, type courseTabType } from "../../../../types/course";
+import type { RegisterUserProps } from "../../../../types/user";
+import { createCourseFormData } from "../../../../utils/courseFormData";
+import TextEditor from "../../../atoms/TextEditor";
+import FileDragDrop from "../../../molecules/FileDragDrop";
+import FooterAction from "../../../molecules/FooterAction";
+import TabController from "../../../molecules/TabController";
+import CategoryFilter from "../../../organism/CategoryFilter";
 import CourseMedia from "./createCourse/CourseMedia";
 import CourseCurriculumForm from "./createCourse/CourseSubFields/Curriculum";
 import CourseOverviewForm from "./createCourse/CourseSubFields/Overview";
 import CourseType from "./createCourse/CourseType";
-import { useAppDispatch } from "../../../../store/hook";
-import type { RegisterUserProps } from "../../../../types/user";
-import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery, useGetAllSubCategoryRelatedToCategoryQuery } from "../../../../services/categoryApi";
-import { initialCourseState, type courseTabType } from "../../../../types/course";
-import { useGetAllPositionQuery } from "../../../../services/positionApi";
-import { useGetAllUserQuery } from "../../../../services/userApi";
-import { useCreateCourseMutation, useEditCourseMutation, useGetCourseByIdQuery } from "../../../../services/courseApi";
-import { createCourseFormData } from "../../../../utils/courseFormData";
-import { showToast } from "../../../../slice/toastSlice";
-import { PATH } from "../../../../routes/PATH";
-import FileDragDrop from "../../../molecules/FileDragDrop";
-import TextEditor from "../../../atoms/TextEditor";
-import CategoryFilter from "../../../organism/CategoryFilter";
-import TabController from "../../../molecules/TabController";
-import FooterAction from "../../../molecules/FooterAction";
 
 const validationSchema = (id?: string) => Yup.object().shape({
     name: Yup.string()
@@ -79,9 +79,9 @@ const validationSchema = (id?: string) => Yup.object().shape({
             .min(1, "Please select at least one mega category"),
         category: Yup.object(),
         sub_category: Yup.object(),
-        position_ids: Yup.array()
-            .of(Yup.number())
-            .min(1, "Please select at least one position/level"),
+        // position_ids: Yup.array()
+        //     .of(Yup.number())
+        //     .min(1, "Please select at least one position/level"),
     }),
 
     about_this_course_np: Yup.string()
