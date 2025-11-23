@@ -83,5 +83,17 @@ export const PATH = {
 	},
 	SUBSCRIPTION_PLAN_MANAGEMENT: {
 		ROOT: "/subscription-management"
+	},
+	CONTENT_MANAGEMENT: {
+		ROOT: "/content-management",
+		SPLASH_SCREEN: {
+			ROOT: "/splash-screen"
+		},
+		ONBOARDING_SCREEN: {
+			ROOT: "/onboarding-screen"
+		},
+		FEATURED_COURSE_SCREEN: {
+			ROOT: "/featured-course-screen"
+		}
 	}
 };

@@ -1,14 +1,55 @@
-import { Box, Button, Tooltip, Typography, useTheme } from '@mui/material';
+import { AccessTime } from '@mui/icons-material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
+import dayjs from 'dayjs';
+import durationPlugin from 'dayjs/plugin/duration';
 import { Link } from 'react-router-dom';
 import type { LiveClassPayload } from '../../../types/liveClass';
+import { getStatusStyle } from '../../../utils/getStyleBasedOnStatus';
+import { getTimeDifference } from '../../../utils/getTimeDifference';
 
+dayjs.extend(durationPlugin);
+export const getUpcomingTimeText = (startTime: string | Date): string => {
+    const now = dayjs();
+    const start = dayjs(startTime);
+    const diff = start.diff(now);
+
+    if (diff <= 0) return "Starting soon";
+
+    const duration = dayjs.duration(diff);
+    const days = Math.floor(duration.asDays());
+    const hours = duration.hours();
+    const minutes = duration.minutes();
+
+    // More than 1 day
+    if (days > 0) {
+        if (days === 1 && hours > 0) {
+            return `In ${days} day ${hours}h`;
+        }
+        return `In ${days} day${days > 1 ? 's' : ''}`;
+    }
+
+    // Less than a day but more than 1 hour
+    if (hours > 0) {
+        if (minutes > 0 && hours < 5) {
+            return `In ${hours}h ${minutes}m`;
+        }
+        return `In ${hours} hour${hours > 1 ? 's' : ''}`;
+    }
+
+    // Less than an hour
+    if (minutes > 0) {
+        return `In ${minutes} min${minutes > 1 ? 's' : ''}`;
+    }
+
+    return "Starting soon";
+};
 export default function LiveClassCard({ liveClass }: { liveClass: LiveClassPayload }) {
     const theme = useTheme();
     return (
         <Box sx={{
             border: `1px solid ${theme.palette.seperator.dark}`
         }} className="rounded-md p-4 flex flex-col gap-3">
-            <div className="live__class__card__title">
+            <div className="live__class__card__title flex justify-between items-start">
                 <div className="class__title__wrapper flex items-center gap-4">
                     <Box className="min-w-12 h-12 aspect-square rounded-full flex justify-center items-center" sx={{
                         background: theme.palette.gray.gray1
@@ -18,12 +59,38 @@ export default function LiveClassCard({ liveClass }: { liveClass: LiveClassPaylo
                         </svg>
                     </Box>
                     <Box>
-                        <Tooltip title={liveClass.name}>
-                            <Typography variant='subtitle2' color='text.dark' className='line-clamp-2 font-medium'>{liveClass.name}</Typography>
-                        </Tooltip>
+                        {/* <Tooltip title={liveClass.name}> */}
+                        <Typography variant='subtitle2' color='text.dark' className='line-clamp-2 font-medium'>{liveClass.name}</Typography>
+                        {/* </Tooltip> */}
                         <Typography variant='caption' color='text.middle' className='line-clamp-2'>{liveClass?.teachers?.map((item) => item.name).join(",")}</Typography>
                     </Box>
                 </div>
+                {liveClass.status && (
+                    <Typography
+                        variant='caption'
+                        className={`status py-0.5 px-2 rounded-md text-nowrap capitalize `}
+                        sx={{
+                            ...getStatusStyle(liveClass.status),
+                        }}
+                    >
+                        {liveClass.status}
+                    </Typography>
+                )}
+            </div>
+            <div className="flex justify-between items-center">
+                {liveClass.start_time && liveClass.end_time ? <div className="feature flex gap-1 items-center">
+                    <AccessTime />
+                    <Typography variant='subtitle2' color='text.middle'>  {getTimeDifference(liveClass.start_time, liveClass.end_time)}</Typography>
+                </div> : ""}
+                {liveClass.active_students && liveClass?.active_students > 0 ? <div className="feature flex gap-1 items-center">
+                    <Box sx={{
+                        background: theme.palette.success.main,
+                        minWidth: "8px",
+                        height: "8px",
+                        borderRadius: "50%"
+                    }}></Box>
+                    <Typography variant='subtitle2' color='text.middle'>{liveClass.active_students} students active</Typography>
+                </div> : ""}
             </div>
             <Link to={liveClass?.start_url || ""} target='_blank'>
                 <Button variant="contained" color="primary" fullWidth startIcon={(

@@ -30,6 +30,9 @@ export interface LiveClassPayload {
     status?: "ongoing" | "upcoming" | "ended",
     start_url?: string;
     join_url?: string;
+    start_time?: string;
+    end_time?: string;
+    active_students?: number;
 }
 
 
@@ -152,3 +155,21 @@ export interface LiveClassList {
     }
 }
 
+
+export type liveClassTabType = "live_class" | "upcoming_class" | "recorded_class"
+
+export const LiveClassTabs: { label: string; value: liveClassTabType }[] = [
+    {
+        label: "Live Class",
+        value: "live_class"
+    },
+    {
+        label: "Upcoming Classes",
+        value: "upcoming_class"
+    },
+    {
+        label: "Recorded Classes",
+        value: "recorded_class"
+    },
+
+]

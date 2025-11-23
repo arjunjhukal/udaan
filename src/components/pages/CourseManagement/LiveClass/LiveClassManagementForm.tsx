@@ -312,6 +312,7 @@ export default function LiveClassManagementForm() {
                         <MakuraDatePicker
                             value={formik.values.schedule_date ? dayjs(formik.values.schedule_date) : null}
                             onChange={(date: Dayjs | null) => formik.setFieldValue("schedule_date", date ? date.toISOString() : "")}
+                            includeTime={true}
                         />
                     </div>
 
@@ -421,6 +422,7 @@ export default function LiveClassManagementForm() {
                                         <MakuraDatePicker
                                             value={formik.values.end_date ? dayjs(formik.values.end_date) : null}
                                             onChange={(date: Dayjs | null) => formik.setFieldValue("end_date", date ? date.toISOString() : null)}
+
                                         />
                                     </div>
                                 </div>
