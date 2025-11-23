@@ -81,6 +81,15 @@ export const PATH = {
 				id ? `/user-management/${id}` : "/user-management/:id",
 		},
 	},
+	TEST_QUESTION_MANAGEMENT: {
+		ROOT: "/test-question-management/",
+		QUESTIONS: {
+			ROOT: "/questions",
+		},
+		TEST: {
+			ROOT: "/test"
+		}
+	},
 	SUBSCRIPTION_PLAN_MANAGEMENT: {
 		ROOT: "/subscription-management"
 	},

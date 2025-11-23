@@ -39,6 +39,15 @@
                 "view_quiz": "View Quiz"
             }
         },
+        "test_question_management": {
+            "root": "Test & Questions",
+            "question": {
+                "root": "Questions"
+            },
+            "test": {
+                "root": "Test"
+            }
+        },
         "teachers": {
             "root": "Teachers"
         },
@@ -86,6 +95,21 @@
                 "title": "No Live Class Available",
                 "description": "You haven’t created any live class yet. Start building your first live class.",
                 "action": "Create Live Class"
+            },
+            "quiz": {
+                "title": "No Quiz Available",
+                "description": "You haven’t created any quiz yet. Start building your first quiz.",
+                "action": "Create Quiz"
+            },
+            "test": {
+                "title": "No Test Available",
+                "description": "You haven’t created any test yet. Start building your first test.",
+                "action": "Create Test"
+            },
+            "question": {
+                "title": "No Question Available",
+                "description": "You haven’t created any question yet. Start building your first question.",
+                "action": "Create Question"
             },
             "subscription_plan": {
                 "title": "No Plans Available",

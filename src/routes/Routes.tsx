@@ -11,10 +11,15 @@ import CreateCourseRoot from "../components/pages/CourseManagement/Course/create
 import LiveClassRoot from "../components/pages/CourseManagement/LiveClass";
 import AllLiveClass from "../components/pages/CourseManagement/LiveClass/allLiveClass";
 import CreateLiveClassRoot from "../components/pages/CourseManagement/LiveClass/createLiveClass";
+import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
+import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
 import SubscriptionManagementRoot from "../components/pages/SubscriptionManagement";
+import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
+import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
+import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
 import AuthRoot from "../components/pages/auth";
 import Login from "../components/pages/auth/login";
 import Register from "../components/pages/auth/register";
@@ -86,6 +91,19 @@ const router = createBrowserRouter([
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT, element: <AllLiveClass /> },
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT, element: <CreateLiveClassRoot /> },
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(), element: <CreateLiveClassRoot /> },
+				],
+			},
+			{
+				element: <QuizManagementRoot />,
+				children: [
+					{ path: PATH.COURSE_MANAGEMENT.QUIZ.ROOT, element: <AllQuizes /> },
+				],
+			},
+			{
+				element: <TestAndQuestionManagementRoot />,
+				children: [
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT, element: <QuestionManagementRoot /> },
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT, element: <TestManagementRoot /> },
 				],
 			},
 			{
