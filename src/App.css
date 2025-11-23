@@ -154,3 +154,7 @@ body {
 .MuiPickersSectionList-root {
 	padding: 14px 0 !important;
 }
+
+.status {
+	@apply py-0.5! px-2! rounded-md! max-w-fit! text-[12px]!;
+}

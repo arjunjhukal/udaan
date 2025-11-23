@@ -156,20 +156,20 @@ export interface LiveClassList {
 }
 
 
-export type liveClassTabType = "live_class" | "upcoming_class" | "recorded_class"
+export type liveClassTabType = "ongoing" | "upcoming" | "ended"
 
 export const LiveClassTabs: { label: string; value: liveClassTabType }[] = [
     {
         label: "Live Class",
-        value: "live_class"
+        value: "ongoing"
     },
     {
         label: "Upcoming Classes",
-        value: "upcoming_class"
+        value: "upcoming"
     },
     {
-        label: "Recorded Classes",
-        value: "recorded_class"
+        label: "Past Class",
+        value: "ended"
     },
 
 ]

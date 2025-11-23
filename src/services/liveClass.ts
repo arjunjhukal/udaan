@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
-import type { LiveClassList, LiveClassPayload } from "../types/liveClass";
+import type { LiveClassList, LiveClassPayload, liveClassTabType } from "../types/liveClass";
 import type { GlobalResponse } from "../types/user";
 import { baseQuery } from "./baseQuery";
 
@@ -16,8 +16,8 @@ export const liveClassApi = createApi({
                 body
             })
         }),
-        getAllLiveClass: builder.query<LiveClassList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => {
+        getAllLiveClass: builder.query<LiveClassList, QueryParams & { status: liveClassTabType }>({
+            query: ({ pageIndex, pageSize, search, status }) => {
                 const params = new URLSearchParams();
 
                 if (pageIndex) {
@@ -28,6 +28,9 @@ export const liveClassApi = createApi({
                 }
                 if (search) {
                     params.append('search', search.toString());
+                }
+                if (status) {
+                    params.append('status', status.toString());
                 }
 
                 return {

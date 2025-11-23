@@ -1,24 +1,25 @@
 import { Checkbox, Stack, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../../routes/PATH";
 import { useDeleteLiveClassMutation, useGetAllLiveClassQuery } from "../../../../../services/liveClass";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
-import type { LiveClassPayload } from "../../../../../types/liveClass";
+import { LiveClassTabs, type LiveClassPayload, type liveClassTabType } from "../../../../../types/liveClass";
 import { formatDate } from "../../../../../utils/dateFormat";
+import { getStatusStyle } from "../../../../../utils/getStyleBasedOnStatus";
 import Actions from "../../../../molecules/Action";
+import TabController from "../../../../molecules/TabController";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
+import EmptyRoute from "../../../../organism/EmptyRoute";
 import type { LayoutProps } from "../../../../organism/TableFilter";
 import TableFilter from "../../../../organism/TableFilter";
 import LiveClassGrid from "./LiveClassGrid";
 
 export default function AllLiveClassList() {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
@@ -30,8 +31,9 @@ export default function AllLiveClassList() {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [liveClassToDelete, setLiveClassToDelete] = useState<string[]>([]);
   const [layout, setLayout] = useState<LayoutProps>("table");
+  const [activeTab, setActiveTab] = useState<liveClassTabType>("ongoing");
 
-  const { data, isLoading } = useGetAllLiveClassQuery({ ...qp, search: search });
+  const { data, isLoading } = useGetAllLiveClassQuery({ ...qp, search: search, status: activeTab });
   const [deleteLiveClass, { isLoading: deleting }] = useDeleteLiveClassMutation();
 
   const liveClasses = data?.data?.data || [];
@@ -131,8 +133,10 @@ export default function AllLiveClassList() {
       cell: ({ row }) => {
 
         return (
-          <Typography fontWeight={500} className="capitalize">
-            {formatDate(row.original?.status || "")}
+          <Typography fontWeight={500} className="capitalize status" sx={{
+            ...getStatusStyle(row.original.status || "ongoing")
+          }}>
+            {row.original?.status}
           </Typography>
         )
       },
@@ -173,22 +177,37 @@ export default function AllLiveClassList() {
         layout={layout}
         setLayout={setLayout}
       />
-      {layout === "table" ?
-        <>
-          <UdaanTable
-            data={data?.data?.data || []}
-            columns={columns}
-            loading={isLoading}
-          />
+      <TabController
+        options={LiveClassTabs}
+        currentActive={activeTab}
+        setActiveTab={setActiveTab}
 
-        </> :
-        <LiveClassGrid liveClasses={liveClasses} />}
-
-      <TablePagination
-        qp={qp}
-        setQp={setQp}
-        totalPages={data?.data?.pagination?.total_pages || 0}
       />
+      {!isLoading && !liveClasses.length ? (
+        <EmptyRoute
+          title="No Live Class Found"
+          message="Start adding courses to organize your learning content. Use the button below to create your first course."
+        />
+      ) : (
+        <>
+          {layout === "table" ? (
+            <UdaanTable
+              data={data?.data?.data || []}
+              columns={columns}
+              loading={isLoading}
+            />
+          ) : (
+            <LiveClassGrid liveClasses={liveClasses} />
+          )}
+
+          <TablePagination
+            qp={qp}
+            setQp={setQp}
+            totalPages={data?.data?.pagination?.total_pages || 0}
+          />
+        </>
+      )}
+
 
       <ConfirmationDialog
         open={openConfirm}
