@@ -359,7 +359,7 @@ export default function LiveClassManagementForm() {
                                     options={intervalOptions}
                                     getOptionLabel={(option) => option.label}
                                     value={intervalOptions.find(opt => opt.value === formik.values.recurring_type) || null}
-                                    onChange={(e, v) => {
+                                    onChange={(_e, v) => {
                                         formik.setFieldValue("recurring_type", v?.value || 1);
                                         formik.setFieldValue("weekly_days", []);
                                         formik.setFieldValue("monthly_day", null);

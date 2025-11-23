@@ -9,14 +9,14 @@ export default function TextEditor({
     value,
     onChange,
     onBlur
-    ,required
+    , required
 }: {
     label?: string;
     error?: string;
     value?: string;
     onChange?: (value: string) => void;
     onBlur?: (value: string) => void;
-    required?:boolean
+    required?: boolean
 }) {
     const [data, setData] = useState(value || "");
     const prevValueRef = useRef(value);
@@ -28,6 +28,8 @@ export default function TextEditor({
             prevValueRef.current = value;
         }
     }, [value]);
+
+    console.log(required);
 
     return (
         <div className="input__field">
