@@ -2,7 +2,7 @@ import { Add } from "@mui/icons-material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import PageHeader from "../../../organism/PageHeader";
-import TestManagementForm from "./TestManagementForm";
+import AllTestListing from "./allTest";
 
 export default function TestManagementRoot() {
     const { t } = useTranslation();
@@ -30,7 +30,8 @@ export default function TestManagementRoot() {
                 }
                 handleOpenPopup={() => setOpen(true)}
             />
-            <TestManagementForm open={open} setOpen={setOpen} />
+            {/* <TestManagementForm open={open} setOpen={setOpen} /> */}
+            <AllTestListing open={open} setOpen={setOpen} />
         </div>
     )
 }

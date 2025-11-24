@@ -11,8 +11,10 @@ interface MakuraDatePickerProps {
     required?: boolean;
     fullWidth?: boolean;
     placeholder?: string;
-    includeTime?: boolean; // New prop to enable time picker
-    format?: string; // Optional custom format
+    includeTime?: boolean;
+    format?: string;
+    minDate?: Dayjs | null; // New prop for minimum date
+    error?: boolean; // For error state
 }
 
 // Your custom SVG icon
@@ -32,14 +34,17 @@ export default function MakuraDatePicker({
     placeholder = "Select date",
     includeTime = false,
     format,
+    minDate,
+    error = false,
 }: MakuraDatePickerProps) {
     // Determine format based on whether time is included
-    const displayFormat = format || (includeTime ? "YYYY/MM|DD hh:mm A" : "YYYY/MM|DD");
+    const displayFormat = format || (includeTime ? "YYYY/MM/DD hh:mm A" : "YYYY/MM/DD");
 
     const commonProps = {
         value,
         onChange,
         format: displayFormat,
+        minDate: minDate || undefined, // Set minimum date if provided
         slots: {
             openPickerIcon: ArrowDownIcon,
         },
@@ -47,6 +52,7 @@ export default function MakuraDatePicker({
             textField: {
                 required,
                 fullWidth,
+                error,
                 inputProps: {
                     placeholder,
                 },
@@ -54,13 +60,13 @@ export default function MakuraDatePicker({
                     "& .MuiOutlinedInput-root": {
                         fontSize: "14px",
                         "& fieldset": {
-                            borderColor: "#E5E7EB",
+                            borderColor: error ? "#d32f2f" : "#E5E7EB",
                         },
                         "&:hover fieldset": {
-                            borderColor: "#1D82F5",
+                            borderColor: error ? "#d32f2f" : "#1D82F5",
                         },
                         "&.Mui-focused fieldset": {
-                            borderColor: "#1D82F5",
+                            borderColor: error ? "#d32f2f" : "#1D82F5",
                         },
                     },
                 },
