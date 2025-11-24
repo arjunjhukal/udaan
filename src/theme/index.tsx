@@ -340,6 +340,14 @@ const commonThemeOptions: ThemeOptions = {
                         "svg path": {
                             stroke: "#fff"
                         }
+                    },
+                    "&.active-nested": {
+                        "& *": {
+                            color: "#fff !important",
+                        },
+                        "& svg path": {
+                            stroke: "#fff !important"
+                        }
                     }
                 }),
             },

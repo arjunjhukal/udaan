@@ -7,7 +7,7 @@ import { baseQuery } from "./baseQuery";
 export const mediaApi = createApi({
     reducerPath: "mediaApi",
     baseQuery: baseQuery,
-    tagTypes: ["Media", "Notes", "Audio", "Video"],
+    tagTypes: ["Media", "Notes", "Audio", "Video", "Images"],
     endpoints: (builder) => ({
         uploadMedia: builder.mutation<GlobalResponse, { type: string, body: FormData }>({
             query: ({ type, body }) => ({
@@ -42,8 +42,24 @@ export const mediaApi = createApi({
                         { type: "Media", id: "LIST" },
                     ]
                     : [{ type: "Media", id: "LIST" }],
-        })
+        }),
+        uploadMediaImage: builder.mutation<
+            GlobalResponse & {
+                data: {
+                    url: string;
+                    media_id: number;
+                };
+            },
+            { body: FormData }
+        >({
+            query: ({ body }) => ({
+                url: `/admin/file/image`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: [{ type: "Media", id: "LIST" }]
+        }),
     })
 })
 
-export const { useUploadMediaMutation, useGetallMediaQuery } = mediaApi;
+export const { useUploadMediaMutation, useGetallMediaQuery, useUploadMediaImageMutation } = mediaApi;
