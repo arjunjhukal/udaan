@@ -1,6 +1,8 @@
 import { Box, Checkbox, Stack, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../../../../routes/PATH';
 import { useDeleteTestMutation, useGetAllTestQuery } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
@@ -11,14 +13,13 @@ import TablePagination from '../../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../../organism/ConfirmationDialog';
 import EmptyRoute from '../../../../organism/EmptyRoute';
 import TableFilter from '../../../../organism/TableFilter';
-import TestManagementForm from '../TestManagementForm';
-export interface Props {
-    open: boolean;
-    setOpen: (newValue: boolean) => void;
-}
-export default function AllTestListing({ open, setOpen }: Props) {
+
+export default function AllTestListing() {
 
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
     const [search, setSearch] = useState<string>("");
     const [qp, setQp] = useState({
@@ -27,17 +28,6 @@ export default function AllTestListing({ open, setOpen }: Props) {
     })
     const [openConfirm, setOpenConfirm] = useState(false);
     const [testsToDelete, setTestsToDelete] = useState<string[]>([]);
-    const [editTest, setEditTest] = useState<TestProps | null>(null);
-
-    const handleEdit = (question: TestProps) => {
-        setEditTest(question);
-        setOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setOpen(false);
-        setEditTest(null);
-    };
 
     const { data, isLoading } = useGetAllTestQuery({ ...qp, search: search, });
     const [deleteTest, { isLoading: deleting }] = useDeleteTestMutation();
@@ -180,8 +170,8 @@ export default function AllTestListing({ open, setOpen }: Props) {
             cell: ({ row }) => (
                 <Actions
                     deleting={deleting}
-                    onEdit={() => handleEdit(row.original)}
-                    onView={() => handleEdit(row.original)}
+                    onEdit={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(Number(row.original.id)))}
+                    onView={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(Number(row.original.id)))}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                 />
             ),
@@ -236,7 +226,7 @@ export default function AllTestListing({ open, setOpen }: Props) {
                 </svg>
                 )}
             />
-            <TestManagementForm open={open} setOpen={setOpen} editData={editTest} />
+
         </>
     )
 }

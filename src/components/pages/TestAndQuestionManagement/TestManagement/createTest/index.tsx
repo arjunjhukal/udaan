@@ -1,13 +1,12 @@
-import { Add } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
-import { PATH } from "../../../../routes/PATH";
-import PageHeader from "../../../organism/PageHeader";
-import AllTestListing from "./allTest";
+import { PATH } from "../../../../../routes/PATH";
+import PageHeader from "../../../../organism/PageHeader";
+import TestManagementForm from "../TestManagementForm";
 
-export default function TestManagementRoot() {
+export default function CreatTestRoot() {
     const { t } = useTranslation();
     return (
-        <div className="test__management_root">
+        <>
             <PageHeader
                 breadcrumb={[
                     {
@@ -17,18 +16,12 @@ export default function TestManagementRoot() {
                             <path d="M10.7102 4.71018C8.88023 3.72018 6.11023 2.84018 4.23023 2.68018H4.16023C2.96023 2.68018 1.99023 3.65018 1.99023 4.85018V16.7402C1.99023 17.7102 2.78023 18.6002 3.75023 18.7202L4.06023 18.7602C5.70023 18.9802 8.01023 19.6602 9.87023 20.4402C10.5202 20.7102 11.2402 20.2202 11.2402 19.5102V5.60018C11.2402 5.22018 11.0402 4.89018 10.7102 4.71018ZM5.00023 7.74018H7.25023C7.66023 7.74018 8.00023 8.08018 8.00023 8.49018C8.00023 8.91018 7.66023 9.24018 7.25023 9.24018H5.00023C4.59023 9.24018 4.25023 8.91018 4.25023 8.49018C4.25023 8.08018 4.59023 7.74018 5.00023 7.74018ZM8.00023 12.2402H5.00023C4.59023 12.2402 4.25023 11.9102 4.25023 11.4902C4.25023 11.0802 4.59023 10.7402 5.00023 10.7402H8.00023C8.41023 10.7402 8.75023 11.0802 8.75023 11.4902C8.75023 11.9102 8.41023 12.2402 8.00023 12.2402Z" fill="#1D82F5" />
                         </svg>
                         ),
-                        // url: PATH.ROLES.CREATE_ROLE.ROOT
+                        url: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT
                     }
                 ]}
-                cta={
-                    {
-                        icon: <Add />,
-                        url: PATH.TEST_QUESTION_MANAGEMENT.TEST.CREATE_TEST.ROOT,
-                        label: t("messages.empty_states.test.action"),
-                    }
-                }
+
             />
-            <AllTestListing />
-        </div>
+            <TestManagementForm />
+        </>
     )
 }

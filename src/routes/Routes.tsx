@@ -20,6 +20,7 @@ import SubscriptionManagementRoot from "../components/pages/SubscriptionManageme
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
+import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
 import AuthRoot from "../components/pages/auth";
 import Login from "../components/pages/auth/login";
 import NotFound from "../components/pages/layout/NotFound";
@@ -87,6 +88,7 @@ const router = createBrowserRouter([
 				children: [
 					{ path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT, element: <QuestionManagementRoot /> },
 					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT, element: <TestManagementRoot /> },
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(), element: <CreatTestRoot /> },
 				],
 			},
 			{

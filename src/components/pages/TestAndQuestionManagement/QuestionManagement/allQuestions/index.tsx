@@ -36,10 +36,10 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
         setOpen(true);
     };
 
-    const handleCloseModal = () => {
-        setOpen(false);
-        setEditQuestion(null);
-    };
+    // const handleCloseModal = () => {
+    //     setOpen(false);
+    //     setEditQuestion(null);
+    // };
 
     const { data, isLoading } = useGetAllQuestionQuery({ ...qp, search: search, type: activeTab });
     const [deleteQuestion, { isLoading: deleting }] = useDeleteQuestionMutation();

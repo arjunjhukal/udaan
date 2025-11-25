@@ -85,12 +85,12 @@ export const questionApi = createApi({
             },
             providesTags: [{ type: "Test", id: "LIST" }]
         }),
-        getTestById: builder.query<{ data: TestProps }, number>({
-            query: (id) => ({
+        getTestById: builder.query<{ data: TestProps }, { id?: number }>({
+            query: ({ id }) => ({
                 url: `admin/test/${id}`,
                 method: "GET",
             }),
-            providesTags: (_result, _error, id) => [{ type: "Test", id }]
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
         deleteTest: builder.mutation<GlobalResponse, { body: string[] }>({
             query: ({ body }) => ({
