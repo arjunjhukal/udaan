@@ -31,6 +31,8 @@ export default function TextEditor({
         }
     }, [value]);
 
+    console.log(required);
+
     // Custom upload adapter for CKEditor
     function CustomUploadAdapterPlugin(editor: any) {
         editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
