@@ -1,10 +1,17 @@
-import { Box, Dialog, DialogContent, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
+import { Box, Dialog, DialogContent, FormHelperText, InputLabel, OutlinedInput, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
+import { useState } from "react";
 import * as Yup from "yup";
+import { useGetAllCourseQuery } from "../../../../services/courseApi";
+import { useEditOrCreateTestMutation, useGetAllQuestionQuery } from "../../../../services/questionApi";
+import { showToast } from "../../../../slice/toastSlice";
+import { useAppDispatch } from "../../../../store/hook";
+import { TestInitialState, type TestProps } from "../../../../types/question";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
 import TextEditor from "../../../atoms/TextEditor";
 import FooterAction from "../../../molecules/FooterAction";
+import InfiniteScrolling from "../../../molecules/InfiniteScrolling";
 
 export interface Props {
     open: boolean;
@@ -12,33 +19,8 @@ export interface Props {
     editData?: TestProps | null;
 }
 
-export interface TestProps {
-    id: number | null;
-    name: string;
-    duration: {
-        hours: number;
-        minutes: number;
-    };
-    description: string;
-    full_marks: number;
-    pass_marks: number;
-    start_date_time: string;
-    end_date_time: string;
-}
 
-export const TestInitialState: TestProps = {
-    id: null,
-    name: "",
-    duration: {
-        hours: 0,
-        minutes: 0
-    },
-    description: "",
-    full_marks: 100,
-    pass_marks: 40,
-    start_date_time: "",
-    end_date_time: ""
-};
+
 
 const testValidationSchema = Yup.object().shape({
     name: Yup.string()
@@ -76,23 +58,52 @@ const testValidationSchema = Yup.object().shape({
                 return value <= this.parent.full_marks;
             }
         ),
-    start_date_time: Yup.string()
+    start_datetime: Yup.string()
         .required("Start date & time is required"),
-    end_date_time: Yup.string()
+    end_datetime: Yup.string()
         .required("End date & time is required")
         .test(
             "end-after-start",
             "End date must be after start date",
             function (value) {
-                const { start_date_time } = this.parent;
-                if (!start_date_time || !value) return true;
-                return dayjs(value).isAfter(dayjs(start_date_time));
+                const { start_datetime } = this.parent;
+                if (!start_datetime || !value) return true;
+                return dayjs(value).isAfter(dayjs(start_datetime));
             }
-        )
+        ),
+    course_ids: Yup.array()
+        .of(Yup.number())
+        .min(1, "At least one course must be selected")
+        .max(10, "Cannot select more than 10 courses")
+        .required("Course selection is required"),
+    question_ids: Yup.array()
+        .of(Yup.number())
+        .min(1, "At least one question must be selected")
+        .max(100, "Cannot select more than 100 questions")
+        .required("Question selection is required")
 });
 
 export default function TestManagementForm({ open, setOpen, editData }: Props) {
+    const theme = useTheme();
+    const dispatch = useAppDispatch();
+
+    const [courseQp, setCourseQp] = useState({
+        pageIndex: 1,
+        pageSize: 10,
+        search: ""
+    });
+    const [questionQp, setQuestionQp] = useState({
+        pageIndex: 1,
+        pageSize: 10,
+        search: ""
+    });
+
     const isEditMode = Boolean(editData?.id);
+
+    const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp });
+    const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp });
+
+    const [createTest, { isLoading: creatingTest }] = useEditOrCreateTestMutation();
 
     const formik = useFormik<TestProps>({
         initialValues: editData || TestInitialState,
@@ -100,14 +111,53 @@ export default function TestManagementForm({ open, setOpen, editData }: Props) {
         enableReinitialize: true,
         onSubmit: async (values) => {
             try {
-                console.log("Form values:", values);
-                // Add your API call here
-                alert(JSON.stringify(values, null, 2));
+                const response = await createTest({ body: values }).unwrap();
+                dispatch(
+                    showToast({
+                        message: response?.message || "Test Created Successfully.",
+                        severity: "success"
+                    })
+                )
+                setOpen(false);
+                formik.resetForm();
             } catch (e: any) {
-                console.error("Error:", e);
+                dispatch(
+                    showToast({
+                        message: e?.data?.message || "Unable to Create Test",
+                        severity: "error"
+                    })
+                )
             }
         }
     });
+
+    const fetchMoreCourses = () => {
+        if (courses?.data?.data && courses?.data?.data?.length < courses?.data?.pagination?.total) {
+            setCourseQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
+        }
+    };
+
+    const fetchMoreQuestions = () => {
+        if (questions?.data?.data && questions?.data?.data?.length < questions?.data?.pagination?.total) {
+            setQuestionQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
+        }
+    };
+
+    const handleCourseSearch = (searchTerm: string) => {
+        setCourseQp(prev => ({
+            ...prev,
+            search: searchTerm,
+            pageIndex: 1 // Reset to first page on new search
+        }));
+    };
+
+    const handleQuestionSearch = (searchTerm: string) => {
+        setQuestionQp(prev => ({
+            ...prev,
+            search: searchTerm,
+            pageIndex: 1 // Reset to first page on new search
+        }));
+    };
 
     return (
         <Dialog
@@ -122,7 +172,9 @@ export default function TestManagementForm({ open, setOpen, editData }: Props) {
                 }
             }}
         >
-            <DialogContent>
+            <DialogContent sx={{
+                background: theme.palette.primary.contrastText
+            }}>
                 <form onSubmit={formik.handleSubmit}>
                     <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
                         <div className="col-span-2">
@@ -199,7 +251,7 @@ export default function TestManagementForm({ open, setOpen, editData }: Props) {
                                     label="Description"
                                     value={formik.values.description}
                                     onChange={(value) => formik.setFieldValue("description", value)}
-                                    onBlur={(value) => formik.setFieldTouched("description", true)}
+                                    onBlur={(_value) => formik.setFieldTouched("description", true)}
                                     error={
                                         formik.touched.description && formik.errors.description
                                             ? formik.errors.description
@@ -254,14 +306,14 @@ export default function TestManagementForm({ open, setOpen, editData }: Props) {
                             <div className="input__field">
                                 <InputLabel className="required">Start Date & Time</InputLabel>
                                 <MakuraDatePicker
-                                    value={formik.values.start_date_time ? dayjs(formik.values.start_date_time) : null}
+                                    value={formik.values.start_datetime ? dayjs(formik.values.start_datetime) : null}
                                     onChange={(date: Dayjs | null) =>
-                                        formik.setFieldValue("start_date_time", date ? date.toISOString() : "")
+                                        formik.setFieldValue("start_datetime", date ? date.toISOString() : "")
                                     }
                                     includeTime={true}
                                 />
-                                {formik.touched.start_date_time && formik.errors.start_date_time && (
-                                    <FormHelperText error>{formik.errors.start_date_time}</FormHelperText>
+                                {formik.touched.start_datetime && formik.errors.start_datetime && (
+                                    <FormHelperText error>{formik.errors.start_datetime}</FormHelperText>
                                 )}
                             </div>
                         </div>
@@ -270,15 +322,65 @@ export default function TestManagementForm({ open, setOpen, editData }: Props) {
                             <div className="input__field">
                                 <InputLabel className="required">End Date & Time</InputLabel>
                                 <MakuraDatePicker
-                                    value={formik.values.end_date_time ? dayjs(formik.values.end_date_time) : null}
+                                    value={formik.values.end_datetime ? dayjs(formik.values.end_datetime) : null}
                                     onChange={(date: Dayjs | null) =>
-                                        formik.setFieldValue("end_date_time", date ? date.toISOString() : "")
+                                        formik.setFieldValue("end_datetime", date ? date.toISOString() : "")
                                     }
                                     includeTime={true}
-                                    minDate={formik.values.start_date_time ? dayjs(formik.values.start_date_time) : dayjs()}
+                                    minDate={formik.values.start_datetime ? dayjs(formik.values.start_datetime) : dayjs()}
                                 />
-                                {formik.touched.end_date_time && formik.errors.end_date_time && (
-                                    <FormHelperText error>{formik.errors.end_date_time}</FormHelperText>
+                                {formik.touched.end_datetime && formik.errors.end_datetime && (
+                                    <FormHelperText error>{formik.errors.end_datetime}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required">Select Courses (Max 10)</InputLabel>
+                                <InfiniteScrolling
+                                    data={courses?.data?.data || []}
+                                    hasMore={courses?.data?.pagination?.total || 0}
+                                    selectedItems={formik.values.course_ids}
+                                    onSelectionChange={(selectedIds) => {
+                                        formik.setFieldValue("course_ids", selectedIds);
+                                        formik.setFieldTouched("course_ids", true);
+                                    }}
+                                    fetchMore={fetchMoreCourses}
+                                    onSearch={handleCourseSearch}
+                                    loading={loadingCourses}
+                                    maxSelection={10}
+                                    itemLabelKey="name"
+                                    itemIdKey="id"
+                                    placeholder="Search courses..."
+                                />
+                                {formik.touched.course_ids && formik.errors.course_ids && (
+                                    <FormHelperText error>{formik.errors.course_ids}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required">Select Questions (Max 100)</InputLabel>
+                                <InfiniteScrolling
+                                    data={questions?.data?.data || []}
+                                    hasMore={questions?.data?.pagination?.total || 0}
+                                    selectedItems={formik.values.question_ids}
+                                    onSelectionChange={(selectedIds) => {
+                                        formik.setFieldValue("question_ids", selectedIds);
+                                        formik.setFieldTouched("question_ids", true);
+                                    }}
+                                    fetchMore={fetchMoreQuestions}
+                                    onSearch={handleQuestionSearch}
+                                    loading={loadingQuestions}
+                                    maxSelection={100}
+                                    itemLabelKey="question"
+                                    itemIdKey="id"
+                                    placeholder="Search questions..."
+                                />
+                                {formik.touched.question_ids && formik.errors.question_ids && (
+                                    <FormHelperText error>{formik.errors.question_ids}</FormHelperText>
                                 )}
                             </div>
                         </div>
@@ -286,10 +388,10 @@ export default function TestManagementForm({ open, setOpen, editData }: Props) {
 
                     <FooterAction
                         handleComfirmationChange={() => setOpen(false)}
-                        isLoading={false}
-                        isUpdating={false}
+                        isLoading={creatingTest}
+                        isUpdating={creatingTest}
                         isEditMode={isEditMode}
-                        buttonLabel="Test"
+                        buttonLabel={"Test"}
                     />
                 </form>
             </DialogContent>

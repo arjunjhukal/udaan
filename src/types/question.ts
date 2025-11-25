@@ -32,3 +32,47 @@ export interface QuestionList extends GlobalResponse {
         pagination: Pagination
     }
 }
+
+export interface TestProps {
+    id: number | null;
+    name: string;
+    duration: {
+        hours: number;
+        minutes: number;
+    };
+    description: string;
+    full_marks: number;
+    pass_marks: number;
+    start_datetime: string;
+    end_datetime: string;
+    course_ids: number[];
+    question_ids: number[];
+    category?: string[];
+    questions?: number;
+    status?: null;
+    no_of_students?: number;
+}
+
+
+
+export const TestInitialState: TestProps = {
+    id: null,
+    name: "",
+    duration: {
+        hours: 0,
+        minutes: 0
+    },
+    description: "",
+    full_marks: 100,
+    pass_marks: 40,
+    start_datetime: "",
+    end_datetime: "",
+    course_ids: [],
+    question_ids: []
+};
+export interface TestList {
+    data: {
+        data: TestProps[]
+        pagination: Pagination
+    }
+}

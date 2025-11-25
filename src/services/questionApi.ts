@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
-import type { QuestionList, QuestionProps, QuestionTypeProps } from "../types/question";
+import type { QuestionList, QuestionProps, QuestionTypeProps, TestList, TestProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -8,7 +8,7 @@ import { baseQuery } from "./baseQuery";
 export const questionApi = createApi({
     reducerPath: "questionApi",
     baseQuery: baseQuery,
-    tagTypes: ["Questions"],
+    tagTypes: ["Questions", "Test"],
     endpoints: (builder) => ({
         uploadQuestionPaper: builder.mutation<GlobalResponse, { body: FormData }>({
             query: ({ body }) => ({
@@ -29,7 +29,7 @@ export const questionApi = createApi({
                 ...(body.id ? [{ type: "Questions" as const, id: body.id }] : [])
             ]
         }),
-        getAllQuestion: builder.query<QuestionList, QueryParams & { type: QuestionTypeProps }>({
+        getAllQuestion: builder.query<QuestionList, QueryParams & { type?: QuestionTypeProps }>({
             query: ({ type, pageIndex, pageSize, search }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
@@ -60,6 +60,48 @@ export const questionApi = createApi({
                 }
             }),
         }),
+        editOrCreateTest: builder.mutation<GlobalResponse, { body: TestProps }>({
+            query: ({ body }) => ({
+                url: `/admin/test`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: (_result, _error, { body }) => [
+                { type: "Test", id: "LIST" },
+                ...(body.id ? [{ type: "Test" as const, id: body.id }] : [])
+            ]
+        }),
+        getAllTest: builder.query<TestList, QueryParams>({
+            query: ({ pageIndex, pageSize, search }) => {
+                const queryString = buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search,
+                });
+                return {
+                    url: `admin/test?${queryString}`,
+                    method: "GET",
+                };
+            },
+            providesTags: [{ type: "Test", id: "LIST" }]
+        }),
+        getTestById: builder.query<{ data: TestProps }, number>({
+            query: (id) => ({
+                url: `admin/test/${id}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, id) => [{ type: "Test", id }]
+        }),
+        deleteTest: builder.mutation<GlobalResponse, { body: string[] }>({
+            query: ({ body }) => ({
+                url: `admin/test`,
+                method: "DELETE",
+                body: {
+                    tests: body
+                }
+            }),
+            invalidatesTags: [{ type: "Test", id: "LIST" }]
+        }),
     })
 });
 
@@ -68,5 +110,9 @@ export const {
     useEditOrCreateQuestionMutation,
     useGetAllQuestionQuery,
     useGetQuestionByIdQuery,
-    useDeleteQuestionMutation
+    useDeleteQuestionMutation,
+    useEditOrCreateTestMutation,
+    useGetAllTestQuery,
+    useGetTestByIdQuery,
+    useDeleteTestMutation
 } = questionApi;

@@ -22,9 +22,6 @@ import QuestionManagementRoot from "../components/pages/TestAndQuestionManagemen
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
 import AuthRoot from "../components/pages/auth";
 import Login from "../components/pages/auth/login";
-import Register from "../components/pages/auth/register";
-import VerifyOTP from "../components/pages/auth/verifyOtp";
-import AuthLayout from "../components/pages/layout/AuthLayout";
 import NotFound from "../components/pages/layout/NotFound";
 import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
 import AllPositions from "../components/pages/positionManagement/allPositions";
@@ -39,28 +36,14 @@ const router = createBrowserRouter([
 		element: <AuthRoot />,
 		children: [
 			{
-				path: PATH.AUTH.ADMIN_LOGIN.ROOT,
+				path: PATH.AUTH.LOGIN.ROOT,
 				element: (
 					<SingleFormAuthLayout>
 						<Login requirePassword={true} />
 					</SingleFormAuthLayout>
 				),
 			},
-			{
-				element: <AuthLayout />,
-				children: [
-					{ index: true, path: PATH.AUTH.LOGIN.ROOT, element: <Login /> },
-					{ path: PATH.AUTH.REGISTER.ROOT, element: <Register /> },
-				],
-			},
-			{
-				path: PATH.AUTH.VERIFY_OTP.ROOT,
-				element: (
-					<SingleFormAuthLayout>
-						<VerifyOTP />
-					</SingleFormAuthLayout>
-				),
-			},
+
 		],
 	},
 

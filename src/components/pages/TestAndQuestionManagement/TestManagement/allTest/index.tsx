@@ -1,12 +1,11 @@
-import { Checkbox, Stack, Typography } from '@mui/material';
+import { Box, Checkbox, Stack, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
-import { useDeleteQuestionMutation, useGetAllQuestionQuery } from '../../../../../services/questionApi';
+import { useDeleteTestMutation, useGetAllTestQuery } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
-import type { QuestionProps, QuestionTypeProps } from '../../../../../types/question';
+import type { TestProps } from '../../../../../types/question';
 import Actions from '../../../../molecules/Action';
-import TabController from '../../../../molecules/TabController';
 import UdaanTable from '../../../../molecules/Table';
 import TablePagination from '../../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../../organism/ConfirmationDialog';
@@ -27,28 +26,27 @@ export default function AllTestListing({ open, setOpen }: Props) {
         pageSize: 8,
     })
     const [openConfirm, setOpenConfirm] = useState(false);
-    const [questionsToDelete, setQuestionsToDelete] = useState<string[]>([]);
-    const [activeTab, setActiveTab] = useState<QuestionTypeProps>("mcq");
-    const [editQuestion, setEditQuestion] = useState<QuestionProps | null>(null);
+    const [testsToDelete, setTestsToDelete] = useState<string[]>([]);
+    const [editTest, setEditTest] = useState<TestProps | null>(null);
 
-    const handleEdit = (question: QuestionProps) => {
-        setEditQuestion(question);
+    const handleEdit = (question: TestProps) => {
+        setEditTest(question);
         setOpen(true);
     };
 
     const handleCloseModal = () => {
         setOpen(false);
-        setEditQuestion(null);
+        setEditTest(null);
     };
 
-    const { data, isLoading } = useGetAllQuestionQuery({ ...qp, search: search, type: activeTab });
-    const [deleteQuestion, { isLoading: deleting }] = useDeleteQuestionMutation();
+    const { data, isLoading } = useGetAllTestQuery({ ...qp, search: search, });
+    const [deleteTest, { isLoading: deleting }] = useDeleteTestMutation();
 
 
-    const questions = data?.data?.data || [];
+    const tests = data?.data?.data || [];
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            const allIndices = new Set(questions.map((_, index) => index));
+            const allIndices = new Set(tests.map((_, index) => index));
             setSelectedRows(allIndices);
         } else {
             setSelectedRows(new Set());
@@ -65,18 +63,18 @@ export default function AllTestListing({ open, setOpen }: Props) {
         setSelectedRows(newSelected);
     };
 
-    const isAllSelected = questions.length > 0 && selectedRows.size === questions.length;
-    const isSomeSelected = selectedRows.size > 0 && selectedRows.size < questions.length;
+    const isAllSelected = tests.length > 0 && selectedRows.size === tests.length;
+    const isSomeSelected = selectedRows.size > 0 && selectedRows.size < tests.length;
 
     const openDeleteConfirmation = (selectedCourseIds: string[]) => {
-        setQuestionsToDelete(selectedCourseIds);
+        setTestsToDelete(selectedCourseIds);
         setOpenConfirm(true);
     };
 
     const handleQuestionDeletion = async () => {
         try {
-            const response = await deleteQuestion({
-                body: questionsToDelete,
+            const response = await deleteTest({
+                body: testsToDelete,
             }).unwrap();
 
             dispatch(
@@ -87,7 +85,7 @@ export default function AllTestListing({ open, setOpen }: Props) {
             );
             setSelectedRows(new Set());
             setOpenConfirm(false);
-            setQuestionsToDelete([]);
+            setTestsToDelete([]);
         } catch (e: any) {
             dispatch(
                 showToast({
@@ -99,7 +97,7 @@ export default function AllTestListing({ open, setOpen }: Props) {
         }
     }
 
-    const columns = useMemo<ColumnDef<QuestionProps>[]>(() => [
+    const columns = useMemo<ColumnDef<TestProps>[]>(() => [
         {
             header: () => (
                 <Stack sx={{ gap: "10px" }}>
@@ -126,11 +124,53 @@ export default function AllTestListing({ open, setOpen }: Props) {
             size: 80,
         },
         {
-            header: "Question Name",
-            accessorKey: "question",
+            header: "Test Name",
+            accessorKey: "name",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
-                    {row.original.question || "N/A"}
+                    {row.original.name || "N/A"}
+                </Typography>
+            ),
+        },
+        {
+            header: "Category",
+            accessorKey: "category",
+            cell: ({ row }) => (
+                <Box>
+                    {
+                        row.original?.category?.map((item) => (
+                            <Typography fontWeight={500} className="capitalize">
+                                {item || "N/A"}
+                            </Typography>
+                        ))
+                    }
+                </Box>
+            ),
+        },
+        {
+            header: "No. of Questions",
+            accessorKey: "questions",
+            cell: ({ row }) => (
+                <Typography fontWeight={500} className="capitalize">
+                    {row.original.questions || "N/A"}
+                </Typography>
+            ),
+        },
+        {
+            header: "No. of Students",
+            accessorKey: "no_of_students",
+            cell: ({ row }) => (
+                <Typography fontWeight={500} className="capitalize">
+                    {row.original.no_of_students || 0}
+                </Typography>
+            ),
+        },
+        {
+            header: "Duration",
+            accessorKey: "duration",
+            cell: ({ row }) => (
+                <Typography fontWeight={500} className="capitalize">
+                    {row.original.duration.hours} Hrs {row.original.duration.minutes} Mins
                 </Typography>
             ),
         },
@@ -151,11 +191,7 @@ export default function AllTestListing({ open, setOpen }: Props) {
 
     return (
         <>
-            <TabController
-                options={[{ label: "MCQs", value: "mcq" }, { label: "Subjective", value: "subjective" }]}
-                setActiveTab={setActiveTab}
-                currentActive={activeTab}
-            />
+
 
             <TableFilter
                 search={search}
@@ -164,7 +200,7 @@ export default function AllTestListing({ open, setOpen }: Props) {
                 handleRoleDelete={openDeleteConfirmation}
             />
 
-            {!isLoading && !questions.length ?
+            {!isLoading && !tests.length ?
                 <EmptyRoute
                     title='Question Not Found'
                     message='Oops your question is empty. Please add question to help student gain knowlegde.'
@@ -177,7 +213,7 @@ export default function AllTestListing({ open, setOpen }: Props) {
                 /> : (
                     <>
                         <UdaanTable
-                            data={questions || []}
+                            data={tests || []}
                             columns={columns}
                             loading={isLoading}
                         />
@@ -200,7 +236,7 @@ export default function AllTestListing({ open, setOpen }: Props) {
                 </svg>
                 )}
             />
-            <TestManagementForm open={open} setOpen={setOpen} editData={editQuestion} />
+            <TestManagementForm open={open} setOpen={setOpen} editData={editTest} />
         </>
     )
 }

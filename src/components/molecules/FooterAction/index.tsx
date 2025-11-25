@@ -47,10 +47,10 @@ export default function FooterAction({
                 <Typography variant="body2">
                     {isEditMode
                         ? isUpdating
-                            ? "Updating "
+                            ? `Updating ${buttonLabel}`
                             : `Update ${buttonLabel}`
                         : isLoading
-                            ? "Creating "
+                            ? `Creating ${buttonLabel}`
                             : `Create ${buttonLabel}`}
                 </Typography>
             </Button>

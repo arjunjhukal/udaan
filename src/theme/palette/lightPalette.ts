@@ -33,7 +33,7 @@ export const lightPalette = {
         light: "#9CA3B0",
     },
     info: {
-        main: "#F59E0B", // Changed from 'default' to 'main'
+        main: "#F59E0B",
         hover: "#DB7706",
         light: "#FEF3C8",
         contrastText: "#FFFFFF",
@@ -45,13 +45,13 @@ export const lightPalette = {
         darkest: "#6B7280",
     },
     success: {
-        main: "#059467", // Changed from 'default' to 'main'
+        main: "#059467",
         hover: "#066046",
         light: "#EDFDF5",
         contrastText: "#FFFFFF",
     },
     warning: {
-        main: "#F97415", // Changed from 'default' to 'main'
+        main: "#F97415",
         hover: "#E9590C",
         light: "#FFF6EB",
         contrastText: "#FFFFFF",

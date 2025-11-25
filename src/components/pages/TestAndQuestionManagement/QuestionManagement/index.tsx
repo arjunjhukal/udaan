@@ -2,7 +2,6 @@ import { Add } from "@mui/icons-material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import PageHeader from "../../../organism/PageHeader";
-import QuestionManagementModal from "./QuestionManagementModal";
 import AllQuestionListing from "./allQuestions";
 
 export default function QuestionManagementRoot() {
@@ -31,8 +30,8 @@ export default function QuestionManagementRoot() {
                 }
                 handleOpenPopup={() => setOpen(true)}
             />
-            <AllQuestionListing open={open} setOpen={setOpen}/>
-           
+            <AllQuestionListing open={open} setOpen={setOpen} />
+
         </div>
     )
 }
