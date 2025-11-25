@@ -21,6 +21,7 @@ import CategoryFilter from "../../../organism/CategoryFilter";
 import CourseMedia from "./createCourse/CourseMedia";
 import CourseCurriculumForm from "./createCourse/CourseSubFields/Curriculum";
 import CourseOverviewForm from "./createCourse/CourseSubFields/Overview";
+import CourseTest from "./createCourse/CourseSubFields/Test";
 import CourseType from "./createCourse/CourseType";
 
 const validationSchema = (id?: string) => Yup.object().shape({
@@ -403,7 +404,7 @@ export default function CourseManagementForm() {
                 {activeTab === "notes" ? <CourseMedia type="notes" id={id} /> : ""}
                 {activeTab === "audios" ? <CourseMedia type="audios" id={id} /> : ""}
                 {activeTab === "videos" ? <CourseMedia type="videos" id={id} /> : ""}
-                {activeTab === "test" ? <CourseMedia type="notes" id={id} /> : ""}
+                {activeTab === "test" ? <CourseTest id={id} /> : ""}
                 <FooterAction
                     handleComfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
                     isLoading={isLoading}
