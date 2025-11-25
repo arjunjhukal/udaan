@@ -3,6 +3,7 @@ import type { CurriculumType } from "../components/pages/CourseManagement/Course
 import type { CategoryFilterParams, QueryParams } from "../types";
 import type { CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
 import type { MediaList } from "../types/media";
+import type { TestList } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -32,16 +33,6 @@ export const courseApi = createApi({
                     sub_categories: categoryFilter?.sub_category,
                     positions: categoryFilter?.positions,
                 })
-                // if (pageIndex) {
-                //     params.append('page', (pageIndex).toString());
-                // }
-                // if (pageSize) {
-                //     params.append('page_size', pageSize.toString());
-                // }
-                // if (search) {
-                //     params.append('search', search.toString());
-                // }
-
                 return {
                     url: `/course?${queryString}`,
                     method: "GET",
@@ -174,6 +165,19 @@ export const courseApi = createApi({
             ],
 
         }),
+        getCourseTest: builder.query<TestList, QueryParams & { id: number }>({
+            query: ({ id, pageIndex, pageSize, search }) => {
+                const queryString = buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search,
+                })
+                return ({
+                    url: `/admin/course/${id}/test?${queryString}`,
+                    method: "GET"
+                })
+            }
+        })
     })
 })
 
@@ -188,5 +192,6 @@ export const {
     useGetCourseCurriculumByIdQuery,
     useDeleteCourseCurriculumMutation,
     useGetCourseMediaByTypeQuery,
-    useAddCourseMediaByTypeMutation
+    useAddCourseMediaByTypeMutation,
+    useGetCourseTestQuery
 } = courseApi;
