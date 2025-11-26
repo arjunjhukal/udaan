@@ -85,7 +85,7 @@ const validationSchema = (id?: string) => Yup.object().shape({
         //     .min(1, "Please select at least one position/level"),
     }),
 
-    about_this_course_np: Yup.string()
+    about_this_course: Yup.string()
         .required("About this course is required")
         .min(10, "About course must be at least 10 characters"),
 

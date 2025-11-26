@@ -43,12 +43,12 @@ export default function CourseOverviewForm({
             <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2 lg:col-span-1">
                     <TextEditor
-                        value={formik.values.about_this_course_np}
-                        onChange={(value) => formik.setFieldValue("about_this_course_np", value)}
-                        onBlur={() => formik.setFieldTouched("about_this_course_np")}
+                        value={formik.values.about_this_course}
+                        onChange={(value) => formik.setFieldValue("about_this_course", value)}
+                        onBlur={() => formik.setFieldTouched("about_this_course")}
                     />
-                    {formik.touched.about_this_course_np && formik.errors.about_this_course_np && (
-                        <FormHelperText error>{formik.errors.about_this_course_np}</FormHelperText>
+                    {formik.touched.about_this_course && formik.errors.about_this_course && (
+                        <FormHelperText error>{formik.errors.about_this_course}</FormHelperText>
                     )}
                 </div>
 

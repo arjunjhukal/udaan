@@ -7,7 +7,7 @@ export const createCourseFormData = (values: CourseProps): FormData => {
     formData.append("name", values.name);
     formData.append("slug", values.slug);
     formData.append("description", values.description);
-    formData.append("about_this_course_np", values.about_this_course_np);
+    formData.append("about_this_course", values.about_this_course);
     formData.append("course_type", values.course_type);
 
     // Duration object

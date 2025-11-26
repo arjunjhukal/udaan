@@ -39,7 +39,7 @@ export interface CourseProps {
     thumbnail: File | null;
     thumbnail_url?: string;
     selections: SelectionType;
-    about_this_course_np: string;
+    about_this_course: string;
     teachers: number[];
     course_type: CourseTypeProps
     course_expiry: CourseExpiry;
@@ -67,7 +67,7 @@ export const initialCourseState: CourseProps = {
         sub_category: {},
         position_ids: [],
     },
-    about_this_course_np: "",
+    about_this_course: "",
     teachers: [],
     course_type: "free",
     course_expiry: {
