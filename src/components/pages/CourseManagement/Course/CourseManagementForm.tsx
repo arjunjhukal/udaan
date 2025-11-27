@@ -322,7 +322,7 @@ export default function CourseManagementForm() {
                                         placeholder="0"
                                         type="number"
                                         name="duration.hours"
-                                        value={formik.values.duration.hours}
+                                        value={formik.values.duration?.hours}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         error={
