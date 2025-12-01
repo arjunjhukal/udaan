@@ -64,7 +64,7 @@ export default function CategoryFilter({
                     >
                         Mega-Categories
                     </Typography>
-                    <div className="item__listing">
+                    <div className="item__listing min-h-[120px]">
                         {loadingMegaCategory
                             ? Array.from({ length: 4 }).map((_, i) => (
                                 <Box
@@ -116,7 +116,7 @@ export default function CategoryFilter({
                     >
                         Categories
                     </Typography>
-                    <div className="item__listing">
+                    <div className="item__listing min-h-[120px]">
                         {categories.length === 0 ? (
                             <div className="text-center">
                                 {/* Empty state */}
@@ -207,7 +207,7 @@ export default function CategoryFilter({
                     >
                         Sub- Categories
                     </Typography>
-                    <div className="item__listing">
+                    <div className="item__listing min-h-[120px]">
                         {subCategories.length === 0 ? (
                             <div>
                                 {/* Empty state */}
@@ -298,7 +298,7 @@ export default function CategoryFilter({
                     >
                         Level
                     </Typography>
-                    <div className="item__listing">
+                    <div className="item__listing min-h-[120px]">
                         {positions.map((item) => (
                             <FormControlLabel
                                 key={item.id}

@@ -32,6 +32,8 @@ export const courseApi = createApi({
                     categories: categoryFilter?.category,
                     sub_categories: categoryFilter?.sub_category,
                     positions: categoryFilter?.positions,
+                    teachers: categoryFilter?.teachers,
+                    payment: categoryFilter?.course_type,
                 })
                 return {
                     url: `/course?${queryString}`,

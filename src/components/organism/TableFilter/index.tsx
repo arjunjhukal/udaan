@@ -69,7 +69,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                             padding: "8px 16px"
                         }}
                     /> : ""}
-                    {onFilter ? <Button startIcon={<FilterIcon />} sx={{
+                    {onFilter ? <Button onClick={onFilter} startIcon={<FilterIcon />} sx={{
                         border: `1px solid ${theme.palette.seperator.dark}`
                     }} className="py-2.5! px-3.5! rounded-md!">
                         <Typography variant="subtitle1" color="text.dark">Filter</Typography>

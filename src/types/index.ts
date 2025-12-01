@@ -1,3 +1,4 @@
+import type { CourseTypeProps } from "./course";
 
 export interface QueryParams {
     pageIndex?: number;
@@ -11,4 +12,6 @@ export interface CategoryFilterParams {
     category: number[];
     sub_category: number[];
     positions: number[];
+    teachers?: number[];
+    course_type?: CourseTypeProps[];
 }

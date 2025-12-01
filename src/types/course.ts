@@ -7,6 +7,8 @@ export interface SelectionType {
     category: { [megaCategoryId: number]: number[] };
     sub_category: { [categoryId: number]: number[] };
     position_ids: number[];
+    teacher_ids?: number[];
+    course_type?: CourseTypeProps[];
 }
 
 export type CourseTypeProps = "free" | "expiry" | "subscription"
