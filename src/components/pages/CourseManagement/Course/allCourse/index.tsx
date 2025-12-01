@@ -212,6 +212,7 @@ export default function AllCourse() {
                 </> :
                 <AllCourseGrid
                     data={data?.data?.data || []}
+                    onDelete={openDeleteConfirmation}
 
                 />}
             <TablePagination

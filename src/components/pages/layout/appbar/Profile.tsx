@@ -53,7 +53,7 @@ export default function ProfileMenu() {
             <Box
                 ref={anchorRef}
                 onClick={handleToggle}
-                className="flex gap-2 items-center p-2 rounded-md cursor-pointer"
+                className="flex gap-2 items-center p-2 justify-between rounded-md cursor-pointer"
                 sx={{
                     border: `1px solid ${theme.palette.seperator.dark}`,
                     minWidth: "160px",

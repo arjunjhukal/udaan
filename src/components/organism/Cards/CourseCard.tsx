@@ -1,8 +1,12 @@
 import { Box, Button, Divider, Typography, useTheme } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { PATH } from '../../../routes/PATH';
 import type { CourseProps } from '../../../types/course';
 import Actions from '../../molecules/Action';
-export default function CourseCard({ course }: { course: CourseProps }) {
+export default function CourseCard({ course, onDelete }: { course: CourseProps, onDelete: (selectedRoleIds: string[]) => void; }) {
     const theme = useTheme();
+    const navigate = useNavigate();
+
     return (
         <Box className="course__card rounded-md"
             sx={{
@@ -13,9 +17,9 @@ export default function CourseCard({ course }: { course: CourseProps }) {
                 <img src={course.thumbnail_url || "/logo.svg"} alt="Course" className="w-full h-full object-contain" />
                 <div className="absolute! top-2.5 right-2.5">
                     <Actions
-                        onEdit={() => { }}
-                        onDelete={() => { }}
-                        onView={() => { }}
+                        onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}
+                        onView={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}
+                        onDelete={() => onDelete([course.id?.toString() || ""])}
                     />
                 </div>
 

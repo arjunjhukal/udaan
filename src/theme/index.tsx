@@ -439,14 +439,16 @@ const commonThemeOptions: ThemeOptions = {
         MuiPaginationItem: {
             styleOverrides: {
                 root: ({ theme }) => ({
+                    ...theme.typography.subtitle2,
                     border: `1px solid ${theme.palette.seperator.dark}`,
                     borderRadius: '4px',
                     background: 'white',
-                    width: 34,
+                    minWidth: 34,
                     height: 34,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+
                     "&.Mui-selected": {
                         background: theme.palette.primary.main,
                         color: theme.palette.primary.contrastText
