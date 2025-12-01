@@ -16,7 +16,7 @@ export default function ConfirmationDialog({ open, setOpen, icon, title, descrip
     const theme = useTheme();
     return (
         <Dialog open={open} onClose={handleClose}>
-            <DialogContent className="py-8! px-13! relative rounded-2xl" sx={{
+            <DialogContent className="py-8!  relative rounded-2xl" sx={{
                 boxShadow: "0 4px 20px 0 rgba(0, 8, 251, 0.20)",
                 maxWidth: "409px",
             }}>
@@ -32,7 +32,7 @@ export default function ConfirmationDialog({ open, setOpen, icon, title, descrip
                 </Box> : ""}
                 {title ? <Typography variant="h5" color="text.dark" className="mb-1">{title}</Typography> : ""}
                 {description ? <Typography color="text.middle">{description}</Typography> : ""}
-                <Box className="my-6" sx={{
+                <Box className="mt-6 mb-4" sx={{
                     border: `1px solid ${theme.palette.seperator.dark}`
                 }} />
                 <DialogActions>
