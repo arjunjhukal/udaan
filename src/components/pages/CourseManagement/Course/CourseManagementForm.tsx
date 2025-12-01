@@ -1,4 +1,4 @@
-import { Divider, FormHelperText, InputLabel, OutlinedInput } from "@mui/material";
+import { Box, Divider, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -30,23 +30,23 @@ const validationSchema = (id?: string) => Yup.object().shape({
         .min(3, "Course name must be at least 3 characters")
         .max(200, "Course name must not exceed 200 characters"),
 
-    // duration: Yup.object().shape({
-    //     hours: Yup.number()
-    //         .required("Hours is required")
-    //         .min(0, "Hours must be at least 0")
-    //         .max(999, "Hours must not exceed 999"),
-    //     minutes: Yup.number()
-    //         .required("Minutes is required")
-    //         .min(0, "Minutes must be at least 0")
-    //         .max(59, "Minutes must be between 0 and 59"),
-    // }).test(
-    //     "duration-check",
-    //     "Duration must be at least 1 minute",
-    //     function (value) {
-    //         const { hours, minutes } = value;
-    //         return hours > 0 || minutes > 0;
-    //     }
-    // ),
+    duration: Yup.object().shape({
+        hours: Yup.number()
+            .required("Hours is required")
+            .min(0, "Hours must be at least 0")
+            .max(999, "Hours must not exceed 999"),
+        minutes: Yup.number()
+            .required("Minutes is required")
+            .min(0, "Minutes must be at least 0")
+            .max(59, "Minutes must be between 0 and 59"),
+    }).test(
+        "duration-check",
+        "Duration must be at least 1 minute",
+        function (value) {
+            const { hours, minutes } = value;
+            return hours > 0 || minutes > 0;
+        }
+    ),
 
     description: Yup.string()
         .required("Course description is required")
@@ -313,7 +313,7 @@ export default function CourseManagementForm() {
                                 </FormHelperText>
                             )}
                         </div>
-                        {/* <div className="input__field">
+                        <div className="input__field">
                             <InputLabel className="required">Duration</InputLabel>
                             <div className="flex items-center gap-5">
                                 <div className="hours__wrapper flex items-center gap-2 flex-1">
@@ -359,7 +359,7 @@ export default function CourseManagementForm() {
                                         : formik.errors.duration?.hours || formik.errors.duration?.minutes}
                                 </FormHelperText>
                             )}
-                        </div> */}
+                        </div>
                     </div>
                 </div >
                 <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
