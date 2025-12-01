@@ -1,4 +1,4 @@
-import { Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, OutlinedInput, Typography } from "@mui/material";
+import { Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, OutlinedInput, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 import SearchIcon from "../../../icons/SearchIcon";
 import type { CategoryProps } from "../../../types/category";
@@ -44,7 +44,9 @@ export const CourseFilter = ({
   open,
   onClose
 }: Props) => {
+  const theme = useTheme();
   const [selectedCourseTypes, setSelectedCourseTypes] = useState<string[]>([]);
+
 
   const courseTypes = [
     { value: "free", label: "Free" },
@@ -70,9 +72,10 @@ export const CourseFilter = ({
   const handleResetFilter = () => {
     setSelectedCourseTypes([]);
     onResetFilter();
+    onClose();
   };
 
-  
+
 
   const handleTeacherChange = (teacherId: number, checked: boolean) => {
     const currentTeachers = selections.teacher_ids || [];
@@ -180,13 +183,18 @@ export const CourseFilter = ({
 
           {/* Action Footer */}
           <div className="action__footer flex justify-end items-center gap-2">
-            <Button onClick={handleResetFilter}>
-              Reset Filter
+            <Button onClick={handleResetFilter} className="font-medium!"
+              sx={{
+                background: theme.palette.seperator.dark,
+                color: theme.palette.text.middle
+              }}>
+              {selections ? "Reset & Close Filter" : "Cancel"}
             </Button>
             <Button
               variant="contained"
               color="primary"
               onClick={handleApplyFilter}
+              className="font-medium!"
             >
               Apply Filter
             </Button>

@@ -93,7 +93,7 @@ export default function PrimaryMenu() {
                         <Collapse in={course} timeout="auto" unmountOnExit>
 
                             <List component="div" disablePadding sx={{ pl: 3 }}>
-                                <CAN permissions={["add_courses", "edit_courses", "delete_courses", "view_courses", ]}>
+                                <CAN permissions={["add_courses", "edit_courses", "delete_courses", "view_courses",]}>
                                     <ListItem disablePadding className="menu__item">
                                         <ListItemButton
                                             onClick={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
@@ -260,7 +260,7 @@ export default function PrimaryMenu() {
                 </CAN>
 
                 {/* Subscription Management */}
-                <CAN permissions={["add_subscriptions", "edit_subscriptions", "delete_subscriptions", "view_subscriptions",]}>
+                <CAN permissions={["add_subscription", "edit_subscription", "delete_subscription", "view_subscription",]}>
                     <ListItem disablePadding className="menu__item">
                         <ListItemButton
                             onClick={() => navigate(PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT)}

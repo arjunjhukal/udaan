@@ -30,23 +30,23 @@ const validationSchema = (id?: string) => Yup.object().shape({
         .min(3, "Course name must be at least 3 characters")
         .max(200, "Course name must not exceed 200 characters"),
 
-    duration: Yup.object().shape({
-        hours: Yup.number()
-            .required("Hours is required")
-            .min(0, "Hours must be at least 0")
-            .max(999, "Hours must not exceed 999"),
-        minutes: Yup.number()
-            .required("Minutes is required")
-            .min(0, "Minutes must be at least 0")
-            .max(59, "Minutes must be between 0 and 59"),
-    }).test(
-        "duration-check",
-        "Duration must be at least 1 minute",
-        function (value) {
-            const { hours, minutes } = value;
-            return hours > 0 || minutes > 0;
-        }
-    ),
+    // duration: Yup.object().shape({
+    //     hours: Yup.number()
+    //         .required("Hours is required")
+    //         .min(0, "Hours must be at least 0")
+    //         .max(999, "Hours must not exceed 999"),
+    //     minutes: Yup.number()
+    //         .required("Minutes is required")
+    //         .min(0, "Minutes must be at least 0")
+    //         .max(59, "Minutes must be between 0 and 59"),
+    // }).test(
+    //     "duration-check",
+    //     "Duration must be at least 1 minute",
+    //     function (value) {
+    //         const { hours, minutes } = value;
+    //         return hours > 0 || minutes > 0;
+    //     }
+    // ),
 
     description: Yup.string()
         .required("Course description is required")
@@ -211,7 +211,7 @@ export default function CourseManagementForm() {
         validationSchema: validationSchema(id),
         enableReinitialize: true,
         onSubmit: async (values) => {
-            console.log(values);
+            console.log("inside", values);
             if (id) {
                 try {
                     const formattedData = createCourseFormData(values);
@@ -363,27 +363,57 @@ export default function CourseManagementForm() {
                     </div>
                 </div >
                 <div className="grid md:grid-cols-2 gap-4 lg:gap-6">
-                    <div className="input__field">
-                        <TextEditor
-                            value={formik.values.description}
-                            onChange={(value) => formik.setFieldValue("description", value)}
-                            onBlur={() => formik.setFieldTouched("description")}
+                    <div className="col-span-1">
+                        <div className="input__field">
+                            <TextEditor
+                                value={formik.values.description}
+                                onChange={(value) => formik.setFieldValue("description", value)}
+                                onBlur={() => formik.setFieldTouched("description")}
+                            />
+                            {formik.touched.description && formik.errors.description && (
+                                <FormHelperText error={true} sx={{ mt: 0.5 }}>
+                                    {formik.errors.description}
+                                </FormHelperText>
+                            )}
+                        </div>
+                    </div>
+                    <div className="col-span-1">
+                        <CategoryFilter
+                            megaCategories={megaCategories?.data || []}
+                            categories={categories?.data || []}
+                            subCategories={subCategories?.data || []}
+                            positions={positions?.data?.data || []}
+                            selections={formik.values.selections}
+                            onChange={handleCategoryChange}
+                            loadingMegaCategory={loadingMegaCategory}
                         />
-                        {formik.touched.description && formik.errors.description && (
-                            <FormHelperText error={true} sx={{ mt: 0.5 }}>
-                                {formik.errors.description}
+                        {formik.touched.selections?.mega_category && formik.errors.selections?.mega_category && (
+                            <FormHelperText error sx={{ mt: 0.5 }}>
+                                {formik.errors.selections.mega_category}
+                            </FormHelperText>
+                        )}
+
+                        {/* Flatten category errors */}
+                        {formik.touched.selections?.category && Object.keys(formik.errors.selections?.category || {}).length > 0 && (
+                            <FormHelperText error sx={{ mt: 0.5 }}>
+                                Please select at least one category
+                            </FormHelperText>
+                        )}
+
+                        {/* Flatten sub_category errors */}
+                        {formik.touched.selections?.sub_category && Object.keys(formik.errors.selections?.sub_category || {}).length > 0 && (
+                            <FormHelperText error sx={{ mt: 0.5 }}>
+                                Please select at least one sub-category
+                            </FormHelperText>
+                        )}
+
+                        {/* Position ids error */}
+                        {formik.touched.selections?.position_ids && formik.errors.selections?.position_ids && (
+                            <FormHelperText error sx={{ mt: 0.5 }}>
+                                {formik.errors.selections.position_ids}
                             </FormHelperText>
                         )}
                     </div>
-                    <CategoryFilter
-                        megaCategories={megaCategories?.data || []}
-                        categories={categories?.data || []}
-                        subCategories={subCategories?.data || []}
-                        positions={positions?.data?.data || []}
-                        selections={formik.values.selections}
-                        onChange={handleCategoryChange}
-                        loadingMegaCategory={loadingMegaCategory}
-                    />
                 </div>
                 <Divider sx={{ marginTop: "36px", marginBottom: "36px" }} />
                 <CourseType

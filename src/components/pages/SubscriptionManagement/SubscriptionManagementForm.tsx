@@ -153,6 +153,7 @@ export default function SubscriptionManagementForm({ open, setOpen, selectedPlan
                         isEditMode={!!selectedPlan?.id}
                         isUpdating={updating}
                         handleComfirmationChange={handleClose}
+                        buttonLabel="Subscription"
                     />
                 </form>
             </DialogContent>
