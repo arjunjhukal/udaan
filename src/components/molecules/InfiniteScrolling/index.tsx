@@ -1,10 +1,11 @@
 import { Box, Checkbox, CircularProgress, FormControlLabel, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { v4 as uuidv4 } from "uuid";
 
 interface InfiniteScrollingProps {
     data: any[];
-    hasMore: number;
+    hasMore: boolean;
     selectedItems: number[];
     onSelectionChange: (selectedIds: number[]) => void;
     fetchMore: () => void;
@@ -29,26 +30,36 @@ export default function InfiniteScrolling({
     itemIdKey = "id",
     placeholder = "Search..."
 }: InfiniteScrollingProps) {
+
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Debounce search to avoid too many API calls
+    // --- Map stable UUIDs to each itemId so they don't regenerate every render ---
+    const [uuidMap, setUuidMap] = useState<Record<number, string>>({});
+
     useEffect(() => {
-        const timer = setTimeout(() => {
-            onSearch(searchTerm);
-        }, 500);
+        const newMap = { ...uuidMap };
 
-        return () => clearTimeout(timer);
-    }, [searchTerm, onSearch]);
-
-    const handleToggle = (itemId: number) => {
-        const isSelected = selectedItems.includes(itemId);
-
-        if (isSelected) {
-            onSelectionChange(selectedItems.filter(id => id !== itemId));
-        } else {
-            if (selectedItems.length < maxSelection) {
-                onSelectionChange([...selectedItems, itemId]);
+        data.forEach((item) => {
+            const itemId = item[itemIdKey];
+            if (!newMap[itemId]) {
+                newMap[itemId] = uuidv4();
             }
+        });
+
+        setUuidMap(newMap);
+    }, [data]);
+
+    // Debounced search
+    useEffect(() => {
+        const timer = setTimeout(() => onSearch(searchTerm), 500);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+    const handleToggle = (id: number) => {
+        if (selectedItems.includes(id)) {
+            onSelectionChange(selectedItems.filter(i => i !== id));
+        } else if (selectedItems.length < maxSelection) {
+            onSelectionChange([...selectedItems, id]);
         }
     };
 
@@ -73,8 +84,8 @@ export default function InfiniteScrolling({
                 overflow: 'hidden'
             }}
         >
-            {/* Search and Select All Header */}
-            <Box sx={{ p: 1.5, borderBottom: '1px solid', borderColor: 'divider', bgcolor: 'background.paper' }}>
+            {/* Search + Select All */}
+            <Box sx={{ p: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
                 <TextField
                     fullWidth
                     size="small"
@@ -83,117 +94,82 @@ export default function InfiniteScrolling({
                     onChange={(e) => setSearchTerm(e.target.value)}
                     sx={{ mb: 1 }}
                 />
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                checked={allSelected}
-                                indeterminate={selectedItems.length > 0 && !allSelected}
-                                onChange={handleSelectAll}
-                                disabled={data.length === 0}
-                            />
-                        }
-                        label={
-                            <Typography variant="body2" fontWeight={600}>
-                                Select All
-                            </Typography>
-                        }
-                    />
-                    <Typography variant="caption" color="text.secondary">
-                        {selectedItems.length} / {maxSelection} selected
-                    </Typography>
-                </Box>
+
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={allSelected}
+                            indeterminate={selectedItems.length > 0 && !allSelected}
+                            onChange={handleSelectAll}
+                        />
+                    }
+                    label={<Typography variant="body2" fontWeight={600}>Select All</Typography>}
+                />
+
+                <Typography variant="caption" color="text.secondary">
+                    {selectedItems.length} / {maxSelection} selected
+                </Typography>
             </Box>
 
             {/* Scrollable List */}
-            <Box
-                id="scrollableDiv"
-                sx={{
-                    height: 300,
-                    overflow: 'auto',
-                    bgcolor: 'background.default'
-                }}
-            >
+            <Box id="scrollableDiv" sx={{ height: 300, overflow: "auto" }}>
                 {loading && data.length === 0 ? (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+                    <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
                         <CircularProgress size={24} />
                     </Box>
                 ) : (
                     <InfiniteScroll
                         dataLength={data.length}
                         next={fetchMore}
-                        hasMore={data.length < hasMore}
+                        hasMore={hasMore}
+                        scrollableTarget="scrollableDiv"
                         loader={
-                            <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
-                                <CircularProgress size={24} />
+                            <Box sx={{ textAlign: "center", p: 2 }}>
+                                <CircularProgress size={22} />
                             </Box>
                         }
-                        scrollableTarget="scrollableDiv"
                         endMessage={
-                            data.length > 0 ? (
-                                <Typography
-                                    variant="caption"
-                                    color="text.secondary"
-                                    sx={{ display: 'block', textAlign: 'center', p: 2 }}
-                                >
-                                    No more items to load
+                            data.length > 0 && (
+                                <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>
+                                    No more items
                                 </Typography>
-                            ) : null
+                            )
                         }
                     >
                         {data.length === 0 ? (
-                            <Box sx={{ p: 3, textAlign: 'center' }}>
+                            <Box sx={{ p: 3, textAlign: "center" }}>
                                 <Typography variant="body2" color="text.secondary">
-                                    {searchTerm ? 'No items found' : 'No items available'}
+                                    {searchTerm ? "No items found" : "No items available"}
                                 </Typography>
                             </Box>
                         ) : (
                             data.map((item) => {
                                 const itemId = item[itemIdKey];
+                                const stableKey = uuidMap[itemId];
                                 const isSelected = selectedItems.includes(itemId);
-                                const isDisabled = !isSelected && isMaxReached;
 
                                 return (
                                     <Box
-                                        key={itemId}
+                                        key={stableKey}
                                         sx={{
-                                            borderBottom: '1px solid',
-                                            borderColor: 'divider',
-                                            '&:last-child': {
-                                                borderBottom: 'none'
-                                            },
-                                            '&:hover': {
-                                                bgcolor: 'action.hover'
-                                            },
-                                            bgcolor: isSelected ? 'action.selected' : 'transparent'
+                                            borderBottom: "1px solid",
+                                            borderColor: "divider",
+                                            bgcolor: isSelected ? "action.selected" : "transparent",
+                                            "&:hover": { bgcolor: "action.hover" }
                                         }}
                                     >
                                         <FormControlLabel
-                                            sx={{
-                                                m: 0,
-                                                p: 1.5,
-                                                width: '100%',
-                                                '& .MuiFormControlLabel-label': {
-                                                    flex: 1
-                                                }
-                                            }}
+                                            sx={{ m: 0, p: 1.5, width: "100%" }}
                                             control={
                                                 <Checkbox
                                                     checked={isSelected}
+                                                    disabled={!isSelected && isMaxReached}
                                                     onChange={() => handleToggle(itemId)}
-                                                    disabled={isDisabled}
                                                 />
                                             }
                                             label={
                                                 <Box>
-                                                    <Typography variant="body2">
-                                                        {item[itemLabelKey]}
-                                                    </Typography>
-                                                    {item.description && (
-                                                        <Typography variant="caption" color="text.secondary">
-                                                            {item.description}
-                                                        </Typography>
-                                                    )}
+                                                    <Typography variant="body2">{item[itemLabelKey]}</Typography>
                                                 </Box>
                                             }
                                         />
@@ -205,11 +181,10 @@ export default function InfiniteScrolling({
                 )}
             </Box>
 
-            {/* Warning Message */}
             {isMaxReached && (
-                <Box sx={{ p: 1, bgcolor: 'warning.light', borderTop: '1px solid', borderColor: 'divider' }}>
+                <Box sx={{ p: 1, bgcolor: "warning.light", borderTop: "1px solid", borderColor: "divider" }}>
                     <Typography variant="caption" color="warning.dark">
-                        Maximum selection limit reached ({maxSelection} items)
+                        Maximum selection limit reached ({maxSelection})
                     </Typography>
                 </Box>
             )}

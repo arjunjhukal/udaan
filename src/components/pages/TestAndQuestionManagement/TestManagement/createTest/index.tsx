@@ -17,6 +17,9 @@ export default function CreatTestRoot() {
                         </svg>
                         ),
                         url: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT
+                    },
+                    {
+                        title: "Create Test"
                     }
                 ]}
 

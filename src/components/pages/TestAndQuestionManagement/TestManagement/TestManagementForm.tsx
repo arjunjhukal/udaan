@@ -1,7 +1,7 @@
 import { Box, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { PATH } from "../../../../routes/PATH";
@@ -9,6 +9,7 @@ import { useGetAllCourseQuery } from "../../../../services/courseApi";
 import { useEditOrCreateTestMutation, useGetAllQuestionQuery, useGetTestByIdQuery } from "../../../../services/questionApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
+import type { CourseProps } from "../../../../types/course";
 import { TestInitialState, type TestProps } from "../../../../types/question";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
 import TextEditor from "../../../atoms/TextEditor";
@@ -66,13 +67,9 @@ const testValidationSchema = Yup.object().shape({
         ),
     course_ids: Yup.array()
         .of(Yup.number())
-        .min(1, "At least one course must be selected")
-        .max(10, "Cannot select more than 10 courses")
         .required("Course selection is required"),
     question_ids: Yup.array()
         .of(Yup.number())
-        .min(1, "At least one question must be selected")
-        .max(100, "Cannot select more than 100 questions")
         .required("Question selection is required")
 });
 
@@ -95,8 +92,20 @@ export default function TestManagementForm() {
 
     const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp });
     const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp });
-    const { data: editData } = useGetTestByIdQuery({ id: Number(id) }, { skip: !id });
+    const { data: editData } = useGetTestByIdQuery({ id: Number(id) }, { skip: !!id });
     const [createTest, { isLoading: creatingTest }] = useEditOrCreateTestMutation();
+    const [courseList, setCourseList] = useState<CourseProps[]>([]);
+
+    useEffect(() => {
+        if (!courses?.data?.data) return;
+
+        setCourseList(prev =>
+            courseQp.pageIndex === 1
+                ? courses.data.data
+                : [...prev, ...courses.data.data]
+        );
+    }, [courses]);
+
 
     const getInitialValues = (): TestProps => {
         if (id && editData?.data) {
@@ -144,17 +153,7 @@ export default function TestManagementForm() {
         }
     });
 
-    const fetchMoreCourses = () => {
-        if (courses?.data?.data && courses?.data?.data?.length < courses?.data?.pagination?.total) {
-            setCourseQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
-        }
-    };
 
-    const fetchMoreQuestions = () => {
-        if (questions?.data?.data && questions?.data?.data?.length < questions?.data?.pagination?.total) {
-            setQuestionQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
-        }
-    };
 
     const handleCourseSearch = (searchTerm: string) => {
         setCourseQp(prev => ({
@@ -172,6 +171,27 @@ export default function TestManagementForm() {
         }));
     };
 
+    const calcHasMore = (pagination?: { current_page?: number; total_pages?: number }) => {
+        if (!pagination?.current_page || !pagination?.total_pages) return false;
+        return pagination.current_page < pagination.total_pages;
+    };
+    const coursePagination = courses?.data?.pagination;
+    const questionPagination = questions?.data?.pagination;
+
+    const hasMoreCourses = calcHasMore(coursePagination);
+    const hasMoreQuestions = calcHasMore(questionPagination);
+
+    const fetchMoreCourses = () => {
+        if (hasMoreCourses) {
+            setCourseQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
+        }
+    };
+
+    const fetchMoreQuestions = () => {
+        if (hasMoreQuestions) {
+            setQuestionQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
+        }
+    };
     return (
 
         <form onSubmit={formik.handleSubmit}>
@@ -194,7 +214,7 @@ export default function TestManagementForm() {
                     </div>
                 </div>
 
-                <div className="col-span-2">
+                {/* <div className="col-span-2">
                     <div className="input__field">
                         <InputLabel className="required">Duration</InputLabel>
                         <div className="flex items-center gap-5">
@@ -204,7 +224,7 @@ export default function TestManagementForm() {
                                     placeholder="0"
                                     type="number"
                                     name="duration.hours"
-                                    value={formik.values.duration.hours}
+                                    value={formik.values?.duration.hours}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     error={
@@ -222,7 +242,7 @@ export default function TestManagementForm() {
                                     placeholder="0"
                                     type="number"
                                     name="duration.minutes"
-                                    value={formik.values.duration.minutes}
+                                    value={formik.values?.duration?.minutes}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     error={
@@ -238,11 +258,11 @@ export default function TestManagementForm() {
                             <FormHelperText error sx={{ mt: 1 }}>
                                 {typeof formik.errors.duration === 'string'
                                     ? formik.errors.duration
-                                    : formik.errors.duration.hours || formik.errors.duration.minutes}
+                                    : formik.errors.duration?.hours || formik.errors.duration?.minutes}
                             </FormHelperText>
                         )}
                     </div>
-                </div>
+                </div> */}
 
                 <div className="col-span-2">
                     <div className="input__field">
@@ -336,10 +356,11 @@ export default function TestManagementForm() {
 
                 <div className="col-span-1">
                     <div className="input__field">
-                        <InputLabel className="required">Select Courses (Max 10)</InputLabel>
+                        <InputLabel className="required">Select Courses <Typography variant="caption" color="text.middle">(Select the course you want to add test)</Typography></InputLabel>
                         <InfiniteScrolling
-                            data={courses?.data?.data || []}
-                            hasMore={courses?.data?.pagination?.total || 0}
+                            key="course-list"
+                            data={courseList || []}
+                            hasMore={hasMoreCourses}
                             selectedItems={formik.values.course_ids}
                             onSelectionChange={(selectedIds) => {
                                 formik.setFieldValue("course_ids", selectedIds);
@@ -361,10 +382,11 @@ export default function TestManagementForm() {
 
                 <div className="col-span-1">
                     <div className="input__field">
-                        <InputLabel className="required">Select Questions (Max 100)</InputLabel>
+                        <InputLabel className="required">Select Questions</InputLabel>
                         <InfiniteScrolling
+                            key="question-list"
                             data={questions?.data?.data || []}
-                            hasMore={questions?.data?.pagination?.total || 0}
+                            hasMore={hasMoreQuestions}
                             selectedItems={formik.values.question_ids}
                             onSelectionChange={(selectedIds) => {
                                 formik.setFieldValue("question_ids", selectedIds);

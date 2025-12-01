@@ -1,4 +1,4 @@
-import { Box, Divider, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
+import { Divider, FormHelperText, InputLabel, OutlinedInput } from "@mui/material";
 import { useFormik } from "formik";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -313,7 +313,7 @@ export default function CourseManagementForm() {
                                 </FormHelperText>
                             )}
                         </div>
-                        <div className="input__field">
+                        {/* <div className="input__field">
                             <InputLabel className="required">Duration</InputLabel>
                             <div className="flex items-center gap-5">
                                 <div className="hours__wrapper flex items-center gap-2 flex-1">
@@ -340,7 +340,7 @@ export default function CourseManagementForm() {
                                         placeholder="0"
                                         type="number"
                                         name="duration.minutes"
-                                        value={formik.values.duration.minutes}
+                                        value={formik.values.duration?.minutes}
                                         onChange={formik.handleChange}
                                         onBlur={formik.handleBlur}
                                         error={
@@ -356,10 +356,10 @@ export default function CourseManagementForm() {
                                 <FormHelperText error sx={{ mt: 1 }}>
                                     {typeof formik.errors.duration === 'string'
                                         ? formik.errors.duration
-                                        : formik.errors.duration.hours || formik.errors.duration.minutes}
+                                        : formik.errors.duration?.hours || formik.errors.duration?.minutes}
                                 </FormHelperText>
                             )}
-                        </div>
+                        </div> */}
                     </div>
                 </div >
                 <div className="grid md:grid-cols-2 gap-4 lg:gap-6">

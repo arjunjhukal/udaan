@@ -74,93 +74,109 @@ export default function PrimaryMenu() {
                 </ListItem>
 
                 {/* Course Management Menu */}
-                <ListItem disablePadding className="menu__item">
-                    <ListItemButton
-                        onClick={() => setCourse((prev) => !prev)}
-                        className={isCourseManagementActive() ? "active" : ""}>
-                        <ListItemIcon>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M18.3333 13.9501V3.89174C18.3333 2.89174 17.5167 2.15008 16.525 2.23341H16.475C14.725 2.38341 12.0667 3.27508 10.5833 4.20841L10.4417 4.30008C10.2 4.45008 9.8 4.45008 9.55833 4.30008L9.35 4.17508C7.86667 3.25008 5.21667 2.36674 3.46667 2.22508C2.475 2.14174 1.66667 2.89174 1.66667 3.88341V13.9501C1.66667 14.7501 2.31667 15.5001 3.11667 15.6001L3.35833 15.6334C5.16667 15.8751 7.95833 16.7917 9.55833 17.6667L9.59167 17.6834C9.81667 17.8084 10.175 17.8084 10.3917 17.6834C11.9917 16.8001 14.7917 15.8751 16.6083 15.6334L16.8833 15.6001C17.6833 15.5001 18.3333 14.7501 18.3333 13.9501Z" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M10 4.57495V17.075" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M6.45833 7.07495H4.58333" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M7.08333 9.57495H4.58333" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </ListItemIcon>
-                        <ListItemText primary={t("menus.course_management.root")} />
-                        {course ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={course} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding sx={{ pl: 3 }}>
-                            <ListItem disablePadding className="menu__item">
-                                <ListItemButton
-                                    onClick={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
-                                    className={location.pathname.startsWith(PATH.COURSE_MANAGEMENT.COURSES.ROOT) ? "active-nested" : ""}>
-                                    <ListItemText
-                                        primary={t("menus.course_management.courses.root")}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding className="menu__item">
-                                <ListItemButton
-                                    onClick={() => navigate(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT)}
-                                    className={location.pathname.startsWith(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT) ? "active-nested" : ""}>
-                                    <ListItemText
-                                        primary={t("menus.course_management.live_classes.root")}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding className="menu__item">
-                                <ListItemButton
-                                    onClick={() => navigate(PATH.COURSE_MANAGEMENT.QUIZ.ROOT)}
-                                    className={location.pathname.startsWith(PATH.COURSE_MANAGEMENT.QUIZ.ROOT) ? "active-nested" : ""}>
-                                    <ListItemText
-                                        primary={t("menus.course_management.quiz.root")}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                        </List>
-                    </Collapse>
-                </ListItem>
+                <CAN permissions={["add_courses", "edit_courses", "delete_courses", "view_courses", "add_live_classes", "edit_live_classes", "delete_live_classes", "view_live_classes"]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => setCourse((prev) => !prev)}
+                            className={isCourseManagementActive() ? "active" : ""}>
+                            <ListItemIcon>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18.3333 13.9501V3.89174C18.3333 2.89174 17.5167 2.15008 16.525 2.23341H16.475C14.725 2.38341 12.0667 3.27508 10.5833 4.20841L10.4417 4.30008C10.2 4.45008 9.8 4.45008 9.55833 4.30008L9.35 4.17508C7.86667 3.25008 5.21667 2.36674 3.46667 2.22508C2.475 2.14174 1.66667 2.89174 1.66667 3.88341V13.9501C1.66667 14.7501 2.31667 15.5001 3.11667 15.6001L3.35833 15.6334C5.16667 15.8751 7.95833 16.7917 9.55833 17.6667L9.59167 17.6834C9.81667 17.8084 10.175 17.8084 10.3917 17.6834C11.9917 16.8001 14.7917 15.8751 16.6083 15.6334L16.8833 15.6001C17.6833 15.5001 18.3333 14.7501 18.3333 13.9501Z" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M10 4.57495V17.075" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M6.45833 7.07495H4.58333" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M7.08333 9.57495H4.58333" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </ListItemIcon>
+                            <ListItemText primary={t("menus.course_management.root")} />
+                            {course ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+                        <Collapse in={course} timeout="auto" unmountOnExit>
+
+                            <List component="div" disablePadding sx={{ pl: 3 }}>
+                                <CAN permissions={["add_courses", "edit_courses", "delete_courses", "view_courses", ]}>
+                                    <ListItem disablePadding className="menu__item">
+                                        <ListItemButton
+                                            onClick={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
+                                            className={location.pathname.startsWith(PATH.COURSE_MANAGEMENT.COURSES.ROOT) ? "active-nested" : ""}>
+                                            <ListItemText
+                                                primary={t("menus.course_management.courses.root")}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                </CAN>
+                                <CAN permissions={["add_live_classes", "edit_live_classes", "delete_live_classes", "view_live_classes"]}>
+                                    <ListItem disablePadding className="menu__item">
+                                        <ListItemButton
+                                            onClick={() => navigate(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT)}
+                                            className={location.pathname.startsWith(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT) ? "active-nested" : ""}>
+                                            <ListItemText
+                                                primary={t("menus.course_management.live_classes.root")}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                </CAN>
+                                <CAN permissions={["add_quizs", "edit_quizs", "delete_quizs", "view_quizs"]}>
+                                    <ListItem disablePadding className="menu__item">
+                                        <ListItemButton
+                                            onClick={() => navigate(PATH.COURSE_MANAGEMENT.QUIZ.ROOT)}
+                                            className={location.pathname.startsWith(PATH.COURSE_MANAGEMENT.QUIZ.ROOT) ? "active-nested" : ""}>
+                                            <ListItemText
+                                                primary={t("menus.course_management.quiz.root")}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                </CAN>
+                            </List>
+                        </Collapse>
+                    </ListItem>
+                </CAN>
 
                 {/* Test & Question Management Menu */}
-                <ListItem disablePadding className="menu__item">
-                    <ListItemButton
-                        onClick={() => setOpenTest((prev) => !prev)}
-                        className={isTestManagementActive() ? "active" : ""}>
-                        <ListItemIcon>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M18.3333 13.9501V3.89174C18.3333 2.89174 17.5167 2.15008 16.525 2.23341H16.475C14.725 2.38341 12.0667 3.27508 10.5833 4.20841L10.4417 4.30008C10.2 4.45008 9.8 4.45008 9.55833 4.30008L9.35 4.17508C7.86667 3.25008 5.21667 2.36674 3.46667 2.22508C2.475 2.14174 1.66667 2.89174 1.66667 3.88341V13.9501C1.66667 14.7501 2.31667 15.5001 3.11667 15.6001L3.35833 15.6334C5.16667 15.8751 7.95833 16.7917 9.55833 17.6667L9.59167 17.6834C9.81667 17.8084 10.175 17.8084 10.3917 17.6834C11.9917 16.8001 14.7917 15.8751 16.6083 15.6334L16.8833 15.6001C17.6833 15.5001 18.3333 14.7501 18.3333 13.9501Z" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M10 4.57495V17.075" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M6.45833 7.07495H4.58333" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M7.08333 9.57495H4.58333" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </ListItemIcon>
-                        <ListItemText primary={t("menus.test_question_management.root")} />
-                        {openTest ? <ExpandLess /> : <ExpandMore />}
-                    </ListItemButton>
-                    <Collapse in={openTest} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding sx={{ pl: 3 }}>
-                            <ListItem disablePadding className="menu__item">
-                                <ListItemButton
-                                    onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT)}
-                                    className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT) ? "active-nested" : ""}>
-                                    <ListItemText
-                                        primary={t("menus.test_question_management.question.root")}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                            <ListItem disablePadding className="menu__item">
-                                <ListItemButton
-                                    onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT)}
-                                    className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT) ? "active-nested" : ""}>
-                                    <ListItemText
-                                        primary={t("menus.test_question_management.test.root")}
-                                    />
-                                </ListItemButton>
-                            </ListItem>
-                        </List>
-                    </Collapse>
-                </ListItem>
+                <CAN permissions={["add_questions", "edit_questions", "delete_questions", "view_questions", "add_tests", "edit_tests", "delete_tests", "view_tests"]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => setOpenTest((prev) => !prev)}
+                            className={isTestManagementActive() ? "active" : ""}>
+                            <ListItemIcon>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M18.3333 13.9501V3.89174C18.3333 2.89174 17.5167 2.15008 16.525 2.23341H16.475C14.725 2.38341 12.0667 3.27508 10.5833 4.20841L10.4417 4.30008C10.2 4.45008 9.8 4.45008 9.55833 4.30008L9.35 4.17508C7.86667 3.25008 5.21667 2.36674 3.46667 2.22508C2.475 2.14174 1.66667 2.89174 1.66667 3.88341V13.9501C1.66667 14.7501 2.31667 15.5001 3.11667 15.6001L3.35833 15.6334C5.16667 15.8751 7.95833 16.7917 9.55833 17.6667L9.59167 17.6834C9.81667 17.8084 10.175 17.8084 10.3917 17.6834C11.9917 16.8001 14.7917 15.8751 16.6083 15.6334L16.8833 15.6001C17.6833 15.5001 18.3333 14.7501 18.3333 13.9501Z" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M10 4.57495V17.075" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M6.45833 7.07495H4.58333" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M7.08333 9.57495H4.58333" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </ListItemIcon>
+                            <ListItemText primary={t("menus.test_question_management.root")} />
+                            {openTest ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+                        <Collapse in={openTest} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding sx={{ pl: 3 }}>
+                                <CAN permissions={["add_questions", "edit_questions", "delete_questions", "view_questions"]}>
+                                    <ListItem disablePadding className="menu__item">
+                                        <ListItemButton
+                                            onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT)}
+                                            className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT) ? "active-nested" : ""}>
+                                            <ListItemText
+                                                primary={t("menus.test_question_management.question.root")}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                </CAN>
+                                <CAN permissions={["add_tests", "edit_tests", "delete_tests", "view_tests"]}>
+                                    <ListItem disablePadding className="menu__item">
+                                        <ListItemButton
+                                            onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT)}
+                                            className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT) ? "active-nested" : ""}>
+                                            <ListItemText
+                                                primary={t("menus.test_question_management.test.root")}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                </CAN>
+                            </List>
+                        </Collapse>
+                    </ListItem>
+                </CAN>
+
 
                 {/* Role Management */}
                 <CAN permissions={["add_roles", "edit_roles", "delete_roles", "view_roles"]}>
@@ -244,21 +260,23 @@ export default function PrimaryMenu() {
                 </CAN>
 
                 {/* Subscription Management */}
-                <ListItem disablePadding className="menu__item">
-                    <ListItemButton
-                        onClick={() => navigate(PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT)}
-                        className={location.pathname.startsWith(PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT) ? "active" : ""}>
-                        <ListItemIcon>
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M14.167 17.0832H5.83366C3.33366 17.0832 1.66699 15.8332 1.66699 12.9165V7.08317C1.66699 4.1665 3.33366 2.9165 5.83366 2.9165H14.167C16.667 2.9165 18.3337 4.1665 18.3337 7.08317V12.9165C18.3337 15.8332 16.667 17.0832 14.167 17.0832Z" stroke="#9CA3B0" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="#9CA3B0" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M4.58301 7.9165V12.0832" stroke="#9CA3B0" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M15.417 7.9165V12.0832" stroke="#9CA3B0" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </ListItemIcon>
-                        <ListItemText primary={t("menus.subscription_plan.root")} />
-                    </ListItemButton>
-                </ListItem>
+                <CAN permissions={["add_subscriptions", "edit_subscriptions", "delete_subscriptions", "view_subscriptions",]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => navigate(PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT)}
+                            className={location.pathname.startsWith(PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT) ? "active" : ""}>
+                            <ListItemIcon>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14.167 17.0832H5.83366C3.33366 17.0832 1.66699 15.8332 1.66699 12.9165V7.08317C1.66699 4.1665 3.33366 2.9165 5.83366 2.9165H14.167C16.667 2.9165 18.3337 4.1665 18.3337 7.08317V12.9165C18.3337 15.8332 16.667 17.0832 14.167 17.0832Z" stroke="#9CA3B0" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="#9CA3B0" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M4.58301 7.9165V12.0832" stroke="#9CA3B0" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M15.417 7.9165V12.0832" stroke="#9CA3B0" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </ListItemIcon>
+                            <ListItemText primary={t("menus.subscription_plan.root")} />
+                        </ListItemButton>
+                    </ListItem>
+                </CAN>
             </List>
         </Box>
     );

@@ -160,7 +160,7 @@ export default function AllTestListing() {
             accessorKey: "duration",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
-                    {row.original.duration.hours} Hrs {row.original.duration.minutes} Mins
+                    {row.original.duration.hours} Hrs {row.original.duration?.minutes} Mins
                 </Typography>
             ),
         },

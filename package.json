@@ -33,6 +33,7 @@
 		"react-redux": "^9.2.0",
 		"react-router-dom": "^7.9.5",
 		"tailwindcss": "^4.1.16",
+		"uuid": "^13.0.0",
 		"yup": "^1.7.1"
 	},
 	"devDependencies": {

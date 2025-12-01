@@ -79,7 +79,7 @@ export const questionApi = createApi({
                     search: search,
                 });
                 return {
-                    url: `admin/test?${queryString}`,
+                    url: `/admin/test?${queryString}`,
                     method: "GET",
                 };
             },
@@ -87,14 +87,14 @@ export const questionApi = createApi({
         }),
         getTestById: builder.query<{ data: TestProps }, { id?: number }>({
             query: ({ id }) => ({
-                url: `admin/test/${id}`,
+                url: `/admin/test/${id}`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
         deleteTest: builder.mutation<GlobalResponse, { body: string[] }>({
             query: ({ body }) => ({
-                url: `admin/test`,
+                url: `/admin/test`,
                 method: "DELETE",
                 body: {
                     tests: body
