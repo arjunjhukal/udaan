@@ -119,7 +119,8 @@ export const CourseFilter = ({
                 placeholder="Search teachers..."
                 startAdornment={<SearchIcon />}
                 sx={{
-                  padding: "6px 8px"
+                  padding: "6px 8px",
+                  gap: "4px"
                 }}
               />
             </div>
@@ -162,7 +163,7 @@ export const CourseFilter = ({
               <Typography variant="h5">Course Type</Typography>
             </div>
             <Divider className="mb-3.5! mt-2!" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-9">
               {courseTypes.map((type) => (
                 <div className="col-span-1" key={type.value}>
                   <FormControlLabel

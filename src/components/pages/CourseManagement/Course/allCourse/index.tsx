@@ -16,6 +16,7 @@ import Actions from "../../../../molecules/Action";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
+import EmptyRoute from "../../../../organism/EmptyRoute";
 import { CourseFilter } from "../../../../organism/Filter/CourseFilter";
 import PageHeader from "../../../../organism/PageHeader";
 import type { LayoutProps } from "../../../../organism/TableFilter";
@@ -56,6 +57,7 @@ export default function AllCourse() {
 
     const categoryFilter = getCategoryFilterParams();
 
+    console.log(categoryFilter);
 
     const { data, isLoading } = useGetAllCourseQuery({
         ...qp,
@@ -160,11 +162,20 @@ export default function AllCourse() {
             ),
         },
         {
+            header: "Course Type",
+            accessorKey: "course_type",
+            cell: ({ row }) => (
+                <Typography fontWeight={500} className="capitalize">
+                    {row.original.course_type || "N/A"}
+                </Typography>
+            ),
+        },
+        {
             header: "Price",
             accessorKey: "price",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
-                    {row.original.course_type || "N/A"}
+                    {row.original.marked_price || "N/A"}
                 </Typography>
             ),
         },
@@ -202,6 +213,7 @@ export default function AllCourse() {
         },
     ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate])
 
+
     return (
         <div className="course__root">
             <PageHeader
@@ -229,23 +241,33 @@ export default function AllCourse() {
                 setLayout={setLayout}
                 onFilter={() => setFilterDialogOpen(true)}
             />
-            {layout === "table" ?
-                <>
-                    <UdaanTable
-                        data={courses}
-                        columns={columns}
-                        loading={isLoading}
-                    />
-                </> :
-                <AllCourseGrid
-                    data={courses}
-                    onDelete={openDeleteConfirmation}
-                />}
-            <TablePagination
-                qp={qp}
-                setQp={setQp}
-                totalPages={data?.data?.pagination?.total_pages || 0}
-            />
+            {
+                !isLoading && !courses.length ? <EmptyRoute
+                    title="No Course Found"
+                    message={`We couldn't find any courses matching "${search}".`}
+                /> : (
+                    <>
+                        {layout === "table" ?
+                            <>
+                                <UdaanTable
+                                    data={courses}
+                                    columns={columns}
+                                    loading={isLoading}
+                                />
+                            </> :
+                            <AllCourseGrid
+                                data={courses}
+                                onDelete={openDeleteConfirmation}
+                            />}
+                        <TablePagination
+                            qp={qp}
+                            setQp={setQp}
+                            totalPages={data?.data?.pagination?.total_pages || 0}
+                        />
+                    </>
+                )
+            }
+
 
             <ConfirmationDialog
                 open={openConfirm}

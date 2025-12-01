@@ -44,7 +44,7 @@ export default function MakuraDatePicker({
         value,
         onChange,
         format: displayFormat,
-        minDate: minDate || undefined, // Set minimum date if provided
+        minDate: minDate || undefined,
         slots: {
             openPickerIcon: ArrowDownIcon,
         },

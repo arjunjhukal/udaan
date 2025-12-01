@@ -191,12 +191,12 @@ export const useCourseFilter = () => {
 
         // teachers (array flat)
         if (selections?.teacher_ids && selections?.teacher_ids?.length > 0) {
-            params.teacher_ids = selections.teacher_ids;
+            params.teachers = selections.teacher_ids;
         }
 
         // course types (array flat)
         if (courseTypes?.length > 0) {
-            params.course_types = courseTypes;
+            params.payment = courseTypes;
         }
 
         return params;
