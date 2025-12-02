@@ -114,7 +114,7 @@
             "subscription_plan": {
                 "title": "No Plans Available",
                 "description": "You haven’t created any plans yet. Start building your first plan.",
-                "action": "Create SUbscription Plan"
+                "action": "Create Subscription Plan"
             }
         },
         "toasts": {

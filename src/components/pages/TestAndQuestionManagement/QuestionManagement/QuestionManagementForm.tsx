@@ -2,11 +2,10 @@ import { Add } from "@mui/icons-material";
 import {
     Autocomplete,
     Button,
+    Checkbox,
     FormControlLabel,
-    IconButton,
     InputLabel,
     OutlinedInput,
-    Radio,
     TextField,
     Typography
 } from "@mui/material";
@@ -39,9 +38,14 @@ const questionValidationSchema = Yup.object().shape({
     megacategory_id: Yup.number()
         .nullable()
         .required("Mega category is required"),
-    points: Yup.number()
-        .min(1, "Points must be at least 1")
-        .required("Points is required"),
+    points: Yup.number().when("question_type", {
+        is: "subjective",
+        then: (schema) =>
+            schema
+                .min(1, "Points must be at least 1")
+                .required("Points is required"),
+        otherwise: (schema) => schema.notRequired()
+    }),
     question: Yup.string()
         .trim()
         .required("Question is required"),
@@ -68,7 +72,6 @@ const questionValidationSchema = Yup.object().shape({
         otherwise: (schema) => schema.notRequired()
     })
 });
-
 export default function QuestionManagementForm({ setOpen, editData }: Props) {
     const dispatch = useAppDispatch();
     const { data } = useGetAllMegaCategoryQuery();
@@ -81,7 +84,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
     const formik = useFormik<QuestionProps>({
         initialValues: editData || QuestionInitialState,
         validationSchema: questionValidationSchema,
-        enableReinitialize: true, // This allows form to reinitialize when editData changes
+        enableReinitialize: true,
         onSubmit: async (values) => {
             try {
                 const response = await createOrUpdateQuestion({ body: values }).unwrap();
@@ -195,7 +198,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                     </div>
                 </div>
 
-                <div className="col-span-1">
+                {formik.values.question_type === "subjective" ? <div className="col-span-1">
                     <div className="input__field">
                         <InputLabel>
                             Question Weight{" "}
@@ -223,7 +226,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                             </Typography>
                         )}
                     </div>
-                </div>
+                </div> : ""}
 
                 <div className="col-span-2">
                     <div className="input__field">
@@ -283,22 +286,15 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
 
             {isMCQ && (
                 <>
-                    <div className="gap-6 grid grid-cols-12 mt-6">
-                        <div className="col-span-7">
-                            <Typography variant="subtitle1" color="text.primary">
-                                Answer Options
-                            </Typography>
-                        </div>
-                        <div className="col-span-5">
-                            <Typography variant="subtitle1" color="text.primary">
-                                Mark Correct Answer
-                            </Typography>
-                        </div>
+                    <div className="mt-6">
+                        <Typography variant="subtitle1" color="text.primary">
+                            Answer Options
+                        </Typography>
                     </div>
 
-                    {formik.values.options.map((option, index) => (
-                        <div key={index} className="gap-6 grid grid-cols-12 mt-6 items-end">
-                            <div className="col-span-7">
+                    <div className="grid grid-cols-2 gap-4">
+                        {formik.values.options.map((option, index) => (
+                            <div key={index} className="flex flex-col gap-4">
                                 <TextEditor
                                     label={`Option ${index + 1}`}
                                     value={option.option}
@@ -311,38 +307,40 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                                         (formik.errors.options?.[index] as any)?.option
                                     }
                                 />
+
+                                <div className="flex items-center gap-4">
+                                    <FormControlLabel
+                                        label="Mark Correct Answer"
+                                        control={
+                                            <Checkbox
+                                                color="success"
+                                                checked={option.is_correct}
+                                                onChange={() => handleCorrectAnswerChange(index)}
+                                            />
+                                        }
+                                        className="items-center!"
+                                    />
+                                    {formik.values.options.length > 1 && (
+                                        <Button
+                                            onClick={() => removeOption(index)}
+                                            color="error"
+                                            size="small"
+                                            className="gap-1! items-center!"
+                                        >
+                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <path d="M17.5 4.98332C14.725 4.70832 11.9333 4.56665 9.15 4.56665C7.5 4.56665 5.85 4.64998 4.2 4.81665L2.5 4.98332" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M7.08331 4.14175L7.26665 3.05008C7.39998 2.25841 7.49998 1.66675 8.90831 1.66675H11.0916C12.5 1.66675 12.6083 2.29175 12.7333 3.05841L12.9166 4.14175" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M15.7084 7.6167L15.1667 16.0084C15.075 17.3167 15 18.3334 12.675 18.3334H7.32502C5.00002 18.3334 4.92502 17.3167 4.83335 16.0084L4.29169 7.6167" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M8.60834 13.75H11.3833" stroke="#848484" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M7.91669 10.4167H12.0834" stroke="#848484" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                            <Typography variant="subtitle1">Delete</Typography>
+                                        </Button>
+                                    )}
+                                </div>
                             </div>
-                            <div className="col-span-4">
-                                <FormControlLabel
-                                    label=""
-                                    control={
-                                        <Radio
-                                            color="success"
-                                            checked={option.is_correct}
-                                            onChange={() => handleCorrectAnswerChange(index)}
-                                        />
-                                    }
-                                />
-                            </div>
-                            <div className="col-span-1">
-                                {formik.values.options.length > 1 && (
-                                    <IconButton
-                                        onClick={() => removeOption(index)}
-                                        color="error"
-                                        size="small"
-                                    >
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M17.5 4.98332C14.725 4.70832 11.9333 4.56665 9.15 4.56665C7.5 4.56665 5.85 4.64998 4.2 4.81665L2.5 4.98332" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            <path d="M7.08331 4.14175L7.26665 3.05008C7.39998 2.25841 7.49998 1.66675 8.90831 1.66675H11.0916C12.5 1.66675 12.6083 2.29175 12.7333 3.05841L12.9166 4.14175" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            <path d="M15.7084 7.6167L15.1667 16.0084C15.075 17.3167 15 18.3334 12.675 18.3334H7.32502C5.00002 18.3334 4.92502 17.3167 4.83335 16.0084L4.29169 7.6167" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            <path d="M8.60834 13.75H11.3833" stroke="#848484" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            <path d="M7.91669 10.4167H12.0834" stroke="#848484" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    </IconButton>
-                                )}
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
 
                     {formik.touched.options && typeof formik.errors.options === "string" && (
                         <Typography variant="caption" color="error" className="mt-2 block">

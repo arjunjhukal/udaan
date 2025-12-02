@@ -21,7 +21,7 @@ export const QuestionInitialState: QuestionProps = {
     id: null,
     points: 0,
     question: "",
-    options: [{ id: null, option: "", is_correct: false }],
+    options: [{ id: null, option: "", is_correct: false }, { id: null, option: "", is_correct: false }],
     megacategory_id: null,
     question_type: "mcq"
 };
