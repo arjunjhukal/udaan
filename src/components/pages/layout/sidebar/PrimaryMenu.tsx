@@ -260,7 +260,7 @@ export default function PrimaryMenu() {
                 </CAN>
 
                 {/* Subscription Management */}
-                <CAN permissions={["add_subscription", "edit_subscription", "delete_subscription", "view_subscription",]}>
+                <CAN permissions={["add_subscriptions", "edit_subscriptions", "delete_subscriptions", "view_subscriptions",]}>
                     <ListItem disablePadding className="menu__item">
                         <ListItemButton
                             onClick={() => navigate(PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT)}

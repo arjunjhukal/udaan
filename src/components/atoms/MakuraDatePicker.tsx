@@ -1,9 +1,11 @@
 "use client";
+import { TextField } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { Dayjs } from "dayjs";
+import { useState } from "react";
 
 interface MakuraDatePickerProps {
     value: Dayjs | null;
@@ -13,11 +15,10 @@ interface MakuraDatePickerProps {
     placeholder?: string;
     includeTime?: boolean;
     format?: string;
-    minDate?: Dayjs | null; // New prop for minimum date
-    error?: boolean; // For error state
+    minDate?: Dayjs | null;
+    error?: boolean;
 }
 
-// Your custom SVG icon
 function ArrowDownIcon() {
     return (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -37,40 +38,71 @@ export default function MakuraDatePicker({
     minDate,
     error = false,
 }: MakuraDatePickerProps) {
-    // Determine format based on whether time is included
+    const [open, setOpen] = useState(false);
     const displayFormat = format || (includeTime ? "YYYY/MM/DD hh:mm A" : "YYYY/MM/DD");
+
+    const CustomTextField = (params: any) => {
+        return (
+            <div style={{ position: 'relative', width: fullWidth ? '100%' : 'auto' }}>
+                <TextField
+                    {...params}
+                    required={required}
+                    fullWidth={fullWidth}
+                    error={error}
+                    onClick={() => setOpen(true)}
+                    sx={{
+                        "& .MuiOutlinedInput-root": {
+                            fontSize: "14px",
+                            cursor: "pointer",
+                            "& fieldset": {
+                                borderColor: error ? "#d32f2f" : "#E5E7EB",
+                            },
+                            "&:hover fieldset": {
+                                borderColor: error ? "#d32f2f" : "#1D82F5",
+                            },
+                            "&.Mui-focused fieldset": {
+                                borderColor: error ? "#d32f2f" : "#1D82F5",
+                            },
+                        },
+                        "& .MuiOutlinedInput-input": {
+                            cursor: "pointer",
+                            color: value ? 'inherit' : 'transparent',
+                        },
+                    }}
+                />
+                {!value && (
+                    <div
+                        onClick={() => setOpen(true)}
+                        style={{
+                            position: 'absolute',
+                            left: '14px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            color: '#9CA3B0',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        {placeholder}
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     const commonProps = {
         value,
         onChange,
         format: displayFormat,
         minDate: minDate || undefined,
+        open,
+        onOpen: () => setOpen(true),
+        onClose: () => setOpen(false),
+        enableAccessibleFieldDOMStructure: false,
         slots: {
             openPickerIcon: ArrowDownIcon,
-        },
-        slotProps: {
-            textField: {
-                required,
-                fullWidth,
-                error,
-                inputProps: {
-                    placeholder,
-                },
-                sx: {
-                    "& .MuiOutlinedInput-root": {
-                        fontSize: "14px",
-                        "& fieldset": {
-                            borderColor: error ? "#d32f2f" : "#E5E7EB",
-                        },
-                        "&:hover fieldset": {
-                            borderColor: error ? "#d32f2f" : "#1D82F5",
-                        },
-                        "&.Mui-focused fieldset": {
-                            borderColor: error ? "#d32f2f" : "#1D82F5",
-                        },
-                    },
-                },
-            },
+            textField: CustomTextField,
         },
     };
 

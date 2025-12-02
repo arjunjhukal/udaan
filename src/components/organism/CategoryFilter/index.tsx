@@ -16,7 +16,7 @@ interface Props {
     megaCategories: CategoryProps[];
     categories: CategoryProps[];
     subCategories: CategoryProps[];
-    positions: positionProps[];
+    positions?: positionProps[];
     selections: SelectionType;
     onChange: (
         type: "mega" | "category" | "sub" | "position",
@@ -43,14 +43,15 @@ export default function CategoryFilter({
     return (
         <div className="input__field flex flex-col">
             <InputLabel className="required">Category</InputLabel>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-2 2xl:grid-cols-4 gap-3 h-full">
+            <div className=" flex gap-3 h-full">
                 {/* Mega Categories */}
-                <Box
+                {megaCategories ? <Box
                     sx={{
                         border: `1px solid ${theme.palette.seperator.dark}`,
                         borderRadius: "8px",
                         padding: "8px",
                     }}
+                    className="w-full"
                 >
                     <Typography
                         variant="caption"
@@ -94,15 +95,16 @@ export default function CategoryFilter({
                                 />
                             ))}
                     </div>
-                </Box>
-
+                </Box> : ""
+                }
                 {/* Categories, grouped by mega categories */}
-                <Box
+                {categories ? <Box
                     sx={{
                         border: `1px solid ${theme.palette.seperator.dark}`,
                         borderRadius: "8px",
                         padding: "8px",
                     }}
+                    className="w-full"
                 >
                     <Typography
                         variant="caption"
@@ -185,15 +187,16 @@ export default function CategoryFilter({
                             ))
                         )}
                     </div>
-                </Box>
+                </Box> : ""}
 
                 {/* Sub Categories */}
-                <Box
+                {subCategories ? <Box
                     sx={{
                         border: `1px solid ${theme.palette.seperator.dark}`,
                         borderRadius: "8px",
                         padding: "8px",
                     }}
+                    className="w-full"
                 >
                     <Typography
                         variant="caption"
@@ -276,15 +279,16 @@ export default function CategoryFilter({
                             ))
                         )}
                     </div>
-                </Box>
-
+                </Box> : ""
+                }
                 {/* Level (positions) */}
-                <Box
+                {positions.length > 0 ? <Box
                     sx={{
                         border: `1px solid ${theme.palette.seperator.dark}`,
                         borderRadius: "8px",
                         padding: "8px",
                     }}
+                    className="w-full"
                 >
                     <Typography
                         variant="caption"
@@ -318,7 +322,7 @@ export default function CategoryFilter({
                             />
                         ))}
                     </div>
-                </Box>
+                </Box> : ""}
             </div>
         </div>
     );

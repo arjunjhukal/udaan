@@ -2,17 +2,17 @@ import { styled } from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
 
 export const YesNoSwitch = styled(Switch)(({ theme }) => ({
-    width: 60,
+    width: 70,
     height: 30,
     padding: 0,
     display: "flex",
     "& .MuiSwitch-switchBase": {
         padding: 2,
         "&.Mui-checked": {
-            transform: "translateX(30px)",
+            transform: "translateX(40px)",
             color: "#fff",
             "& + .MuiSwitch-track": {
-                backgroundColor: theme.palette.success.main,
+                backgroundColor: theme.palette.primary.main,
                 opacity: 1,
             },
         },
@@ -27,7 +27,7 @@ export const YesNoSwitch = styled(Switch)(({ theme }) => ({
 
     "& .MuiSwitch-track": {
         borderRadius: 30,
-        backgroundColor: "#A3A7AD", // grey bg like screenshot
+        backgroundColor: theme.palette.seperator.dark,
         opacity: 1,
         position: "relative",
         transition: theme.transitions.create(["background-color"]),
@@ -37,7 +37,7 @@ export const YesNoSwitch = styled(Switch)(({ theme }) => ({
     "& .MuiSwitch-track:before": {
         content: '"NO"',
         position: "absolute",
-        left: 32,
+        left: 42,
         top: "50%",
         transform: "translateY(-50%)",
         color: "#fff",

@@ -1,5 +1,5 @@
 // hooks/useCourseFilter.ts
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery, useGetAllSubCategoryRelatedToCategoryQuery } from '../services/categoryApi';
 import { useGetAllPositionQuery } from '../services/positionApi';
 import { useGetAllUserQuery } from '../services/userApi';
@@ -149,6 +149,10 @@ export const useCourseFilter = () => {
         setCourseTypes([]);
         localStorage.removeItem(STORAGE_KEY);
     }, []);
+
+    useEffect(() => {
+        resetFilters()
+    }, [])
 
     const hasActiveFilters = useCallback(() => {
         return (

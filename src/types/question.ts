@@ -32,15 +32,16 @@ export interface QuestionList extends GlobalResponse {
         pagination: Pagination
     }
 }
+export type TestTypeProps = "subjective" | "mcq"
 
 export interface TestProps {
+    test_type: TestTypeProps;
     id?: number;
     name: string;
     duration: {
         hours: number;
         minutes: number;
     };
-    description: string;
     full_marks: number;
     pass_marks: number;
     start_datetime: string;
@@ -51,23 +52,29 @@ export interface TestProps {
     questions?: number;
     status?: null;
     no_of_students?: number;
+    is_scheduled: boolean;
+    total_questions: number | null;
+    marks_per_question: number | null;
 }
 
 
 
 export const TestInitialState: TestProps = {
+    test_type: "mcq",
     name: "",
     duration: {
         hours: 0,
         minutes: 0
     },
-    description: "",
     full_marks: 100,
     pass_marks: 40,
     start_datetime: "",
     end_datetime: "",
     course_ids: [],
-    question_ids: []
+    question_ids: [],
+    is_scheduled: false,
+    total_questions: null,
+    marks_per_question: 0,
 };
 export interface TestList {
     data: {

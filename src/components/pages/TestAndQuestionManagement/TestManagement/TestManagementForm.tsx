@@ -1,4 +1,4 @@
-import { FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
+import { Box, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
@@ -9,17 +9,26 @@ import { useGetAllCourseQuery } from "../../../../services/courseApi";
 import { useEditOrCreateTestMutation, useGetAllQuestionQuery, useGetTestByIdQuery } from "../../../../services/questionApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
+import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { CourseProps } from "../../../../types/course";
-import { TestInitialState, type TestProps } from "../../../../types/question";
+import { TestInitialState, type QuestionProps, type TestProps } from "../../../../types/question";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
-import TextEditor from "../../../atoms/TextEditor";
+import StyledToggleButtons from "../../../atoms/StyledToggleSwitch";
+import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FooterAction from "../../../molecules/FooterAction";
 import InfiniteScrolling from "../../../molecules/InfiniteScrolling";
+import CategoryFilter from "../../../organism/CategoryFilter";
 
 const testValidationSchema = Yup.object().shape({
     name: Yup.string()
         .trim()
         .required("Name is required"),
+    test_type: Yup.string()
+        .oneOf(["mcq", "subjective"], "Invalid test type")
+        .required("Test type is required"),
+    total_questions: Yup.number()
+        .min(1, "Total questions must be at least 1")
+        .required("Total questions is required"),
     duration: Yup.object().shape({
         hours: Yup.number()
             .min(0, "Hours must be at least 0")
@@ -36,12 +45,20 @@ const testValidationSchema = Yup.object().shape({
             return (value.hours ?? 0) > 0 || (value.minutes ?? 0) > 0;
         }
     ),
-    description: Yup.string()
-        .trim()
-        .required("Description is required"),
-    full_marks: Yup.number()
-        .min(1, "Full marks must be at least 1")
-        .required("Full marks is required"),
+    full_marks: Yup.number().when("test_type", {
+        is: "subjective",
+        then: (schema) => schema
+            .min(1, "Full marks must be at least 1")
+            .required("Full marks is required"),
+        otherwise: (schema) => schema.notRequired()
+    }),
+    marks_per_question: Yup.number().when("test_type", {
+        is: "mcq",
+        then: (schema) => schema
+            .min(1, "Marks per question must be at least 1")
+            .required("Marks per question is required"),
+        otherwise: (schema) => schema.notRequired()
+    }),
     pass_marks: Yup.number()
         .min(0, "Pass marks must be at least 0")
         .required("Pass marks is required")
@@ -49,27 +66,40 @@ const testValidationSchema = Yup.object().shape({
             "pass-marks-validation",
             "Pass marks cannot exceed full marks",
             function (value) {
-                return value <= this.parent.full_marks;
+                const { test_type, full_marks, marks_per_question, total_questions } = this.parent;
+                const totalMarks = test_type === "mcq"
+                    ? (marks_per_question || 0) * (total_questions || 0)
+                    : full_marks || 0;
+                return value <= totalMarks;
             }
         ),
-    start_datetime: Yup.string()
-        .required("Start date & time is required"),
-    end_datetime: Yup.string()
-        .required("End date & time is required")
-        .test(
-            "end-after-start",
-            "End date must be after start date",
-            function (value) {
-                const { start_datetime } = this.parent;
-                if (!start_datetime || !value) return true;
-                return dayjs(value).isAfter(dayjs(start_datetime));
-            }
-        ),
+    start_datetime: Yup.string().when("is_scheduled", {
+        is: true,
+        then: (schema) => schema.required("Start date & time is required"),
+        otherwise: (schema) => schema.notRequired()
+    }),
+    end_datetime: Yup.string().when("is_scheduled", {
+        is: true,
+        then: (schema) => schema
+            .required("End date & time is required")
+            .test(
+                "end-after-start",
+                "End date must be after start date",
+                function (value) {
+                    const { start_datetime } = this.parent;
+                    if (!start_datetime || !value) return true;
+                    return dayjs(value).isAfter(dayjs(start_datetime));
+                }
+            ),
+        otherwise: (schema) => schema.notRequired()
+    }),
     course_ids: Yup.array()
         .of(Yup.number())
+        .min(1, "At least one course must be selected")
         .required("Course selection is required"),
     question_ids: Yup.array()
         .of(Yup.number())
+        .min(1, "At least one question must be selected")
         .required("Question selection is required")
 });
 
@@ -89,22 +119,56 @@ export default function TestManagementForm() {
         search: ""
     });
 
+    const {
+        megaCategories,
+        categories,
+        subCategories,
+        handleCategoryChange,
+        selections,
+        getCategoryFilterParams,
+    } = useCourseFilter();
 
-    const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp });
+    const categoryFilter = getCategoryFilterParams();
+    const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });
     const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp });
     const { data: editData } = useGetTestByIdQuery({ id: Number(id) }, { skip: !!id });
     const [createTest, { isLoading: creatingTest }] = useEditOrCreateTestMutation();
     const [courseList, setCourseList] = useState<CourseProps[]>([]);
+    const [questionList, setQuestionList] = useState<QuestionProps[]>([]);
 
     useEffect(() => {
         if (!courses?.data?.data) return;
 
-        setCourseList(prev =>
-            courseQp.pageIndex === 1
-                ? courses.data.data
-                : [...prev, ...courses.data.data]
-        );
-    }, [courses]);
+        setCourseList(prev => {
+            if (courseQp.pageIndex === 1) {
+                return courses.data.data;
+            }
+
+            const existingIds = new Set(prev.map(course => course.id));
+            const newCourses = courses.data.data.filter(
+                course => !existingIds.has(course.id)
+            );
+
+            return [...prev, ...newCourses];
+        });
+    }, [courses, courseQp.pageIndex]);
+
+    useEffect(() => {
+        if (!questions?.data?.data) return;
+
+        setQuestionList(prev => {
+            if (questionQp.pageIndex === 1) {
+                return questions.data.data;
+            }
+
+            const existingIds = new Set(prev.map(question => question.id));
+            const newQuestions = questions.data.data.filter(
+                question => !existingIds.has(question.id)
+            );
+
+            return [...prev, ...newQuestions];
+        });
+    }, [questions, questionQp.pageIndex]);
 
 
     const getInitialValues = (): TestProps => {
@@ -114,13 +178,16 @@ export default function TestManagementForm() {
                 id: test.id,
                 name: test.name || "",
                 duration: test.duration || { hours: 0, minutes: 0 },
-                description: test.description || "",
-                full_marks: test.full_marks || 100,
-                pass_marks: test.pass_marks || 40,
+                full_marks: test.full_marks || 0,
+                pass_marks: test.pass_marks || 0,
                 start_datetime: test.start_datetime || "",
                 end_datetime: test.end_datetime || "",
                 course_ids: test.course_ids || [],
-                question_ids: test.question_ids || []
+                question_ids: test.question_ids || [],
+                is_scheduled: test.is_scheduled ?? false,
+                test_type: test.test_type || "mcq",
+                total_questions: test.total_questions || 0,
+                marks_per_question: test.marks_per_question || 0
             };
         }
         return TestInitialState;
@@ -152,8 +219,6 @@ export default function TestManagementForm() {
             }
         }
     });
-
-
 
     const handleCourseSearch = (searchTerm: string) => {
         setCourseQp(prev => ({
@@ -192,11 +257,32 @@ export default function TestManagementForm() {
             setQuestionQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
         }
     };
-    return (
 
+    return (
         <form onSubmit={formik.handleSubmit}>
             <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
                 <div className="col-span-2">
+                    <StyledToggleButtons
+                        leftLabel="MCQ"
+                        rightLabel="Subjective"
+                        value={formik.values.test_type === "mcq" ? "left" : "right"}
+                        onChange={(_event, newValue) => {
+                            if (newValue !== null) {
+                                if (formik.values.test_type === "mcq") {
+                                    formik.setFieldValue("full_marks", 0);
+                                    formik.setFieldValue("test_type", "subjective");
+
+                                } else {
+                                    formik.setFieldValue("marks_per_question", 0);
+                                    formik.setFieldValue("test_type", "mcq");
+
+                                }
+                            }
+                        }}
+                    />
+                </div>
+
+                <div className="col-span-1">
                     <div className="input__field">
                         <InputLabel className="required">Name</InputLabel>
                         <OutlinedInput
@@ -214,7 +300,89 @@ export default function TestManagementForm() {
                     </div>
                 </div>
 
-                {/* <div className="col-span-2">
+                <div className="col-span-1">
+                    <div className="input__field">
+                        <InputLabel className="required">Total No. of Questions</InputLabel>
+                        <OutlinedInput
+                            fullWidth
+                            name="total_questions"
+                            type="number"
+                            value={formik.values.total_questions}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            placeholder="Enter Total Questions"
+                            error={formik.touched.total_questions && Boolean(formik.errors.total_questions)}
+                            inputProps={{ min: 1 }}
+                        />
+                        {formik.touched.total_questions && formik.errors.total_questions && (
+                            <FormHelperText error>{formik.errors.total_questions}</FormHelperText>
+                        )}
+                    </div>
+                </div>
+
+                {formik.values.test_type === "subjective" ? (
+                    <div className="col-span-1">
+                        <div className="input__field">
+                            <InputLabel className="required">Full Marks</InputLabel>
+                            <OutlinedInput
+                                fullWidth
+                                name="full_marks"
+                                value={formik.values.full_marks}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                placeholder="Enter Full Marks"
+                                type="number"
+                                error={formik.touched.full_marks && Boolean(formik.errors.full_marks)}
+                                inputProps={{ min: 1 }}
+                            />
+                            {formik.touched.full_marks && formik.errors.full_marks && (
+                                <FormHelperText error>{formik.errors.full_marks}</FormHelperText>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="col-span-1">
+                        <div className="input__field">
+                            <InputLabel className="required">Marks Per Question</InputLabel>
+                            <OutlinedInput
+                                fullWidth
+                                name="marks_per_question"
+                                value={formik.values.marks_per_question}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                placeholder="Enter Marks Per Question"
+                                type="number"
+                                error={formik.touched.marks_per_question && Boolean(formik.errors.marks_per_question)}
+                                inputProps={{ min: 1 }}
+                            />
+                            {formik.touched.marks_per_question && formik.errors.marks_per_question && (
+                                <FormHelperText error>{formik.errors.marks_per_question}</FormHelperText>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                <div className="col-span-1">
+                    <div className="input__field">
+                        <InputLabel className="required">Pass Marks</InputLabel>
+                        <OutlinedInput
+                            fullWidth
+                            name="pass_marks"
+                            value={formik.values.pass_marks}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            placeholder="Enter Pass Marks"
+                            type="number"
+                            error={formik.touched.pass_marks && Boolean(formik.errors.pass_marks)}
+                            inputProps={{ min: 0 }}
+                        />
+                        {formik.touched.pass_marks && formik.errors.pass_marks && (
+                            <FormHelperText error>{formik.errors.pass_marks}</FormHelperText>
+                        )}
+                    </div>
+                </div>
+
+                <div className="col-span-1">
                     <div className="input__field">
                         <InputLabel className="required">Duration</InputLabel>
                         <div className="flex items-center gap-5">
@@ -224,7 +392,7 @@ export default function TestManagementForm() {
                                     placeholder="0"
                                     type="number"
                                     name="duration.hours"
-                                    value={formik.values?.duration.hours}
+                                    value={formik.values?.duration?.hours}
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     error={
@@ -262,130 +430,117 @@ export default function TestManagementForm() {
                             </FormHelperText>
                         )}
                     </div>
-                </div> */}
+                </div>
+
+                <div className="col-span-2 flex items-center gap-2">
+                    <Typography variant="subtitle1" color="text.middle">Do you want to schedule this test?</Typography>
+                    <YesNoSwitch
+                        checked={formik.values.is_scheduled}
+                        onChange={(event) => {
+                            formik.setFieldValue("is_scheduled", event.target.checked);
+                            if (!event.target.checked) {
+                                formik.setFieldValue("start_datetime", "");
+                                formik.setFieldValue("end_datetime", "");
+                            }
+                        }}
+                    />
+                </div>
+
+                {formik.values.is_scheduled && (
+                    <>
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required">Start Date & Time</InputLabel>
+                                <MakuraDatePicker
+                                    value={formik.values.start_datetime ? dayjs(formik.values.start_datetime) : null}
+                                    onChange={(date: Dayjs | null) =>
+                                        formik.setFieldValue("start_datetime", date ? date.toISOString() : "")
+                                    }
+                                    includeTime={true}
+                                    placeholder="Select start date & time"
+                                    error={formik.touched.start_datetime && Boolean(formik.errors.start_datetime)}
+                                />
+                                {formik.touched.start_datetime && formik.errors.start_datetime && (
+                                    <FormHelperText error>{formik.errors.start_datetime}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required">End Date & Time</InputLabel>
+                                <MakuraDatePicker
+                                    value={formik.values.end_datetime ? dayjs(formik.values.end_datetime) : null}
+                                    onChange={(date: Dayjs | null) =>
+                                        formik.setFieldValue("end_datetime", date ? date.toISOString() : "")
+                                    }
+                                    includeTime={true}
+                                    minDate={formik.values.start_datetime ? dayjs(formik.values.start_datetime) : dayjs()}
+                                    placeholder="Select end date & time"
+                                    error={formik.touched.end_datetime && Boolean(formik.errors.end_datetime)}
+                                />
+                                {formik.touched.end_datetime && formik.errors.end_datetime && (
+                                    <FormHelperText error>{formik.errors.end_datetime}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+                    </>
+                )}
 
                 <div className="col-span-2">
-                    <div className="input__field">
-                        <TextEditor
-                            label="Description"
-                            value={formik.values.description}
-                            onChange={(value) => formik.setFieldValue("description", value)}
-                            onBlur={(_value) => formik.setFieldTouched("description", true)}
-                            error={
-                                formik.touched.description && formik.errors.description
-                                    ? formik.errors.description
-                                    : undefined
-                            }
-                            required
-                        />
+                    <div className="lg:grid grid-cols-2 gap-6">
+                        <div className="col-span-1">
+                            <CategoryFilter
+                                megaCategories={megaCategories}
+                                categories={categories}
+                                subCategories={subCategories}
+                                onChange={handleCategoryChange}
+                                selections={selections}
+                            />
+                        </div>
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required">Select Courses <Typography variant="caption" color="text.middle">(Select the course you want to add test)</Typography></InputLabel>
+                                <OutlinedInput
+                                    fullWidth
+                                    placeholder="Search Course"
+                                    value={courseQp.search}
+                                    onChange={(e) => handleCourseSearch(e.target.value)}
+                                    endAdornment={
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.58317 17.5001C13.9554 17.5001 17.4998 13.9557 17.4998 9.58341C17.4998 5.21116 13.9554 1.66675 9.58317 1.66675C5.21092 1.66675 1.6665 5.21116 1.6665 9.58341C1.6665 13.9557 5.21092 17.5001 9.58317 17.5001Z" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path><path d="M18.3332 18.3334L16.6665 16.6667" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                                    }
+                                />
+                                <InfiniteScrolling
+                                    key="course-list"
+                                    data={courseList || []}
+                                    hasMore={hasMoreCourses}
+                                    selectedItems={formik.values.course_ids}
+                                    onSelectionChange={(selectedIds) => {
+                                        formik.setFieldValue("course_ids", selectedIds);
+                                        formik.setFieldTouched("course_ids", true);
+                                    }}
+                                    fetchMore={fetchMoreCourses}
+                                    onSearch={handleCourseSearch}
+                                    loading={loadingCourses}
+                                    maxSelection={10}
+                                    itemLabelKey="name"
+                                    itemIdKey="id"
+                                    placeholder="Search courses..."
+                                />
+                                {formik.touched.course_ids && formik.errors.course_ids && (
+                                    <FormHelperText error>{formik.errors.course_ids}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div className="col-span-1">
-                    <div className="input__field">
-                        <InputLabel className="required">Full Marks</InputLabel>
-                        <OutlinedInput
-                            fullWidth
-                            name="full_marks"
-                            value={formik.values.full_marks}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            placeholder="Enter Full Marks"
-                            type="number"
-                            error={formik.touched.full_marks && Boolean(formik.errors.full_marks)}
-                            inputProps={{ min: 0 }}
-                        />
-                        {formik.touched.full_marks && formik.errors.full_marks && (
-                            <FormHelperText error>{formik.errors.full_marks}</FormHelperText>
-                        )}
-                    </div>
-                </div>
-
-                <div className="col-span-1">
-                    <div className="input__field">
-                        <InputLabel className="required">Pass Marks</InputLabel>
-                        <OutlinedInput
-                            fullWidth
-                            name="pass_marks"
-                            value={formik.values.pass_marks}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            placeholder="Enter Pass Marks"
-                            type="number"
-                            error={formik.touched.pass_marks && Boolean(formik.errors.pass_marks)}
-                            inputProps={{ min: 0 }}
-                        />
-                        {formik.touched.pass_marks && formik.errors.pass_marks && (
-                            <FormHelperText error>{formik.errors.pass_marks}</FormHelperText>
-                        )}
-                    </div>
-                </div>
-
-                <div className="col-span-1">
-                    <div className="input__field">
-                        <InputLabel className="required">Start Date & Time</InputLabel>
-                        <MakuraDatePicker
-                            value={formik.values.start_datetime ? dayjs(formik.values.start_datetime) : null}
-                            onChange={(date: Dayjs | null) =>
-                                formik.setFieldValue("start_datetime", date ? date.toISOString() : "")
-                            }
-                            includeTime={true}
-                        />
-                        {formik.touched.start_datetime && formik.errors.start_datetime && (
-                            <FormHelperText error>{formik.errors.start_datetime}</FormHelperText>
-                        )}
-                    </div>
-                </div>
-
-                <div className="col-span-1">
-                    <div className="input__field">
-                        <InputLabel className="required">End Date & Time</InputLabel>
-                        <MakuraDatePicker
-                            value={formik.values.end_datetime ? dayjs(formik.values.end_datetime) : null}
-                            onChange={(date: Dayjs | null) =>
-                                formik.setFieldValue("end_datetime", date ? date.toISOString() : "")
-                            }
-                            includeTime={true}
-                            minDate={formik.values.start_datetime ? dayjs(formik.values.start_datetime) : dayjs()}
-                        />
-                        {formik.touched.end_datetime && formik.errors.end_datetime && (
-                            <FormHelperText error>{formik.errors.end_datetime}</FormHelperText>
-                        )}
-                    </div>
-                </div>
-
-                <div className="col-span-1">
-                    <div className="input__field">
-                        <InputLabel className="required">Select Courses <Typography variant="caption" color="text.middle">(Select the course you want to add test)</Typography></InputLabel>
-                        <InfiniteScrolling
-                            key="course-list"
-                            data={courseList || []}
-                            hasMore={hasMoreCourses}
-                            selectedItems={formik.values.course_ids}
-                            onSelectionChange={(selectedIds) => {
-                                formik.setFieldValue("course_ids", selectedIds);
-                                formik.setFieldTouched("course_ids", true);
-                            }}
-                            fetchMore={fetchMoreCourses}
-                            onSearch={handleCourseSearch}
-                            loading={loadingCourses}
-                            maxSelection={10}
-                            itemLabelKey="name"
-                            itemIdKey="id"
-                            placeholder="Search courses..."
-                        />
-                        {formik.touched.course_ids && formik.errors.course_ids && (
-                            <FormHelperText error>{formik.errors.course_ids}</FormHelperText>
-                        )}
-                    </div>
-                </div>
-
-                <div className="col-span-1">
+                <div className="col-span-2">
                     <div className="input__field">
                         <InputLabel className="required">Select Questions</InputLabel>
                         <InfiniteScrolling
                             key="question-list"
-                            data={questions?.data?.data || []}
+                            data={questionList || []}
                             hasMore={hasMoreQuestions}
                             selectedItems={formik.values.question_ids}
                             onSelectionChange={(selectedIds) => {

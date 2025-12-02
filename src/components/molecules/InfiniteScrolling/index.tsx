@@ -1,4 +1,4 @@
-import { Box, Checkbox, CircularProgress, FormControlLabel, TextField, Typography } from "@mui/material";
+import { Box, Checkbox, CircularProgress, FormControlLabel, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { v4 as uuidv4 } from "uuid";
@@ -23,15 +23,12 @@ export default function InfiniteScrolling({
     selectedItems,
     onSelectionChange,
     fetchMore,
-    onSearch,
     loading = false,
     maxSelection = 100,
     itemLabelKey = "name",
     itemIdKey = "id",
-    placeholder = "Search..."
 }: InfiniteScrollingProps) {
 
-    const [searchTerm, setSearchTerm] = useState("");
 
     // --- Map stable UUIDs to each itemId so they don't regenerate every render ---
     const [uuidMap, setUuidMap] = useState<Record<number, string>>({});
@@ -49,11 +46,6 @@ export default function InfiniteScrolling({
         setUuidMap(newMap);
     }, [data]);
 
-    // Debounced search
-    useEffect(() => {
-        const timer = setTimeout(() => onSearch(searchTerm), 500);
-        return () => clearTimeout(timer);
-    }, [searchTerm]);
 
     const handleToggle = (id: number) => {
         if (selectedItems.includes(id)) {
@@ -61,58 +53,23 @@ export default function InfiniteScrolling({
         } else if (selectedItems.length < maxSelection) {
             onSelectionChange([...selectedItems, id]);
         }
-    };
-
-    const handleSelectAll = () => {
-        if (selectedItems.length === data.length) {
-            onSelectionChange([]);
-        } else {
-            const allIds = data.slice(0, maxSelection).map(item => item[itemIdKey]);
-            onSelectionChange(allIds);
-        }
-    };
+    }
 
     const isMaxReached = selectedItems.length >= maxSelection;
-    const allSelected = data.length > 0 && selectedItems.length === data.length;
 
+    const theme = useTheme();
     return (
         <Box
             sx={{
-                border: '1px solid',
-                borderColor: 'divider',
+                border: `1px solid ${theme.palette.seperator.dark}`,
                 borderRadius: 1,
-                overflow: 'hidden'
+                overflow: 'hidden',
+                padding: "8px",
+                marginTop: "8px"
             }}
         >
-            {/* Search + Select All */}
-            <Box sx={{ p: 1.5, borderBottom: '1px solid', borderColor: 'divider' }}>
-                <TextField
-                    fullWidth
-                    size="small"
-                    placeholder={placeholder}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    sx={{ mb: 1 }}
-                />
-
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            checked={allSelected}
-                            indeterminate={selectedItems.length > 0 && !allSelected}
-                            onChange={handleSelectAll}
-                        />
-                    }
-                    label={<Typography variant="body2" fontWeight={600}>Select All</Typography>}
-                />
-
-                <Typography variant="caption" color="text.secondary">
-                    {selectedItems.length} / {maxSelection} selected
-                </Typography>
-            </Box>
-
             {/* Scrollable List */}
-            <Box id="scrollableDiv" sx={{ height: 300, overflow: "auto" }}>
+            <Box id="scrollableDiv" sx={{ height: 200, overflow: "auto" }}>
                 {loading && data.length === 0 ? (
                     <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
                         <CircularProgress size={24} />
@@ -139,7 +96,7 @@ export default function InfiniteScrolling({
                         {data.length === 0 ? (
                             <Box sx={{ p: 3, textAlign: "center" }}>
                                 <Typography variant="body2" color="text.secondary">
-                                    {searchTerm ? "No items found" : "No items available"}
+                                    {"No items available"}
                                 </Typography>
                             </Box>
                         ) : (
@@ -151,15 +108,15 @@ export default function InfiniteScrolling({
                                 return (
                                     <Box
                                         key={stableKey}
-                                        sx={{
-                                            borderBottom: "1px solid",
-                                            borderColor: "divider",
-                                            bgcolor: isSelected ? "action.selected" : "transparent",
-                                            "&:hover": { bgcolor: "action.hover" }
-                                        }}
+                                    // sx={{
+                                    //     borderBottom: "1px solid",
+                                    //     borderColor: "divider",
+                                    //     bgcolor: isSelected ? "action.selected" : "transparent",
+                                    //     "&:hover": { bgcolor: "action.hover" }
+                                    // }}
                                     >
                                         <FormControlLabel
-                                            sx={{ m: 0, p: 1.5, width: "100%" }}
+                                            sx={{ m: 0, p: .5, width: "100%" }}
                                             control={
                                                 <Checkbox
                                                     checked={isSelected}
@@ -169,7 +126,7 @@ export default function InfiniteScrolling({
                                             }
                                             label={
                                                 <Box>
-                                                    <Typography variant="body2">{item[itemLabelKey]}</Typography>
+                                                    <Typography variant="subtitle1">{item[itemLabelKey]}</Typography>
                                                 </Box>
                                             }
                                         />
