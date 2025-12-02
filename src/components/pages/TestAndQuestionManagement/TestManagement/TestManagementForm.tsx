@@ -3,7 +3,6 @@ import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import * as Yup from "yup";
 import { PATH } from "../../../../routes/PATH";
 import { useGetAllCourseQuery } from "../../../../services/courseApi";
 import { useEditOrCreateTestMutation, useGetAllQuestionQuery, useGetTestByIdQuery } from "../../../../services/questionApi";
@@ -11,7 +10,7 @@ import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { CourseProps } from "../../../../types/course";
-import { TestInitialState, type QuestionProps, type TestProps } from "../../../../types/question";
+import { TestInitialState, testValidationSchema, type QuestionProps, type TestProps } from "../../../../types/question";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
 import StyledToggleButtons from "../../../atoms/StyledToggleSwitch";
 import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
@@ -19,89 +18,7 @@ import FooterAction from "../../../molecules/FooterAction";
 import InfiniteScrolling from "../../../molecules/InfiniteScrolling";
 import CategoryFilter from "../../../organism/CategoryFilter";
 
-const testValidationSchema = Yup.object().shape({
-    name: Yup.string()
-        .trim()
-        .required("Name is required"),
-    test_type: Yup.string()
-        .oneOf(["mcq", "subjective"], "Invalid test type")
-        .required("Test type is required"),
-    total_questions: Yup.number()
-        .min(1, "Total questions must be at least 1")
-        .required("Total questions is required"),
-    duration: Yup.object().shape({
-        hours: Yup.number()
-            .min(0, "Hours must be at least 0")
-            .max(999, "Hours cannot exceed 999")
-            .required("Hours is required"),
-        minutes: Yup.number()
-            .min(0, "Minutes must be at least 0")
-            .max(59, "Minutes cannot exceed 59")
-            .required("Minutes is required")
-    }).test(
-        "duration-required",
-        "Duration must be at least 1 minute",
-        function (value) {
-            return (value.hours ?? 0) > 0 || (value.minutes ?? 0) > 0;
-        }
-    ),
-    full_marks: Yup.number().when("test_type", {
-        is: "subjective",
-        then: (schema) => schema
-            .min(1, "Full marks must be at least 1")
-            .required("Full marks is required"),
-        otherwise: (schema) => schema.notRequired()
-    }),
-    marks_per_question: Yup.number().when("test_type", {
-        is: "mcq",
-        then: (schema) => schema
-            .min(1, "Marks per question must be at least 1")
-            .required("Marks per question is required"),
-        otherwise: (schema) => schema.notRequired()
-    }),
-    pass_marks: Yup.number()
-        .min(0, "Pass marks must be at least 0")
-        .required("Pass marks is required")
-        .test(
-            "pass-marks-validation",
-            "Pass marks cannot exceed full marks",
-            function (value) {
-                const { test_type, full_marks, marks_per_question, total_questions } = this.parent;
-                const totalMarks = test_type === "mcq"
-                    ? (marks_per_question || 0) * (total_questions || 0)
-                    : full_marks || 0;
-                return value <= totalMarks;
-            }
-        ),
-    start_datetime: Yup.string().when("is_scheduled", {
-        is: true,
-        then: (schema) => schema.required("Start date & time is required"),
-        otherwise: (schema) => schema.notRequired()
-    }),
-    end_datetime: Yup.string().when("is_scheduled", {
-        is: true,
-        then: (schema) => schema
-            .required("End date & time is required")
-            .test(
-                "end-after-start",
-                "End date must be after start date",
-                function (value) {
-                    const { start_datetime } = this.parent;
-                    if (!start_datetime || !value) return true;
-                    return dayjs(value).isAfter(dayjs(start_datetime));
-                }
-            ),
-        otherwise: (schema) => schema.notRequired()
-    }),
-    course_ids: Yup.array()
-        .of(Yup.number())
-        .min(1, "At least one course must be selected")
-        .required("Course selection is required"),
-    question_ids: Yup.array()
-        .of(Yup.number())
-        .min(1, "At least one question must be selected")
-        .required("Question selection is required")
-});
+
 
 export default function TestManagementForm() {
     const dispatch = useAppDispatch();
@@ -128,10 +45,62 @@ export default function TestManagementForm() {
         getCategoryFilterParams,
     } = useCourseFilter();
 
+    const { data: editData } = useGetTestByIdQuery({ id: id ? Number(id) : undefined }, { skip: !id });
+
+
+    function getInitialValues(): TestProps {
+        if (id && editData?.data) {
+            const test = editData.data;
+            return {
+                id: test.id,
+                name: test.name || "",
+                duration: test.duration || { hours: 0, minutes: 0 },
+                full_mark: test.full_mark || 0,
+                pass_mark: test.pass_mark || 0,
+                start_datetime: test.start_datetime || "",
+                end_datetime: test.end_datetime || "",
+                course_ids: test.course_ids || [],
+                question_ids: test.question_ids || [],
+                is_scheduled: test.is_scheduled ?? false,
+                test_type: test.test_type || "mcq",
+                total_questions: test.total_questions || 0,
+                marks_per_question: test.marks_per_question || 0
+            };
+        }
+        return TestInitialState;
+    }
+
+
+    const formik = useFormik<TestProps>({
+        initialValues: getInitialValues(),
+        validationSchema: testValidationSchema,
+        enableReinitialize: true,
+        onSubmit: async (values) => {
+            console.log(values);
+            try {
+                const response = await createTest({ body: values }).unwrap();
+                dispatch(
+                    showToast({
+                        message: response?.message || "Test Created Successfully.",
+                        severity: "success"
+                    })
+                )
+                navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT)
+                formik.resetForm();
+            } catch (e: any) {
+                dispatch(
+                    showToast({
+                        message: e?.data?.message || "Unable to Create Test",
+                        severity: "error"
+                    })
+                )
+            }
+        }
+    });
+
     const categoryFilter = getCategoryFilterParams();
     const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });
-    const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp });
-    const { data: editData } = useGetTestByIdQuery({ id: Number(id) }, { skip: !!id });
+    const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp, type: formik.values.test_type });
     const [createTest, { isLoading: creatingTest }] = useEditOrCreateTestMutation();
     const [courseList, setCourseList] = useState<CourseProps[]>([]);
     const [questionList, setQuestionList] = useState<QuestionProps[]>([]);
@@ -171,54 +140,7 @@ export default function TestManagementForm() {
     }, [questions, questionQp.pageIndex]);
 
 
-    const getInitialValues = (): TestProps => {
-        if (id && editData?.data) {
-            const test = editData.data;
-            return {
-                id: test.id,
-                name: test.name || "",
-                duration: test.duration || { hours: 0, minutes: 0 },
-                full_marks: test.full_marks || 0,
-                pass_marks: test.pass_marks || 0,
-                start_datetime: test.start_datetime || "",
-                end_datetime: test.end_datetime || "",
-                course_ids: test.course_ids || [],
-                question_ids: test.question_ids || [],
-                is_scheduled: test.is_scheduled ?? false,
-                test_type: test.test_type || "mcq",
-                total_questions: test.total_questions || 0,
-                marks_per_question: test.marks_per_question || 0
-            };
-        }
-        return TestInitialState;
-    };
 
-    const formik = useFormik<TestProps>({
-        initialValues: getInitialValues(),
-        validationSchema: testValidationSchema,
-        enableReinitialize: true,
-        onSubmit: async (values) => {
-            console.log(values);
-            try {
-                const response = await createTest({ body: values }).unwrap();
-                dispatch(
-                    showToast({
-                        message: response?.message || "Test Created Successfully.",
-                        severity: "success"
-                    })
-                )
-                navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT)
-                formik.resetForm();
-            } catch (e: any) {
-                dispatch(
-                    showToast({
-                        message: e?.data?.message || "Unable to Create Test",
-                        severity: "error"
-                    })
-                )
-            }
-        }
-    });
 
     const handleCourseSearch = (searchTerm: string) => {
         setCourseQp(prev => ({
@@ -326,17 +248,17 @@ export default function TestManagementForm() {
                             <InputLabel className="required">Full Marks</InputLabel>
                             <OutlinedInput
                                 fullWidth
-                                name="full_marks"
-                                value={formik.values.full_marks}
+                                name="full_mark"
+                                value={formik.values.full_mark}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 placeholder="Enter Full Marks"
                                 type="number"
-                                error={formik.touched.full_marks && Boolean(formik.errors.full_marks)}
+                                error={formik.touched.full_mark && Boolean(formik.errors.full_mark)}
                                 inputProps={{ min: 1 }}
                             />
-                            {formik.touched.full_marks && formik.errors.full_marks && (
-                                <FormHelperText error>{formik.errors.full_marks}</FormHelperText>
+                            {formik.touched.full_mark && formik.errors.full_mark && (
+                                <FormHelperText error>{formik.errors.full_mark}</FormHelperText>
                             )}
                         </div>
                     </div>
@@ -367,17 +289,17 @@ export default function TestManagementForm() {
                         <InputLabel className="required">Pass Marks</InputLabel>
                         <OutlinedInput
                             fullWidth
-                            name="pass_marks"
-                            value={formik.values.pass_marks}
+                            name="pass_mark"
+                            value={formik.values.pass_mark}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             placeholder="Enter Pass Marks"
                             type="number"
-                            error={formik.touched.pass_marks && Boolean(formik.errors.pass_marks)}
+                            error={formik.touched.pass_mark && Boolean(formik.errors.pass_mark)}
                             inputProps={{ min: 0 }}
                         />
-                        {formik.touched.pass_marks && formik.errors.pass_marks && (
-                            <FormHelperText error>{formik.errors.pass_marks}</FormHelperText>
+                        {formik.touched.pass_mark && formik.errors.pass_mark && (
+                            <FormHelperText error>{formik.errors.pass_mark}</FormHelperText>
                         )}
                     </div>
                 </div>
@@ -500,7 +422,7 @@ export default function TestManagementForm() {
                         </div>
                         <div className="col-span-1">
                             <div className="input__field">
-                                <InputLabel className="required">Select Courses <Typography variant="caption" color="text.middle">(Select the course you want to add test)</Typography></InputLabel>
+                                <InputLabel className="required">Select Courses {formik.values.course_ids.length ? (formik.values.course_ids.length) : ""} <Typography variant="caption" color="text.middle">(Select the course you want to add test)</Typography></InputLabel>
                                 <OutlinedInput
                                     fullWidth
                                     placeholder="Search Course"
@@ -566,7 +488,7 @@ export default function TestManagementForm() {
                 handleComfirmationChange={() => { }}
                 isLoading={creatingTest}
                 isUpdating={creatingTest}
-                isEditMode={!!id}
+                isEditMode={!id}
                 buttonLabel={"Test"}
             />
         </form>

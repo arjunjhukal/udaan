@@ -1,4 +1,4 @@
-import { Box, Checkbox, Stack, Typography } from '@mui/material';
+import { Checkbox, Stack, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -117,24 +117,18 @@ export default function AllTestListing() {
             header: "Test Name",
             accessorKey: "name",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">
+                <Typography fontWeight={500} className="capitalize max-w-[450px]">
                     {row.original.name || "N/A"}
                 </Typography>
             ),
         },
         {
-            header: "Category",
-            accessorKey: "category",
+            header: "Test Type",
+            accessorKey: "Test Type",
             cell: ({ row }) => (
-                <Box>
-                    {
-                        row.original?.category?.map((item) => (
-                            <Typography fontWeight={500} className="capitalize">
-                                {item || "N/A"}
-                            </Typography>
-                        ))
-                    }
-                </Box>
+                <Typography fontWeight={500} className="capitalize">
+                    {row.original.test_type || "N/A"}
+                </Typography>
             ),
         },
         {
