@@ -56,6 +56,7 @@ export interface TestProps {
     is_scheduled: boolean;
     total_questions: number | null;
     marks_per_question: number | null;
+    created_at?: string;
 }
 
 

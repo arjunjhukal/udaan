@@ -15,6 +15,7 @@ interface InfiniteScrollingProps {
     itemLabelKey?: string;
     itemIdKey?: string;
     placeholder?: string;
+    scrollableId?: string;
 }
 
 export default function InfiniteScrolling({
@@ -27,6 +28,7 @@ export default function InfiniteScrolling({
     maxSelection = 100,
     itemLabelKey = "name",
     itemIdKey = "id",
+    scrollableId = "scrollableDiv",
 }: InfiniteScrollingProps) {
 
 
@@ -69,7 +71,7 @@ export default function InfiniteScrolling({
             }}
         >
             {/* Scrollable List */}
-            <Box id="scrollableDiv" sx={{ height: 200, overflow: "auto" }}>
+            <Box id={scrollableId} sx={{ height: 200, overflow: "auto" }}>
                 {loading && data.length === 0 ? (
                     <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
                         <CircularProgress size={24} />
@@ -79,7 +81,7 @@ export default function InfiniteScrolling({
                         dataLength={data.length}
                         next={fetchMore}
                         hasMore={hasMore}
-                        scrollableTarget="scrollableDiv"
+                        scrollableTarget={scrollableId}
                         loader={
                             <Box sx={{ textAlign: "center", p: 2 }}>
                                 <CircularProgress size={22} />

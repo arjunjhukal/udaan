@@ -11,7 +11,7 @@ import { baseQuery } from "./baseQuery";
 export const courseApi = createApi({
     reducerPath: "courseApi",
     baseQuery: baseQuery,
-    tagTypes: ["Course", "Curriculum", "Media"],
+    tagTypes: ["Course", "Curriculum", "Media", "Test"],
     endpoints: (builder) => ({
         createCourse: builder.mutation<{ data: CourseProps, message: string }, { body: FormData }>({
             query: ({ body }) => ({
@@ -178,8 +178,30 @@ export const courseApi = createApi({
                     url: `/admin/course/${id}/test?${queryString}`,
                     method: "GET"
                 })
-            }
-        })
+            },
+            providesTags: (result) =>
+                result?.data?.data
+                    ? [
+                        ...result.data.data.map((curriculum) => ({ type: "Test" as const, id: curriculum.id })),
+                        { type: "Test", id: "LIST" },
+                    ]
+                    : [{ type: "Test", id: "LIST" }],
+        }),
+        assignTestToCourse: builder.mutation<GlobalResponse, { id: number | null; body: number[] }>({
+            query: ({ id, body }) => {
+                return {
+                    url: `/admin/course/${id}/test`,
+                    method: "POST",
+                    body: {
+                        test_ids: body
+                    }
+                };
+            },
+            invalidatesTags: (_result, _error,) => [
+                { type: "Test", id: "LIST" }
+            ],
+
+        }),
     })
 })
 
@@ -195,5 +217,6 @@ export const {
     useDeleteCourseCurriculumMutation,
     useGetCourseMediaByTypeQuery,
     useAddCourseMediaByTypeMutation,
-    useGetCourseTestQuery
+    useGetCourseTestQuery,
+    useAssignTestToCourseMutation
 } = courseApi;

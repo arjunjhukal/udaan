@@ -1,30 +1,35 @@
 import { Box, Button, Checkbox, Dialog, DialogContent, Divider, IconButton, Skeleton, Typography, useTheme } from "@mui/material";
-import React from "react";
-import MediaFileDragDrop from ".";
-import { useGetallMediaQuery } from "../../../services/mediaApi";
-import type { courseTabType } from "../../../types/course";
-import MediaCard from "../../organism/Cards/MediaCard";
-import EmptyRoute from "../../organism/EmptyRoute";
-import TableFilter from "../../organism/TableFilter";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useAssignTestToCourseMutation } from "../../../../../../../services/courseApi";
+import { useGetAllTestQuery } from "../../../../../../../services/questionApi";
+import { showToast } from "../../../../../../../slice/toastSlice";
+import { useAppDispatch } from "../../../../../../../store/hook";
+import type { TestProps } from "../../../../../../../types/question";
+import TablePagination from "../../../../../../molecules/Table/Pagination";
+import TestCard from "../../../../../../organism/Cards/TestCard";
+import EmptyRoute from "../../../../../../organism/EmptyRoute";
+import TableFilter from "../../../../../../organism/TableFilter";
 
 interface Props {
     open: boolean;
     setOpen: (newValue: boolean) => void;
-    type: courseTabType;
-    onSelect?: (selectedIds: number[]) => void;
-    allowMultiple?: boolean;
-}
+    selectedTestIds: number[];
 
-export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMultiple = true }: Props) {
+}
+export default function AssignTestDialog({ open, setOpen, selectedTestIds }: Props) {
     const theme = useTheme();
-    const [search, setSearch] = React.useState("");
-    const [selectedItems, setSelectedItems] = React.useState<Set<number>>(new Set());
-    const [qp] = React.useState({
+    const dispatch = useAppDispatch();
+    const { id } = useParams();
+    const [search, setSearch] = useState("");
+    const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+    const [qp, setQp] = useState({
         pageIndex: 1,
         pageSize: 50,
     });
 
-    const { data, isLoading } = useGetallMediaQuery({ ...qp, search, type: type });
+    const { data, isLoading } = useGetAllTestQuery({ ...qp, search, });
+    const [assignTest, { isLoading: assigningTest }] = useAssignTestToCourseMutation();
     const items = data?.data?.data || [];
 
     const handleClose = () => {
@@ -32,13 +37,15 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
         setSelectedItems(new Set());
     };
 
+    useEffect(() => {
+        if (open && selectedTestIds?.length) {
+            setSelectedItems(new Set(selectedTestIds));
+        }
+    }, [open, selectedTestIds]);
+
     const handleToggleItem = (id: number) => {
         setSelectedItems(prev => {
             const newSet = new Set(prev);
-
-            if (!allowMultiple) {
-                return new Set([id]);
-            }
 
             if (newSet.has(id)) newSet.delete(id);
             else newSet.add(id);
@@ -47,33 +54,29 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
         });
     };
 
-
-    const handleAddMedia = () => {
-        if (onSelect && selectedItems.size > 0) {
-            onSelect(Array.from(selectedItems));
+    const handleTestAddition = async () => {
+        try {
+            const response = await assignTest({
+                id: Number(id),
+                body: Array.from(selectedItems)
+            }).unwrap();
+            dispatch(
+                showToast({
+                    message: response?.message || "Unable to assign test to course. Try again Later.",
+                    severity: "success"
+                })
+            )
+            handleClose();
         }
-        handleClose();
-    };
-
-    const handleCancel = () => {
-        handleClose();
-    };
-
-    const getTitle = () => {
-        switch (type) {
-            case 'notes':
-                return 'Notes';
-            case 'audios':
-                return 'Audio';
-            default:
-                return 'Media';
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to assign test to course. Try again Later.",
+                    severity: "error"
+                })
+            )
         }
-    };
-
-    const getVariant = () => {
-        return type === 'notes' ? 'error' : 'success';
-    };
-
+    }
     return (
         <Dialog
             open={open}
@@ -96,7 +99,7 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
             >
                 <div className="flex justify-between items-center pb-1">
                     <Typography variant="h5" className="text.dark">
-                        Add {getTitle()}
+                        Add Test
                     </Typography>
                     <IconButton onClick={handleClose}>
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -105,17 +108,12 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                     </IconButton>
                 </div>
                 <Divider className="mb-6!" />
-                <Typography variant="subtitle1" className="mb-2!">
-                    {getTitle()}
-                </Typography>
                 <Box
-                    className="media__wrapper rounded-2xl px-4 py-6"
-                    sx={{
-                        border: `1px solid ${theme.palette.textField.border}`
-                    }}
+                    className="media__wrapper rounded-2xl"
+                // sx={{
+                //     border: `1px solid ${theme.palette.textField.border}`
+                // }}
                 >
-                    <MediaFileDragDrop variant={getVariant()} type={type} />
-                    <Divider className="mb-6!" />
                     <TableFilter
                         search={search}
                         setSearch={setSearch}
@@ -124,9 +122,9 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                         categoryLayout={true}
                     />
                     {!isLoading && !items.length &&
-                        <EmptyRoute variant={getVariant()} title={`${type} Not Found`} message="" />
+                        <EmptyRoute title={`Test Not Found`} message="" />
                     }
-                    <div className="flex flex-col gap-4 md:grid grid-cols-2 xl:grid-cols-3 2xl:gap-9">
+                    <div className="flex flex-col gap-4 md:grid lg:grid-cols-2 2xl:gap-9">
                         {isLoading ? (
                             [...Array(6)].map((_, idx) => (
                                 <div key={idx} className="col-span-1">
@@ -139,22 +137,23 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                                 </div>
                             ))
                         ) : (
-                            items.map((item: any) => (
+                            items.map((item: TestProps) => (
                                 <div className="col-span-1" key={item.id}>
                                     <div className="flex gap-3 items-center">
                                         <Checkbox
                                             color="primary"
-                                            checked={selectedItems.has(item.id)}
-                                            onChange={() => handleToggleItem(item.id)}
+                                            checked={selectedItems.has(Number(item.id))}
+                                            onChange={() => handleToggleItem(Number(item.id))}
                                         />
-                                        <div onClick={() => handleToggleItem(item.id)} className="cursor-pointer flex-1">
-                                            <MediaCard media={item} />
+                                        <div onClick={() => handleToggleItem(Number(item.id))} className="cursor-pointer flex-1">
+                                            <TestCard test={item} />
                                         </div>
                                     </div>
                                 </div>
                             ))
                         )}
                     </div>
+                    <TablePagination qp={qp} setQp={setQp} totalPages={data?.data?.pagination?.total_pages || 0} />
                     <Box
                         className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky -bottom-5"
                         sx={{
@@ -164,7 +163,7 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                     >
                         <Button
                             variant="contained"
-                            onClick={handleCancel}
+                            onClick={handleClose}
                             sx={{
                                 background: theme.palette.seperator.dark,
                                 color: theme.palette.text.middle
@@ -175,14 +174,14 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={handleAddMedia}
+                            onClick={handleTestAddition}
                             disabled={selectedItems.size === 0}
                         >
-                            Add {getTitle()} {selectedItems.size > 0 && `(${selectedItems.size})`}
+                            {assigningTest ? "Assigning" : "Assign"} Test {selectedItems.size > 0 && `(${selectedItems.size})`}
                         </Button>
                     </Box>
                 </Box>
             </DialogContent>
         </Dialog>
-    );
+    )
 }

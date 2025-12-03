@@ -5,10 +5,11 @@ import TestCard from '../../../../../../organism/Cards/TestCard';
 import EmptyRoute from '../../../../../../organism/EmptyRoute';
 import PageHeader from '../../../../../../organism/PageHeader';
 import TableFilter from '../../../../../../organism/TableFilter';
+import AssignTestDialog from './AssignTestDialog';
 
 export default function CourseTest({ id }: { id?: string }) {
-
     const [search, setSearch] = useState("")
+    const [open, setOpen] = useState(false);
     const [qp, _setQp] = useState({
         pageIndex: 1,
         pageSize: 8
@@ -16,9 +17,6 @@ export default function CourseTest({ id }: { id?: string }) {
     const { data, isLoading } = useGetCourseTestQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search, id: Number(id) }, { skip: !id });
 
     const tests = data?.data?.data || [];
-
-
-    console.log({ id, tests })
 
     return (
         <>
@@ -29,6 +27,13 @@ export default function CourseTest({ id }: { id?: string }) {
                     }
                 ]}
                 description="Add a test for this course so that you can manage the test you wanted deeply. "
+                cta={{
+                    label: "Add Test",
+                    url: ""
+                }}
+                handleOpenPopup={() => {
+                    setOpen(prev => !prev)
+                }}
             />
             <TableFilter
                 handleRoleDelete={() => { }}
@@ -41,7 +46,7 @@ export default function CourseTest({ id }: { id?: string }) {
                 message='Oops your test is empty. Please add test to help student gain knowledge.'
             />}
 
-            <div className="flex flex-col gap-4 md:grid grid-cols-2 xl:grid-cols-3 2xl:gap-9">
+            <div className="flex flex-col gap-4 md:grid grid-cols-2 xl:grid-cols-3 2xl:gap-6">
                 {isLoading ? (
                     [...Array(6)].map((_, idx) => (
                         <div key={idx} className="col-span-1">
@@ -57,6 +62,8 @@ export default function CourseTest({ id }: { id?: string }) {
                         <TestCard test={test} key={test.id} />
                     )))}
             </div>
+
+            <AssignTestDialog open={open} setOpen={setOpen} selectedTestIds={tests.map((item) => Number(item.id))} />
         </>
     )
 }

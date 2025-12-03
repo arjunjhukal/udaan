@@ -434,6 +434,7 @@ export default function TestManagementForm() {
                                 />
                                 <InfiniteScrolling
                                     key="course-list"
+                                    scrollableId="course-scrollable"
                                     data={courseList || []}
                                     hasMore={hasMoreCourses}
                                     selectedItems={formik.values.course_ids}
@@ -462,6 +463,7 @@ export default function TestManagementForm() {
                         <InputLabel className="required">Select Questions</InputLabel>
                         <InfiniteScrolling
                             key="question-list"
+                            scrollableId="question-scrollable"
                             data={questionList || []}
                             hasMore={hasMoreQuestions}
                             selectedItems={formik.values.question_ids}

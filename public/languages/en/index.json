@@ -65,6 +65,9 @@
         },
         "subscription_plan": {
             "root": "Subscription & Plans"
+        },
+        "transaction_management": {
+            "root": "Transactions"
         }
     },
     "messages": {
@@ -115,6 +118,11 @@
                 "title": "No Plans Available",
                 "description": "You haven’t created any plans yet. Start building your first plan.",
                 "action": "Create Subscription Plan"
+            },
+            "transaction_management": {
+                "title": "No Transaction Available",
+                "description": "You haven’t created any transaction yet.",
+                "action": "Add Transaction"
             }
         },
         "toasts": {

@@ -1,11 +1,19 @@
-import { Dialog, DialogContent, Divider, IconButton, OutlinedInput, Typography } from '@mui/material'
-import SearchIcon from '../../../icons/SearchIcon'
+import { Dialog, DialogContent, Divider, IconButton, Typography } from '@mui/material'
 
 export default function UserFilter() {
     return (
         <Dialog
-            open={true}
-            maxWidth="lg">
+            open={false}
+            maxWidth="lg"
+            sx={{
+                "& .MuiPaper-root": {
+                    minWidth: {
+                        md: "664px",
+                        xl: "1041px"
+                    }
+                }
+            }}
+        >
             <DialogContent className='relative'>
                 <IconButton className="absolute! right-4 top-4">
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -16,14 +24,6 @@ export default function UserFilter() {
                 <Divider className="mb-6!" />
                 <div className="flex items-center justify-between">
                     <Typography variant="h5">Role</Typography>
-                    <OutlinedInput
-                        placeholder="Search teachers..."
-                        startAdornment={<SearchIcon />}
-                        sx={{
-                            padding: "6px 8px",
-                            gap: "4px"
-                        }}
-                    />
                 </div>
                 <Divider className="mb-3.5! mt-2!" />
                 <Typography variant="h5">User Status</Typography>

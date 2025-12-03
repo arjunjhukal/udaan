@@ -100,6 +100,9 @@ export const PATH = {
 	SUBSCRIPTION_PLAN_MANAGEMENT: {
 		ROOT: "/subscription-management"
 	},
+	TRANSACTION_MANAGEMENT: {
+		ROOT: "/transaction-management"
+	},
 	CONTENT_MANAGEMENT: {
 		ROOT: "/content-management",
 		SPLASH_SCREEN: {
