@@ -13,6 +13,8 @@ import AllLiveClass from "../components/pages/CourseManagement/LiveClass/allLive
 import CreateLiveClassRoot from "../components/pages/CourseManagement/LiveClass/createLiveClass";
 import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
+import NotificationRoot from "../components/pages/NotificationManagement";
+import AllNotificationsRoot from "../components/pages/NotificationManagement/allNotification";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
@@ -21,6 +23,8 @@ import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionMa
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
 import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
+import TransactionManagementRoot from "../components/pages/TransactionManagement";
+import AllTransactionRoot from "../components/pages/TransactionManagement/allTransation";
 import AuthRoot from "../components/pages/auth";
 import Login from "../components/pages/auth/login";
 import NotFound from "../components/pages/layout/NotFound";
@@ -117,6 +121,22 @@ const router = createBrowserRouter([
 			{
 				path: PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT,
 				element: <SubscriptionManagementRoot />,
+			},
+			{
+
+				element: <TransactionManagementRoot />,
+				children: [
+					{ path: PATH.TRANSACTION_MANAGEMENT.ROOT, element: <AllTransactionRoot /> },
+				],
+			},
+			{
+
+				element: <NotificationRoot />,
+				children: [
+					{ path: PATH.NOTIFICATION_MANAGEMENT.ROOT, element: <AllNotificationsRoot /> },
+					{ path: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT, element: <AllNotificationsRoot /> },
+					{ path: PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(), element: <AllNotificationsRoot /> },
+				],
 			},
 		],
 	},

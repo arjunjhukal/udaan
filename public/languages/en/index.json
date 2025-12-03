@@ -67,7 +67,10 @@
             "root": "Subscription & Plans"
         },
         "transaction_management": {
-            "root": "Transactions"
+            "root": "Transactions Management"
+        },
+        "notification_management": {
+            "root": "Notification Management"
         }
     },
     "messages": {
@@ -123,6 +126,11 @@
                 "title": "No Transaction Available",
                 "description": "You haven’t created any transaction yet.",
                 "action": "Add Transaction"
+            },
+            "notification_management": {
+                "title": "No Notifications Found",
+                "description": "Start adding notifications to send to the specific roles or students. Use the button below to create your first Notifications.",
+                "action": "Create Notifications"
             }
         },
         "toasts": {

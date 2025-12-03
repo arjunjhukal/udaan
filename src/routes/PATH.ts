@@ -103,6 +103,16 @@ export const PATH = {
 	TRANSACTION_MANAGEMENT: {
 		ROOT: "/transaction-management"
 	},
+	NOTIFICATION_MANAGEMENT: {
+		ROOT: "/notification-management",
+		CREATE_NOTIFICATION: {
+			ROOT: "/notification-management/create",
+		},
+		EDIT_NOTIFICATION: {
+			ROOT: (id?: number) =>
+				id ? `/notification-management/edit/${id}` : "/notification-management/edit/:id",
+		},
+	},
 	CONTENT_MANAGEMENT: {
 		ROOT: "/content-management",
 		SPLASH_SCREEN: {
