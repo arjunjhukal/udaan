@@ -122,7 +122,7 @@ export const testValidationSchema = Yup.object().shape({
             }
         ),
 
-    full_marks: Yup.number().when("test_type", {
+    full_mark: Yup.number().when("test_type", {
         is: "subjective",
         then: (schema) => schema
             .min(1, "Full marks must be at least 1")
@@ -138,7 +138,7 @@ export const testValidationSchema = Yup.object().shape({
         otherwise: (schema) => schema.notRequired()
     }),
 
-    pass_marks: Yup.number()
+    pass_mark: Yup.number()
         .min(0, "Pass marks must be at least 0")
         .required("Pass marks is required"),
     // .test(

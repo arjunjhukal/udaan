@@ -460,7 +460,7 @@ export default function TestManagementForm() {
 
                 <div className="col-span-2">
                     <div className="input__field">
-                        <InputLabel className="required">Select Questions</InputLabel>
+                        <InputLabel className="required">Select Questions ({formik.values.question_ids.length})</InputLabel>
                         <InfiniteScrolling
                             key="question-list"
                             scrollableId="question-scrollable"
@@ -474,14 +474,14 @@ export default function TestManagementForm() {
                             fetchMore={fetchMoreQuestions}
                             onSearch={handleQuestionSearch}
                             loading={loadingQuestions}
-                            maxSelection={100}
+                            maxSelection={formik.values.total_questions || undefined}
                             itemLabelKey="question"
                             itemIdKey="id"
                             placeholder="Search questions..."
                         />
-                        {formik.touched.question_ids && formik.errors.question_ids && (
+                        {/* {formik.touched.question_ids && formik.errors.question_ids && (
                             <FormHelperText error>{formik.errors.question_ids}</FormHelperText>
-                        )}
+                        )} */}
                     </div>
                 </div>
             </div>
