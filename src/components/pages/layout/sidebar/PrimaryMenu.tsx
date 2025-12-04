@@ -277,6 +277,7 @@ export default function PrimaryMenu() {
                         </ListItemButton>
                     </ListItem>
                 </CAN>
+
                 {/* Transactions Management */}
                 <CAN permissions={["add_transactions", "edit_transactions", "delete_transactions", "view_transactions",]}>
                     <ListItem disablePadding className="menu__item">
@@ -285,17 +286,18 @@ export default function PrimaryMenu() {
                             className={location.pathname.startsWith(PATH.TRANSACTION_MANAGEMENT.ROOT) ? "active" : ""}>
                             <ListItemIcon>
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M16.0831 6.60023V10.8919C16.0831 13.4586 14.6165 14.5586 12.4165 14.5586H5.09147C4.71647 14.5586 4.35813 14.5253 4.0248 14.4503C3.81647 14.4169 3.61647 14.3586 3.43314 14.2919C2.18314 13.8253 1.4248 12.7419 1.4248 10.8919V6.60023C1.4248 4.03356 2.89147 2.93359 5.09147 2.93359H12.4165C14.2831 2.93359 15.6248 3.72526 15.9831 5.53359C16.0415 5.86692 16.0831 6.20856 16.0831 6.60023Z" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M18.5842 9.1018V13.3935C18.5842 15.9601 17.1176 17.0601 14.9176 17.0601H7.59254C6.97588 17.0601 6.41755 16.9768 5.93422 16.7935C4.94255 16.4268 4.26755 15.6685 4.02588 14.4518C4.35921 14.5268 4.71754 14.5601 5.09254 14.5601H12.4176C14.6176 14.5601 16.0842 13.4601 16.0842 10.8935V6.6018C16.0842 6.21013 16.0509 5.86016 15.9842 5.53516C17.5676 5.86849 18.5842 6.98513 18.5842 9.1018Z" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M8.74835 10.9508C9.96338 10.9508 10.9484 9.96582 10.9484 8.75079C10.9484 7.53577 9.96338 6.55078 8.74835 6.55078C7.53333 6.55078 6.54834 7.53577 6.54834 8.75079C6.54834 9.96582 7.53333 10.9508 8.74835 10.9508Z" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M3.98291 6.91797V10.5847" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M13.5181 6.91797V10.5847" stroke="white" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M16.0831 6.60023V10.8919C16.0831 13.4586 14.6165 14.5586 12.4165 14.5586H5.09147C4.71647 14.5586 4.35813 14.5253 4.0248 14.4503C3.81647 14.4169 3.61647 14.3586 3.43314 14.2919C2.18314 13.8253 1.4248 12.7419 1.4248 10.8919V6.60023C1.4248 4.03356 2.89147 2.93359 5.09147 2.93359H12.4165C14.2831 2.93359 15.6248 3.72526 15.9831 5.53359C16.0415 5.86692 16.0831 6.20856 16.0831 6.60023Z" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M18.5842 9.1018V13.3935C18.5842 15.9601 17.1176 17.0601 14.9176 17.0601H7.59254C6.97588 17.0601 6.41755 16.9768 5.93422 16.7935C4.94255 16.4268 4.26755 15.6685 4.02588 14.4518C4.35921 14.5268 4.71754 14.5601 5.09254 14.5601H12.4176C14.6176 14.5601 16.0842 13.4601 16.0842 10.8935V6.6018C16.0842 6.21013 16.0509 5.86016 15.9842 5.53516C17.5676 5.86849 18.5842 6.98513 18.5842 9.1018Z" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M8.74835 10.9508C9.96338 10.9508 10.9484 9.96582 10.9484 8.75079C10.9484 7.53577 9.96338 6.55078 8.74835 6.55078C7.53333 6.55078 6.54834 7.53577 6.54834 8.75079C6.54834 9.96582 7.53333 10.9508 8.74835 10.9508Z" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M3.98291 6.91797V10.5847" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M13.5181 6.91797V10.5847" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
                             </ListItemIcon>
                             <ListItemText primary={t("menus.transaction_management.root")} />
                         </ListItemButton>
                     </ListItem>
                 </CAN>
+
                 {/* Notification Management */}
                 <CAN permissions={["add_notifications", "edit_notifications", "delete_notifications", "view_notifications",]}>
                     <ListItem disablePadding className="menu__item">

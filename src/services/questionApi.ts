@@ -59,6 +59,7 @@ export const questionApi = createApi({
                     questions: body
                 }
             }),
+            invalidatesTags: [{ type: "Questions", id: "LIST" }]
         }),
         editOrCreateTest: builder.mutation<GlobalResponse, { body: TestProps }>({
             query: ({ body }) => ({

@@ -1,8 +1,11 @@
-import { useTranslation } from 'react-i18next'
-import PageHeader from '../../../organism/PageHeader'
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import PageHeader from '../../../organism/PageHeader';
+import AllTransaction from './AllTransaction';
 
 export default function AllTransactionRoot() {
-    const {t}=useTranslation();
+    const { t } = useTranslation();
+    const [open, setOpen] = useState(false);
     return (
         <div className="all__transaction__root">
             <PageHeader
@@ -17,8 +20,10 @@ export default function AllTransactionRoot() {
                 cta={{
                     label: t("messages.empty_states.transaction_management.action"),
                 }}
+                handleOpenPopup={() => setOpen(true)}
             />
-            
+            <AllTransaction open={open} setOpen={setOpen} />
+
         </div>
     )
 }

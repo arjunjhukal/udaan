@@ -290,7 +290,8 @@ export default function CourseManagementForm() {
         <div className="course__management__form__root">
             <form action="" onSubmit={formik.handleSubmit}>
                 <div className="grid md:grid-cols-2 gap-4 lg:gap-6 mb-6">
-                    <FileDragDrop onFileChange={handleFileChange}
+                    <FileDragDrop
+                        onFileChange={handleFileChange}
                         initialFile={formik.values.thumbnail}
                         initialPreview={formik.values.thumbnail_url}
                         error={formik.touched.thumbnail && Boolean(formik.errors.thumbnail)}
