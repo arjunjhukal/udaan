@@ -82,6 +82,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
 
     const isEditMode = Boolean(editData?.id);
 
+
     const formik = useFormik<QuestionProps>({
         initialValues: editData || QuestionInitialState,
         validationSchema: questionValidationSchema,
@@ -232,7 +233,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                         <div className="input__field">
                             <InputLabel>Contains Image Options</InputLabel>
                             <YesNoSwitch
-                                value={formik.values.has_image_in_option}
+                                checked={formik.values.has_image_in_option}
                                 onChange={(e) => formik.setFieldValue("has_image_in_option", e.target.checked)}
                             />
                         </div>
