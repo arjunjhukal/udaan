@@ -18,6 +18,7 @@ import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import { QuestionInitialState, type QuestionProps } from "../../../../types/question";
 import TextEditor from "../../../atoms/TextEditor";
+import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FooterAction from "../../../molecules/FooterAction";
 
 export interface Props {
@@ -198,35 +199,45 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                     </div>
                 </div>
 
-                {formik.values.question_type === "subjective" ? <div className="col-span-1">
-                    <div className="input__field">
-                        <InputLabel>
-                            Question Weight{" "}
-                            <Typography
-                                variant="subtitle2"
-                                color="text.secondary"
-                                className="inline-block"
-                            >
-                                Marks this question holds.
-                            </Typography>
-                        </InputLabel>
-                        <OutlinedInput
-                            fullWidth
-                            name="points"
-                            value={formik.values.points}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            placeholder="Enter Total Marks"
-                            type="number"
-                            error={formik.touched.points && Boolean(formik.errors.points)}
-                        />
-                        {formik.touched.points && formik.errors.points && (
-                            <Typography variant="caption" color="error">
-                                {formik.errors.points}
-                            </Typography>
-                        )}
+                {formik.values.question_type === "subjective" ?
+                    <div className="col-span-1">
+                        <div className="input__field">
+                            <InputLabel>
+                                Question Weight{" "}
+                                <Typography
+                                    variant="subtitle2"
+                                    color="text.secondary"
+                                    className="inline-block"
+                                >
+                                    Marks this question holds.
+                                </Typography>
+                            </InputLabel>
+                            <OutlinedInput
+                                fullWidth
+                                name="points"
+                                value={formik.values.points}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                placeholder="Enter Total Marks"
+                                type="number"
+                                error={formik.touched.points && Boolean(formik.errors.points)}
+                            />
+                            {formik.touched.points && formik.errors.points && (
+                                <Typography variant="caption" color="error">
+                                    {formik.errors.points}
+                                </Typography>
+                            )}
+                        </div>
+                    </div> : <div className="col-span-1">
+                        <div className="input__field">
+                            <InputLabel>Contains Image Options</InputLabel>
+                            <YesNoSwitch
+                                value={formik.values.has_image_in_option}
+                                onChange={(e) => formik.setFieldValue("has_image_in_option", e.target.checked)}
+                            />
+                        </div>
                     </div>
-                </div> : ""}
+                }
 
                 <div className="col-span-2">
                     <div className="input__field">
@@ -263,7 +274,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
 
                 <div className="col-span-2">
                     <div className="input__field">
-                        <InputLabel>Question</InputLabel>
+                        {/* <InputLabel>Question</InputLabel>
                         <OutlinedInput
                             fullWidth
                             name="question"
@@ -279,7 +290,17 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                             <Typography variant="caption" color="error">
                                 {formik.errors.question}
                             </Typography>
-                        )}
+                        )} */}
+                        <TextEditor
+                            label={`Question`}
+                            value={formik.values.question}
+                            onChange={(value) => formik.setFieldValue("question", value)}
+                            onBlur={() => formik.setFieldTouched("question")}
+                            error={
+                                formik.touched.question &&
+                                (formik.errors.question as any)
+                            }
+                        />
                     </div>
                 </div>
             </div>

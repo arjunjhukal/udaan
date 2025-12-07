@@ -16,6 +16,7 @@ export interface QuestionProps {
     options: OptionProps[],
     megacategory_id: number | null;
     question_type: QuestionTypeProps
+    has_image_in_option:boolean;
 }
 
 export const QuestionInitialState: QuestionProps = {
@@ -24,7 +25,8 @@ export const QuestionInitialState: QuestionProps = {
     question: "",
     options: [{ id: null, option: "", is_correct: false }, { id: null, option: "", is_correct: false }],
     megacategory_id: null,
-    question_type: "mcq"
+    question_type: "mcq",
+    has_image_in_option:false,
 };
 
 export interface QuestionList extends GlobalResponse {
