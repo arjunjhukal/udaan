@@ -45,7 +45,7 @@ export const notificationApi = createApi({
                 url: `/admin/notification/${id}`,
                 method: "GET",
             }),
-            providesTags: (result, error, { id }) => [
+            providesTags: (_result, _error, { id }) => [
                 { type: "Notifications", id }
             ],
         }),
@@ -55,7 +55,7 @@ export const notificationApi = createApi({
                 method: "POST",
                 body
             }),
-            invalidatesTags: (result, error, { id }) => [
+            invalidatesTags: (_result, _error, { id }) => [
                 { type: "Notifications", id },
                 { type: "Notifications", id: "LIST" },
             ],
@@ -68,7 +68,7 @@ export const notificationApi = createApi({
                     notification_ids: body
                 }
             }),
-            invalidatesTags: (result, error, { body }) => [
+            invalidatesTags: (_result, _error, { body }) => [
                 ...body.map((id) => ({
                     type: "Notifications" as const,
                     id: Number(id)
