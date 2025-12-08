@@ -129,7 +129,7 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
             header: "Question Name",
             accessorKey: "question",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">
+                <Typography fontWeight={500} >
                     {row.original.question || "N/A"}
                 </Typography>
             ),
