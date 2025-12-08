@@ -156,6 +156,7 @@
         "delete": "Delete",
         "cancel": "Cancel",
         "suspend": "Suspend",
-        "unsuspend": "Un Suspend"
+        "unsuspend": "Un Suspend",
+        "view_file": "View Attachment"
     }
 }

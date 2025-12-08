@@ -13,6 +13,9 @@ import {
 } from "@mui/material";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { showAttachment } from "../../../slice/attachmentSlice";
+import { useAppDispatch } from "../../../store/hook";
+import AttachmentViewerDialog from "../../organism/Dialog/AttachmentViewerDialog";
 
 interface Props {
     onEdit: () => void;
@@ -21,9 +24,11 @@ interface Props {
     deleting?: boolean;
     onSuspend?: () => void;
     userStatus?: boolean;
+    file?: string;
 }
 
-export default function Actions({ onEdit, onDelete, onView, deleting = false, onSuspend, userStatus }: Props) {
+export default function Actions({ onEdit, onDelete, onView, deleting = false, onSuspend, userStatus, file }: Props) {
+    const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLButtonElement | null>(null);
     const { t } = useTranslation();
@@ -129,7 +134,7 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
                                             <ListItemText primary={t("actions.edit")} />
                                         </ListItemButton>
                                     </ListItem> : ""}
-                                    {onDelete ? <ListItem className="menu__item action__item">
+                                    {onDelete ? <ListItem className="menu__item action__item delete__item">
                                         <ListItemButton sx={{
                                             m: 0,
                                             border: "none"
@@ -147,7 +152,7 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
                                             <ListItemText primary={!deleting ? t("actions.delete") : "Deleting"} />
                                         </ListItemButton>
                                     </ListItem> : ""}
-                                    {onSuspend ? <ListItem className="menu__item action__item">
+                                    {onSuspend ? <ListItem className="menu__item action__item suspend__item">
                                         <ListItemButton sx={{
                                             m: 0,
                                             border: "none"
@@ -165,12 +170,31 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
                                             <ListItemText primary={!userStatus ? t("actions.suspend") : t("actions.unsuspend")} />
                                         </ListItemButton>
                                     </ListItem> : ""}
+                                    {file ? <ListItem className="menu__item action__item view__item">
+                                        <ListItemButton sx={{
+                                            m: 0,
+                                            border: "none"
+                                        }} onClick={() => dispatch(showAttachment(file))}>
+                                            <ListItemIcon>
+                                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M9.99992 9.99984C12.3011 9.99984 14.1666 8.13436 14.1666 5.83317C14.1666 3.53198 12.3011 1.6665 9.99992 1.6665C7.69873 1.6665 5.83325 3.53198 5.83325 5.83317C5.83325 8.13436 7.69873 9.99984 9.99992 9.99984Z" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M2.84155 18.3333C2.84155 15.1083 6.04991 12.5 9.99991 12.5C10.7999 12.5 11.5749 12.6083 12.2999 12.8083" stroke="#9CA3B0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M18.3334 14.9998C18.3334 15.2665 18.3001 15.5248 18.2334 15.7748C18.1584 16.1082 18.0251 16.4332 17.8501 16.7165C17.2751 17.6832 16.2167 18.3332 15.0001 18.3332C14.1417 18.3332 13.3668 18.0081 12.7834 17.4748C12.5334 17.2581 12.3168 16.9998 12.1501 16.7165C11.8418 16.2165 11.6667 15.6248 11.6667 14.9998C11.6667 14.0998 12.0251 13.2749 12.6084 12.6749C13.2168 12.0499 14.0667 11.6665 15.0001 11.6665C15.9834 11.6665 16.8751 12.0915 17.4751 12.7749C18.0084 13.3665 18.3334 14.1498 18.3334 14.9998Z" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                                    <path d="M16.2416 14.9834H13.7583" stroke="#848484" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                                </svg>
+
+
+                                            </ListItemIcon>
+                                            <ListItemText primary={t("actions.view_file")} />
+                                        </ListItemButton>
+                                    </ListItem> : ""}
                                 </List>
                             </ClickAwayListener>
                         </Paper>
                     </Grow>
                 )}
             </Popper>
+            <AttachmentViewerDialog />
         </Box>
     );
 }

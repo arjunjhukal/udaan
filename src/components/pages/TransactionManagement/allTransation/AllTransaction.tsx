@@ -108,7 +108,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                         onChange={(e) => handleSelectAll(e.target.checked)}
                         color="primary"
                     />
-                    <Typography fontWeight={500}>ID</Typography>
+                    <Typography variant='subtitle2'>ID</Typography>
                 </Stack>
             ),
             accessorKey: "sno",
@@ -119,7 +119,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                         onChange={(e) => handleSelectRow(row.original.id || '', e.target.checked)}
                         color="primary"
                     />
-                    <Typography fontWeight={500}>{row.original.id}</Typography>
+                    <Typography variant='subtitle2'>{row.original.id}</Typography>
                 </Stack>
             ),
             size: 80,
@@ -128,7 +128,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             header: "Student Name",
             accessorKey: "name",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">
+                <Typography variant='subtitle2' className="capitalize">
                     {row.original.name || "N/A"}
                 </Typography>
             ),
@@ -137,7 +137,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             header: "Course Name",
             accessorKey: "course_name",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">
+                <Typography variant='subtitle2' className="capitalize">
                     {row.original.course_name || "N/A"}
                 </Typography>
             ),
@@ -146,7 +146,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             header: "Email",
             accessorKey: "email",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="">
+                <Typography variant='subtitle2' className="">
                     {row.original.email || "N/A"}
                 </Typography>
             ),
@@ -155,7 +155,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             header: "Contact No.",
             accessorKey: "contact",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="">
+                <Typography variant='subtitle2' className="">
                     {row.original.contact || "N/A"}
                 </Typography>
             ),
@@ -164,7 +164,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             header: "Invoice ID",
             accessorKey: "invoice_id",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="">
+                <Typography variant='subtitle2' className="">
                     {row.original.invoice_id || "N/A"}
                 </Typography>
             ),
@@ -173,7 +173,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             header: "Payment ID",
             accessorKey: "transaction_id",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">
+                <Typography variant='subtitle2' className="capitalize">
                     {row.original.transaction_id || "N/A"}
                 </Typography>
             ),
@@ -183,7 +183,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             accessorKey: "created_at",
             cell: ({ row }) => {
                 return (
-                    <Typography fontWeight={500} className="capitalize">
+                    <Typography variant='subtitle2' className="capitalize">
                         {formatDate(row.original?.created_at || "")}
                     </Typography>
                 )
@@ -198,6 +198,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                     onEdit={() => handleEdit(row.original)}
                     onView={() => handleEdit(row.original)}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
+                    file={row.original?.image_url}
                 />
             ),
         },

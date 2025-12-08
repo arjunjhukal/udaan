@@ -11,6 +11,7 @@ import { roleAndPermissionApi } from "../services/roleAndPermissionApi";
 import { subscriptionPlanApi } from "../services/subscriptionPlanApi";
 import { transactionApi } from "../services/transactionApi";
 import { userApi } from "../services/userApi";
+import attachmentReducer from "../slice/attachmentSlice";
 import authReducer from "../slice/authSlice";
 import sessionReducer from "../slice/sessionSlice";
 import themeReducer from "../slice/themeSlice";
@@ -21,6 +22,7 @@ export const store = configureStore({
 		auth: authReducer,
 		toast: toastReducer,
 		session: sessionReducer,
+		attachment: attachmentReducer,
 		[authApi.reducerPath]: authApi.reducer,
 		[roleAndPermissionApi.reducerPath]: roleAndPermissionApi.reducer,
 		[userApi.reducerPath]: userApi.reducer,
