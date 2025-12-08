@@ -81,7 +81,7 @@ export default function NotificationManagementForm() {
                 if (values.external_link) formData.append("external_link", values.external_link);
                 if (values.notification_type) formData.append("notification_type", values.notification_type);
                 if (values.scheduled_date) formData.append("scheduled_date", values.scheduled_date);
-                if (values.schedule_time) formData.append("schedule_time", values.schedule_time);
+                if (values.scheduled_time) formData.append("scheduled_time", values.scheduled_time);
 
                 // Arrays — convert each element to string
                 values.target_students.forEach((item) => formData.append("target_students[]", item));
@@ -618,10 +618,10 @@ export default function NotificationManagementForm() {
                     <InputLabel>Time</InputLabel>
                     <MakuraTimePicker
 
-                        value={parseTime(formik.values.schedule_time)}
+                        value={parseTime(formik.values.scheduled_time)}
                         onChange={(time: Dayjs | null) =>
                             formik.setFieldValue(
-                                "schedule_time",
+                                "scheduled_time",
                                 time ? time.format("HH:mm") : ""
                             )
                         }

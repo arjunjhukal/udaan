@@ -18,3 +18,10 @@ export const getTimeDifference = (
 
     return `${startFormatted} - ${endFormatted}`;
 };
+
+
+export const formatTimeAMPM = (time: string): string => {
+    if (!time) return "";
+    const date = dayjs(`1970-01-01T${time}`); // combine with a dummy date
+    return date.isValid() ? date.format("hh:mm A") : "";
+};

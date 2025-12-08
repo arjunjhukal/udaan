@@ -25,7 +25,7 @@ export interface NotificationPayload {
     completion_status?: CompletionStatus[];
     delivery_methods?: DeliveryMethodsType[];
     scheduled_date?: string;
-    schedule_time?: string;
+    scheduled_time?: string;
 }
 
 export const NotificationInitialState: NotificationPayload = {
@@ -44,7 +44,7 @@ export const NotificationInitialState: NotificationPayload = {
     completion_status: [],
     delivery_methods: [],
     scheduled_date: "",
-    schedule_time: ""
+    scheduled_time: ""
 }
 
 import * as yup from "yup";
