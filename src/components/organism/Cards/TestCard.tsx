@@ -7,7 +7,7 @@ export default function TestCard({ test }: { test: TestProps }) {
     const theme = useTheme();
     return (
         <Box className="test__card rounded-md p-3 h-full flex flex-col justify-between" sx={{
-            border: `1px solid ${theme.palette.seperator.dark}`
+            border: `1px solid ${theme.palette.separator.dark}`
         }}>
             <div className="test__card__top flex gap-3">
                 <Box

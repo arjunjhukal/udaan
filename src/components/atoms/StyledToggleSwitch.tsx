@@ -9,7 +9,7 @@ interface StyledToggleButtonsProps {
 }
 
 const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-    backgroundColor: theme.palette.seperator.dark,
+    backgroundColor: theme.palette.separator.dark,
     borderRadius: "8px",
     padding: "4px",
     gap: "4px",

@@ -126,7 +126,7 @@ export default function AllCategories() {
                                 : level === 1
                                     ? theme.palette.success.light
                                     : "transparent",
-                        borderBottom: level === 2 ? `1px solid ${theme.palette.seperator.dark}` : undefined,
+                        borderBottom: level === 2 ? `1px solid ${theme.palette.separator.dark}` : undefined,
                     }}
                     onClick={() => hasChildren && toggleCategory(cat.id ?? "")}
                 >

@@ -110,7 +110,7 @@ export const PATH = {
 		},
 		EDIT_NOTIFICATION: {
 			ROOT: (id?: number) =>
-				id ? `/notification-management/edit/${id}` : "/notification-management/edit/:id",
+				id ? `/notification-management/${id}` : "/notification-management/:id",
 		},
 	},
 	CONTENT_MANAGEMENT: {

@@ -336,14 +336,14 @@ export default function UserManagementForm() {
                 <Box
                     className="footer__action flex justify-end items-center gap-2 py-6 mt-8 sticky -bottom-5"
                     sx={{
-                        borderTop: `1px solid ${theme.palette.seperator.dark}`,
+                        borderTop: `1px solid ${theme.palette.separator.dark}`,
                         background: theme.palette.primary.contrastText,
                     }}
                 >
                     <Button
                         variant="contained"
                         sx={{
-                            background: theme.palette.seperator.dark,
+                            background: theme.palette.separator.dark,
                             color: theme.palette.text.middle
                         }}
                         onClick={handleCancel}

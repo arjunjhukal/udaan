@@ -4,6 +4,7 @@ import { categoryApi } from "../services/categoryApi";
 import { courseApi } from "../services/courseApi";
 import { liveClassApi } from "../services/liveClass";
 import { mediaApi } from "../services/mediaApi";
+import { notificationApi } from "../services/notificationApi";
 import { positionApi } from "../services/positionApi";
 import { questionApi } from "../services/questionApi";
 import { roleAndPermissionApi } from "../services/roleAndPermissionApi";
@@ -31,6 +32,7 @@ export const store = configureStore({
 		[liveClassApi.reducerPath]: liveClassApi.reducer,
 		[questionApi.reducerPath]: questionApi.reducer,
 		[transactionApi.reducerPath]: transactionApi.reducer,
+		[notificationApi.reducerPath]: notificationApi.reducer,
 
 	},
 	middleware: (getDefaultMiddleware) =>
@@ -45,6 +47,7 @@ export const store = configureStore({
 			.concat(liveClassApi.middleware)
 			.concat(questionApi.middleware)
 			.concat(transactionApi.middleware)
+			.concat(notificationApi.middleware)
 
 });
 

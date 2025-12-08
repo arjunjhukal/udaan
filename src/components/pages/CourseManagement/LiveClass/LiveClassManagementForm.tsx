@@ -597,7 +597,7 @@ export default function LiveClassManagementForm() {
                 </div>
 
                 <FooterAction
-                    handleComfirmationChange={formik.handleSubmit}
+                    handleConfirmationChange={formik.handleSubmit}
                     buttonLabel={id ? " Live Class" : " Live Class"}
                     isLoading={isLoading}
                     isEditMode={!!id}

@@ -385,7 +385,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
             )}
 
             <FooterAction
-                handleComfirmationChange={() => setOpen(false)}
+                handleConfirmationChange={() => setOpen(false)}
                 isLoading={isLoading}
                 isEditMode={isEditMode}
                 isUpdating={isLoading}

@@ -1,7 +1,7 @@
 import { Box, Button, Typography, useTheme } from "@mui/material";
 
 interface FooterActionProps {
-    handleComfirmationChange: () => void;
+    handleConfirmationChange: () => void;
     isLoading?: boolean;
     isUpdating?: boolean;
     isEditMode?: boolean;
@@ -9,7 +9,7 @@ interface FooterActionProps {
 }
 
 export default function FooterAction({
-    handleComfirmationChange,
+    handleConfirmationChange,
     isLoading = false,
     isUpdating = false,
     isEditMode = false,
@@ -21,7 +21,7 @@ export default function FooterAction({
         <Box
             className="footer__action flex justify-end items-center gap-2 py-6 mt-8 sticky -bottom-5"
             sx={{
-                borderTop: `1px solid ${theme.palette.seperator.dark}`,
+                borderTop: `1px solid ${theme.palette.separator.dark}`,
                 background: theme.palette.primary.contrastText,
             }}
         >
@@ -29,10 +29,10 @@ export default function FooterAction({
             <Button
                 variant="contained"
                 sx={{
-                    background: theme.palette.seperator.dark,
+                    background: theme.palette.separator.dark,
                     color: theme.palette.text.middle,
                 }}
-                onClick={handleComfirmationChange}
+                onClick={handleConfirmationChange}
             >
                 Cancel
             </Button>

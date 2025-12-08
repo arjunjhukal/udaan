@@ -63,7 +63,7 @@ export default function InfiniteScrolling({
     return (
         <Box
             sx={{
-                border: `1px solid ${theme.palette.seperator.dark}`,
+                border: `1px solid ${theme.palette.separator.dark}`,
                 borderRadius: 1,
                 overflow: 'hidden',
                 padding: "8px",

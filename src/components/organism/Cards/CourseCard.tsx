@@ -10,7 +10,7 @@ export default function CourseCard({ course, onDelete }: { course: CourseProps, 
     return (
         <Box className="course__card rounded-md"
             sx={{
-                border: `1px solid ${theme.palette.seperator.dark}`
+                border: `1px solid ${theme.palette.separator.dark}`
             }}
         >
             <div className="course_card_image aspect-347/128 relative">

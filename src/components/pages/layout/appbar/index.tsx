@@ -63,19 +63,19 @@ export default function CustomAppbar({
 
 					<Box className="flex gap-4">
 						<IconButton sx={{
-							background: theme.palette.seperator.dark,
+							background: theme.palette.separator.dark,
 							minWidth: "44px",
 						}}>
 							<NotificationsNoneIcon />
 						</IconButton>
 						<IconButton sx={{
-							background: theme.palette.seperator.dark,
+							background: theme.palette.separator.dark,
 							minWidth: "44px",
 						}}>
 							<EmailIcon />
 						</IconButton>
 						{/* <IconButton sx={{
-							background: theme.palette.seperator.dark,
+							background: theme.palette.separator.dark,
 							minWidth: "44px",
 						}}>
 							<SettingsIcon />

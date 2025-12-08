@@ -27,7 +27,7 @@ export const YesNoSwitch = styled(Switch)(({ theme }) => ({
 
     "& .MuiSwitch-track": {
         borderRadius: 30,
-        backgroundColor: theme.palette.seperator.dark,
+        backgroundColor: theme.palette.separator.dark,
         opacity: 1,
         position: "relative",
         transition: theme.transitions.create(["background-color"]),

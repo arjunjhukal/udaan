@@ -26,7 +26,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
     return (
         <Box className={`md:grid md:grid-cols-12  items-center mb-8 ${categoryLayout ? "pb-2 mb-6" : ""}`}
             sx={{
-                borderBottom: categoryLayout ? `1px solid ${theme.palette.seperator.dark}` : ""
+                borderBottom: categoryLayout ? `1px solid ${theme.palette.separator.dark}` : ""
             }}
         >
             <div className="col-span-6">
@@ -47,7 +47,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                 <div className="flex justify-end items-center gap-3 filter__right">
                     {selectedRows.size > 0 ? <IconButton
                         sx={{
-                            border: `1px solid ${theme.palette.seperator.dark}`
+                            border: `1px solid ${theme.palette.separator.dark}`
                         }} className={`rounded-md! ${categoryLayout ? "" : "py-2.5! px-3.5! "}`}
                         onClick={handleDeleteClick}
                     >
@@ -70,13 +70,13 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                         }}
                     /> : ""}
                     {onFilter ? <Button onClick={onFilter} startIcon={<FilterIcon />} sx={{
-                        border: `1px solid ${theme.palette.seperator.dark}`
+                        border: `1px solid ${theme.palette.separator.dark}`
                     }} className="py-2.5! px-3.5! rounded-md!">
                         <Typography variant="subtitle1" color="text.dark">Filter</Typography>
                     </Button> : ""}
                     {layout ? <Stack >
                         <IconButton sx={{
-                            border: `1px solid ${theme.palette.seperator.dark}`,
+                            border: `1px solid ${theme.palette.separator.dark}`,
                             borderRadius: "8px 0 0 8px",
                         }} className={`py-2.5! px-3.5! ${layout === "table" ? "active__layout" : ""}`}
                             onClick={() => setLayout && setLayout("table")}
@@ -89,7 +89,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                             </svg>
                         </IconButton>
                         <IconButton sx={{
-                            border: `1px solid ${theme.palette.seperator.dark}`,
+                            border: `1px solid ${theme.palette.separator.dark}`,
                             borderRadius: "0 8px 8px 0",
                         }} className={`py-2.5! px-3.5! ${layout === "grid" ? "active__layout" : ""}`}
                             onClick={() => setLayout && setLayout("grid")}

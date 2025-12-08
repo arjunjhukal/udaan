@@ -283,7 +283,7 @@ export default function CurriculumFormWithMedia({
                         <FooterAction
                             isLoading={isLoading}
                             isEditMode={!!selectedCurriculum?.id}
-                            handleComfirmationChange={handleClose}
+                            handleConfirmationChange={handleClose}
                             buttonLabel={"Curriculum"}
                         />
                     </form>

@@ -15,6 +15,7 @@ import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
 import NotificationRoot from "../components/pages/NotificationManagement";
 import AllNotificationsRoot from "../components/pages/NotificationManagement/allNotification";
+import CreateNotificationRoot from "../components/pages/NotificationManagement/createNotification";
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
@@ -134,8 +135,8 @@ const router = createBrowserRouter([
 				element: <NotificationRoot />,
 				children: [
 					{ path: PATH.NOTIFICATION_MANAGEMENT.ROOT, element: <AllNotificationsRoot /> },
-					{ path: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT, element: <AllNotificationsRoot /> },
-					{ path: PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(), element: <AllNotificationsRoot /> },
+					{ path: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT, element: <CreateNotificationRoot /> },
+					{ path: PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(), element: <CreateNotificationRoot /> },
 				],
 			},
 		],

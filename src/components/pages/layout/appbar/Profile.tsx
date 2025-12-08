@@ -55,7 +55,7 @@ export default function ProfileMenu() {
                 onClick={handleToggle}
                 className="flex gap-2 items-center p-2 justify-between rounded-md cursor-pointer"
                 sx={{
-                    border: `1px solid ${theme.palette.seperator.dark}`,
+                    border: `1px solid ${theme.palette.separator.dark}`,
                     minWidth: "160px",
                     "&:hover": { backgroundColor: theme.palette.action.hover },
                 }}
@@ -70,7 +70,7 @@ export default function ProfileMenu() {
                     <Box
                         className="flex items-center w-7 h-7 rounded-full justify-center"
                         sx={{
-                            background: theme.palette.seperator.dark,
+                            background: theme.palette.separator.dark,
                         }}
                     >
                         <Typography variant="body1" color="text.dark">

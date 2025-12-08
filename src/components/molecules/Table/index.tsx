@@ -53,7 +53,7 @@ export default function UdaanTable<T extends object>({
     const theme = useTheme();
     return (
         <Box className={className}>
-            <TableContainer sx={{ borderRadius: 2, border: `1px solid ${theme.palette.seperator.dark}`, }}>
+            <TableContainer sx={{ borderRadius: 2, border: `1px solid ${theme.palette.separator.dark}`, }}>
                 <Table >
                     <TableHead>
                         {table.getHeaderGroups().map((headerGroup) => (

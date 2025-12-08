@@ -303,7 +303,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                 <div className="col-span-5">
                                     <InputLabel>Select Course <Typography variant="caption" color="text.middle">(Select the course you want to add test)</Typography></InputLabel>
                                     <Box className="h-[187px] overflow-y-auto p-2.5 rounded-md flex flex-col" sx={{
-                                        border: `1px solid ${theme.palette.seperator.dark}`
+                                        border: `1px solid ${theme.palette.separator.dark}`
                                     }}>
                                         {courses?.data?.data?.map((course) => (
                                             <FormControlLabel

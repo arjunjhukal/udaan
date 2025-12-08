@@ -62,7 +62,7 @@ export default function SettingMenu() {
                 ref={anchorRef}
                 onClick={() => handleToggle()}
                 sx={{
-                    background: theme.palette.seperator.dark,
+                    background: theme.palette.separator.dark,
                     minWidth: "44px",
                     display: "flex",
                     alignItems: "center",

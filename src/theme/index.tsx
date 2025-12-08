@@ -25,7 +25,7 @@ declare module "@mui/material/styles" {
             dark: string;
             light: string;
         };
-        seperator: {
+        separator: {
             main: string;
             dark: string;
             darker: string;
@@ -68,7 +68,7 @@ declare module "@mui/material/styles" {
             dark?: string;
             light?: string;
         };
-        seperator?: {
+        separator?: {
             main?: string;
             dark?: string;
             darker?: string;
@@ -378,7 +378,7 @@ const commonThemeOptions: ThemeOptions = {
         MuiTableCell: {
             styleOverrides: {
                 root: ({ theme }) => ({
-                    borderColor: `${theme.palette.seperator.dark}`,
+                    borderColor: `${theme.palette.separator.dark}`,
                 }),
             },
         },
@@ -440,7 +440,7 @@ const commonThemeOptions: ThemeOptions = {
             styleOverrides: {
                 root: ({ theme }) => ({
                     ...theme.typography.subtitle2,
-                    border: `1px solid ${theme.palette.seperator.dark}`,
+                    border: `1px solid ${theme.palette.separator.dark}`,
                     borderRadius: '4px',
                     background: 'white',
                     minWidth: 34,

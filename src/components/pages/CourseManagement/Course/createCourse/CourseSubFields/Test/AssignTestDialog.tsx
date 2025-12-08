@@ -157,7 +157,7 @@ export default function AssignTestDialog({ open, setOpen, selectedTestIds }: Pro
                     <Box
                         className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky -bottom-5"
                         sx={{
-                            borderTop: `1px solid ${theme.palette.seperator.dark}`,
+                            borderTop: `1px solid ${theme.palette.separator.dark}`,
                             background: theme.palette.primary.contrastText,
                         }}
                     >
@@ -165,7 +165,7 @@ export default function AssignTestDialog({ open, setOpen, selectedTestIds }: Pro
                             variant="contained"
                             onClick={handleClose}
                             sx={{
-                                background: theme.palette.seperator.dark,
+                                background: theme.palette.separator.dark,
                                 color: theme.palette.text.middle
                             }}
                         >

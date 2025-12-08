@@ -14,8 +14,8 @@ import type { positionProps } from "../../../types/position";
 
 interface Props {
     megaCategories: CategoryProps[];
-    categories: CategoryProps[];
-    subCategories: CategoryProps[];
+    categories?: CategoryProps[];
+    subCategories?: CategoryProps[];
     positions?: positionProps[];
     selections: SelectionType;
     onChange: (
@@ -24,6 +24,7 @@ interface Props {
         parentId?: number
     ) => void;
     loadingMegaCategory?: boolean;
+    isRequired?: boolean;
 }
 
 const toggleArray = (arr: number[], id: number) =>
@@ -37,17 +38,18 @@ export default function CategoryFilter({
     selections,
     onChange,
     loadingMegaCategory,
+    isRequired = true,
 }: Props) {
     const theme = useTheme();
 
     return (
         <div className="input__field flex flex-col">
-            <InputLabel className="required">Category</InputLabel>
+            <InputLabel className={isRequired ? "required" : ""}>Category</InputLabel>
             <div className=" flex gap-3 h-full">
                 {/* Mega Categories */}
                 {megaCategories ? <Box
                     sx={{
-                        border: `1px solid ${theme.palette.seperator.dark}`,
+                        border: `1px solid ${theme.palette.separator.dark}`,
                         borderRadius: "8px",
                         padding: "8px",
                     }}
@@ -65,7 +67,7 @@ export default function CategoryFilter({
                     >
                         Mega-Categories
                     </Typography>
-                    <div className="item__listing min-h-[120px]">
+                    <div className="item__listing h-[150px]">
                         {loadingMegaCategory
                             ? Array.from({ length: 4 }).map((_, i) => (
                                 <Box
@@ -100,7 +102,7 @@ export default function CategoryFilter({
                 {/* Categories, grouped by mega categories */}
                 {categories ? <Box
                     sx={{
-                        border: `1px solid ${theme.palette.seperator.dark}`,
+                        border: `1px solid ${theme.palette.separator.dark}`,
                         borderRadius: "8px",
                         padding: "8px",
                     }}
@@ -118,7 +120,7 @@ export default function CategoryFilter({
                     >
                         Categories
                     </Typography>
-                    <div className="item__listing min-h-[120px]">
+                    <div className="item__listing h-[150px]">
                         {categories.length === 0 ? (
                             <div className="text-center">
                                 {/* Empty state */}
@@ -192,7 +194,7 @@ export default function CategoryFilter({
                 {/* Sub Categories */}
                 {subCategories ? <Box
                     sx={{
-                        border: `1px solid ${theme.palette.seperator.dark}`,
+                        border: `1px solid ${theme.palette.separator.dark}`,
                         borderRadius: "8px",
                         padding: "8px",
                     }}
@@ -210,7 +212,7 @@ export default function CategoryFilter({
                     >
                         Sub- Categories
                     </Typography>
-                    <div className="item__listing min-h-[120px]">
+                    <div className="item__listing h-[150px]">
                         {subCategories.length === 0 ? (
                             <div>
                                 {/* Empty state */}
@@ -284,7 +286,7 @@ export default function CategoryFilter({
                 {/* Level (positions) */}
                 {positions.length > 0 ? <Box
                     sx={{
-                        border: `1px solid ${theme.palette.seperator.dark}`,
+                        border: `1px solid ${theme.palette.separator.dark}`,
                         borderRadius: "8px",
                         padding: "8px",
                     }}
@@ -302,7 +304,7 @@ export default function CategoryFilter({
                     >
                         Level
                     </Typography>
-                    <div className="item__listing min-h-[120px]">
+                    <div className="item__listing h-[150px]">
                         {positions.map((item) => (
                             <FormControlLabel
                                 key={item.id}

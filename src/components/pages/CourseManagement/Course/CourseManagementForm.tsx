@@ -437,7 +437,7 @@ export default function CourseManagementForm() {
                 {activeTab === "videos" ? <CourseMedia type="videos" id={id} /> : ""}
                 {activeTab === "test" ? <CourseTest id={id} /> : ""}
                 <FooterAction
-                    handleComfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
+                    handleConfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}
                     isLoading={isLoading}
                     isUpdating={updating}
                     isEditMode={!!id}

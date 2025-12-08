@@ -11,6 +11,7 @@ import { useAppDispatch } from "../../../../store/hook";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { CourseProps } from "../../../../types/course";
 import { TestInitialState, testValidationSchema, type QuestionProps, type TestProps } from "../../../../types/question";
+import { calcHasMore } from "../../../../utils/calculateHasMore";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
 import StyledToggleButtons from "../../../atoms/StyledToggleSwitch";
 import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
@@ -158,10 +159,7 @@ export default function TestManagementForm() {
         }));
     };
 
-    const calcHasMore = (pagination?: { current_page?: number; total_pages?: number }) => {
-        if (!pagination?.current_page || !pagination?.total_pages) return false;
-        return pagination.current_page < pagination.total_pages;
-    };
+
     const coursePagination = courses?.data?.pagination;
     const questionPagination = questions?.data?.pagination;
 
@@ -487,7 +485,7 @@ export default function TestManagementForm() {
             </div>
 
             <FooterAction
-                handleComfirmationChange={() => { }}
+                handleConfirmationChange={() => { }}
                 isLoading={creatingTest}
                 isUpdating={creatingTest}
                 isEditMode={!id}

@@ -47,7 +47,7 @@ export default function LiveClassCard({ liveClass }: { liveClass: LiveClassPaylo
     const theme = useTheme();
     return (
         <Box sx={{
-            border: `1px solid ${theme.palette.seperator.dark}`
+            border: `1px solid ${theme.palette.separator.dark}`
         }} className="rounded-md p-4 flex flex-col gap-3">
             <div className="live__class__card__title flex justify-between items-start">
                 <div className="class__title__wrapper flex items-center gap-4">

@@ -33,11 +33,11 @@ export default function ConfirmationDialog({ open, setOpen, icon, title, descrip
                 {title ? <Typography variant="h5" color="text.dark" className="mb-1">{title}</Typography> : ""}
                 {description ? <Typography color="text.middle">{description}</Typography> : ""}
                 <Box className="mt-6 mb-4" sx={{
-                    border: `1px solid ${theme.palette.seperator.dark}`
+                    border: `1px solid ${theme.palette.separator.dark}`
                 }} />
                 <DialogActions>
                     <Button fullWidth variant="contained" sx={{
-                        background: theme.palette.seperator.dark,
+                        background: theme.palette.separator.dark,
                         color: theme.palette.text.middle
                     }}
                         onClick={handleClose}

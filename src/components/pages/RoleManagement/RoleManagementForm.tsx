@@ -205,7 +205,7 @@ export default function RoleManagementForm() {
         [handlePermissionToggle]
     );
 
-    const handleComfirmationChange = () => {
+    const handleConfirmationChange = () => {
         setOpenConfirm((prev) => !prev)
     }
 
@@ -241,17 +241,17 @@ export default function RoleManagementForm() {
                 <Box
                     className="footer__action flex justify-end items-center gap-2 py-6 mt-8 sticky -bottom-5"
                     sx={{
-                        borderTop: `1px solid ${theme.palette.seperator.dark}`,
+                        borderTop: `1px solid ${theme.palette.separator.dark}`,
                         background: theme.palette.primary.contrastText,
                     }}
                 >
                     <Button
                         variant="contained"
                         sx={{
-                            background: theme.palette.seperator.dark,
+                            background: theme.palette.separator.dark,
                             color: theme.palette.text.middle
                         }}
-                        onClick={handleComfirmationChange}
+                        onClick={handleConfirmationChange}
                     >
                         Cancel
                     </Button>
@@ -271,7 +271,7 @@ export default function RoleManagementForm() {
                 title="Cancel Role"
                 description="All the recent changes will be lost completely. Are you sure."
                 open={openConfirm}
-                setOpen={handleComfirmationChange}
+                setOpen={handleConfirmationChange}
                 onSave={() => { navigate(PATH.ROLES.ROOT) }}
             />
         </>

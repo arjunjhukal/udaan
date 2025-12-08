@@ -107,7 +107,7 @@ export default function CourseOverviewForm({
                                     key={teacher.id}
                                     className="capsule flex gap-4 py-2 px-3 rounded-md items-center"
                                     sx={{
-                                        background: theme.palette.seperator.dark,
+                                        background: theme.palette.separator.dark,
                                     }}
                                 >
                                     <div className="teacher__info flex items-center gap-2">

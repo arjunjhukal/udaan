@@ -20,7 +20,7 @@ export const getStatusStyle = (status: "ongoing" | "upcoming" | "ended") => {
             };
         default:
             return {
-                backgroundColor: theme.palette.seperator.dark,
+                backgroundColor: theme.palette.separator.dark,
                 color: theme.palette.text.dark,
             };
     }

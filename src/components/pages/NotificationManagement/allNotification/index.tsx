@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { PATH } from "../../../../routes/PATH";
 import PageHeader from "../../../organism/PageHeader";
 import AllNotifications from "./AllNotifications";
 
@@ -17,6 +18,7 @@ export default function AllNotificationsRoot() {
                 }]}
                 cta={{
                     label: t("messages.empty_states.notification_management.action"),
+                    url: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT
                 }}
             />
             <AllNotifications />

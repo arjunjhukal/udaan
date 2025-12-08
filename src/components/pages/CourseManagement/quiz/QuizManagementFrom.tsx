@@ -12,7 +12,7 @@ export default function QuizManagementFrom({ open, setOpen }: Props) {
             <DialogContent>
 
                 <FooterAction
-                    handleComfirmationChange={() => setOpen(false)}
+                    handleConfirmationChange={() => setOpen(false)}
                     isLoading={false}
                     isUpdating={false}
                     isEditMode={false}

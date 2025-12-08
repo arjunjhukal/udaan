@@ -5,7 +5,7 @@ export default function ActionIconVisible({ onDelete, onEdit }: { onDelete: () =
     return (
         <div className="action__group flex justify-end gap-3">
             <IconButton className="p-1.5 rounded-md!" sx={{
-                border: `1px solid ${theme.palette.seperator.darker}`,
+                border: `1px solid ${theme.palette.separator.darker}`,
                 background: theme.palette.primary.contrastText,
                 "&:hover": {
                     color: theme.palette.primary.contrastText,
@@ -20,7 +20,7 @@ export default function ActionIconVisible({ onDelete, onEdit }: { onDelete: () =
 
             </IconButton>
             <IconButton className="p-1.5 rounded-md!" sx={{
-                border: `1px solid ${theme.palette.seperator.darker}`,
+                border: `1px solid ${theme.palette.separator.darker}`,
                 background: theme.palette.primary.contrastText,
                 "&:hover": {
                     color: theme.palette.primary.contrastText,

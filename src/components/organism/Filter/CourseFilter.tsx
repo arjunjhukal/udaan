@@ -186,7 +186,7 @@ export const CourseFilter = ({
           <div className="action__footer flex justify-end items-center gap-2">
             <Button onClick={handleResetFilter} className="font-medium!"
               sx={{
-                background: theme.palette.seperator.dark,
+                background: theme.palette.separator.dark,
                 color: theme.palette.text.middle
               }}>
               {selections ? "Reset & Close Filter" : "Cancel"}
