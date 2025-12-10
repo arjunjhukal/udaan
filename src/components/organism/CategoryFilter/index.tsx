@@ -67,7 +67,7 @@ export default function CategoryFilter({
                     >
                         Mega-Categories
                     </Typography>
-                    <div className="item__listing h-[150px]">
+                    <div className="item__listing h-[150px] flex flex-col gap-1">
                         {loadingMegaCategory
                             ? Array.from({ length: 4 }).map((_, i) => (
                                 <Box
@@ -120,7 +120,7 @@ export default function CategoryFilter({
                     >
                         Categories
                     </Typography>
-                    <div className="item__listing h-[150px]">
+                    <div className="item__listing h-[150px] flex flex-col gap-1">
                         {categories.length === 0 ? (
                             <div className="text-center">
                                 {/* Empty state */}
@@ -152,7 +152,7 @@ export default function CategoryFilter({
                             </div>
                         ) : (
                             categories.map((megaCategory) => (
-                                <div className="category__item" key={megaCategory.id}>
+                                <div className="category__item flex flex-col gap-1 " key={megaCategory.id}>
                                     <Typography
                                         variant="caption"
                                         color="text.dark"
@@ -212,7 +212,7 @@ export default function CategoryFilter({
                     >
                         Sub- Categories
                     </Typography>
-                    <div className="item__listing h-[150px]">
+                    <div className="item__listing h-[150px] flex flex-col gap-1">
                         {subCategories.length === 0 ? (
                             <div>
                                 {/* Empty state */}
@@ -244,7 +244,7 @@ export default function CategoryFilter({
                             </div>
                         ) : (
                             subCategories.map((cat) => (
-                                <div className="category__item" key={cat.id}>
+                                <div className="category__item flex flex-col gap-1" key={cat.id}>
                                     <Typography
                                         variant="caption"
                                         color="text.dark"
@@ -304,7 +304,7 @@ export default function CategoryFilter({
                     >
                         Level
                     </Typography>
-                    <div className="item__listing h-[150px]">
+                    <div className="item__listing h-[150px] flex flex-col gap-1">
                         {positions.map((item) => (
                             <FormControlLabel
                                 key={item.id}

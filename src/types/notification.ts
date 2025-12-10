@@ -26,6 +26,7 @@ export interface NotificationPayload {
     delivery_methods?: DeliveryMethodsType[];
     scheduled_date?: string;
     scheduled_time?: string;
+    updated_at?: string;
 }
 
 export const NotificationInitialState: NotificationPayload = {
@@ -85,8 +86,8 @@ export const NotificationValidationSchema = yup.object({
         .required("Target students is required"),
 
     notification_type: yup
-        .mixed<"all_course" | "specific_cours">()
-        .oneOf(["all_course", "specific_cours"])
+        .mixed<"all_course" | "specific_course">()
+        .oneOf(["all_course", "specific_course"])
         .required("Notification type is required"),
 
     megacategory_ids: yup.array().of(yup.number()),

@@ -76,6 +76,15 @@ export const notificationApi = createApi({
                 { type: "Notifications", id: "LIST" },
             ],
         }),
+        sendNotification: builder.mutation<GlobalResponse, { id: number }>({
+            query: ({ id }) => ({
+                url: `/admin/notification/${id}/send`,
+                method: "POST",
+            }),
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: "Notifications", id }
+            ],
+        }),
     })
 })
 
@@ -84,5 +93,6 @@ export const {
     useGetAllNotificationQuery,
     useGetNotificationByIdQuery,
     useUpdateNotificationByIdMutation,
-    useDeleteNotificationMutation
+    useDeleteNotificationMutation,
+    useSendNotificationMutation
 } = notificationApi;

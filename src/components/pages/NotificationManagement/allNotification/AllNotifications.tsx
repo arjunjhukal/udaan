@@ -7,6 +7,7 @@ import { useDeleteNotificationMutation, useGetAllNotificationQuery, } from "../.
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import type { NotificationPayload } from "../../../../types/notification";
+import { formatDateCustom } from "../../../../utils/dateFormat";
 import { renderHtml } from "../../../../utils/renderHtml";
 import Actions from "../../../molecules/Action";
 import ScheduleNotification from "../../../molecules/Action/ScheduleNotification";
@@ -158,7 +159,10 @@ export default function AllNotifications() {
             header: "Schedule Notification",
             accessorKey: "schedule_notification",
             cell: ({ row }) => (
-                <ScheduleNotification data={row.original} />
+                <>
+                    <ScheduleNotification data={row.original} />
+                    <Typography variant="caption">Last Sent: {formatDateCustom(row.original.updated_at || "", { shortMonth: true })}</Typography>
+                </>
             ),
         },
         {

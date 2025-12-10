@@ -171,7 +171,7 @@ export default function AllUserTable() {
             header: "Email",
             accessorKey: "email",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">{row.original.email}</Typography>
+                <Typography fontWeight={500} >{row.original.email}</Typography>
             ),
         },
         {

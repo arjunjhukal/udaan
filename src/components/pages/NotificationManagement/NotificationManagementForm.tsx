@@ -124,6 +124,24 @@ export default function NotificationManagementForm() {
         }
     })
 
+    useEffect(() => {
+        if (!selections) return;
+
+        const megaIds = selections.mega_category || [];
+
+        const categoryIds = Object.values(selections.category || {}).flat();
+        const subCategoryIds = Object.values(selections.sub_category || {}).flat();
+
+        const positionIds = selections.position_ids || [];
+
+        formik.setFieldValue("megacategory_ids", megaIds);
+        formik.setFieldValue("category_ids", categoryIds);
+        formik.setFieldValue("subcategory_ids", subCategoryIds);
+        formik.setFieldValue("level_ids", positionIds);
+
+    }, [selections]);
+
+
     const [onlyNotPurchased, setOnlyNotPurchased] = useState(false);
 
     useEffect(() => {

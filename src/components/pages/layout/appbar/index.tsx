@@ -1,6 +1,6 @@
 import EmailIcon from "@mui/icons-material/Email";
 import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import {
 	AppBar,
 	Box,
@@ -66,7 +66,7 @@ export default function CustomAppbar({
 							background: theme.palette.separator.dark,
 							minWidth: "44px",
 						}}>
-							<NotificationsNoneIcon />
+							<NotificationsIcon />
 						</IconButton>
 						<IconButton sx={{
 							background: theme.palette.separator.dark,

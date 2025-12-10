@@ -134,7 +134,7 @@ export default function ProfileMenu() {
                                     </ListItem>
 
                                     {/* Logout */}
-                                    <ListItem className="menu__item action__item">
+                                    <ListItem className="menu__item action__item delete__item">
                                         <ListItemButton
                                             sx={{ m: 0, border: "none" }}
                                             onClick={() => handleMenuClick(onLogout)}
