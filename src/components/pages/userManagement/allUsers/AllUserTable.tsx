@@ -12,7 +12,6 @@ import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../organism/EmptyRoute";
-import UserFilter from "../../../organism/Filter/UserFilter";
 import TableFilter from "../../../organism/TableFilter";
 
 export default function AllUserTable() {
@@ -219,7 +218,6 @@ export default function AllUserTable() {
                 setSearch={setSearch}
                 selectedRows={selectedRows}
                 handleRoleDelete={openDeleteConfirmation}
-                onFilter={() => { }}
             />
             {!user.length && !isLoading ? <EmptyRoute
                 icon={(<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -256,7 +254,6 @@ export default function AllUserTable() {
                 </svg>
                 )}
             />
-            <UserFilter />
         </>
     )
 }
