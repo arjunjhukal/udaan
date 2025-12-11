@@ -275,6 +275,9 @@ export default function LiveClassManagementForm() {
                                 />
                             )}
                         />
+                        {formik.touched.account_id && formik.errors.account_id && (
+                            <Typography color="error" variant="caption">{formik.errors.account_id}</Typography>
+                        )}
                     </div>
 
                     {/* AGENDA */}
@@ -285,6 +288,9 @@ export default function LiveClassManagementForm() {
                             onChange={(value) => formik.setFieldValue("agenda", value)}
                         // error={formik.touched.agenda && formik.errors.agenda}
                         />
+                        {formik.touched.agenda && formik.errors.agenda && (
+                            <Typography color="error" variant="caption">{formik.errors.agenda}</Typography>
+                        )}
                     </div>
 
                     {/* DESCRIPTION */}
@@ -295,6 +301,9 @@ export default function LiveClassManagementForm() {
                             value={formik.values.description || ""}
                             onChange={(value) => formik.setFieldValue("description", value)}
                         />
+                        {formik.touched.description && formik.errors.description && (
+                            <Typography color="error" variant="caption">{formik.errors.description}</Typography>
+                        )}
                     </div>
                 </div>
 
@@ -314,6 +323,9 @@ export default function LiveClassManagementForm() {
                             onChange={(date: Dayjs | null) => formik.setFieldValue("schedule_date", date ? date.toISOString() : "")}
                             includeTime={true}
                         />
+                        {formik.touched.schedule_date && formik.errors.schedule_date && (
+                            <FormHelperText color="error" >{formik.errors.schedule_date}</FormHelperText>
+                        )}
                     </div>
 
                     {/* Duration */}
