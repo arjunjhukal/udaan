@@ -14,7 +14,10 @@ export const liveClassApi = createApi({
                 url: `/admin/course/live`,
                 method: "POST",
                 body
-            })
+            }),
+            invalidatesTags: (_result, _error,) => [
+                { type: "Live_Class", id: "LIST" }
+            ],
         }),
         getAllLiveClass: builder.query<LiveClassList, QueryParams & { status: liveClassTabType }>({
             query: ({ pageIndex, pageSize, search, status }) => {
@@ -69,7 +72,10 @@ export const liveClassApi = createApi({
                 url: `/admin/course/live/${id}`,
                 method: "POST",
                 body
-            })
+            }),
+            invalidatesTags: (_result, _error,) => [
+                { type: "Live_Class", id: "LIST" }
+            ],
         })
     })
 })
