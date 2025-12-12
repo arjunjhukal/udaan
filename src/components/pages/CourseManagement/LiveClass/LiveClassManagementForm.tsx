@@ -101,7 +101,7 @@ export default function LiveClassManagementForm() {
     // Fetch zoom accounts (assuming you have a query for this)
     const zoomAccounts = {
         data: {
-            data: [{ name: "Zoom 01", id: 1 }]
+            data: [{ name: "udaanshaikshikkendra@gmail.com", id: 1 }, { name: "sushantsanu123@gmail.com", id: 2 }]
         }
     }
 
