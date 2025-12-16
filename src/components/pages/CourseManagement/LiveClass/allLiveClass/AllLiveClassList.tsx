@@ -1,4 +1,4 @@
-import { Checkbox, Stack, Typography } from "@mui/material";
+import { Button, Checkbox, Stack, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -138,6 +138,18 @@ export default function AllLiveClassList() {
           }}>
             {row.original?.status}
           </Typography>
+        )
+      },
+    },
+    {
+      header: "Start Class",
+      accessorKey: "start_url",
+      cell: ({ row }) => {
+
+        return (
+          <Button className="capitalize" variant="contained" color="primary" href={row.original.start_url} disabled={row.original.status === "ended"} >
+            Start Meeting
+          </Button>
         )
       },
     },
