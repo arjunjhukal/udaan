@@ -125,8 +125,8 @@ export const liveClassValidationSchema = Yup.object({
         .required("Course selection is required"),
 
     // Registration type only applies for weekly
-    registration_type: Yup.mixed<1 | 2 | 3>()
-        .oneOf([1, 2, 3])
+    registration_type: Yup.mixed<1 | 2 | 3 | 99>()
+        .oneOf([1, 2, 3, 99])
         .when(["is_recurring", "recurring_type"], {
             is: (is_recurring: boolean, recurring_type: 1 | 2 | 3) =>
                 is_recurring && recurring_type === 2,
