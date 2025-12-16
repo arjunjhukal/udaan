@@ -210,6 +210,7 @@ export default function LiveClassManagementForm() {
     ];
 
     const registrationOptions = [
+        { label: "None", value: 69 },
         { label: "Register Once (Attend All Occurrences)", value: 1 },
         { label: "Register for Each Occurrence Separately", value: 2 },
         { label: "Register for One Occurrence Only", value: 3 }
