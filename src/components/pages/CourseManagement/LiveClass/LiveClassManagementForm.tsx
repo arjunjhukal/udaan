@@ -209,12 +209,12 @@ export default function LiveClassManagementForm() {
         { label: "Monthly", value: 3 }
     ];
 
-    const registrationOptions = [
-        { label: "None", value: 99 },
-        { label: "Register Once (Attend All Occurrences)", value: 1 },
-        { label: "Register for Each Occurrence Separately", value: 2 },
-        { label: "Register for One Occurrence Only", value: 3 }
-    ];
+    // const registrationOptions = [
+    //     { label: "None", value: 99 },
+    //     { label: "Register Once (Attend All Occurrences)", value: 1 },
+    //     { label: "Register for Each Occurrence Separately", value: 2 },
+    //     { label: "Register for One Occurrence Only", value: 3 }
+    // ];
 
 
     const daysOptions = [
@@ -442,7 +442,7 @@ export default function LiveClassManagementForm() {
                             </div>
 
                             {/* Registration Type (only for weekly) */}
-                            <div className="col-span-1">
+                            {/* <div className="col-span-1">
                                 <InputLabel className="required">Registration Type</InputLabel>
                                 <Autocomplete
                                     options={registrationOptions}
@@ -458,7 +458,7 @@ export default function LiveClassManagementForm() {
                                         />
                                     )}
                                 />
-                            </div>
+                            </div> */}
                         </>
                     )}
                 </div>

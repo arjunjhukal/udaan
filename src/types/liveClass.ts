@@ -18,7 +18,7 @@ export interface LiveClassPayload {
     end_date?: string | null;
     teacher_ids: number[];
     courses: number[];
-    registration_type?: 1 | 2 | 3;        // only for weekly (free paid pre-approval)
+    registration_type?: 1 | 2 | 3 | 99;        // only for weekly (free paid pre-approval)
     is_enable_recording: boolean;
     auto_recording?: "local" | "cloud" | "none";
     attendee?: number | null;
@@ -51,7 +51,7 @@ export const initialLiveClassState: LiveClassPayload = {
     end_date: null,
     teacher_ids: [],
     courses: [],
-    registration_type: 1,
+    registration_type: 99,
     is_enable_recording: true,
     auto_recording: "none",
 };
