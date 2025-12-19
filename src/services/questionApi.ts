@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
-import type { QuestionList, QuestionProps, QuestionTypeProps, TestList, TestProps } from "../types/question";
+import type { QuestionList, QuestionProps, QuestionTypeProps, StudentSubmitTestList, TestList, TestOverviewResponse, TestProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -103,6 +103,31 @@ export const questionApi = createApi({
             }),
             invalidatesTags: [{ type: "Test", id: "LIST" }]
         }),
+        getTestOverview: builder.query<TestOverviewResponse, { id?: number }>({
+            query: ({ id }) => ({
+                url: `/admin/test/${id}/overview`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
+        getTestQuestions: builder.query<QuestionList, { id?: number }>({
+            query: ({ id }) => ({
+                url: `/admin/test/${id}/questions`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
+        getListOfStudentSubmittedTest: builder.query<StudentSubmitTestList, { id?: number, qp: QueryParams, search: String }>({
+            query: ({ id, qp, search }) => ({
+                url: `/admin/test/${id}/result?${buildQueryParams({
+                    page: qp.pageIndex,
+                    page_size: qp.pageSize,
+                    search: search
+                })}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
     })
 });
 
@@ -115,5 +140,8 @@ export const {
     useEditOrCreateTestMutation,
     useGetAllTestQuery,
     useGetTestByIdQuery,
-    useDeleteTestMutation
+    useDeleteTestMutation,
+    useGetTestOverviewQuery,
+    useGetTestQuestionsQuery,
+    useGetListOfStudentSubmittedTestQuery
 } = questionApi;

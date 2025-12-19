@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import * as Yup from "yup";
 import type { Pagination } from "./roleAndPermission";
-import type { GlobalResponse } from "./user";
+import type { GlobalResponse, User } from "./user";
 export type QuestionTypeProps = "mcq" | "subjective"
 export interface OptionProps {
     id: number | null,
@@ -16,7 +16,7 @@ export interface QuestionProps {
     options: OptionProps[],
     megacategory_id: number | null;
     question_type: QuestionTypeProps
-    has_image_in_option:boolean;
+    has_image_in_option: boolean;
 }
 
 export const QuestionInitialState: QuestionProps = {
@@ -26,7 +26,7 @@ export const QuestionInitialState: QuestionProps = {
     options: [{ id: null, option: "", is_correct: false }, { id: null, option: "", is_correct: false }],
     megacategory_id: null,
     question_type: "mcq",
-    has_image_in_option:false,
+    has_image_in_option: false,
 };
 
 export interface QuestionList extends GlobalResponse {
@@ -182,3 +182,49 @@ export const testValidationSchema = Yup.object().shape({
             }
         ),
 });
+
+
+export interface TestOverviewProps {
+    total_students_enrolled: number;
+    total_student_submitted: number;
+    total_student_passed: number;
+    average_score: number;
+    high_score: number;
+
+}
+export interface TestOverviewResponse extends GlobalResponse {
+    data: {
+        total_students_enrolled: number;
+        total_student_submitted: number;
+        total_student_passed: number;
+        average_score: number;
+        high_score: number;
+    }
+}
+
+export type ResultProps = "failed" | "passed";
+export type TestStatus = "progress" | "completed";
+
+
+export interface StudentSubmitTestProps {
+    id: number,
+    student: User,
+    total_attempted: number,
+    total_questions: number,
+    total_correct: number,
+    started_at: string,
+    finished_at: string,
+    timer: number,
+    status: TestStatus,
+    result: ResultProps,
+    total_marks: number,
+    score: number,
+    test_type: TestTypeProps
+}
+
+export interface StudentSubmitTestList {
+    data: {
+        data: StudentSubmitTestProps[];
+        pagination: Pagination;
+    }
+}

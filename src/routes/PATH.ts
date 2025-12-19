@@ -89,12 +89,20 @@ export const PATH = {
 		TEST: {
 			ROOT: "/test",
 			CREATE_TEST: {
-				ROOT: "/test-question-management/test/create-test",
+				ROOT: "/test/create-test",
 			},
 			EDIT_TEST: {
 				ROOT: (id?: number) =>
-					id ? `/test-question-management/test/${id}` : "/test-question-management/test/:id",
+					id ? `/test/${id}` : "/test/:id",
 			},
+			VIEW_TEST: {
+				ROOT: (id?: number) =>
+					id ? `/test/${id}/view` : "/test/:id/view",
+			},
+			CHECK_PAPER: {
+				ROOT: (id?: number) =>
+					id ? `/test/${id}/check-paper` : "/test/:id/check-paper",
+			}
 		}
 	},
 	SUBSCRIPTION_PLAN_MANAGEMENT: {

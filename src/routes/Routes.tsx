@@ -24,6 +24,7 @@ import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionMa
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
 import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
+import ViewTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/viewTest";
 import TransactionManagementRoot from "../components/pages/TransactionManagement";
 import AllTransactionRoot from "../components/pages/TransactionManagement/allTransation";
 import AuthRoot from "../components/pages/auth";
@@ -94,6 +95,7 @@ const router = createBrowserRouter([
 					{ path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT, element: <QuestionManagementRoot /> },
 					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT, element: <TestManagementRoot /> },
 					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(), element: <CreatTestRoot /> },
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(), element: <ViewTestRoot /> },
 				],
 			},
 			{

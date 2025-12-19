@@ -25,6 +25,7 @@ export default function TestManagementForm() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
+    const testId = Number.isFinite(Number(id)) ? Number(id) : undefined;
     const [courseQp, setCourseQp] = useState({
         pageIndex: 1,
         pageSize: 10,
@@ -46,7 +47,10 @@ export default function TestManagementForm() {
         getCategoryFilterParams,
     } = useCourseFilter();
 
-    const { data: editData } = useGetTestByIdQuery({ id: id ? Number(id) : undefined }, { skip: !id });
+    const { data: editData } = useGetTestByIdQuery(
+        { id: testId as number },
+        { skip: !testId }
+    );
 
 
     function getInitialValues(): TestProps {

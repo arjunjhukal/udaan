@@ -12,7 +12,8 @@ import UdaanTable from '../../../../molecules/Table';
 import TablePagination from '../../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../../organism/ConfirmationDialog';
 import EmptyRoute from '../../../../organism/EmptyRoute';
-import TableFilter from '../../../../organism/TableFilter';
+import TableFilter, { type LayoutProps } from '../../../../organism/TableFilter';
+import TestGridLayout from './TestGridLayout';
 
 export default function AllTestListing() {
 
@@ -26,6 +27,7 @@ export default function AllTestListing() {
         pageIndex: 1,
         pageSize: 8,
     })
+    const [layout, setLayout] = useState<LayoutProps>('table');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [testsToDelete, setTestsToDelete] = useState<string[]>([]);
 
@@ -136,7 +138,7 @@ export default function AllTestListing() {
             accessorKey: "questions",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
-                    {row.original.questions || "N/A"}
+                    {row.original.total_questions || "N/A"}
                 </Typography>
             ),
         },
@@ -165,7 +167,7 @@ export default function AllTestListing() {
                 <Actions
                     deleting={deleting}
                     onEdit={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(Number(row.original.id)))}
-                    onView={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(Number(row.original.id)))}
+                    onView={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(Number(row.original.id)))}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                 />
             ),
@@ -182,6 +184,8 @@ export default function AllTestListing() {
                 setSearch={setSearch}
                 selectedRows={selectedRows}
                 handleRoleDelete={openDeleteConfirmation}
+                layout={layout}
+                setLayout={setLayout}
             />
 
             {!isLoading && !tests.length ?
@@ -196,11 +200,12 @@ export default function AllTestListing() {
                     )}
                 /> : (
                     <>
-                        <UdaanTable
-                            data={tests || []}
+                        {layout === "table" ? <UdaanTable
                             columns={columns}
+                            data={tests || []}
                             loading={isLoading}
-                        />
+                        /> : <TestGridLayout data={tests || []}
+                            loading={isLoading} />}
                         <TablePagination
                             qp={qp}
                             setQp={setQp}
