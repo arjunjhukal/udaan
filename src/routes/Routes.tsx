@@ -23,7 +23,10 @@ import SubscriptionManagementRoot from "../components/pages/SubscriptionManageme
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
+import CheckTestPaperRoot from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest";
+import SingleStudentAnswerLayout from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest/SingleStudentAnswerLayout";
 import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
+import ResultRoot from "../components/pages/TestAndQuestionManagement/TestManagement/result";
 import ViewTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/viewTest";
 import TransactionManagementRoot from "../components/pages/TransactionManagement";
 import AllTransactionRoot from "../components/pages/TransactionManagement/allTransation";
@@ -92,10 +95,36 @@ const router = createBrowserRouter([
 			{
 				element: <TestAndQuestionManagementRoot />,
 				children: [
-					{ path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT, element: <QuestionManagementRoot /> },
-					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT, element: <TestManagementRoot /> },
-					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(), element: <CreatTestRoot /> },
-					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(), element: <ViewTestRoot /> },
+					{
+						path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT,
+						element: <QuestionManagementRoot />,
+					},
+					{
+						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT,
+						element: <TestManagementRoot />,
+					},
+					{
+						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(),
+						element: <CreatTestRoot />,
+					},
+					{
+						element: <ResultRoot />,
+						children: [
+							{
+								path: PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(),
+								element: <ViewTestRoot />,
+							},
+							{
+								element: <SingleStudentAnswerLayout />,
+								children: [
+									{
+										path: PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.ROOT(),
+										element: <CheckTestPaperRoot />,
+									},
+								]
+							},
+						],
+					},
 				],
 			},
 			{

@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
-import type { QuestionList, QuestionProps, QuestionTypeProps, StudentSubmitTestList, TestList, TestOverviewResponse, TestProps } from "../types/question";
+import type { QuestionList, QuestionProps, QuestionTypeProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -128,6 +128,13 @@ export const questionApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
+        getSingleStudentResult: builder.query<{ data: StudentSubmitTestProps }, { id?: number, resultId?: number }>({
+            query: ({ id, resultId }) => ({
+                url: `/admin/test/${id}/result/${resultId}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
     })
 });
 
@@ -143,5 +150,6 @@ export const {
     useDeleteTestMutation,
     useGetTestOverviewQuery,
     useGetTestQuestionsQuery,
-    useGetListOfStudentSubmittedTestQuery
+    useGetListOfStudentSubmittedTestQuery,
+    useGetSingleStudentResultQuery,
 } = questionApi;

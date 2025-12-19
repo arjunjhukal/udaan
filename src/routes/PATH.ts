@@ -100,8 +100,8 @@ export const PATH = {
 					id ? `/test/${id}/view` : "/test/:id/view",
 			},
 			CHECK_PAPER: {
-				ROOT: (id?: number) =>
-					id ? `/test/${id}/check-paper` : "/test/:id/check-paper",
+				ROOT: (id?: number, resultId?: number) =>
+					id && resultId ? `/test/${id}/check-paper/${resultId}` : "/test/:id/check-paper/:resultId",
 			}
 		}
 	},
