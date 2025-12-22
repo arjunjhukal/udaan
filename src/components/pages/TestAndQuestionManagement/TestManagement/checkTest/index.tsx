@@ -2,7 +2,8 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Box, Button, Typography, useTheme } from "@mui/material";
 import { Calendar, Timer, UserEdit, UserTag } from "iconsax-reactjs";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { PATH } from '../../../../../routes/PATH';
 import { useGetQuestionsListInTestQuery } from "../../../../../services/questionApi";
 import { formatDateTime } from '../../../../../utils/dateFormat';
 import { renderHtml } from "../../../../../utils/renderHtml";
@@ -72,7 +73,7 @@ const DetailItem = ({
 	value,
 	colSpan = 1
 }: {
-	icon: any;
+	icon: React.ReactElement;
 	label: string;
 	value: string | null | undefined;
 	colSpan?: number;
@@ -92,11 +93,7 @@ const DetailItem = ({
 					background: (theme) => theme.palette.primary.light
 				}}
 			>
-				<Icon
-					size={20}
-					color="currentColor"
-					style={{ color: 'inherit' }}
-				/>
+				{Icon}
 			</Box>
 			<Box>
 				<Typography variant='subtitle2' color='text.middle' className='mb-1.5!'>
@@ -110,6 +107,7 @@ const DetailItem = ({
 
 export default function CheckTestPaperRoot({ type }: { type?: string }) {
 	const { id, resultId } = useParams();
+	const navigate = useNavigate();
 	const theme = useTheme();
 	const { data } = useGetQuestionsListInTestQuery({
 		id: Number(id),
@@ -129,7 +127,7 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 								<Typography variant="subtitle1" color="text.dark" className="lg:max-w-[80%]">
 									{renderHtml(item.question)}
 								</Typography>
-								<Button variant='contained' color='primary'>
+								<Button variant='contained' color='primary' onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.CHECK_SUBJECTIVE_QUESTION.ROOT(Number(id), Number(resultId), Number(item.id)))}>
 									View/Check Answer
 								</Button>
 							</div>
@@ -146,31 +144,31 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 
 								<Box className="flex flex-col md:grid md:grid-cols-2 gap-y-4 gap-x-8 mt-4">
 									<DetailItem
-										icon={Calendar}
+										icon={<Calendar color={theme.palette.primary.main} />}
 										label="Submitted at:"
 										value={formatDateTime(item?.submitted_at)}
 									/>
 
 									<DetailItem
-										icon={UserEdit}
+										icon={<Calendar color={theme.palette.success.main} />}
 										label="Marks Obtained:"
 										value={item?.mark_obtained?.toString()}
 									/>
 
 									<DetailItem
-										icon={UserEdit}
+										icon={<UserEdit color={theme.palette.warning.main} />}
 										label="Checked by:"
 										value={item?.checked_by}
 									/>
 
 									<DetailItem
-										icon={Timer}
+										icon={<Timer color={theme.palette.info.main} />}
 										label="Checked at:"
 										value={formatDateTime(item?.checked_at)}
 									/>
 
 									<DetailItem
-										icon={UserTag}
+										icon={<UserTag color={theme.palette.primary.main} />}
 										label="Teacher's Feedback"
 										value={item?.feedback}
 										colSpan={2}

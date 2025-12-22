@@ -23,7 +23,8 @@ import SubscriptionManagementRoot from "../components/pages/SubscriptionManageme
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
-import CheckTestPaperRoot from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest";
+import SingleStudentSingleQuestion from "../components/pages/TestAndQuestionManagement/TestManagement/checkSinlgeQuestion";
+import QuestionAnswerLisitingLayout from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest/Layout";
 import SingleStudentAnswerLayout from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest/SingleStudentAnswerLayout";
 import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
 import ResultRoot from "../components/pages/TestAndQuestionManagement/TestManagement/result";
@@ -119,7 +120,12 @@ const router = createBrowserRouter([
 								children: [
 									{
 										path: PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.ROOT(),
-										element: <CheckTestPaperRoot />,
+										element: <QuestionAnswerLisitingLayout />
+
+									},
+									{
+										path: PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.CHECK_SUBJECTIVE_QUESTION.ROOT(),
+										element: <SingleStudentSingleQuestion />,
 									},
 								]
 							},

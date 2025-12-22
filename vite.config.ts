@@ -8,5 +8,13 @@ export default defineConfig({
       "@ckeditor/ckeditor5-react",
       "@ckeditor/ckeditor5-build-classic"
     ]
-  }
+  },
+  server: {
+    proxy: {
+      '/storage': {
+        target: 'https://app.makuralms.site',
+        changeOrigin: true,
+      },
+    },
+  },
 })

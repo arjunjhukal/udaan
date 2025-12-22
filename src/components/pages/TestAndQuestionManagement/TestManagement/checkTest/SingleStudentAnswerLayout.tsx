@@ -1,5 +1,5 @@
 import { Box, Divider, Typography } from '@mui/material';
-import { useParams } from 'react-router-dom';
+import { Outlet, useParams } from 'react-router-dom';
 import CheckMcqTestPaperRoot from '.';
 import { useGetSingleStudentResultQuery, useGetTestByIdQuery } from '../../../../../services/questionApi';
 import { msToHMS } from '../../../../../utils/parseDateTime';
@@ -50,17 +50,8 @@ export default function SingleStudentAnswerLayout() {
                 </div>
             </div>
             <Divider className='mt-4! mb-6!' />
-
-            <div className="flex flex-col md:grid md:grid-cols-12 gap-4 lg:gap-6">
-                <div className="cols-span-7 lg:col-span-8">
-                    <CheckMcqTestPaperRoot type={data?.data?.test_type} />
-                </div>
-                <div className="col-span-5 lg:col-span-4 sticky top-0 self-start">
-                    <aside className="feedback__form">
-                        <FeedbackForm data={data?.data || null} test={test?.data || null} testId={id} />
-                    </aside>
-                </div>
-            </div>
+            <Outlet />
+           
         </div>
     )
 }

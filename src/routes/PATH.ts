@@ -102,6 +102,10 @@ export const PATH = {
 			CHECK_PAPER: {
 				ROOT: (id?: number, resultId?: number) =>
 					id && resultId ? `/test/${id}/check-paper/${resultId}` : "/test/:id/check-paper/:resultId",
+				CHECK_SUBJECTIVE_QUESTION: {
+					ROOT: (id?: number, resultId?: number, questionId?: number) =>
+						id && resultId ? `/test/${id}/check-paper/${resultId}/question/${questionId}` : "/test/:id/check-paper/:resultId/question/:questionId"
+				}
 			}
 		}
 	},

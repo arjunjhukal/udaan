@@ -143,6 +143,17 @@ export const questionApi = createApi({
             }),
             invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
+        getTestFeedback: builder.query<GlobalResponse & {
+            data: {
+                feedback: string;
+            }
+        }, { id?: number, resultId?: number }>({
+            query: ({ id, resultId }) => ({
+                url: `/admin/test/${id}/result/${resultId}/feedback`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
         getQuestionsListInTest: builder.query<QuestionList, { id?: number, resultId?: number }>({
             query: ({ id, resultId }) => ({
                 url: `/admin/test/${id}/result/${resultId}/question`,
@@ -150,6 +161,14 @@ export const questionApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
+        getSingleQuestionInTest: builder.query<{ data: QuestionProps }, { id?: number, resultId?: number, questionId?: number }>({
+            query: ({ id, resultId, questionId }) => ({
+                url: `/admin/test/${id}/result/${resultId}/question/${questionId}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
+
     })
 });
 
@@ -168,5 +187,7 @@ export const {
     useGetListOfStudentSubmittedTestQuery,
     useGetSingleStudentResultQuery,
     useSubmitTestFeedbackMutation,
-    useGetQuestionsListInTestQuery
+    useGetTestFeedbackQuery,
+    useGetQuestionsListInTestQuery,
+    useGetSingleQuestionInTestQuery
 } = questionApi;
