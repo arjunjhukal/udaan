@@ -105,3 +105,44 @@ export function formatDateForDisplay(date: string | Date | number | null | undef
         return '-';
     }
 }
+
+
+/**
+ * Formats a date to "MMM DD, YYYY h:mm AM/PM" format
+ * Examples: "Nov 23, 2025 3:42 PM", "Jan 1, 2024 9:15 AM"
+ * 
+ * @param date - Date string, Date object, or timestamp
+ * @returns Formatted date-time string
+ */
+export function formatDateTime(date: string | Date | number | null | undefined): string {
+    if (!date) return '';
+
+    try {
+        const dateObj = new Date(date);
+
+        // Check if date is valid
+        if (isNaN(dateObj.getTime())) {
+            return '';
+        }
+
+        const month = dateObj.toLocaleString('en-US', { month: 'short' });
+        const day = dateObj.getDate();
+        const year = dateObj.getFullYear();
+
+        let hours = dateObj.getHours();
+        const minutes = dateObj.getMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+
+        // Convert to 12-hour format
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 0 should be 12
+
+        // Pad minutes with leading zero if needed
+        const minutesStr = minutes < 10 ? `0${minutes}` : minutes;
+
+        return `${month} ${day}, ${year} ${hours}:${minutesStr} ${ampm}`;
+    } catch (error) {
+        console.error('Error formatting date-time:', error);
+        return '';
+    }
+}

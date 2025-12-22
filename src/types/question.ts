@@ -17,6 +17,17 @@ export interface QuestionProps {
     megacategory_id: number | null;
     question_type: QuestionTypeProps
     has_image_in_option: boolean;
+    your_answer_id?: number;
+    type?: "correct" | "incorrect" | "skipped",
+    media_files?: {
+        id: number;
+        url: string;
+    }[];
+    mark_obtained?: string,
+    checked_by?: string,
+    checked_at?: string,
+    submitted_at?: string,
+    feedback?: string
 }
 
 export const QuestionInitialState: QuestionProps = {
@@ -32,7 +43,11 @@ export const QuestionInitialState: QuestionProps = {
 export interface QuestionList extends GlobalResponse {
     data: {
         data: QuestionProps[];
-        pagination: Pagination
+        pagination: Pagination;
+        overview: {
+            test_type: TestTypeProps;
+
+        }
     }
 }
 export type TestTypeProps = "subjective" | "mcq"

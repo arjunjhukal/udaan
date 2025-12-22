@@ -75,9 +75,9 @@ export default function TextEditor({
 
     return (
         <div className="input__field">
-            <InputLabel className={required ? "required" : ""}>
-                {label || "Description"}
-            </InputLabel>
+            {label ? <InputLabel className={required ? "required" : ""}>
+                {label}
+            </InputLabel> : ""}
 
             <div
                 className="editor__wrapper"

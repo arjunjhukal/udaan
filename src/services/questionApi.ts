@@ -135,6 +135,21 @@ export const questionApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
+        submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string } }>({
+            query: ({ id, resultId, body }) => ({
+                url: `/admin/test/${id}/result/${resultId}/feedback`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
+        getQuestionsListInTest: builder.query<QuestionList, { id?: number, resultId?: number }>({
+            query: ({ id, resultId }) => ({
+                url: `/admin/test/${id}/result/${resultId}/question`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
     })
 });
 
@@ -152,4 +167,6 @@ export const {
     useGetTestQuestionsQuery,
     useGetListOfStudentSubmittedTestQuery,
     useGetSingleStudentResultQuery,
+    useSubmitTestFeedbackMutation,
+    useGetQuestionsListInTestQuery
 } = questionApi;

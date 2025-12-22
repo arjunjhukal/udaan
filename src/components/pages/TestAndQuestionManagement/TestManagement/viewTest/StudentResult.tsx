@@ -237,7 +237,7 @@ export default function StudentResult({ id }: { id: string }) {
 				accessorKey: "marks",
 				cell: ({ row }) => (
 					<Typography variant="subtitle1">
-						{row.original?.total_marks}
+						{row.original?.total_marks}%
 					</Typography>
 				),
 			},
