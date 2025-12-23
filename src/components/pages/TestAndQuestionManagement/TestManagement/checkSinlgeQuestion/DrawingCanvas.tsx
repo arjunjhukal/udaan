@@ -12,183 +12,187 @@ interface Image {
 
 interface DrawingCanvasProps {
   images?: Image[];
+  value?: Record<number, string>;
+  onChange?: (drawings: Record<number, string>) => void;
 }
 
-const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ images = [] }) => {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const [isDrawing, setIsDrawing] = useState<boolean>(false);
-  const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
-  const [tool, setTool] = useState<Tool>('pen');
-  const [color, setColor] = useState<string>('#000000');
-  const [lineWidth, setLineWidth] = useState<number>(3);
-  const [history, setHistory] = useState<string[]>([]);
-  const [historyStep, setHistoryStep] = useState<number>(-1);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
-  const [imagesLoaded, setImagesLoaded] = useState<boolean>(false);
+const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
+  images = [],
+  value = {},
+  onChange
+}) => {
+  /* -------------------- Refs -------------------- */
+  const canvasRefs = useRef<Record<number, HTMLCanvasElement | null>>({});
+  const ctxRefs = useRef<Record<number, CanvasRenderingContext2D | null>>({});
+  const historyRefs = useRef<Record<number, string[]>>({});
+  const historyStepRefs = useRef<Record<number, number>>({});
 
-  // Debug: Log images
+  /* -------------------- State -------------------- */
+  const [tool, setTool] = useState<Tool>('pen');
+  const [color, setColor] = useState('#000000');
+  const [lineWidth, setLineWidth] = useState(3);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [activeImageId, setActiveImageId] = useState<number | null>(null);
+  const [drawings, setDrawings] = useState<Record<number, string>>(value);
+
+  const colors = ['#000000', '#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF'];
+
+  /* -------------------- Init Canvas -------------------- */
   useEffect(() => {
-    console.log('Images received:', images);
-    console.log('Number of images:', images.length);
+    images.forEach((img) => {
+      const canvas = canvasRefs.current[img.id];
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return;
+
+      canvas.width = canvas.offsetWidth;
+      canvas.height = 400;
+
+      ctxRefs.current[img.id] = ctx;
+      historyRefs.current[img.id] = [];
+      historyStepRefs.current[img.id] = -1;
+
+      if (drawings[img.id]) {
+        restoreCanvas(drawings[img.id], ctx, canvas);
+        saveState(img.id);
+      } else {
+        saveState(img.id);
+      }
+    });
   }, [images]);
 
-  // Load and render images on canvas
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+  /* -------------------- Drawing -------------------- */
+  const startDrawing = (
+    e: MouseEvent<HTMLCanvasElement>,
+    imageId: number
+  ) => {
+    const canvas = canvasRefs.current[imageId];
+    const ctx = ctxRefs.current[imageId];
+    if (!canvas || !ctx) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Set canvas size
-    canvas.width = canvas.offsetWidth;
-    canvas.height = 400;
-
-    setContext(ctx);
-
-    // Load images if provided
-    if (images.length > 0) {
-      loadImageToCanvas(images[selectedImageIndex].url, ctx, canvas);
-    } else {
-      // Set initial white background if no images
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      setImagesLoaded(true);
-      saveState();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Update canvas when selected image changes
-  useEffect(() => {
-    if (!context || !canvasRef.current || images.length === 0) return;
-
-    loadImageToCanvas(images[selectedImageIndex].url, context, canvasRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedImageIndex]);
-
-  const loadImageToCanvas = (
-    imageUrl: string,
-    ctx: CanvasRenderingContext2D,
-    canvas: HTMLCanvasElement
-  ): void => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous'; // Handle CORS if needed
-
-    img.onload = () => {
-      // Clear canvas
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Calculate dimensions to fit image while maintaining aspect ratio
-      const scale = Math.min(
-        canvas.width / img.width,
-        canvas.height / img.height
-      );
-
-      const x = (canvas.width - img.width * scale) / 2;
-      const y = (canvas.height - img.height * scale) / 2;
-
-      // Draw image centered
-      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-
-      setImagesLoaded(true);
-      saveState();
-    };
-
-    img.onerror = () => {
-      console.error('Failed to load image:', imageUrl);
-      // Fallback to white background
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      setImagesLoaded(true);
-      saveState();
-    };
-
-    img.src = imageUrl;
-  };
-
-  const saveState = (): void => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const imageData = canvas.toDataURL();
-    const newHistory = history.slice(0, historyStep + 1);
-    newHistory.push(imageData);
-    setHistory(newHistory);
-    setHistoryStep(newHistory.length - 1);
-  };
-
-  const startDrawing = (e: MouseEvent<HTMLCanvasElement>): void => {
-    const canvas = canvasRef.current;
-    if (!canvas || !context || !imagesLoaded) return;
+    setActiveImageId(imageId);
 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = tool === 'eraser' ? lineWidth * 3 : lineWidth;
+    ctx.globalCompositeOperation =
+      tool === 'eraser' ? 'destination-out' : 'source-over';
 
     setIsDrawing(true);
-    context.beginPath();
-    context.moveTo(x, y);
-
-    if (tool === 'pen') {
-      context.strokeStyle = color;
-      context.lineWidth = lineWidth;
-      context.lineCap = 'round';
-      context.lineJoin = 'round';
-    } else if (tool === 'eraser') {
-      context.strokeStyle = '#ffffff';
-      context.lineWidth = lineWidth * 3;
-      context.lineCap = 'round';
-      context.lineJoin = 'round';
-    }
   };
 
-  const draw = (e: MouseEvent<HTMLCanvasElement>): void => {
-    if (!isDrawing || !context) return;
+  const draw = (
+    e: MouseEvent<HTMLCanvasElement>,
+    imageId: number
+  ) => {
+    if (!isDrawing || activeImageId !== imageId) return;
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const canvas = canvasRefs.current[imageId];
+    const ctx = ctxRefs.current[imageId];
+    if (!canvas || !ctx) return;
 
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    context.lineTo(x, y);
-    context.stroke();
+    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    ctx.stroke();
   };
 
-  const stopDrawing = (): void => {
-    if (isDrawing && context) {
-      setIsDrawing(false);
-      context.closePath();
-      saveState();
-    }
+  const stopDrawing = (imageId: number) => {
+    if (!isDrawing) return;
+
+    const canvas = canvasRefs.current[imageId];
+    const ctx = ctxRefs.current[imageId];
+    if (!canvas || !ctx) return;
+
+    ctx.closePath();
+    setIsDrawing(false);
+
+    saveState(imageId);
+
+    const data = canvas.toDataURL('image/png');
+    const updated = { ...drawings, [imageId]: data };
+    setDrawings(updated);
+    onChange?.(updated);
   };
 
-  const undo = (): void => {
-    if (historyStep > 0) {
-      const newStep = historyStep - 1;
-      setHistoryStep(newStep);
-      restoreCanvas(history[newStep]);
-    }
-  };
-
-  const redo = (): void => {
-    if (historyStep < history.length - 1) {
-      const newStep = historyStep + 1;
-      setHistoryStep(newStep);
-      restoreCanvas(history[newStep]);
-    }
-  };
-
-  const restoreCanvas = (dataUrl: string): void => {
-    const canvas = canvasRef.current;
+  /* -------------------- History -------------------- */
+  const saveState = (imageId: number) => {
+    const canvas = canvasRefs.current[imageId];
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    const history = historyRefs.current[imageId] || [];
+    const step = historyStepRefs.current[imageId] ?? -1;
 
+    const data = canvas.toDataURL('image/png');
+    const next = history.slice(0, step + 1);
+    next.push(data);
+
+    historyRefs.current[imageId] = next;
+    historyStepRefs.current[imageId] = next.length - 1;
+  };
+
+  const undo = () => {
+    if (!activeImageId) return;
+
+    const step = historyStepRefs.current[activeImageId];
+    if (step <= 0) return;
+
+    historyStepRefs.current[activeImageId] = step - 1;
+    restoreFromHistory(activeImageId);
+  };
+
+  const redo = () => {
+    if (!activeImageId) return;
+
+    const history = historyRefs.current[activeImageId];
+    const step = historyStepRefs.current[activeImageId];
+
+    if (step >= history.length - 1) return;
+
+    historyStepRefs.current[activeImageId] = step + 1;
+    restoreFromHistory(activeImageId);
+  };
+
+  const restoreFromHistory = (imageId: number) => {
+    const canvas = canvasRefs.current[imageId];
+    const ctx = ctxRefs.current[imageId];
+    if (!canvas || !ctx) return;
+
+    const step = historyStepRefs.current[imageId];
+    const data = historyRefs.current[imageId][step];
+    restoreCanvas(data, ctx, canvas);
+  };
+
+  /* -------------------- Clear -------------------- */
+  const clearCanvas = () => {
+    if (!activeImageId) return;
+
+    const canvas = canvasRefs.current[activeImageId];
+    const ctx = ctxRefs.current[activeImageId];
+    if (!canvas || !ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    saveState(activeImageId);
+
+    const updated = { ...drawings };
+    delete updated[activeImageId];
+    setDrawings(updated);
+    onChange?.(updated);
+  };
+
+  /* -------------------- Utils -------------------- */
+  const restoreCanvas = (
+    dataUrl: string,
+    ctx: CanvasRenderingContext2D,
+    canvas: HTMLCanvasElement
+  ) => {
     const img = new Image();
     img.src = dataUrl;
     img.onload = () => {
@@ -197,184 +201,98 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ images = [] }) => {
     };
   };
 
-  const clearCanvas = (): void => {
-    const canvas = canvasRef.current;
-    if (!canvas || !context) return;
-
-    // Just clear the drawing layer (canvas is transparent, image shows through background)
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    saveState();
-  };
-
-  const downloadImage = (): void => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const link = document.createElement('a');
-    link.download = 'drawing.png';
-    link.href = canvas.toDataURL();
-    link.click();
-  };
-
-  const submitDrawing = async (): Promise<void> => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
-
-      const formData = new FormData();
-      formData.append('drawing', blob, 'answer.png');
-      formData.append('answer_id', '123');
-
-      try {
-        const response = await fetch('/api/submit-drawing', {
-          method: 'POST',
-          body: formData
-        });
-
-        if (response.ok) {
-          alert('Drawing submitted successfully!');
-        }
-      } catch (error) {
-        console.error('Error submitting drawing:', error);
-      }
-    }, 'image/png');
-  };
-
-  const colors: string[] = ['#000000', '#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF'];
-
+  /* -------------------- Render -------------------- */
   return (
-    <Box className="rounded-md py-3 px-4" sx={{
-      border: (theme) => `1px solid ${theme.palette.separator.dark}`
-    }}>
-      <Typography variant='caption' color='text.middle' className='mb-4! block!'>
+    <Box
+      className="rounded-md py-3 px-4"
+      sx={{ border: (t) => `1px solid ${t.palette.separator.dark}` }}
+    >
+      <Typography variant="caption" color='text.middle' className="mb-4! block">
         Answer
       </Typography>
 
-      {/* Image selector - only show if images are provided */}
-      {images.length > 1 && (
-        <div className="mb-4">
-          <Typography variant='caption' color='text.middle' className='mb-2 block'>
-            Select Image:
-          </Typography>
-          <div className="flex gap-2 flex-wrap">
-            {images.map((image, index) => (
-              <button
-                key={image.id}
-                onClick={() => setSelectedImageIndex(index)}
-                className={`px-3 py-1 rounded text-sm ${selectedImageIndex === index
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-              >
-                Image {index + 1}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Toolbar */}
+      {/* ===== Global Toolbar (UNCHANGED UX) ===== */}
       <div className="mb-4 p-4 bg-gray-100 rounded-lg flex flex-wrap gap-4 items-center">
-        {/* Tools */}
         <div className="flex gap-2">
           <button
             onClick={() => setTool('pen')}
-            className={`p-2 rounded ${tool === 'pen' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-200'}`}
-            title="Pen"
+            className={`p-2 rounded ${tool === 'pen' ? 'bg-blue-500 text-white' : 'bg-white'}`}
           >
             <Brush2 size={20} />
           </button>
           <button
             onClick={() => setTool('eraser')}
-            className={`p-2 rounded ${tool === 'eraser' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-200'}`}
-            title="Eraser"
+            className={`p-2 rounded ${tool === 'eraser' ? 'bg-blue-500 text-white' : 'bg-white'}`}
           >
             <Eraser size={20} />
           </button>
         </div>
 
-        {/* Colors */}
         <div className="flex gap-2">
           {colors.map((c) => (
             <button
               key={c}
               onClick={() => setColor(c)}
-              className={`w-8 h-8 rounded border-2 ${color === c ? 'border-blue-500' : 'border-gray-300'}`}
+              className={`w-8 h-8 rounded border-2 ${color === c ? 'border-blue-500' : 'border-gray-300'
+                }`}
               style={{ backgroundColor: c }}
-              title={c}
-              aria-label={`Select color ${c}`}
             />
           ))}
         </div>
 
-        {/* Line Width */}
         <div className="flex items-center gap-2">
-          <label className="text-sm font-medium text-gray-700">Size:</label>
+          <span className="text-sm">Size</span>
           <input
             type="range"
-            min="1"
-            max="20"
+            min={1}
+            max={20}
             value={lineWidth}
-            onChange={(e) => setLineWidth(Number(e.target.value))}
-            className="w-24"
+            onChange={(e) => setLineWidth(+e.target.value)}
           />
-          <span className="text-sm text-gray-600">{lineWidth}px</span>
+          <span className="text-sm">{lineWidth}px</span>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-2 ml-auto">
-          <button
-            onClick={undo}
-            disabled={historyStep <= 0}
-            className="p-2 rounded bg-white hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Undo"
-          >
-            <Undo sx={{ fontSize: 20 }} />
+          <button onClick={undo} className="p-2 bg-white rounded">
+            <Undo />
           </button>
-          <button
-            onClick={redo}
-            disabled={historyStep >= history.length - 1}
-            className="p-2 rounded bg-white hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Redo"
-          >
-            <Redo sx={{ fontSize: 20 }} />
+          <button onClick={redo} className="p-2 bg-white rounded">
+            <Redo />
           </button>
-          <button
-            onClick={clearCanvas}
-            className="p-2 rounded bg-white hover:bg-gray-200 flex items-center gap-1"
-            title="Clear"
-          >
-            <Trash size={20} />
-            <Typography variant='subtitle2' color='text.secondary'>
-              Clear All
-            </Typography>
+          <button onClick={clearCanvas} className="p-2 bg-white rounded flex items-center gap-1">
+            <Trash size={18} />
+            <Typography variant="subtitle2">Clear All</Typography>
           </button>
         </div>
       </div>
 
-      {/* Canvas with background image */}
-      <div
-        className="rounded-lg overflow-hidden relative"
-        style={{
-          backgroundImage: images.length > 0 ? `url(${images[selectedImageIndex].url})` : 'none',
-          backgroundSize: 'contain',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundColor: '#ffffff'
-        }}
-      >
-        <canvas
-          ref={canvasRef}
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
-          className="w-full cursor-crosshair"
-          style={{ touchAction: 'none', background: 'transparent' }}
-        />
-      </div>
+      {/* ===== Canvas Loop ===== */}
+      {images.map((img) => (
+        <div
+          key={img.id}
+          className="mb-8 rounded-lg overflow-hidden relative"
+          style={{
+            backgroundImage: `url(${img.url})`,
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            minHeight: 400,
+            backgroundColor: '#fff'
+          }}
+        >
+          <canvas
+            ref={(el) => {
+              canvasRefs.current[img.id] = el;
+            }}
+            className="w-full cursor-crosshair"
+            style={{ height: 400 }}
+            onMouseDown={(e) => startDrawing(e, img.id)}
+            onMouseMove={(e) => draw(e, img.id)}
+            onMouseUp={() => stopDrawing(img.id)}
+            onMouseLeave={() => stopDrawing(img.id)}
+          />
+        </div>
+      ))}
     </Box>
   );
 };

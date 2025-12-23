@@ -169,6 +169,14 @@ export const questionApi = createApi({
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
 
+        markSubjectiveQuestion: builder.mutation<GlobalResponse, { id?: number, resultId?: number, questionId?: number, body: { marks_obtained: number, feedback: string, drawings: Record<number, string> } }>({
+            query: ({ id, resultId, questionId, body }) => ({
+                url: `/admin/test/${id}/result/${resultId}/question/${questionId}`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
     })
 });
 
@@ -189,5 +197,6 @@ export const {
     useSubmitTestFeedbackMutation,
     useGetTestFeedbackQuery,
     useGetQuestionsListInTestQuery,
-    useGetSingleQuestionInTestQuery
+    useGetSingleQuestionInTestQuery,
+    useMarkSubjectiveQuestionMutation
 } = questionApi;
