@@ -9,7 +9,7 @@ import TextEditor from '../../../../atoms/TextEditor';
 import DrawingCanvas from './DrawingCanvas';
 
 const validationSchema = (max: number) => Yup.object({
-    marks_obtained: Yup.number()
+    grade: Yup.number()
         .required('Marks obtained is required')
         .min(0, 'Marks cannot be negative')
         .max(max, `Marks cannot exceed ${max}`)
@@ -41,14 +41,14 @@ export default function SingleStudentSingleQuestion() {
 
     const formik = useFormik({
         initialValues: {
-            marks_obtained: '',
+            grade: '',
             feedback: '',
             drawings: {}
         },
         validationSchema: validationSchema(maxMarks),
         onSubmit: async (values) => {
             console.log('Form submitted with values:', {
-                marks_obtained: values.marks_obtained,
+                grade: values.grade,
                 feedback: values.feedback,
                 drawings: values.drawings,
                 // drawingCount: Object.keys(values.drawings).length,
@@ -73,7 +73,7 @@ export default function SingleStudentSingleQuestion() {
                     resultId: Number(resultId),
                     questionId: Number(questionId),
                     body: {
-                        marks_obtained: Number(values.marks_obtained),
+                        grade: Number(values.grade),
                         feedback: values.feedback,
                         drawings: values.drawings
                     }
@@ -95,7 +95,7 @@ export default function SingleStudentSingleQuestion() {
             // TODO: Submit to API
             // Example:
             // const formData = new FormData();
-            // formData.append('marks_obtained', values.marks_obtained);
+            // formData.append('grade', values.grade);
             // formData.append('feedback', values.feedback);
             // drawingBlobs.forEach(({ blob, fileName, imageId }) => {
             //     formData.append(`drawings[${imageId}]`, blob, fileName);
@@ -145,24 +145,24 @@ export default function SingleStudentSingleQuestion() {
                     </Box>
                     <div className="py-4 px-5 flex flex-col gap-6">
                         <div className="input__field">
-                            <InputLabel htmlFor="marks_obtained">
+                            <InputLabel htmlFor="grade">
                                 Grade this answer
                             </InputLabel>
                             <OutlinedInput
-                                id="marks_obtained"
-                                name="marks_obtained"
+                                id="grade"
+                                name="grade"
                                 type="number"
                                 fullWidth
                                 size="small"
                                 placeholder='How much would you grade this answer?'
-                                value={formik.values.marks_obtained}
+                                value={formik.values.grade}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.marks_obtained && Boolean(formik.errors.marks_obtained)}
+                                error={formik.touched.grade && Boolean(formik.errors.grade)}
                             />
-                            {formik.touched.marks_obtained && formik.errors.marks_obtained && (
+                            {formik.touched.grade && formik.errors.grade && (
                                 <Typography variant='caption' color='error' className='mt-1 block'>
-                                    {formik.errors.marks_obtained}
+                                    {formik.errors.grade}
                                 </Typography>
                             )}
                         </div>
