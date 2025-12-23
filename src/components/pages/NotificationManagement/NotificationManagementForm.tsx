@@ -373,7 +373,7 @@ export default function NotificationManagementForm() {
 
                     <div className="input__field">
                         <FormControlLabel
-                            className="py-4!  w-full"
+                            className="  w-full"
 
                             control={
                                 <Checkbox
@@ -390,7 +390,7 @@ export default function NotificationManagementForm() {
                             }
                         />
                     </div>
-                    <div className="flex flex-col gap-4 lg:grid grid-cols-12 lg:gap-6">
+                    {formik.values.notification_type === "specific_course" && <div className="flex flex-col gap-4 lg:grid grid-cols-12 lg:gap-6 mt-4">
                         <div className="col-span-7">
                             <CategoryFilter
                                 megaCategories={megaCategories || []}
@@ -424,7 +424,7 @@ export default function NotificationManagementForm() {
                                 placeholder="Search courses..."
                             />
                         </div>
-                    </div>
+                    </div>}
                 </Box>
                 <Typography variant="subtitle2" className="mt-8!">Course Completion Status</Typography>
                 <Divider className="mt-2! mb-3!" />

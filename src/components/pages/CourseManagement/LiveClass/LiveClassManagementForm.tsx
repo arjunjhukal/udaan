@@ -30,6 +30,10 @@ import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FooterAction from "../../../molecules/FooterAction";
 import CategoryFilter from "../../../organism/CategoryFilter";
 
+type ZoomAccount = {
+    id: number;
+    name: string;
+};
 
 export default function LiveClassManagementForm() {
     const dispatch = useAppDispatch();
@@ -99,7 +103,7 @@ export default function LiveClassManagementForm() {
     const { data: liveClassData } = useGetLiveClassByIdQuery({ id: Number(id) }, { skip: !id });
 
     // Fetch zoom accounts (assuming you have a query for this)
-    const zoomAccounts = {
+    const zoomAccounts: { data: { data: ZoomAccount[] } } = {
         data: {
             data: [{ name: "udaanshaikshikkendra@gmail.com", id: 1 }, { name: "sushantsanu123@gmail.com", id: 2 }]
         }
@@ -261,11 +265,15 @@ export default function LiveClassManagementForm() {
                     {/* ZOOM ACCOUNT */}
                     <div className="col-span-1">
                         <InputLabel className="required">Zoom Account</InputLabel>
-                        <Autocomplete
-                            disableClearable
+                        <Autocomplete<ZoomAccount, false, false, false>
                             options={zoomAccounts?.data?.data || []}
                             getOptionLabel={(option) => option.name || ""}
-                            value={zoomAccounts?.data?.data?.find(acc => acc.id === formik.values.account_id) || undefined}
+                            isOptionEqualToValue={(option, value) => option.id === value.id}
+                            value={
+                                zoomAccounts?.data?.data?.find(
+                                    acc => acc.id === formik.values.account_id
+                                ) || null
+                            }
                             onChange={(_e, v) => formik.setFieldValue("account_id", v?.id || null)}
                             renderInput={(params) => (
                                 <TextField
@@ -276,6 +284,7 @@ export default function LiveClassManagementForm() {
                                 />
                             )}
                         />
+
                         {formik.touched.account_id && formik.errors.account_id && (
                             <Typography color="error" variant="caption">{formik.errors.account_id}</Typography>
                         )}
