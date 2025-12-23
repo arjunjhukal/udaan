@@ -8,7 +8,7 @@ import { baseQuery } from "./baseQuery";
 export const questionApi = createApi({
     reducerPath: "questionApi",
     baseQuery: baseQuery,
-    tagTypes: ["Questions", "Test"],
+    tagTypes: ["Questions", "Test", "Results"],
     endpoints: (builder) => ({
         uploadQuestionPaper: builder.mutation<GlobalResponse, { body: FormData }>({
             query: ({ body }) => ({
@@ -169,13 +169,49 @@ export const questionApi = createApi({
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
 
-        markSubjectiveQuestion: builder.mutation<GlobalResponse, { id?: number, resultId?: number, questionId?: number, body: { grade: number, feedback: string, drawings: Record<number, string> } }>({
+        markSubjectiveQuestion: builder.mutation<GlobalResponse,
+            {
+                id?: number,
+                resultId?: number,
+                questionId?: number,
+                body: {
+                    grade: number,
+                    feedback: string,
+                    checked_answer_media: Array<{
+                        media_id: number,
+                        media: string
+                    }>
+                }
+            }
+        >({
             query: ({ id, resultId, questionId, body }) => ({
-                url: `/admin/test/${id}/result/${resultId}/question/${questionId}`,
+                url: `/admin/test/${id}/result/${resultId}/feedback/question/${questionId}`,
                 method: "POST",
                 body
             }),
             invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
+        getMarkedSubjectiveQuestion: builder.query<GlobalResponse & {
+            data: {
+                grade: number,
+                feedback: string,
+                checked_answer_media: Array<{
+                    media_id: number,
+                    media: string
+                }>
+            }
+        },
+            {
+                id?: number,
+                resultId?: number,
+                questionId?: number
+            }
+        >({
+            query: ({ id, resultId, questionId }) => ({
+                url: `/admin/test/${id}/result/${resultId}/feedback/question/${questionId}`,
+                method: "GET"
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
     })
 });
@@ -198,5 +234,6 @@ export const {
     useGetTestFeedbackQuery,
     useGetQuestionsListInTestQuery,
     useGetSingleQuestionInTestQuery,
-    useMarkSubjectiveQuestionMutation
+    useMarkSubjectiveQuestionMutation,
+    useGetMarkedSubjectiveQuestionQuery
 } = questionApi;

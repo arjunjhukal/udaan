@@ -2,7 +2,7 @@ import { Box, Button, InputLabel, OutlinedInput, Typography } from '@mui/materia
 import { useFormik } from 'formik';
 import { useParams } from 'react-router-dom';
 import * as Yup from 'yup';
-import { useGetSingleQuestionInTestQuery, useMarkSubjectiveQuestionMutation } from '../../../../../services/questionApi';
+import { useGetMarkedSubjectiveQuestionQuery, useGetSingleQuestionInTestQuery, useMarkSubjectiveQuestionMutation } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import TextEditor from '../../../../atoms/TextEditor';
@@ -35,39 +35,33 @@ export default function SingleStudentSingleQuestion() {
     }, {
         skip: !id || !resultId || !questionId
     });
-    const [markSubjectiveQuestion] = useMarkSubjectiveQuestionMutation();
+    const [markSubjectiveQuestion, { isLoading }] = useMarkSubjectiveQuestionMutation();
+    const { data: markedQuestion } = useGetMarkedSubjectiveQuestionQuery({
+        id: Number(id),
+        resultId: Number(resultId),
+        questionId: Number(questionId)
+    }, {
+        skip: !id || !resultId || !questionId
+    });
 
     const maxMarks = data?.data?.points || 100;
 
+    console.log("SingleStudentSingleQuestion Rendered with data:", data, "and markedQuestion:", markedQuestion?.data);
     const formik = useFormik({
         initialValues: {
-            grade: '',
-            feedback: '',
+            grade: markedQuestion?.data?.grade || '',
+            feedback: markedQuestion?.data?.feedback || '',
             drawings: {}
         },
+        enableReinitialize: true,
         validationSchema: validationSchema(maxMarks),
         onSubmit: async (values) => {
-            console.log('Form submitted with values:', {
-                grade: values.grade,
-                feedback: values.feedback,
-                drawings: values.drawings,
-                // drawingCount: Object.keys(values.drawings).length,
-                // drawingKeys: Object.keys(values.drawings)
-            });
-
-            // const drawingBlobs = await Promise.all(
-            //     Object.entries(values.drawings).map(async ([imageId, dataUrl]) => {
-            //         const response = await fetch(dataUrl as string);
-            //         const blob = await response.blob();
-            //         return {
-            //             imageId,
-            //             blob,
-            //             fileName: `drawing_${imageId}.png`
-            //         };
-            //     })
-            // );
-
             try {
+                const checkedAnswerMedia = Object.entries(values.drawings).map(([imageId, dataUrl]) => ({
+                    media_id: Number(imageId),
+                    media: dataUrl as string
+                }));
+
                 const response = await markSubjectiveQuestion({
                     id: Number(id),
                     resultId: Number(resultId),
@@ -75,37 +69,34 @@ export default function SingleStudentSingleQuestion() {
                     body: {
                         grade: Number(values.grade),
                         feedback: values.feedback,
-                        drawings: values.drawings
+                        checked_answer_media: checkedAnswerMedia
                     }
                 }).unwrap();
+
                 dispatch(
                     showToast({
                         message: response.message || 'Submitted evaluation successfully!',
                         severity: 'success'
-                    }))
+                    })
+                );
+
+                // Optionally reset form or navigate to next question
+                // formik.resetForm();
             }
             catch (error: any) {
+                console.error('Submission error:', error);
                 dispatch(
                     showToast({
-                        message: error.data.message || 'Failed to submit evaluation. Please try again.',
+                        message: error?.data?.message || 'Failed to submit evaluation. Please try again.',
                         severity: 'error'
-                    }))
+                    })
+                );
             }
-
-            // TODO: Submit to API
-            // Example:
-            // const formData = new FormData();
-            // formData.append('grade', values.grade);
-            // formData.append('feedback', values.feedback);
-            // drawingBlobs.forEach(({ blob, fileName, imageId }) => {
-            //     formData.append(`drawings[${imageId}]`, blob, fileName);
-            // });
         }
     });
 
     const handleSave = () => {
-        console.log('Save clicked - Current form values:', formik.values);
-        console.log('Form errors:', formik.errors);
+        formik.handleSubmit();
     };
 
     const handleNext = () => {
@@ -123,7 +114,6 @@ export default function SingleStudentSingleQuestion() {
                     value={formik.values.drawings}
                     onChange={(drawings) => {
                         formik.setFieldValue('drawings', drawings);
-                        console.log('Drawings updated:', drawings);
                     }}
                 />
                 {formik.touched.drawings && formik.errors.drawings && (
@@ -146,7 +136,7 @@ export default function SingleStudentSingleQuestion() {
                     <div className="py-4 px-5 flex flex-col gap-6">
                         <div className="input__field">
                             <InputLabel htmlFor="grade">
-                                Grade this answer
+                                Grade this answer {`(out of ${maxMarks})`}
                             </InputLabel>
                             <OutlinedInput
                                 id="grade"
@@ -187,6 +177,7 @@ export default function SingleStudentSingleQuestion() {
                                 color='primary'
                                 fullWidth
                                 onClick={handleSave}
+                                disabled={isLoading}
                             >
                                 Save
                             </Button>
@@ -195,8 +186,9 @@ export default function SingleStudentSingleQuestion() {
                                 color='primary'
                                 fullWidth
                                 onClick={handleNext}
+                                disabled={isLoading}
                             >
-                                Next Question
+                                {isLoading ? 'Submitting...' : 'Next Question'}
                             </Button>
                         </div>
                     </div>
