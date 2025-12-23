@@ -71,12 +71,14 @@ const DetailItem = ({
 	icon: Icon,
 	label,
 	value,
-	colSpan = 1
+	colSpan = 1,
+	bgColor
 }: {
 	icon: React.ReactElement;
 	label: string;
 	value: string | null | undefined;
 	colSpan?: number;
+	bgColor?: string;
 }) => {
 	if (!value) return null;
 
@@ -90,7 +92,7 @@ const DetailItem = ({
 			<Box
 				className="w-9 h-9 flex items-center justify-center rounded-full flex-shrink-0"
 				sx={{
-					background: (theme) => theme.palette.primary.light
+					background: (theme) => bgColor || theme.palette.primary.light
 				}}
 			>
 				{Icon}
@@ -99,7 +101,7 @@ const DetailItem = ({
 				<Typography variant='subtitle2' color='text.middle' className='mb-1.5!'>
 					{label}
 				</Typography>
-				<Typography variant='subtitle1'>{value}</Typography>
+				<Typography variant='subtitle1'>{renderHtml(value)}</Typography>
 			</Box>
 		</Box>
 	);
@@ -123,7 +125,7 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 				{questions.map((item, index) => (
 					<Box key={item.id}>
 						<Box className="question">
-							<div className="question flex justify-between items-start flex-wrap gap- mb-5!">
+							<div className="question flex justify-between items-start flex-wrap gap-4 mb-5!">
 								<Typography variant="subtitle1" color="text.dark" className="lg:max-w-[80%]">
 									{renderHtml(item.question)}
 								</Typography>
@@ -147,24 +149,31 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 										icon={<Calendar color={theme.palette.primary.main} />}
 										label="Submitted at:"
 										value={formatDateTime(item?.submitted_at)}
+										bgColor={theme.palette.primary.light}
 									/>
 
 									<DetailItem
 										icon={<Calendar color={theme.palette.success.main} />}
 										label="Marks Obtained:"
 										value={item?.mark_obtained?.toString()}
+										bgColor={theme.palette.success.light}
+
 									/>
 
 									<DetailItem
 										icon={<UserEdit color={theme.palette.warning.main} />}
 										label="Checked by:"
 										value={item?.checked_by}
+										bgColor={theme.palette.warning.light}
+
 									/>
 
 									<DetailItem
 										icon={<Timer color={theme.palette.info.main} />}
 										label="Checked at:"
 										value={formatDateTime(item?.checked_at)}
+										bgColor={theme.palette.info.light}
+
 									/>
 
 									<DetailItem
@@ -172,6 +181,8 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 										label="Teacher's Feedback"
 										value={item?.feedback}
 										colSpan={2}
+										bgColor={theme.palette.primary.light}
+
 									/>
 								</Box>
 

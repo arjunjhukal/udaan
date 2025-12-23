@@ -213,6 +213,13 @@ export const questionApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
+        publishTestResults: builder.mutation<GlobalResponse, { id?: number }>({
+            query: ({ id }) => ({
+                url: `/admin/test/${id}/publish`,
+                method: "POST"
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        })
     })
 });
 
@@ -235,5 +242,6 @@ export const {
     useGetQuestionsListInTestQuery,
     useGetSingleQuestionInTestQuery,
     useMarkSubjectiveQuestionMutation,
-    useGetMarkedSubjectiveQuestionQuery
+    useGetMarkedSubjectiveQuestionQuery,
+    usePublishTestResultsMutation
 } = questionApi;

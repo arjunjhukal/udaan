@@ -1,4 +1,5 @@
 import { Box, Button, IconButton, OutlinedInput, Stack, Typography, useTheme } from "@mui/material";
+import { Send } from "iconsax-reactjs";
 import type { Dispatch, SetStateAction } from "react";
 import FilterIcon from "../../../icons/FilterIcon";
 import SearchIcon from "../../../icons/SearchIcon";
@@ -14,8 +15,9 @@ interface TableFilterProps {
     setLayout?: Dispatch<SetStateAction<LayoutProps>>;
     categoryLayout?: boolean;
     title?: string;
+    onPublish?: () => void;
 }
-export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout }: TableFilterProps) {
+export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish }: TableFilterProps) {
     const theme = useTheme();
 
     const handleDeleteClick = () => {
@@ -102,6 +104,26 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                             </svg>
                         </IconButton>
                     </Stack> : ""}
+                    {onPublish && (
+                        <Button
+                            fullWidth
+                            startIcon={<Send variant="Bold" color={theme.palette.text.dark} />}
+                            sx={{
+                                border: `1px solid ${theme.palette.separator.dark}`,
+                                "& .MuiButton-startIcon": {
+                                    mr: {
+                                        xs: 0
+                                    }
+                                }
+                            }}
+                            className="py-2.5! px-3.5! rounded-md! text-center justify-center! gap-2! items-center!"
+                            onClick={() => onPublish()}
+                        >
+                            <Typography variant="subtitle2" color="text.dark" className="hidden! md:flex!">
+                                Publish
+                            </Typography>
+                        </Button>
+                    )}
                 </div>
             </div>
         </Box>

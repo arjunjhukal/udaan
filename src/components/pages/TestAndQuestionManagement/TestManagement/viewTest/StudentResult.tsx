@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../../routes/PATH";
-import { useGetListOfStudentSubmittedTestQuery } from "../../../../../services/questionApi";
+import { useGetListOfStudentSubmittedTestQuery, usePublishTestResultsMutation } from "../../../../../services/questionApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import type { StudentSubmitTestProps } from "../../../../../types/question";
@@ -33,6 +33,7 @@ export default function StudentResult({ id }: { id: string }) {
 		{ id: Number(id), qp, search },
 		{ skip: !id },
 	);
+	const [publishTestResults] = usePublishTestResultsMutation();
 
 	const results = data?.data?.data || [];
 	const pagination = data?.data?.pagination;
@@ -268,6 +269,26 @@ export default function StudentResult({ id }: { id: string }) {
 		[selectedRows, isAllSelected, isSomeSelected],
 	);
 
+	const handleTestResultPublish = async () => {
+		try {
+			const response = await publishTestResults({ id: Number(id) }).unwrap();
+			dispatch(
+				showToast({
+					message: response?.message || "Test results published successfully",
+					severity: "success",
+				}),
+			);
+		}
+		catch (e: any) {
+			dispatch(
+				showToast({
+					message: e?.data?.message || "Unable to publish test result",
+					severity: "error",
+				}),
+			);
+		}
+	}
+
 	return (
 		<div className="students__attended__test mt-8">
 			<TableFilter
@@ -276,6 +297,7 @@ export default function StudentResult({ id }: { id: string }) {
 				selectedRows={new Set<number | string>([])}
 				handleRoleDelete={() => { }}
 				onFilter={() => { }}
+				onPublish={handleTestResultPublish}
 			/>
 			{!isLoading && !results.length ? (
 				<EmptyRoute title="No Results Found" />

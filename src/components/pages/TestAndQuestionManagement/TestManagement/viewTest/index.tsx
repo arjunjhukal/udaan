@@ -182,7 +182,7 @@ export default function ViewTestRoot() {
                                         {question.points || data?.data?.marks_per_question} Points
                                     </Typography>
                                 </div>
-                                <Typography className="mb-4!" variant="subtitle1">{renderHtml(question.question)}</Typography>
+                                <Typography variant="subtitle1">{renderHtml(question.question)}</Typography>
                                 <div className="flex flex-col gap-4 md:grid md:grid-cols-2">
                                     {question.options.map((option: any) => {
                                         return renderOption(option, option.is_correct);
