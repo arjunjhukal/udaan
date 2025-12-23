@@ -106,7 +106,6 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                     </Stack> : ""}
                     {onPublish && (
                         <Button
-                            fullWidth
                             startIcon={<Send variant="Bold" color={theme.palette.text.dark} />}
                             sx={{
                                 border: `1px solid ${theme.palette.separator.dark}`,
