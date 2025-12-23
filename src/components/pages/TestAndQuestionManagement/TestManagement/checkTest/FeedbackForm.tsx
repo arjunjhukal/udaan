@@ -34,6 +34,7 @@ export default function FeedbackForm({ data, test, testId }: { data: StudentSubm
         }
     };
 
+    console.log("FeedbackForm Rendered with feedback:", isLoading);
     return (
         <Box className="feedback__form p-4 rounded-md" sx={{
             background: (theme) => theme.palette.gray.gray1

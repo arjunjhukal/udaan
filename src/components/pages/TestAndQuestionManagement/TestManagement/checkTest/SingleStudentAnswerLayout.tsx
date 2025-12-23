@@ -1,14 +1,11 @@
 import { Box, Divider, Typography } from '@mui/material';
 import { Outlet, useParams } from 'react-router-dom';
-import CheckMcqTestPaperRoot from '.';
-import { useGetSingleStudentResultQuery, useGetTestByIdQuery } from '../../../../../services/questionApi';
+import { useGetSingleStudentResultQuery } from '../../../../../services/questionApi';
 import { msToHMS } from '../../../../../utils/parseDateTime';
-import FeedbackForm from './FeedbackForm';
 
 export default function SingleStudentAnswerLayout() {
     const { id, resultId } = useParams();
     const { data } = useGetSingleStudentResultQuery({ id: Number(id), resultId: Number(resultId) }, { skip: !id || !resultId });
-    const { data: test } = useGetTestByIdQuery({ id: Number(id) }, { skip: !id });
     const { hours, minutes, seconds } = msToHMS(data?.data?.timer || 0);
     const overviewListing = [
         {
@@ -51,7 +48,7 @@ export default function SingleStudentAnswerLayout() {
             </div>
             <Divider className='mt-4! mb-6!' />
             <Outlet />
-           
+
         </div>
     )
 }
