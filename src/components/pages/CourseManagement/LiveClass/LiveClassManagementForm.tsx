@@ -283,6 +283,7 @@ export default function LiveClassManagementForm() {
                                     helperText={formik.touched.account_id && formik.errors.account_id}
                                 />
                             )}
+                            disabled={!!id}
                         />
 
                         {formik.touched.account_id && formik.errors.account_id && (
@@ -619,7 +620,7 @@ export default function LiveClassManagementForm() {
                 </div>
 
                 <FooterAction
-                    handleConfirmationChange={formik.handleSubmit}
+                    handleConfirmationChange={() => navigate(-1)}
                     buttonLabel={id ? " Live Class" : " Live Class"}
                     isLoading={isLoading}
                     isEditMode={!!id}

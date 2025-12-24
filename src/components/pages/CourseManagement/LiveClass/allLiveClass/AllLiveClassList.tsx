@@ -147,9 +147,20 @@ export default function AllLiveClassList() {
       cell: ({ row }) => {
 
         return (
-          <Button className="capitalize" variant="contained" color="primary" href={row.original.start_url} disabled={row.original.status === "ended"} >
+          <Button
+            className="capitalize"
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              if (row.original.status !== "ended") {
+                window.open(row.original.start_url, "_blank");
+              }
+            }}
+            disabled={row.original.status === "ended"}
+          >
             Start Meeting
           </Button>
+
         )
       },
     },
