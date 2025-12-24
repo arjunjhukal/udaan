@@ -142,7 +142,7 @@ export default function CourseManagementForm() {
     const [searchTeacher, setSearchTeacher] = React.useState("")
 
     const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
-    const { data: teachers } = useGetAllUserQuery({ pageIndex: 1, pageSize: 20, search: searchTeacher, role: "teacher" });
+    const { data: teachers } = useGetAllUserQuery({ pageIndex: 1, pageSize: 20, search: searchTeacher, role: 4 });
 
 
     const { data } = useGetCourseByIdQuery({ id: id || "" }, { skip: !id });
