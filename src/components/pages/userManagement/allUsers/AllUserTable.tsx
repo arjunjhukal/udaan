@@ -225,7 +225,6 @@ export default function AllUserTable() {
         },
     ], [isAllSelected, selectedRows, handleDeleteUser, handleSelectAll])
 
-
     return (
         <>
             <TableFilter

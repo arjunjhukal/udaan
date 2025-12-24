@@ -56,7 +56,7 @@ export const useCourseFilter = () => {
         pageIndex: 1,
         pageSize: 20,
         search: searchTeacher,
-        role: "teacher"
+        role: 4
     });
 
     const { data: categories } = useGetAllCategoryRelatedToMegaCategoryQuery(
