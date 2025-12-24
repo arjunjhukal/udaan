@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery, useGetAllSubCategoryRelatedToCategoryQuery } from '../services/categoryApi';
 import { useGetAllPositionQuery } from '../services/positionApi';
+import { useGetAllRolesQuery } from '../services/roleAndPermissionApi';
 import { useGetAllUserQuery } from '../services/userApi';
 import type { CategoryFilterParams } from '../types';
 import type { SelectionType } from '../types/course';
@@ -13,13 +14,13 @@ const getInitialSelections = (): SelectionType => {
         const stored = localStorage.getItem(STORAGE_KEY);
         if (stored) {
             const parsed = JSON.parse(stored);
-            // Ensure all required fields exist with proper defaults
             return {
                 mega_category: Array.isArray(parsed.mega_category) ? parsed.mega_category : [],
                 category: typeof parsed.category === 'object' && parsed.category !== null ? parsed.category : {},
                 sub_category: typeof parsed.sub_category === 'object' && parsed.sub_category !== null ? parsed.sub_category : {},
                 position_ids: Array.isArray(parsed.position_ids) ? parsed.position_ids : [],
-                teacher_ids: Array.isArray(parsed.teacher_ids) ? parsed.teacher_ids : []
+                teacher_ids: Array.isArray(parsed.teacher_ids) ? parsed.teacher_ids : [],
+                role_ids: Array.isArray(parsed.role_ids) ? parsed.role_ids : []
             };
         }
     } catch (error) {
@@ -31,17 +32,25 @@ const getInitialSelections = (): SelectionType => {
         category: {},
         sub_category: {},
         position_ids: [],
-        teacher_ids: []
+        teacher_ids: [],
+        role_ids: []
     };
 };
 
 export const useCourseFilter = () => {
+    // Draft state (changes as user selects in dialog)
     const [selections, setSelections] = useState<SelectionType>(getInitialSelections);
+
+    // Applied state (only updates when "Apply Filter" is clicked)
+    const [appliedSelections, setAppliedSelections] = useState<SelectionType>(getInitialSelections);
+
     const [searchTeacher, setSearchTeacher] = useState("");
     const [courseTypes, setCourseTypes] = useState<string[]>([]);
+    const [appliedCourseTypes, setAppliedCourseTypes] = useState<string[]>([]);
     const [filterDialogOpen, setFilterDialogOpen] = useState(false);
 
     const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
+    const { data: roles } = useGetAllRolesQuery({ pageIndex: 1, pageSize: 10, });
 
     const { data: teachers } = useGetAllUserQuery({
         pageIndex: 1,
@@ -79,7 +88,7 @@ export const useCourseFilter = () => {
     });
 
     const handleCategoryChange = useCallback((
-        type: "mega" | "category" | "sub" | "position" | "teacher",
+        type: "mega" | "category" | "sub" | "position" | "teacher" | "role",
         ids: number[],
         parentId?: number
     ) => {
@@ -99,7 +108,6 @@ export const useCourseFilter = () => {
                             ...prev.category,
                             [parentId]: ids
                         };
-                        // Reset subcategories when category changes
                         newSelections.sub_category = {};
                     }
                     break;
@@ -120,13 +128,10 @@ export const useCourseFilter = () => {
                 case "teacher":
                     newSelections.teacher_ids = ids;
                     break;
-            }
 
-            // Save to localStorage
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(newSelections));
-            } catch (error) {
-                console.error('Error saving filter selections:', error);
+                case "role":
+                    newSelections.role_ids = ids;
+                    break;
             }
 
             return newSelections;
@@ -134,8 +139,18 @@ export const useCourseFilter = () => {
     }, []);
 
     const handleApplyFilter = useCallback((selectedCourseTypes: string[]) => {
+        // Apply the draft selections to the actual applied state
+        setAppliedSelections(selections);
+        setAppliedCourseTypes(selectedCourseTypes);
         setCourseTypes(selectedCourseTypes);
-    }, []);
+
+        // Save to localStorage
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(selections));
+        } catch (error) {
+            console.error('Error saving filter selections:', error);
+        }
+    }, [selections]);
 
     const resetFilters = useCallback(() => {
         const emptySelections: SelectionType = {
@@ -143,10 +158,13 @@ export const useCourseFilter = () => {
             category: {},
             sub_category: {},
             position_ids: [],
-            teacher_ids: []
+            teacher_ids: [],
+            role_ids: []
         };
         setSelections(emptySelections);
+        setAppliedSelections(emptySelections);
         setCourseTypes([]);
+        setAppliedCourseTypes([]);
         localStorage.removeItem(STORAGE_KEY);
     }, []);
 
@@ -156,59 +174,63 @@ export const useCourseFilter = () => {
 
     const hasActiveFilters = useCallback(() => {
         return (
-            selections.mega_category.length > 0 ||
-            Object.keys(selections.category).length > 0 ||
-            Object.keys(selections.sub_category).length > 0 ||
-            selections.position_ids.length > 0 ||
-            selections?.teacher_ids && selections.teacher_ids.length > 0 ||
-            courseTypes.length > 0
+            appliedSelections.mega_category.length > 0 ||
+            Object.keys(appliedSelections.category).length > 0 ||
+            Object.keys(appliedSelections.sub_category).length > 0 ||
+            appliedSelections.position_ids.length > 0 ||
+            appliedSelections?.teacher_ids && appliedSelections.teacher_ids.length > 0 ||
+            appliedSelections?.role_ids && appliedSelections.role_ids.length > 0 ||
+            appliedCourseTypes.length > 0
         );
-    }, [selections, courseTypes]);
+    }, [appliedSelections, appliedCourseTypes]);
 
-    // Build category filter params for API
+    // Build category filter params for API - NOW READS FROM APPLIED SELECTIONS
     const getCategoryFilterParams = useCallback((): CategoryFilterParams => {
-        // Start with an empty object (NOT null)
         const params: any = {};
 
         // mega category
-        if (selections.mega_category?.length > 0) {
-            params.mega_category = selections.mega_category;
+        if (appliedSelections.mega_category?.length > 0) {
+            params.mega_category = appliedSelections.mega_category;
         }
 
         // category (flat)
-        const flatCategories = Object.values(selections.category || {}).flat();
+        const flatCategories = Object.values(appliedSelections.category || {}).flat();
         if (flatCategories.length > 0) {
             params.category = flatCategories;
         }
 
         // sub category (flat)
-        const flatSubCategories = Object.values(selections.sub_category || {}).flat();
+        const flatSubCategories = Object.values(appliedSelections.sub_category || {}).flat();
         if (flatSubCategories.length > 0) {
             params.sub_category = flatSubCategories;
         }
 
         // positions (flat)
-        const flatPositions = Object.values(selections.position_ids || {}).flat();
+        const flatPositions = Object.values(appliedSelections.position_ids || {}).flat();
         if (flatPositions.length > 0) {
             params.positions = flatPositions;
         }
 
         // teachers (array flat)
-        if (selections?.teacher_ids && selections?.teacher_ids?.length > 0) {
-            params.teachers = selections.teacher_ids;
+        if (appliedSelections?.teacher_ids && appliedSelections?.teacher_ids?.length > 0) {
+            params.teachers = appliedSelections.teacher_ids;
+        }
+
+        if (appliedSelections.role_ids && appliedSelections.role_ids.length > 0) {
+            params.roles = appliedSelections.role_ids;
         }
 
         // course types (array flat)
-        if (courseTypes?.length > 0) {
-            params.payment = courseTypes;
+        if (appliedCourseTypes?.length > 0) {
+            params.payment = appliedCourseTypes;
         }
 
         return params;
-    }, [selections, courseTypes]);
+    }, [appliedSelections, appliedCourseTypes]);
 
 
     return {
-        // State
+        // State (draft - for dialog)
         selections,
         searchTeacher,
         setSearchTeacher,
@@ -222,6 +244,7 @@ export const useCourseFilter = () => {
         subCategories: subCategories?.data || [],
         positions: positions?.data?.data || [],
         teachers: teachers?.data?.data || [],
+        roles: roles?.data?.data || [],
         loadingMegaCategory,
 
         // Methods

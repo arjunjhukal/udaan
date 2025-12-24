@@ -4,22 +4,24 @@ import SearchIcon from "../../../icons/SearchIcon";
 import type { CategoryProps } from "../../../types/category";
 import type { SelectionType } from "../../../types/course";
 import type { positionProps } from "../../../types/position";
+import type { RoleProps } from "../../../types/roleAndPermission";
 import type { RegisterUserProps } from "../../../types/user";
 import CategoryFilter from "../CategoryFilter";
 
 interface Props {
-  megaCategories: CategoryProps[];
-  categories: CategoryProps[];
-  subCategories: CategoryProps[];
-  positions: positionProps[];
+  megaCategories?: CategoryProps[];
+  categories?: CategoryProps[];
+  subCategories?: CategoryProps[];
+  positions?: positionProps[];
   selections: SelectionType;
   onChange: (
-    type: "mega" | "category" | "sub" | "position" | "teacher",
+    type: "mega" | "category" | "sub" | "position" | "teacher" | "role",
     ids: number[],
     parentId?: number
   ) => void;
   loadingMegaCategory?: boolean;
   teachers?: RegisterUserProps[];
+  roles?: RoleProps[];
   searchTeacher?: string;
   setSearchTeacher?: (newValue: string) => void;
   onApplyFilter: (courseTypes: string[]) => void;
@@ -37,6 +39,7 @@ export const CourseFilter = ({
   onChange,
   loadingMegaCategory,
   teachers = [],
+  roles = [],
   searchTeacher = "",
   setSearchTeacher,
   onApplyFilter,
@@ -46,7 +49,6 @@ export const CourseFilter = ({
 }: Props) => {
   const theme = useTheme();
   const [selectedCourseTypes, setSelectedCourseTypes] = useState<string[]>([]);
-
 
   const courseTypes = [
     { value: "free", label: "Free" },
@@ -84,6 +86,13 @@ export const CourseFilter = ({
       : currentTeachers.filter(id => id !== teacherId);
     onChange("teacher", updatedTeachers);
   };
+  const handleRoleChange = (roleId: number, checked: boolean) => {
+    const currentRoles = selections.role_ids || [];
+    const updatedRoles = checked
+      ? [...currentRoles, roleId]
+      : currentRoles.filter(id => id !== roleId);
+    onChange("role", updatedRoles);
+  };
 
   return (
     <Dialog
@@ -97,20 +106,22 @@ export const CourseFilter = ({
           {/* Category Filter */}
           <div className="category__filter">
             <Typography variant="h5">Filter</Typography>
-            <Divider className="mb-6!" />
-            <CategoryFilter
-              megaCategories={megaCategories}
-              categories={categories}
-              subCategories={subCategories}
-              positions={positions}
-              selections={selections}
-              onChange={onChange}
-              loadingMegaCategory={loadingMegaCategory}
-            />
+            <Divider />
+            {megaCategories && megaCategories.length ? <div className="mt-6">
+              <CategoryFilter
+                megaCategories={megaCategories}
+                categories={categories}
+                subCategories={subCategories}
+                positions={positions}
+                selections={selections}
+                onChange={onChange}
+                loadingMegaCategory={loadingMegaCategory}
+              />
+            </div> : ""}
           </div>
 
           {/* Teacher Filter */}
-          <div className="user__filter">
+          {teachers && teachers.length ? <div className="user__filter">
             <div className="flex items-center justify-between">
               <Typography variant="h5">Assigned Teachers</Typography>
               <OutlinedInput
@@ -155,10 +166,10 @@ export const CourseFilter = ({
                 </Typography>
               )}
             </div>
-          </div>
+          </div> : ""}
 
           {/* Course Type Filter */}
-          <div className="type__filter">
+          {courseTypes && courseTypes.length && !roles.length ? <div className="type__filter">
             <div className="flex items-center justify-between">
               <Typography variant="h5">Course Type</Typography>
             </div>
@@ -178,7 +189,30 @@ export const CourseFilter = ({
                 </div>
               ))}
             </div>
-          </div>
+          </div> : ""}
+
+          {/* Role Filter */}
+          {roles && roles.length ? <div className="role__filter">
+            <div className="flex items-center justify-between">
+              <Typography variant="h5">Role</Typography>
+            </div>
+            <Divider className="mb-3.5! mt-2!" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-9">
+              {roles.map((role) => (
+                <div className="col-span-1" key={role.id}>
+                  <FormControlLabel
+                    label={role.name.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
+                    control={
+                      <Checkbox
+                        checked={selections?.role_ids?.includes(Number(role.id)) || false}
+                        onChange={(e) => handleRoleChange(Number(role.id), e.target.checked)}
+                      />
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div> : ""}
 
           <Divider />
 

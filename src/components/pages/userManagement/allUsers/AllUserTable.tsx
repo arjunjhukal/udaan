@@ -6,12 +6,14 @@ import { PATH } from "../../../../routes/PATH";
 import { useDeleteUserMutation, useGetAllUserQuery, useSuspendUserMutation } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
+import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { RegisterUserProps } from "../../../../types/user";
 import Actions from "../../../molecules/Action";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../organism/EmptyRoute";
+import { CourseFilter } from "../../../organism/Filter/CourseFilter";
 import TableFilter from "../../../organism/TableFilter";
 
 export default function AllUserTable() {
@@ -28,7 +30,21 @@ export default function AllUserTable() {
     const [usersToDelete, setUsersToDelete] = React.useState<string[]>([]);
     const [usersToSuspend, setUsersToSuspend] = React.useState<string[]>([]);
 
-    const { data, isLoading } = useGetAllUserQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch })
+
+    const {
+        selections,
+        handleCategoryChange,
+        handleApplyFilter,
+        resetFilters,
+        getCategoryFilterParams,
+        filterDialogOpen,
+        setFilterDialogOpen,
+        roles,
+    } = useCourseFilter();
+
+    const categoryFilter = getCategoryFilterParams();
+
+    const { data, isLoading, isFetching } = useGetAllUserQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(",") });
     const [deleteUser, { isLoading: deleting }] = useDeleteUserMutation();
     const [suspendUser] = useSuspendUserMutation();
 
@@ -210,7 +226,6 @@ export default function AllUserTable() {
     ], [isAllSelected, selectedRows, handleDeleteUser, handleSelectAll])
 
 
-
     return (
         <>
             <TableFilter
@@ -218,6 +233,7 @@ export default function AllUserTable() {
                 setSearch={setSearch}
                 selectedRows={selectedRows}
                 handleRoleDelete={openDeleteConfirmation}
+                onFilter={() => setFilterDialogOpen(true)}
             />
             {!user.length && !isLoading ? <EmptyRoute
                 icon={(<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -231,7 +247,7 @@ export default function AllUserTable() {
                 message="Start adding users to manage access and roles within the system. Use the button below to add your first user."
                 cta={{ label: "Create User", url: PATH.USER_MANAGEMENT.CREATE_USER.ROOT }}
             /> : <UdaanTable
-                loading={isLoading}
+                loading={isLoading || isFetching}
                 data={user}
                 columns={columns}
             />}
@@ -252,6 +268,15 @@ export default function AllUserTable() {
                     <path d="M19.2297 8.14C18.9897 7.89 18.6597 7.75 18.3197 7.75H5.67975C5.33975 7.75 4.99975 7.89 4.76975 8.14C4.53975 8.39 4.40975 8.73 4.42975 9.08L5.04975 19.34C5.15975 20.86 5.29975 22.76 8.78975 22.76H15.2097C18.6997 22.76 18.8398 20.87 18.9497 19.34L19.5697 9.09C19.5897 8.73 19.4597 8.39 19.2297 8.14ZM13.6597 17.75H10.3297C9.91975 17.75 9.57975 17.41 9.57975 17C9.57975 16.59 9.91975 16.25 10.3297 16.25H13.6597C14.0697 16.25 14.4097 16.59 14.4097 17C14.4097 17.41 14.0697 17.75 13.6597 17.75ZM14.4997 13.75H9.49975C9.08975 13.75 8.74975 13.41 8.74975 13C8.74975 12.59 9.08975 12.25 9.49975 12.25H14.4997C14.9097 12.25 15.2497 12.59 15.2497 13C15.2497 13.41 14.9097 13.75 14.4997 13.75Z" fill="#1D82F5" />
                 </svg>
                 )}
+            />
+            <CourseFilter
+                open={filterDialogOpen}
+                onClose={() => setFilterDialogOpen(false)}
+                selections={selections}
+                roles={roles || []}
+                onChange={handleCategoryChange}
+                onApplyFilter={handleApplyFilter}
+                onResetFilter={resetFilters}
             />
         </>
     )

@@ -8,6 +8,7 @@ export interface SelectionType {
     sub_category: { [categoryId: number]: number[] };
     position_ids: number[];
     teacher_ids?: number[];
+    role_ids?: number[];
     course_type?: CourseTypeProps[];
 }
 

@@ -57,7 +57,6 @@ export default function AllCourse() {
 
     const categoryFilter = getCategoryFilterParams();
 
-    console.log(categoryFilter);
 
     const { data, isLoading } = useGetAllCourseQuery({
         ...qp,

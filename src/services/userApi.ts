@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { GlobalResponse, RegisterUserProps, UserList } from "../types/user";
+import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
 
 export const userApi = createApi({
@@ -18,23 +19,15 @@ export const userApi = createApi({
         }),
         getAllUser: builder.query<UserList, QueryParams & { role?: string }>({
             query: ({ pageIndex, pageSize, search, role }) => {
-                const params = new URLSearchParams();
-
-                if (pageIndex) {
-                    params.append('page', (pageIndex).toString());
-                }
-                if (pageSize) {
-                    params.append('page_size', pageSize.toString());
-                }
-                if (search) {
-                    params.append('search', search.toString());
-                }
-                if (role) {
-                    params.append('role', role.toString());
-                }
+                const params = buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search,
+                    role: role
+                });
 
                 return {
-                    url: `/admin/user?${params.toString()}`,
+                    url: `/admin/user?${params}`,
                     method: "GET",
                 };
             },

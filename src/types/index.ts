@@ -13,5 +13,6 @@ export interface CategoryFilterParams {
     sub_category: number[];
     positions: number[];
     teachers?: number[];
+    roles?: number[];
     course_type?: CourseTypeProps[];
 }
