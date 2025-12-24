@@ -90,6 +90,11 @@ export default function ExpiryCourseType({ formik }: { formik: FormikProps<Cours
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                         />
+                        {formik.touched.course_expiry?.discount && formik.errors.course_expiry?.discount && (
+                            <FormHelperText error sx={{ mt: 0.5 }}>
+                                {formik.errors.course_expiry.discount}
+                            </FormHelperText>
+                        )}
                     </div>
                 </div>
 
@@ -114,6 +119,11 @@ export default function ExpiryCourseType({ formik }: { formik: FormikProps<Cours
                                 />
                             )}
                         />
+                        {formik.touched.course_expiry?.discount_type && formik.errors.course_expiry?.discount_type && (
+                            <FormHelperText error sx={{ mt: 0.5 }}>
+                                {formik.errors.course_expiry.discount_type}
+                            </FormHelperText>
+                        )}
                     </div>
                 </div>
             </div>

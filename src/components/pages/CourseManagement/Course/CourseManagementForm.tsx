@@ -97,8 +97,6 @@ const validationSchema = (id?: string) => Yup.object().shape({
         .oneOf(["free", "subscription", "expiry"], "Invalid course type")
         .required("Course type is required"),
 
-
-
     course_expiry: Yup.object().when("course_type", {
         is: "expiry",
         then: (schema) => schema.shape({
@@ -116,8 +114,7 @@ const validationSchema = (id?: string) => Yup.object().shape({
                 ),
             price: Yup.string().required("Price is required for expiry courses"),
             discount: Yup.number()
-                .min(0, "Discount must be at least 0")
-                .max(100, "Discount must not exceed 100"),
+                .min(0, "Discount must be at least 0"),
             discount_type: Yup.string()
                 .oneOf(["percentage", "amount"], "Invalid discount type")
                 .required("Discount type is required"),
