@@ -22,7 +22,7 @@ export default function CourseCard({ course, onDelete }: { course: CourseProps, 
                         onDelete={() => onDelete([course.id?.toString() || ""])}
                     />
                 </div>
-
+ 
             </div>
             <Box className="course_card_content p-3 flex flex-col gap-3" sx={{
                 background: theme.palette.text.lightest

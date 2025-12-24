@@ -49,6 +49,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     const theme = useTheme();
     const [search, setSearch] = useState("");
     const [debounceSearch, setDebounceSearch] = useState("");
+    const [searchCourse, setSearchCourse] = useState("");
     const [qp, _setQp] = useState({
         pageIndex: 1,
         pageSize: 3,
@@ -226,7 +227,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     } = useCourseFilter();
 
     const categoryFilter = getCategoryFilterParams();
-    const { data: courses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });
+    const { data: courses } = useGetAllCourseQuery({ ...courseQp, search: searchCourse, categoryFilter: { ...categoryFilter } });
 
 
 
@@ -302,7 +303,16 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                 </div>
                                 <div className="col-span-5">
                                     <InputLabel>Select Course <Typography variant="caption" color="text.middle">(Select the course you want to add test)</Typography></InputLabel>
-                                    <Box className="h-[187px] overflow-y-auto p-2.5 rounded-md flex flex-col" sx={{
+                                    <OutlinedInput
+                                        fullWidth
+                                        value={searchCourse}
+                                        onChange={(e) => setSearchCourse(e.target.value)}
+                                        placeholder="Search Course"
+                                        sx={{
+                                            py: "4px",
+                                        }}
+                                    />
+                                    <Box className="h-[187px] overflow-y-auto p-2.5 rounded-md flex flex-col mt-4" sx={{
                                         border: `1px solid ${theme.palette.separator.dark}`
                                     }}>
                                         {courses?.data?.data?.map((course) => (
