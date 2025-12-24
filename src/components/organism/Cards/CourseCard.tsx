@@ -14,7 +14,7 @@ export default function CourseCard({ course, onDelete }: { course: CourseProps, 
             }}
         >
             <div className="course_card_image aspect-347/128 relative">
-                <img src={course.thumbnail_url || "/logo.svg"} alt="Course" className="w-full h-full object-contain" />
+                <img src={course.thumbnail_url || "/fallback.png"} alt="Course" className="w-full h-full object-contain" />
                 <div className="absolute! top-2.5 right-2.5">
                     <Actions
                         onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}
