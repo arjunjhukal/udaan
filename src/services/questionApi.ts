@@ -117,7 +117,7 @@ export const questionApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
-        getListOfStudentSubmittedTest: builder.query<StudentSubmitTestList, { id?: number, qp: QueryParams, search: String }>({
+        getListOfStudentSubmittedTest: builder.query<StudentSubmitTestList, { id?: number, qp: QueryParams, search: string }>({
             query: ({ id, qp, search }) => ({
                 url: `/admin/test/${id}/result?${buildQueryParams({
                     page: qp.pageIndex,

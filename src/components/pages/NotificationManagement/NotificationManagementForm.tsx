@@ -146,7 +146,7 @@ export default function NotificationManagementForm() {
 
     useEffect(() => {
 
-        let isPurchased = formik.values.target_students.length === 1 &&
+        const isPurchased = formik.values.target_students.length === 1 &&
             formik.values.target_students[0] === "not_purchased";
         setOnlyNotPurchased(isPurchased)
     }, [formik.values.target_students])

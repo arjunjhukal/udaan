@@ -8,7 +8,6 @@ import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import { LiveClassTabs, type LiveClassPayload, type liveClassTabType } from "../../../../../types/liveClass";
 import { formatDate } from "../../../../../utils/dateFormat";
-import { getStatusStyle } from "../../../../../utils/getStyleBasedOnStatus";
 import Actions from "../../../../molecules/Action";
 import TabController from "../../../../molecules/TabController";
 import UdaanTable from "../../../../molecules/Table";
@@ -18,6 +17,7 @@ import EmptyRoute from "../../../../organism/EmptyRoute";
 import type { LayoutProps } from "../../../../organism/TableFilter";
 import TableFilter from "../../../../organism/TableFilter";
 import LiveClassGrid from "./LiveClassGrid";
+import { useGetStatusStyle } from "../../../../../utils/getStyleBasedOnStatus";
 
 export default function AllLiveClassList() {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ export default function AllLiveClassList() {
   const [liveClassToDelete, setLiveClassToDelete] = useState<string[]>([]);
   const [layout, setLayout] = useState<LayoutProps>("table");
   const [activeTab, setActiveTab] = useState<liveClassTabType>("ongoing");
-
+  const getStatusStyle = useGetStatusStyle();
   const { data, isLoading } = useGetAllLiveClassQuery({ ...qp, search: search, status: activeTab });
   const [deleteLiveClass, { isLoading: deleting }] = useDeleteLiveClassMutation();
 

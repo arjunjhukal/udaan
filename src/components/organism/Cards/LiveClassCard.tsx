@@ -4,7 +4,8 @@ import dayjs from 'dayjs';
 import durationPlugin from 'dayjs/plugin/duration';
 import { Link } from 'react-router-dom';
 import type { LiveClassPayload } from '../../../types/liveClass';
-import { getStatusStyle } from '../../../utils/getStyleBasedOnStatus';
+
+import { useGetStatusStyle } from '../../../utils/getStyleBasedOnStatus';
 import { getTimeDifference } from '../../../utils/getTimeDifference';
 
 dayjs.extend(durationPlugin);
@@ -45,6 +46,8 @@ export const getUpcomingTimeText = (startTime: string | Date): string => {
 };
 export default function LiveClassCard({ liveClass }: { liveClass: LiveClassPayload }) {
     const theme = useTheme();
+    const getStatusStyle = useGetStatusStyle();
+
     return (
         <Box sx={{
             border: `1px solid ${theme.palette.separator.dark}`

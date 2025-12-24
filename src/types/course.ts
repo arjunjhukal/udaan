@@ -161,8 +161,7 @@ export interface SubjectProps
 }
 
 
-export interface CurriculumProps extends SubjectProps {
-}
+export type CurriculumProps = SubjectProps;
 
 export interface CurriculumList extends GlobalResponse {
     data: {

@@ -72,7 +72,7 @@ export default function ActionIconVisible({
 					}}
 					onClick={(e) => {
 						e.stopPropagation();
-						onDelete;
+						onDelete();
 					}}>
 					<svg
 						width="16"
