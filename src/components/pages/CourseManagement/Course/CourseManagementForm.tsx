@@ -208,7 +208,7 @@ export default function CourseManagementForm() {
         validationSchema: validationSchema(id),
         enableReinitialize: true,
         onSubmit: async (values) => {
-            console.log("inside", values);
+
             if (id) {
                 try {
                     const formattedData = createCourseFormData(values);
@@ -220,7 +220,7 @@ export default function CourseManagementForm() {
                             severity: "success"
                         })
                     );
-
+                    setActiveTab("curriculum");
                 }
                 catch (e: any) {
                     dispatch(
@@ -232,7 +232,6 @@ export default function CourseManagementForm() {
                 }
             }
             else {
-
                 try {
                     const formattedData = createCourseFormData(values);
                     const response = await createCourse({ body: formattedData }).unwrap();
@@ -283,6 +282,16 @@ export default function CourseManagementForm() {
     const handleFileChange = (file: File | null) => {
         formik.setFieldValue("thumbnail", file);
     };
+    const handleTabChange = (newValue: courseTabType) => {
+        if (!id) {
+            formik.handleSubmit();
+            setActiveTab(newValue)
+        }
+        else {
+            setActiveTab(newValue)
+        }
+    }
+    console.log("formik", formik.errors)
     return (
         <div className="course__management__form__root">
             <form action="" onSubmit={formik.handleSubmit}>
@@ -418,7 +427,7 @@ export default function CourseManagementForm() {
                     formik={formik}
                 />
                 <Divider sx={{ marginTop: "36px", marginBottom: "36px" }} />
-                <TabController setActiveTab={setActiveTab} currentActive={activeTab} />
+                <TabController setActiveTab={handleTabChange} currentActive={activeTab} />
                 {activeTab === "overview" ? <CourseOverviewForm
                     teachers={teachers?.data?.data || []}
                     selectedTeachers={selectedTeachers}

@@ -1,6 +1,6 @@
 import { Box, Checkbox, Typography, useTheme } from '@mui/material';
 import type { FormikProps } from 'formik';
-import React, { Activity } from 'react';
+import React from 'react';
 import type { CourseProps, CourseTypeProps } from '../../../../../types/course';
 import SubscriptionManagementForm from '../../../SubscriptionManagement/SubscriptionManagementForm';
 import ExpiryCourseType from './CourseTypes/ExpiryCourseType';
@@ -93,15 +93,15 @@ function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, 
             }}
         >
             {currentType === "free" &&
-                <Activity>
-                    <FreeCourseType
-                        value={formik.values.free_type_description}
-                        onChange={(value) => formik.setFieldValue("free_type_description", value)}
-                        onBlur={(value) => formik.setFieldValue("free_type_description", value)}
-                        error={formik.errors.free_type_description}
-                    />
-                </Activity>}
-            {currentType === "subscription" && <Activity>
+
+                <FreeCourseType
+                    value={formik.values.free_type_description}
+                    onChange={(value) => formik.setFieldValue("free_type_description", value)}
+                    onBlur={(value) => formik.setFieldValue("free_type_description", value)}
+                    error={formik.errors.free_type_description}
+                />
+            }
+            {currentType === "subscription" &&
                 <>
                     <SubscriptionCourseType
                         formik={formik}
@@ -112,11 +112,11 @@ function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, 
                         setOpen={setOpen}
                     />
                 </>
-            </Activity>}
+            }
             {currentType === "expiry" &&
-                <Activity>
-                    <ExpiryCourseType formik={formik} />
-                </Activity>
+
+                <ExpiryCourseType formik={formik} />
+
             }
 
 

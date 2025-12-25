@@ -19,9 +19,18 @@ jobs:
           node-version: 20
           cache: 'npm'
 
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: Install dependencies
-        run: npm ci
-        
+        run: npm ci --prefer-offline --no-audit
 
       - name: Lint
         run: npm run lint
@@ -42,7 +51,11 @@ jobs:
         run: |
           rsync -avz --delete dist/ \
           ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/udaan
-          
+      - name: Deploy to server
+        run: |
+          rsync -avz --delete dist/ \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/udaan
+
       - name: Notify Slack on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0

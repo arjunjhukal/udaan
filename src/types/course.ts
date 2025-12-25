@@ -36,7 +36,7 @@ export interface CourseSubscription {
 export interface CourseProps {
     id?: number;
     name: string;
-    slug: string;
+    slug: string | null;
     duration: DurationProps;
     description: string;
     thumbnail: File | null;
@@ -56,7 +56,7 @@ export interface CourseProps {
 
 export const initialCourseState: CourseProps = {
     name: "",
-    slug: "",
+    slug: null,
     duration: {
         hours: 0,
         minutes: 0,

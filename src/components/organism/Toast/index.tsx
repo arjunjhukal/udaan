@@ -47,12 +47,12 @@ export default function Toast() {
 				},
 			}}>
 			<Box
-				className={`toast toast__${severity} p-4 rounded-[8px] w-full border `}
+				className={`toast toast__${severity} p-4 rounded-md w-full border `}
 				sx={{
 					borderColor: borderColor,
 					backgroundColor: bgColor,
 				}}>
-				<Stack justifyContent={"space-between"}>
+				<Stack justifyContent={"space-between"} alignItems={"center"}>
 					<Stack className="!gap-3" alignItems="center">
 						{severity === "success" && <CheckCircleIcon color="success" />}
 						{severity === "warning" && <WarningIcon color="warning" />}
