@@ -371,6 +371,36 @@ const commonThemeOptions: ThemeOptions = {
                             background: theme.palette.primary.black,
                             color: theme.palette.primary.contrastText
                         }
+                    },
+
+                    "&.sub__menu": {
+                        "&  .MuiListItemButton-root": {
+                            transition: "all 0.2s ease-in-out",
+                            borderRadius: "4px",
+
+                            "&.active": {
+                                background: theme.palette.separator.dark,
+                                ".MuiTypography-root": {
+                                    color: `${theme.palette.text.dark} !important`
+                                }
+                            }
+                        },
+
+                        "& .sub__menu": {
+                            paddingLeft: "16px",
+                            "&  .MuiListItemButton-root": {
+                                ".MuiTypography-root": {
+                                    color: `${theme.palette.text.middle} !important`
+                                },
+                                "&.active": {
+                                    background: "transparent",
+                                    ".MuiTypography-root": {
+                                        color: `${theme.palette.text.dark} !important`
+                                    }
+                                }
+                            },
+                        }
+
                     }
                 }),
             },

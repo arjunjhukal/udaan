@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
-import type { QuestionList, QuestionProps, QuestionTypeProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps } from "../types/question";
+import type { QuestionList, QuestionProps, QuestionTypeProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -72,12 +72,13 @@ export const questionApi = createApi({
                 ...(body.id ? [{ type: "Test" as const, id: body.id }] : [])
             ]
         }),
-        getAllTest: builder.query<TestList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => {
+        getAllTest: builder.query<TestList, QueryParams & { type?: TestTypeProps }>({
+            query: ({ pageIndex, pageSize, search, type }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
+                    type: type
                 });
                 return {
                     url: `/admin/test?${queryString}`,

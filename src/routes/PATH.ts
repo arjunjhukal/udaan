@@ -128,13 +128,31 @@ export const PATH = {
 	CONTENT_MANAGEMENT: {
 		ROOT: "/content-management",
 		SPLASH_SCREEN: {
-			ROOT: "/splash-screen"
+			ROOT: "/content-management/splash-screen"
 		},
 		ONBOARDING_SCREEN: {
-			ROOT: "/onboarding-screen"
+			ROOT: "/content-management/onboarding-screen"
 		},
-		FEATURED_COURSE_SCREEN: {
-			ROOT: "/featured-course-screen"
+		HOME_SCREEN: {
+			ROOT: "/content-management/home-screen",
+			WELCOME_POPUP: {
+				ROOT: "/content-management/home-screen/welcome-popup"
+			},
+			BANNER: {
+				ROOT: "/content-management/home-screen/banner"
+			},
+			FEATURED_COURSE: {
+				ROOT: "/content-management/home-screen/featured-course"
+			}
+		},
+		PAGES: {
+			ROOT: "/content-management/pages",
+			CREATE_PAGE: {
+				ROOT: "/content-management/pages/create"
+			},
+			EDIT_PAGE:{
+				ROOT: (id: number) => id ? `/content-management/pages/${id}` : `/content-management/pages/:id`
+			}
 		}
 	}
 };

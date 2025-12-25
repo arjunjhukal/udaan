@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authApi } from "../services/authApi";
 import { categoryApi } from "../services/categoryApi";
+import { contentApi } from "../services/contentApi";
 import { courseApi } from "../services/courseApi";
 import { liveClassApi } from "../services/liveClass";
 import { mediaApi } from "../services/mediaApi";
@@ -35,7 +36,7 @@ export const store = configureStore({
 		[questionApi.reducerPath]: questionApi.reducer,
 		[transactionApi.reducerPath]: transactionApi.reducer,
 		[notificationApi.reducerPath]: notificationApi.reducer,
-
+		[contentApi.reducerPath]: contentApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(authApi.middleware)
@@ -50,6 +51,7 @@ export const store = configureStore({
 			.concat(questionApi.middleware)
 			.concat(transactionApi.middleware)
 			.concat(notificationApi.middleware)
+			.concat(contentApi.middleware)
 
 });
 

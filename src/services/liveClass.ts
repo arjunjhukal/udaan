@@ -19,7 +19,7 @@ export const liveClassApi = createApi({
                 { type: "Live_Class", id: "LIST" }
             ],
         }),
-        getAllLiveClass: builder.query<LiveClassList, QueryParams & { status: liveClassTabType }>({
+        getAllLiveClass: builder.query<LiveClassList, QueryParams & { status?: liveClassTabType }>({
             query: ({ pageIndex, pageSize, search, status }) => {
                 const params = new URLSearchParams();
 

@@ -2,7 +2,6 @@ import { AccessTime } from '@mui/icons-material';
 import { Box, Button, Typography, useTheme } from '@mui/material';
 import dayjs from 'dayjs';
 import durationPlugin from 'dayjs/plugin/duration';
-import { Link } from 'react-router-dom';
 import type { LiveClassPayload } from '../../../types/liveClass';
 
 import { useGetStatusStyle } from '../../../utils/getStyleBasedOnStatus';
@@ -95,18 +94,25 @@ export default function LiveClassCard({ liveClass }: { liveClass: LiveClassPaylo
                     <Typography variant='subtitle2' color='text.middle'>{liveClass.active_students} students active</Typography>
                 </div> : ""}
             </div>
-            <Link to={liveClass?.start_url || ""} target='_blank'>
-                <Button variant="contained" color="primary" fullWidth
-                    disabled={liveClass.status === "ended"}
-                    startIcon={(
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22 8L16 12L22 16V8Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                            <path d="M14 6H4C2.89543 6 2 6.89543 2 8V16C2 17.1046 2.89543 18 4 18H14C15.1046 18 16 17.1046 16 16V8C16 6.89543 15.1046 6 14 6Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    )}>
-                    <Typography variant='subtitle1'>Start Class</Typography>
-                </Button>
-            </Link>
+            <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                disabled={liveClass.status === "ended"}
+                onClick={() => {
+                    if (liveClass.status !== "ended" && liveClass?.start_url) {
+                        window.open(liveClass.start_url, '_blank', 'noopener,noreferrer');
+                    }
+                }}
+                startIcon={(
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 8L16 12L22 16V8Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M14 6H4C2.89543 6 2 6.89543 2 8V16C2 17.1046 2.89543 18 4 18H14C15.1046 18 16 17.1046 16 16V8C16 6.89543 15.1046 6 14 6Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                )}
+            >
+                <Typography variant='subtitle1'>Start Class</Typography>
+            </Button>
         </Box>
     )
 }

@@ -5,6 +5,14 @@ import App from "../App";
 import CategoryManagementRoot from "../components/pages/CategoryManagement";
 import AllCategories from "../components/pages/CategoryManagement/allCategory";
 
+import ContentManagementRoot from "../components/pages/ContentManagement";
+import HomeScreens from "../components/pages/ContentManagement/HomeScreens";
+import BannerRoot from "../components/pages/ContentManagement/HomeScreens/Banner";
+import FeaturedCourseRoot from "../components/pages/ContentManagement/HomeScreens/FeaturedCourse";
+import WelcomePopupRoot from "../components/pages/ContentManagement/HomeScreens/WelcomePopup";
+import OnBoardingScreenRoot from "../components/pages/ContentManagement/OnBoardingScreen";
+import PagesRoot from "../components/pages/ContentManagement/Pages";
+import SplashScreenRoot from "../components/pages/ContentManagement/SplashScreen";
 import CourseManagementRoot from "../components/pages/CourseManagement/Course";
 import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
 import CreateCourseRoot from "../components/pages/CourseManagement/Course/createCourse";
@@ -176,6 +184,22 @@ const router = createBrowserRouter([
 					{ path: PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(), element: <CreateNotificationRoot /> },
 				],
 			},
+			{
+				path: "/content-management",
+				element: <ContentManagementRoot />,
+				children: [
+					{ path: PATH.CONTENT_MANAGEMENT.SPLASH_SCREEN.ROOT, element: <SplashScreenRoot /> },
+					{ path: PATH.CONTENT_MANAGEMENT.ONBOARDING_SCREEN.ROOT, element: <OnBoardingScreenRoot /> },
+					{
+						path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.ROOT, element: <HomeScreens />, children: [
+							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.WELCOME_POPUP.ROOT, element: <WelcomePopupRoot /> },
+							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.BANNER.ROOT, element: <BannerRoot /> },
+							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.FEATURED_COURSE.ROOT, element: <FeaturedCourseRoot /> },
+						]
+					},
+					{ path: PATH.CONTENT_MANAGEMENT.PAGES.ROOT, element: <PagesRoot /> },
+				]
+			}
 		],
 	},
 

@@ -60,8 +60,30 @@
                 "root": "Level / Position"
             }
         },
-        "content": {
-            "root": "Content Management"
+        "content_management": {
+            "root": "Content Management",
+            "splash_screen": {
+                "root": "Splash Screen"
+            },
+            "onboarding_screen": {
+                "root": "Onboarding Screen"
+            },
+            "home_screen": {
+                "root": "Home Screen",
+                "message": "Edit your homepage screen design to create a strong and consistent first impression.",
+                "welcome_popup": {
+                    "root": "Welcome Pop Up"
+                },
+                "banner": {
+                    "root": "Banner"
+                },
+                "featured_course": {
+                    "root": "Featured Course"
+                }
+            },
+            "pages": {
+                "root": "Pages"
+            }
         },
         "subscription_plan": {
             "root": "Subscription & Plans"
