@@ -8,10 +8,10 @@ export interface QueryParams {
 
 
 export interface CategoryFilterParams {
-    mega_category: number[];
-    category: number[];
-    sub_category: number[];
-    positions: number[];
+    mega_category?: number[];
+    category?: number[];
+    sub_category?: number[];
+    positions?: number[];
     teachers?: number[];
     roles?: number[];
     course_type?: CourseTypeProps[];

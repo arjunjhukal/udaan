@@ -22,12 +22,12 @@ export default function CourseCard({ course, onDelete }: { course: CourseProps, 
                         onDelete={() => onDelete([course.id?.toString() || ""])}
                     />
                 </div>
- 
+
             </div>
             <Box className="course_card_content p-3 flex flex-col gap-3" sx={{
                 background: theme.palette.text.lightest
             }}>
-                <Typography variant="caption" className="px-2.5 py-1 rounded-md max-w-fit" sx={{
+                <Typography variant="caption" className="px-2.5 py-1 rounded-md max-w-fit capitalize" sx={{
                     background: theme.palette.primary.light,
                     color: theme.palette.primary.main
                 }}>{course.course_type}</Typography>

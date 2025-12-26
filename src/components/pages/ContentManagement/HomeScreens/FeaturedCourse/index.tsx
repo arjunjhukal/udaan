@@ -131,10 +131,12 @@ import { FieldArray, FormikProvider, useFormik } from "formik";
 import { Add } from "iconsax-reactjs";
 import { useTranslation } from "react-i18next";
 import * as Yup from "yup";
+import { useGetAllMegaCategoryQuery } from "../../../../../services/categoryApi";
 import { useAddOrUpdateFeaturedCourseMutation, useGetAllFeaturedCourseQuery } from "../../../../../services/contentApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import { FeaturedCourseInitialState } from "../../../../../types/content";
+import FeaturedCourseRow from "./FeaturedCourseRow";
 
 const validationSchema = Yup.object({
     featured: Yup.array().of(
@@ -150,13 +152,14 @@ export default function FeaturedCourseRoot() {
     const dispatch = useAppDispatch();
 
     const { data: featuredCourse } = useGetAllFeaturedCourseQuery();
-    // const { data: megaCategories } = useGetAllMegaCategoryQuery();
+    const { data: megaCategories } = useGetAllMegaCategoryQuery();
     const [addOrUpdateFeaturedCourses, { isLoading }] = useAddOrUpdateFeaturedCourseMutation();
 
     const formik = useFormik({
         initialValues: {
             featured: featuredCourse?.data.length ? featuredCourse.data : FeaturedCourseInitialState.featured
         },
+        enableReinitialize: true,
         validationSchema,
         onSubmit: async (values) => {
             try {
@@ -177,18 +180,17 @@ export default function FeaturedCourseRoot() {
 
                 <form onSubmit={formik.handleSubmit}>
                     <FieldArray name="featured">
-                        {({ push }) => (
+                        {({ push, remove }) => (
                             <>
-                                {/* {formik.values.featured.map((item, index) => (
+                                {formik.values.featured.map((_item, index) => (
                                     <FeaturedCourseRow
                                         key={index}
                                         index={index}
-                                        item={item}
                                         megaCategories={megaCategories}
                                         formik={formik}
                                         remove={remove}
                                     />
-                                ))} */}
+                                ))}
 
                                 <Button
                                     variant="text"
@@ -209,7 +211,7 @@ export default function FeaturedCourseRoot() {
                             Cancel
                         </Button>
                         <Button type="submit" variant="contained" disabled={isLoading}>
-                            {isLoading ? "Saving..." : "Save Featured Courses"}
+                            {isLoading ? "Creating Courses..." : "Create Courses"}
                         </Button>
                     </Box>
                 </form>
