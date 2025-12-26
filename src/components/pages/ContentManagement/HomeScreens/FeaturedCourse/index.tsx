@@ -211,7 +211,7 @@ export default function FeaturedCourseRoot() {
                             Cancel
                         </Button>
                         <Button type="submit" variant="contained" disabled={isLoading}>
-                            {isLoading ? "Creating Courses..." : "Create Courses"}
+                            {isLoading ? "Adding Featured Courses..." : "Add Featured Courses"}
                         </Button>
                     </Box>
                 </form>

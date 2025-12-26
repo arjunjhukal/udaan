@@ -221,6 +221,7 @@ export default function BannerRoot() {
 
                                         <FileDragDrop
                                             label="Image"
+                                            required={true}
                                             initialPreview={banner.json.image_url || ""}
                                             initialFile={banner.file.image || null}
                                             onFileChange={(file) => handleFileChange(index, file)}

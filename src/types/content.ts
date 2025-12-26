@@ -62,3 +62,16 @@ export const FeaturedCourseInitialState: { featured: FeaturedCourseProps[] } = {
 export interface FeaturedCourseList {
     data: FeaturedCourseProps[];
 }
+
+export interface WelcomePopupProps {
+    heading: string;
+    sub_heading: string;
+    image: File | null;
+    image_url: string;
+}
+export const WelcomePopupInitialState: WelcomePopupProps = {
+    heading: "",
+    sub_heading: "",
+    image: null,
+    image_url: ""
+}

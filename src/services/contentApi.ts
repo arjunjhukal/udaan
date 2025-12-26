@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { BannerList, FeaturedCourseList, FeaturedCourseProps } from "../types/content";
+import type { BannerList, FeaturedCourseList, FeaturedCourseProps, WelcomePopupProps } from "../types/content";
 import type { GlobalResponse } from "../types/user";
 import { baseQuery } from "./baseQuery";
 
@@ -38,6 +38,21 @@ export const contentApi = createApi({
             }),
             providesTags: [{ type: "Course", id: "LIST" }]
         }),
+        addWelcomePopup: builder.mutation<GlobalResponse, FormData>({
+            query: (body) => ({
+                url: `/admin/content/home-popup`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: [{ type: "Welcome", id: "LIST" }]
+        }),
+        getWelcomePopup: builder.query<{ data: WelcomePopupProps }, void>({
+            query: () => ({
+                url: `/admin/content/home-popup`,
+                method: "GET",
+            }),
+            providesTags: [{ type: "Welcome", id: "LIST" }]
+        })
     })
 });
 
@@ -45,5 +60,7 @@ export const {
     useAddOrUpdateBannerMutation,
     useGetAllBannerQuery,
     useAddOrUpdateFeaturedCourseMutation,
-    useGetAllFeaturedCourseQuery
+    useGetAllFeaturedCourseQuery,
+    useAddWelcomePopupMutation,
+    useGetWelcomePopupQuery
 } = contentApi;

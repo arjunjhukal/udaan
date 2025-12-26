@@ -10,6 +10,7 @@ interface FileDragDropProps {
     helperText?: string;
     maxSize?: number;
     label?: string;
+    required?: boolean;
 }
 
 export default function FileDragDrop({
@@ -18,7 +19,8 @@ export default function FileDragDrop({
     error = false,
     helperText = "",
     maxSize = 2,
-    label
+    label,
+    required = false
 }: FileDragDropProps) {
     const theme = useTheme();
     const [preview, setPreview] = useState<string | null>(initialPreview || null);
@@ -66,7 +68,7 @@ export default function FileDragDrop({
 
     return (
         <Box className="h-full flex flex-col">
-            <InputLabel htmlFor="profile">{label || "Profile Picture"}</InputLabel>
+            <InputLabel htmlFor="profile" className={required ? "required" : ""}>{label || "Profile Picture"}</InputLabel>
             <Box
                 {...getRootProps()}
                 className="flex justify-start items-center gap-4 p-4 rounded-md h-full cursor-pointer transition-all duration-200 relative"
