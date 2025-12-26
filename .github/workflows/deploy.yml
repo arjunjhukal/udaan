@@ -89,11 +89,7 @@ jobs:
                     {
                       "type": "mrkdwn",
                       "text": "*Author:*\n${{ github.actor }}"
-                    }
-                    {
-                      "type": "mrkdwn",
-                      "text": "*Staging:*\n<https://app.udaanacademy.com.np/|View Staging>"
-                    }
+                    }                 
                   ]
                 },
                 {
