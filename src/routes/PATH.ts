@@ -154,5 +154,20 @@ export const PATH = {
 				ROOT: (id?: string) => id ? `/content-management/pages/${id}` : `/content-management/pages/:id`
 			}
 		}
+	},
+	SETTINGS: {
+		ROOT: "/settings",
+		PROFILE: {
+			ROOT: "/settings/profile"
+		},
+		CHANGE_PASSWORD: {
+			ROOT: "/settings/change-password"
+		},
+		LINKED_DEVICE: {
+			ROOT: "/settings/linked-devices"
+		},
+		APP_SETTINGS: {
+			ROOT: "/settings/app-settings"
+		}
 	}
 };

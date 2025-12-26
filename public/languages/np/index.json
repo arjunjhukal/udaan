@@ -98,6 +98,11 @@
     "messages": {
         "overview": "समग्र विवरण",
         "master_data": "मुख्य डाटा",
+        "settings": "सेटिङहरू",
+        "profile": "प्रोफाइल",
+        "change_password": "पासवर्ड परिवर्तन गर्नुहोस्",
+        "linked_devices": "जोडिएका उपकरणहरू",
+        "app_settings": "एप सेटिङहरू",
         "empty_states": {
             "roles": {
                 "title": "भूमिका र अनुमति फेला परेन",

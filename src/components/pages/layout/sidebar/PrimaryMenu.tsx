@@ -319,11 +319,28 @@ export default function PrimaryMenu() {
                             onClick={() => navigate(PATH.CONTENT_MANAGEMENT.SPLASH_SCREEN.ROOT)}
                             className={location.pathname.startsWith(PATH.CONTENT_MANAGEMENT.ROOT) ? "active" : ""}>
                             <ListItemIcon>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M14.1665 17.0846H5.83317C3.33317 17.0846 1.6665 15.8346 1.6665 12.918V7.08464C1.6665 4.16797 3.33317 2.91797 5.83317 2.91797H14.1665C16.6665 2.91797 18.3332 4.16797 18.3332 7.08464V12.918C18.3332 15.8346 16.6665 17.0846 14.1665 17.0846Z" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M10 12.5C11.3807 12.5 12.5 11.3807 12.5 10C12.5 8.61929 11.3807 7.5 10 7.5C8.61929 7.5 7.5 8.61929 7.5 10C7.5 11.3807 8.61929 12.5 10 12.5Z" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M4.5835 7.91797V12.0846" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                    <path d="M15.4165 7.91797V12.0846" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </ListItemIcon>
+                            <ListItemText primary={t("menus.content_management.root")} />
+                        </ListItemButton>
+                    </ListItem>
+                </CAN>
+                <CAN permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => navigate(PATH.SETTINGS.PROFILE.ROOT)}
+                            className={location.pathname.startsWith(PATH.SETTINGS.ROOT) ? "active" : ""}>
+                            <ListItemIcon>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M20.1 9.21945C18.29 9.21945 17.55 7.93945 18.45 6.36945C18.97 5.45945 18.66 4.29945 17.75 3.77945L16.02 2.78945C15.23 2.31945 14.21 2.59945 13.74 3.38945L13.63 3.57945C12.73 5.14945 11.25 5.14945 10.34 3.57945L10.23 3.38945C9.78 2.59945 8.76 2.31945 7.97 2.78945L6.24 3.77945C5.33 4.29945 5.02 5.46945 5.54 6.37945C6.45 7.93945 5.71 9.21945 3.9 9.21945C2.86 9.21945 2 10.0694 2 11.1194V12.8794C2 13.9194 2.85 14.7794 3.9 14.7794C5.71 14.7794 6.45 16.0594 5.54 17.6294C5.02 18.5394 5.33 19.6994 6.24 20.2194L7.97 21.2094C8.76 21.6794 9.78 21.3995 10.25 20.6094L10.36 20.4194C11.26 18.8494 12.74 18.8494 13.65 20.4194L13.76 20.6094C14.23 21.3995 15.25 21.6794 16.04 21.2094L17.77 20.2194C18.68 19.6994 18.99 18.5294 18.47 17.6294C17.56 16.0594 18.3 14.7794 20.11 14.7794C21.15 14.7794 22.01 13.9294 22.01 12.8794V11.1194C22 10.0794 21.15 9.21945 20.1 9.21945ZM12 15.2494C10.21 15.2494 8.75 13.7894 8.75 11.9994C8.75 10.2094 10.21 8.74945 12 8.74945C13.79 8.74945 15.25 10.2094 15.25 11.9994C15.25 13.7894 13.79 15.2494 12 15.2494Z" fill="#9CA3B0" />
                                 </svg>
                             </ListItemIcon>
-                            <ListItemText primary={t("menus.content_management.root")} />
+                            <ListItemText primary={t("messages.settings")} />
                         </ListItemButton>
                     </ListItem>
                 </CAN>

@@ -12,6 +12,7 @@ import FeaturedCourseRoot from "../components/pages/ContentManagement/HomeScreen
 import WelcomePopupRoot from "../components/pages/ContentManagement/HomeScreens/WelcomePopup";
 import OnBoardingScreenRoot from "../components/pages/ContentManagement/OnBoardingScreen";
 import PagesRoot from "../components/pages/ContentManagement/Pages";
+import PageCreationForm from "../components/pages/ContentManagement/Pages/PageCreationForm";
 import SplashScreenRoot from "../components/pages/ContentManagement/SplashScreen";
 import CourseManagementRoot from "../components/pages/CourseManagement/Course";
 import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
@@ -27,6 +28,11 @@ import CreateNotificationRoot from "../components/pages/NotificationManagement/c
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
+import SettingRoot from "../components/pages/Setting";
+import AppSettingRoot from "../components/pages/Setting/AppSetting";
+import ChangePassword from "../components/pages/Setting/ChangePassword";
+import LinkedDevices from "../components/pages/Setting/LinkedDevices";
+import ProfilePageRoot from "../components/pages/Setting/Profile";
 import SubscriptionManagementRoot from "../components/pages/SubscriptionManagement";
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
@@ -49,7 +55,6 @@ import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
 import { PATH } from "./PATH";
 import Private from "./Private";
-import PageCreationForm from "../components/pages/ContentManagement/Pages/PageCreationForm";
 
 const router = createBrowserRouter([
 	{
@@ -201,6 +206,15 @@ const router = createBrowserRouter([
 					{ path: PATH.CONTENT_MANAGEMENT.PAGES.ROOT, element: <PagesRoot /> },
 					{ path: PATH.CONTENT_MANAGEMENT.PAGES.CREATE_PAGE.ROOT, element: <PageCreationForm /> },
 					{ path: PATH.CONTENT_MANAGEMENT.PAGES.EDIT_PAGE.ROOT(), element: <PageCreationForm /> },
+				]
+			},
+			{
+				path: PATH.SETTINGS.ROOT, element: <SettingRoot />,
+				children: [
+					{ path: PATH.SETTINGS.PROFILE.ROOT, element: <ProfilePageRoot /> },
+					{ path: PATH.SETTINGS.CHANGE_PASSWORD.ROOT, element: <ChangePassword /> },
+					{ path: PATH.SETTINGS.LINKED_DEVICE.ROOT, element: <LinkedDevices /> },
+					{ path: PATH.SETTINGS.APP_SETTINGS.ROOT, element: <AppSettingRoot /> },
 				]
 			}
 		],

@@ -99,6 +99,11 @@
     "messages": {
         "overview": "Overview",
         "master_data": "Master Data",
+        "settings": "Settings",
+        "profile": "Profile",
+        "change_password": "Change Password",
+        "linked_devices": "Linked Devices",
+        "app_settings": "App Settings",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",
