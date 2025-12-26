@@ -49,6 +49,7 @@ import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
 import { PATH } from "./PATH";
 import Private from "./Private";
+import PageCreationForm from "../components/pages/ContentManagement/Pages/PageCreationForm";
 
 const router = createBrowserRouter([
 	{
@@ -198,6 +199,8 @@ const router = createBrowserRouter([
 						]
 					},
 					{ path: PATH.CONTENT_MANAGEMENT.PAGES.ROOT, element: <PagesRoot /> },
+					{ path: PATH.CONTENT_MANAGEMENT.PAGES.CREATE_PAGE.ROOT, element: <PageCreationForm /> },
+					{ path: PATH.CONTENT_MANAGEMENT.PAGES.EDIT_PAGE.ROOT(), element: <PageCreationForm /> },
 				]
 			}
 		],

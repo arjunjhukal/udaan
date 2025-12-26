@@ -82,7 +82,8 @@
                 }
             },
             "pages": {
-                "root": "Pages"
+                "root": "Pages",
+                "message": "Add Pages to make it more efficient and well known for the system."
             }
         },
         "subscription_plan": {

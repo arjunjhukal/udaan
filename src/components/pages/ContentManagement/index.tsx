@@ -23,7 +23,7 @@ export default function ContentManagementRoot() {
                     )
                 }]}
             />
-            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 pb-6">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 pb-6 h-full">
                 <Box className="lg:col-span-4 2xl:col-span-3 lg:pr-8 2xl:pr-13.5 lg:mr-2 2xl:mr-7.5 " sx={{
                     borderRight: (theme) => `1px solid ${theme.palette.separator.dark}`
                 }}>

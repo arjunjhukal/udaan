@@ -150,8 +150,8 @@ export const PATH = {
 			CREATE_PAGE: {
 				ROOT: "/content-management/pages/create"
 			},
-			EDIT_PAGE:{
-				ROOT: (id: number) => id ? `/content-management/pages/${id}` : `/content-management/pages/:id`
+			EDIT_PAGE: {
+				ROOT: (id?: string) => id ? `/content-management/pages/${id}` : `/content-management/pages/:id`
 			}
 		}
 	}

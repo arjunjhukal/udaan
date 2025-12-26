@@ -48,7 +48,7 @@ export const contentApi = createApi({
         }),
         getWelcomePopup: builder.query<{ data: WelcomePopupProps }, void>({
             query: () => ({
-                url: `/admin/content/home-popup`,
+                url: `/content/home-popup`,
                 method: "GET",
             }),
             providesTags: [{ type: "Welcome", id: "LIST" }]

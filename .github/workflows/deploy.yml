@@ -1,9 +1,9 @@
-name: Deploy React App
+name: Udaan Deployment Pipeline
 
 on:
   push:
     branches:
-      - dev
+      - prod
 
 jobs:
   build-and-deploy:
@@ -89,6 +89,10 @@ jobs:
                     {
                       "type": "mrkdwn",
                       "text": "*Author:*\n${{ github.actor }}"
+                    }
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Staging:*\n<https://app.udaanacademy.com.np/|View Staging>"
                     }
                   ]
                 },

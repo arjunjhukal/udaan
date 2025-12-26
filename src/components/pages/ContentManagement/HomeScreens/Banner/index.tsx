@@ -141,27 +141,31 @@ export default function BannerRoot() {
 
                                         <div className="flex flex-col gap-4 md:grid md:grid-cols-2 md:gap-6">
                                             <div className="col-span-1">
-                                                <InputLabel className="required">Top Label</InputLabel>
-                                                <OutlinedInput
-                                                    fullWidth
-                                                    name={`banners.${index}.json.title`}
-                                                    value={banner.json.title}
-                                                    onChange={formik.handleChange}
-                                                    onBlur={formik.handleBlur}
-                                                    error={touched?.json?.title && Boolean(errors?.json?.title)}
-                                                />
-                                                {touched?.json?.title && errors?.json?.title && <Typography color="error">{errors.json.title}</Typography>}
+                                                <div className="input__field mb-4 lg:mb-6">
+                                                    <InputLabel className="required">Top Label</InputLabel>
+                                                    <OutlinedInput
+                                                        fullWidth
+                                                        name={`banners.${index}.json.title`}
+                                                        value={banner.json.title}
+                                                        onChange={formik.handleChange}
+                                                        onBlur={formik.handleBlur}
+                                                        error={touched?.json?.title && Boolean(errors?.json?.title)}
+                                                    />
+                                                    {touched?.json?.title && errors?.json?.title && <Typography color="error">{errors.json.title}</Typography>}
 
-                                                <InputLabel className="required">Heading</InputLabel>
-                                                <OutlinedInput
-                                                    fullWidth
-                                                    name={`banners.${index}.json.sub_title`}
-                                                    value={banner.json.sub_title}
-                                                    onChange={formik.handleChange}
-                                                    onBlur={formik.handleBlur}
-                                                    error={touched?.json?.sub_title && Boolean(errors?.json?.sub_title)}
-                                                />
-                                                {touched?.json?.sub_title && errors?.json?.sub_title && <Typography color="error">{errors.json.sub_title}</Typography>}
+                                                </div>
+                                                <div className="input__field">
+                                                    <InputLabel className="required">Heading</InputLabel>
+                                                    <OutlinedInput
+                                                        fullWidth
+                                                        name={`banners.${index}.json.sub_title`}
+                                                        value={banner.json.sub_title}
+                                                        onChange={formik.handleChange}
+                                                        onBlur={formik.handleBlur}
+                                                        error={touched?.json?.sub_title && Boolean(errors?.json?.sub_title)}
+                                                    />
+                                                    {touched?.json?.sub_title && errors?.json?.sub_title && <Typography color="error">{errors.json.sub_title}</Typography>}
+                                                </div>
                                             </div>
 
                                             <div className="col-span-1">
@@ -175,7 +179,7 @@ export default function BannerRoot() {
                                             </div>
                                         </div>
 
-                                        <div className="flex flex-col gap-4 md:grid md:grid-cols-12 md:gap-6 mt-4 lg:mt-6">
+                                        <div className="flex flex-col gap-4 md:grid md:grid-cols-12 md:gap-6 my-4 lg:my-6">
                                             <div className="col-span-6">
                                                 <InputLabel className="required">Button Label</InputLabel>
                                                 <OutlinedInput
@@ -238,7 +242,7 @@ export default function BannerRoot() {
                     )}
                 </FieldArray>
 
-                <Divider className="mt-6" />
+                <Divider className="mt-6!" />
                 <Box className="mt-6 flex justify-end gap-4">
                     <Button onClick={() => formik.resetForm()} variant="contained" color="inherit">Cancel</Button>
                     <Button type="submit" variant="contained" disabled={isLoading}>{isLoading ? "Creating Banner..." : "Create Banner"}</Button>
