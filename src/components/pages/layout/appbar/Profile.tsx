@@ -13,7 +13,9 @@ import {
     useTheme,
 } from "@mui/material";
 import React, { useRef, useState } from "react";
+import { useLogoutMutation } from "../../../../services/authApi";
 import { logout } from "../../../../slice/authSlice";
+import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch, useAppSelector } from "../../../../store/hook";
 import CustomCollapseIcon from "../../../atoms/CustomCollapseIcon";
 
@@ -27,7 +29,7 @@ export default function ProfileMenu() {
     const anchorRef = useRef<HTMLDivElement | null>(null);
 
     const handleToggle = () => setOpen((prev) => !prev);
-
+    const [serverLogout] = useLogoutMutation();
     const handleClose = (event: Event | React.SyntheticEvent) => {
         if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
             return;
@@ -42,11 +44,19 @@ export default function ProfileMenu() {
 
 
     const onMyAccount = () => {
-        // Handle My Account action
     }
 
     const onLogout = async () => {
-        dispatch(logout())
+        try {
+            await serverLogout();
+            dispatch(logout())
+        }
+        catch (e: any) {
+            dispatch(showToast({
+                message: e?.data?.message || "Unable to logout",
+                severity: "error"
+            }))
+        }
     }
     return (
         <>

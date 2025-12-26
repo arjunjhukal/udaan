@@ -1,10 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "./baseQuery";
 import type {
+	GlobalResponse,
 	LoginUserProps,
 	RegisterUserProps,
 	UserResponse,
 } from "../types/user";
+import { baseQuery } from "./baseQuery";
 
 export const authApi = createApi({
 	reducerPath: "authApi",
@@ -24,7 +25,15 @@ export const authApi = createApi({
 				body,
 			}),
 		}),
+		logout: builder.mutation<GlobalResponse, void>(
+			{
+				query: () => ({
+					url: "/admin/auth/logout",
+					method: "POST",
+				})
+			}
+		)
 	}),
 });
 
-export const { useRegisterMutation, useLoginMutation } = authApi;
+export const { useRegisterMutation, useLoginMutation, useLogoutMutation } = authApi;
