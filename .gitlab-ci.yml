@@ -3,23 +3,16 @@ stages:
   - build
   - deploy
 
-# Global variables
 variables:
   NODE_ENV: production
   DEPLOY_PATH: /var/www/udaan
 
-# Cache node modules (same idea as GitHub cache)
 cache:
-  key:
-    files:
-      - package-lock.json
+  key: "node-modules-${CI_COMMIT_REF_SLUG}"
   paths:
     - node_modules/
     - .npm/
 
-# ----------------------------
-# INSTALL DEPENDENCIES
-# ----------------------------
 install:
   stage: install
   image: node:20
@@ -28,9 +21,6 @@ install:
   script:
     - npm ci --prefer-offline --no-audit
 
-# ----------------------------
-# BUILD + LINT
-# ----------------------------
 build:
   stage: build
   image: node:20
@@ -46,9 +36,6 @@ build:
       - dist/
     expire_in: 1 hour
 
-# ----------------------------
-# DEPLOY TO SERVER
-# ----------------------------
 deploy:
   stage: deploy
   image: alpine:latest
@@ -68,51 +55,10 @@ deploy:
     - |
       if [ "$CI_JOB_STATUS" = "success" ]; then
         curl -X POST -H "Content-Type: application/json" \
-        --data '{
-          "text": "✅ Deployment Successful!",
-          "blocks": [
-            {
-              "type": "header",
-              "text": { "type": "plain_text", "text": "✅ Deployment Successful" }
-            },
-            {
-              "type": "section",
-              "fields": [
-                { "type": "mrkdwn", "text": "*Repository:*\n'"$CI_PROJECT_PATH"'" },
-                { "type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_REF_NAME"'" },
-                { "type": "mrkdwn", "text": "*Commit:*\n'"$CI_COMMIT_SHA"'" },
-                { "type": "mrkdwn", "text": "*Author:*\n'"$GITLAB_USER_NAME"'" }
-              ]
-            },
-            {
-              "type": "section",
-              "text": { "type": "mrkdwn", "text": "*Message:*\n'"$CI_COMMIT_MESSAGE"'" }
-            }
-          ]
-        }' $SLACK_WEBHOOK_URL
+        --data '{"text":"✅ Deployment Successful!"}' \
+        $SLACK_WEBHOOK_URL
       else
         curl -X POST -H "Content-Type: application/json" \
-        --data '{
-          "text": "❌ Deployment Failed!",
-          "blocks": [
-            {
-              "type": "header",
-              "text": { "type": "plain_text", "text": "❌ Deployment Failed" }
-            },
-            {
-              "type": "section",
-              "fields": [
-                { "type": "mrkdwn", "text": "*Repository:*\n'"$CI_PROJECT_PATH"'" },
-                { "type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_REF_NAME"'" }
-              ]
-            },
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "*Action:*\n'"$CI_PIPELINE_URL"'"
-              }
-            }
-          ]
-        }' $SLACK_WEBHOOK_URL
+        --data '{"text":"❌ Deployment Failed!"}' \
+        $SLACK_WEBHOOK_URL
       fi
