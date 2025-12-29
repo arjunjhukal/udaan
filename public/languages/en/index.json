@@ -106,6 +106,14 @@
         "change_password": "Change Password",
         "linked_devices": "Linked Devices",
         "app_settings": "App Settings",
+        "sn": "S.No",
+        "course_name": "Course Name",
+        "course_type": "Course Type",
+        "price": "Price",
+        "subjects": "Subjects",
+        "created_at": "Created At",
+        "actions": "Actions",
+        "filter": "Filter",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",
@@ -187,6 +195,7 @@
         "cancel": "Cancel",
         "suspend": "Suspend",
         "unsuspend": "Un Suspend",
-        "view_file": "View Attachment"
+        "view_file": "View Attachment",
+        "clone": "Clone"
     }
 }

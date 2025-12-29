@@ -76,6 +76,15 @@ export const courseApi = createApi({
                 { type: "Course", id: "LIST" }
             ],
         }),
+        cloneCourse: builder.mutation<GlobalResponse, { id: number }>({
+            query: ({ id }) => ({
+                url: `/admin/course/${id}/clone`,
+                method: "POST",
+            }),
+            invalidatesTags: (_result, _error,) => [
+                { type: "Course", id: "LIST" }
+            ],
+        }),
         addCurriculum: builder.mutation<GlobalResponse, { body: CurriculumProps, id: number, type: CurriculumType }>({
             query: ({ body, id, type }) => ({
                 url: `/admin/course/curriculum/${id}?type=${type}`,
@@ -211,6 +220,7 @@ export const {
     useEditCourseMutation,
     useGetCourseByIdQuery,
     useDeleteCourseMutation,
+    useCloneCourseMutation,
     useAddCurriculumMutation,
     useGetAllCurriculumQuery,
     useGetCourseCurriculumByIdQuery,

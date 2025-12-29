@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import { PATH } from "../../../../../routes/PATH";
-import { useDeleteCourseMutation, useGetAllCourseQuery } from "../../../../../services/courseApi";
+import { useCloneCourseMutation, useDeleteCourseMutation, useGetAllCourseQuery } from "../../../../../services/courseApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import { useCourseFilter } from "../../../../../store/useCourseFilter";
@@ -36,7 +36,7 @@ export default function AllCourse() {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [coursesToDelete, setCoursesToDelete] = useState<string[]>([]);
     const [layout, setLayout] = useState<LayoutProps>("table");
-
+    const [cloneCourse] = useCloneCourseMutation();
     const {
         selections,
         megaCategories,
@@ -125,6 +125,7 @@ export default function AllCourse() {
         }
     }
 
+
     const columns = useMemo<ColumnDef<CourseProps>[]>(() => [
         {
             header: () => (
@@ -207,6 +208,25 @@ export default function AllCourse() {
                     onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}`)}
                     onView={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}`)}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
+                    onClone={async () => {
+                        try {
+                            const response = await cloneCourse({ id: Number(row.original.id) }).unwrap();
+                            dispatch(
+                                showToast({
+                                    message: response?.message || "Course Cloned Successfully",
+                                    severity: "success"
+                                })
+                            )
+                        }
+                        catch (e: any) {
+                            dispatch(
+                                showToast({
+                                    message: e?.data?.message || "Unable to Clone Course",
+                                    severity: "error"
+                                })
+                            )
+                        }
+                    }}
                 />
             ),
         },

@@ -183,10 +183,10 @@ export default function AllCategories() {
             <PageHeader
                 breadcrumb={[
                     {
-                        title: "Category & Level / Position ",
+                        title: t("menus.category_level_management.root"),
                         url: PATH.CATEGORY_LEVEL_MANAGEMENT.ROOT,
                     },
-                    { title: "Category" },
+                    { title: t("menus.category_level_management.category.root") },
                 ]}
             />
 

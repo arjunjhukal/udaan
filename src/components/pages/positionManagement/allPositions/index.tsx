@@ -160,10 +160,10 @@ export default function AllPositions() {
             <PageHeader
                 breadcrumb={[
                     {
-                        title: "Category & Level / Position ",
+                        title: t("menus.category_level_management.root"),
                         url: PATH.CATEGORY_LEVEL_MANAGEMENT.ROOT,
                     },
-                    { title: "Level / Position" },
+                    { title: t("menus.category_level_management.level_position.root"), },
                 ]}
             />
             <div className="category__wrapper flex flex-col gap-8.5 md:grid md:grid-cols-12">

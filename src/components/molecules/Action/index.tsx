@@ -11,6 +11,7 @@ import {
     Paper,
     Popper
 } from "@mui/material";
+import { Copy } from "iconsax-reactjs";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { showAttachment } from "../../../slice/attachmentSlice";
@@ -23,11 +24,12 @@ interface Props {
     onView: () => void;
     deleting?: boolean;
     onSuspend?: () => void;
+    onClone?: () => void;
     userStatus?: boolean;
     file?: string;
 }
 
-export default function Actions({ onEdit, onDelete, onView, deleting = false, onSuspend, userStatus, file }: Props) {
+export default function Actions({ onEdit, onDelete, onView, deleting = false, onSuspend, userStatus, file, onClone }: Props) {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLButtonElement | null>(null);
@@ -168,6 +170,17 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
 
                                             </ListItemIcon>
                                             <ListItemText primary={!userStatus ? t("actions.suspend") : t("actions.unsuspend")} />
+                                        </ListItemButton>
+                                    </ListItem> : ""}
+                                    {onClone ? <ListItem className="menu__item action__item suspend__item">
+                                        <ListItemButton sx={{
+                                            m: 0,
+                                            border: "none"
+                                        }} onClick={() => handleMenuClick(onClone)}>
+                                            <ListItemIcon>
+                                                <Copy />
+                                            </ListItemIcon>
+                                            <ListItemText primary={t("actions.clone")} />
                                         </ListItemButton>
                                     </ListItem> : ""}
                                     {file ? <ListItem className="menu__item action__item view__item">

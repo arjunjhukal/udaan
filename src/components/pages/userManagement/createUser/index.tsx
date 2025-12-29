@@ -1,14 +1,16 @@
-import { PATH } from '../../../../routes/PATH'
-import PageHeader from '../../../organism/PageHeader'
-import UserManagementForm from '../UserManagementForm'
+import { useTranslation } from 'react-i18next';
+import { PATH } from '../../../../routes/PATH';
+import PageHeader from '../../../organism/PageHeader';
+import UserManagementForm from '../UserManagementForm';
 
 export default function CreateUser() {
+    const { t } = useTranslation();
     return (
         <div className="create__user__root">
             <PageHeader
                 breadcrumb={[
                     {
-                        title: "User Management",
+                        title: t("menus.user_management.root"),
                         icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9 2C6.38 2 4.25 4.13 4.25 6.75C4.25 9.32 6.26 11.4 8.88 11.49C8.96 11.48 9.04 11.48 9.1 11.49C9.12 11.49 9.13 11.49 9.15 11.49C9.16 11.49 9.16 11.49 9.17 11.49C11.73 11.4 13.74 9.32 13.75 6.75C13.75 4.13 11.62 2 9 2Z" fill="#1D82F5" />
                             <path d="M14.08 14.1499C11.29 12.2899 6.73999 12.2899 3.92999 14.1499C2.65999 14.9999 1.95999 16.1499 1.95999 17.3799C1.95999 18.6099 2.65999 19.7499 3.91999 20.5899C5.31999 21.5299 7.15999 21.9999 8.99999 21.9999C10.84 21.9999 12.68 21.5299 14.08 20.5899C15.34 19.7399 16.04 18.5999 16.04 17.3599C16.03 16.1299 15.34 14.9899 14.08 14.1499Z" fill="#1D82F5" />
@@ -18,7 +20,7 @@ export default function CreateUser() {
                         url: PATH.USER_MANAGEMENT.ROOT
                     },
                     {
-                        title: "Create User",
+                        title: t("menus.user_management.create_user"),
                     },
                 ]}
 
