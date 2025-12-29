@@ -10,9 +10,19 @@ export const questionApi = createApi({
     baseQuery: baseQuery,
     tagTypes: ["Questions", "Test", "Results"],
     endpoints: (builder) => ({
-        uploadQuestionPaper: builder.mutation<GlobalResponse, { body: FormData }>({
+        uploadQuestionPaper: builder.mutation<GlobalResponse & {
+            data: QuestionProps[]
+        }, { body: FormData }>({
             query: ({ body }) => ({
-                url: `admin/questions`,
+                url: `admin/questions/file`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: [{ type: "Questions", id: "LIST" }]
+        }),
+        saveUploadedQuestions: builder.mutation<GlobalResponse, { question: any[] }>({
+            query: (body) => ({
+                url: `admin/questions/import`,
                 method: "POST",
                 body
             }),
@@ -226,6 +236,7 @@ export const questionApi = createApi({
 
 export const {
     useUploadQuestionPaperMutation,
+    useSaveUploadedQuestionsMutation,
     useEditOrCreateQuestionMutation,
     useGetAllQuestionQuery,
     useGetQuestionByIdQuery,

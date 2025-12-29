@@ -30,7 +30,6 @@ export default function QuestionManagementRoot() {
                 }
                 handleOpenPopup={() => setOpen(true)}
             />
-            {/* <PDFQuestionExtractor /> */}
             <AllQuestionListing open={open} setOpen={setOpen} />
 
         </div>

@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, useTheme } from "@mui/material";
 import { useState } from "react";
 import type { QuestionProps } from "../../../../types/question";
-import MediaFileDragDrop from "../../../molecules/MediaFileDragDrop";
+import ImportQuestion from "../../../molecules/ImportQuestion";
 import TabController from "../../../molecules/TabController";
 import QuestionManagementForm from "./QuestionManagementForm";
 
@@ -56,7 +56,7 @@ export default function QuestionManagementModal({ open, setOpen, editData }: Pro
                 )}
 
                 {activeTab === "upload" && !editData && (
-                    <MediaFileDragDrop type="notes" maxSize={20} />
+                    <ImportQuestion maxSize={20} onClose={handleClose} />
                 )}
 
                 {(activeTab === "add" || editData) && (
