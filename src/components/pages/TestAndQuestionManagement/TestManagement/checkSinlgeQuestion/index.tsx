@@ -258,7 +258,7 @@ export default function SingleStudentSingleQuestion() {
                                 onClick={handleNext}
                                 disabled={isLoading}
                             >
-                                {isLoading ? 'Submitting...' : (isLastQuestion ? 'Submit Result' : 'Next Question')}
+                                {isLoading ? 'Submitting...' : (isLastQuestion ? 'Submit Result' : ' Save & Next Question')}
                             </Button>
                         </div>
                     </div>
