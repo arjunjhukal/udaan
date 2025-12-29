@@ -75,3 +75,28 @@ export const WelcomePopupInitialState: WelcomePopupProps = {
     image: null,
     image_url: ""
 }
+
+export interface OnBoardingProps {
+    page_id?: string;
+    icon: File | null;
+    icon_url?: string;
+    title: string;
+    description: string;
+    layout: "square" | "wide";
+    items: OnBoardingCardsProps[]
+}
+export interface OnBoardingCardsProps {
+    icon: File | null;
+    icon_url?: string;
+    title: string;
+    description: string;
+}
+
+
+export interface SplashProps {
+    splash_heading: string;
+    splash_sub_heading: string;
+    splash_icon: File | null;
+    splash_icon_url?: string;
+}
+

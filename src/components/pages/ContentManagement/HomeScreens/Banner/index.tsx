@@ -201,7 +201,7 @@ export default function BannerRoot() {
                                                     value={banner.json.notifiable_type || undefined}
                                                     onChange={(_, newValue) => formik.setFieldValue(`banners.${index}.json.notifiable_type`, newValue ?? undefined)}
                                                     onBlur={formik.handleBlur}
-                                                    getOptionLabel={(option) => option.replace(/_/g, ' ').toUpperCase()}
+                                                    getOptionLabel={(option) => option.replace(/_/g, ' ')}
                                                     isOptionEqualToValue={(option, value) => option === value}
                                                     renderInput={(params) => (
                                                         <TextField {...params} placeholder="Select Type" error={touched?.json?.notifiable_type && Boolean(errors?.json?.notifiable_type)} />

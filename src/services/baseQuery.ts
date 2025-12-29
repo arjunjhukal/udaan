@@ -23,7 +23,7 @@ import type {
 	FetchBaseQueryError,
 } from "@reduxjs/toolkit/query";
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { showSessionExpired } from "../slice/sessionSlice";
+import { logout } from "../slice/authSlice";
 import type { RootState } from "../store/store";
 
 const baseQueryConfig = fetchBaseQuery({
@@ -48,15 +48,9 @@ export const baseQuery: BaseQueryFn<
 	const result = await baseQueryConfig(args, api, extraOptions);
 
 	if (result.error && result.error.status === 401) {
-		const state = api.getState() as RootState;
-
-		if (!state.session?.showSessionExpiredPopup) {
-			api.dispatch(
-				showSessionExpired(
-					"Your session has expired due to a login from another device. Please verify it's you to continue."
-				)
-			);
-		}
+		api.dispatch(
+			logout()
+		)
 	}
 
 	return result;

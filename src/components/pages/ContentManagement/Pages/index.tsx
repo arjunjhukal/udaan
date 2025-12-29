@@ -16,7 +16,7 @@ export default function PagesRoot() {
                     <Typography variant="subtitle2" color="text.middle">{t("menus.content_management.pages.message")}</Typography>
                 </div>
                 <Button
-                 variant="contained"
+                    variant="contained"
                     onClick={() => navigate(PATH.CONTENT_MANAGEMENT.PAGES.CREATE_PAGE.ROOT)}
                     startIcon={<Add />}>Create Page</Button>
             </div>

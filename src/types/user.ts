@@ -17,6 +17,7 @@ export interface RegisterUserProps {
 	profile_url: string;
 	designation: string;
 	is_suspended?: boolean
+	address?: string;
 }
 
 export const RegisterUserInitialData = {

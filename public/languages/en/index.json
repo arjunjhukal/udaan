@@ -63,10 +63,12 @@
         "content_management": {
             "root": "Content Management",
             "splash_screen": {
-                "root": "Splash Screen"
+                "root": "Splash Screen",
+                "message": "Edit your splash screen design to create a strong and consistent first impression."
             },
             "onboarding_screen": {
-                "root": "Onboarding Screen"
+                "root": "Onboarding Screen",
+                "message": "Edit your onboarding screen design to create a strong and consistent first impression."
             },
             "home_screen": {
                 "root": "Home Screen",

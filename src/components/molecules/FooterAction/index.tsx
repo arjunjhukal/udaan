@@ -1,10 +1,12 @@
 import { Box, Button, Typography, useTheme } from "@mui/material";
+import { replace } from "react-router-dom";
 
 interface FooterActionProps {
-    handleConfirmationChange: () => void;
+    handleConfirmationChange?: () => void;
     isLoading?: boolean;
     isUpdating?: boolean;
     isEditMode?: boolean;
+    replaceLabel?: string;
     buttonLabel?: string;
 }
 
@@ -13,7 +15,8 @@ export default function FooterAction({
     isLoading = false,
     isUpdating = false,
     isEditMode = false,
-    buttonLabel
+    buttonLabel,
+    replaceLabel
 }: FooterActionProps) {
     const theme = useTheme();
 
@@ -44,7 +47,7 @@ export default function FooterAction({
                 type="submit"
                 disabled={isLoading || isUpdating}
             >
-                <Typography variant="body2">
+                {!replace ? <Typography variant="body2">
                     {isEditMode
                         ? isUpdating
                             ? `Updating ${buttonLabel}`
@@ -52,7 +55,9 @@ export default function FooterAction({
                         : isLoading
                             ? `Creating ${buttonLabel}`
                             : `Create ${buttonLabel}`}
-                </Typography>
+                </Typography> : <Typography variant="subtitle2">
+                    {replaceLabel}
+                </Typography>}
             </Button>
         </Box>
     );
