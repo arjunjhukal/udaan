@@ -2,9 +2,11 @@ stages:
   - install
   - build
   - deploy
+
 default:
   tags:
     - dev
+
 variables:
   NODE_ENV: production
   DEPLOY_PATH: /var/www/udaan
@@ -15,9 +17,6 @@ cache:
     - node_modules/
     - .npm/
 
-# ----------------------------
-# INSTALL DEPENDENCIES
-# ----------------------------
 install:
   stage: install
   image: node:20
@@ -26,9 +25,6 @@ install:
   script:
     - npm ci --prefer-offline --no-audit
 
-# ----------------------------
-# BUILD + LINT
-# ----------------------------
 build:
   stage: build
   image: node:20
@@ -42,9 +38,6 @@ build:
       - dist/
     expire_in: 1 hour
 
-# ----------------------------
-# DEPLOY TO SERVER
-# ----------------------------
 deploy:
   stage: deploy
   image: alpine:latest
