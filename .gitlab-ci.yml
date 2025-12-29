@@ -2,7 +2,9 @@ stages:
   - install
   - build
   - deploy
-
+default:
+  tags:
+    - dev
 variables:
   NODE_ENV: production
   DEPLOY_PATH: /var/www/udaan
