@@ -1,0 +1,118 @@
+stages:
+  - install
+  - build
+  - deploy
+
+# Global variables
+variables:
+  NODE_ENV: production
+  DEPLOY_PATH: /var/www/udaan
+
+# Cache node modules (same idea as GitHub cache)
+cache:
+  key:
+    files:
+      - package-lock.json
+  paths:
+    - node_modules/
+    - .npm/
+
+# ----------------------------
+# INSTALL DEPENDENCIES
+# ----------------------------
+install:
+  stage: install
+  image: node:20
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+  script:
+    - npm ci --prefer-offline --no-audit
+
+# ----------------------------
+# BUILD + LINT
+# ----------------------------
+build:
+  stage: build
+  image: node:20
+  needs:
+    - install
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+  script:
+    - npm run lint
+    - VITE_API_BASE_URL=$VITE_API_BASE_URL npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+
+# ----------------------------
+# DEPLOY TO SERVER
+# ----------------------------
+deploy:
+  stage: deploy
+  image: alpine:latest
+  needs:
+    - build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "dev"'
+  before_script:
+    - apk add --no-cache rsync openssh curl
+    - mkdir -p ~/.ssh
+    - echo "$SERVER_SSH_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $SERVER_HOST >> ~/.ssh/known_hosts
+  script:
+    - rsync -avz --delete dist/ $SERVER_USER@$SERVER_HOST:$DEPLOY_PATH
+  after_script:
+    - |
+      if [ "$CI_JOB_STATUS" = "success" ]; then
+        curl -X POST -H "Content-Type: application/json" \
+        --data '{
+          "text": "✅ Deployment Successful!",
+          "blocks": [
+            {
+              "type": "header",
+              "text": { "type": "plain_text", "text": "✅ Deployment Successful" }
+            },
+            {
+              "type": "section",
+              "fields": [
+                { "type": "mrkdwn", "text": "*Repository:*\n'"$CI_PROJECT_PATH"'" },
+                { "type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_REF_NAME"'" },
+                { "type": "mrkdwn", "text": "*Commit:*\n'"$CI_COMMIT_SHA"'" },
+                { "type": "mrkdwn", "text": "*Author:*\n'"$GITLAB_USER_NAME"'" }
+              ]
+            },
+            {
+              "type": "section",
+              "text": { "type": "mrkdwn", "text": "*Message:*\n'"$CI_COMMIT_MESSAGE"'" }
+            }
+          ]
+        }' $SLACK_WEBHOOK_URL
+      else
+        curl -X POST -H "Content-Type: application/json" \
+        --data '{
+          "text": "❌ Deployment Failed!",
+          "blocks": [
+            {
+              "type": "header",
+              "text": { "type": "plain_text", "text": "❌ Deployment Failed" }
+            },
+            {
+              "type": "section",
+              "fields": [
+                { "type": "mrkdwn", "text": "*Repository:*\n'"$CI_PROJECT_PATH"'" },
+                { "type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_REF_NAME"'" }
+              ]
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Action:*\n'"$CI_PIPELINE_URL"'"
+              }
+            }
+          ]
+        }' $SLACK_WEBHOOK_URL
+      fi
