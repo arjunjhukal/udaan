@@ -9,7 +9,8 @@ import {
     ListItemIcon,
     ListItemText,
     Paper,
-    Popper
+    Popper,
+    useTheme
 } from "@mui/material";
 import { Copy } from "iconsax-reactjs";
 import { useRef, useState } from "react";
@@ -34,6 +35,7 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLButtonElement | null>(null);
     const { t } = useTranslation();
+    const theme = useTheme();
 
     const handleToggle = () => setOpen((prev) => !prev);
 
@@ -178,7 +180,7 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
                                             border: "none"
                                         }} onClick={() => handleMenuClick(onClone)}>
                                             <ListItemIcon>
-                                                <Copy />
+                                                <Copy size={20} color={theme.palette.separator.darker} />
                                             </ListItemIcon>
                                             <ListItemText primary={t("actions.clone")} />
                                         </ListItemButton>

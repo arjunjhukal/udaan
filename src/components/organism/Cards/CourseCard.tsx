@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { PATH } from '../../../routes/PATH';
 import type { CourseProps } from '../../../types/course';
 import Actions from '../../molecules/Action';
-export default function CourseCard({ course, onDelete }: { course: CourseProps, onDelete: (selectedRoleIds: string[]) => void; }) {
+export default function CourseCard({ course, onDelete, onClone }: {
+    course: CourseProps, onDelete: (selectedRoleIds: string[]) => void; onClone?: (id: number) => void;
+}) {
     const theme = useTheme();
     const navigate = useNavigate();
 
@@ -20,6 +22,7 @@ export default function CourseCard({ course, onDelete }: { course: CourseProps, 
                         onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}
                         onView={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}
                         onDelete={() => onDelete([course.id?.toString() || ""])}
+                        onClone={() => onClone && onClone(Number(course?.id))}
                     />
                 </div>
 

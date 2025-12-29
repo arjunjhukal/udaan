@@ -125,6 +125,25 @@ export default function AllCourse() {
         }
     }
 
+    const handleCourseClone = async (id: number) => {
+        try {
+            const response = await cloneCourse({ id }).unwrap();
+            dispatch(
+                showToast({
+                    message: response?.message || "Course Cloned Successfully",
+                    severity: "success"
+                })
+            )
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to Clone Course",
+                    severity: "error"
+                })
+            )
+        }
+    }
 
     const columns = useMemo<ColumnDef<CourseProps>[]>(() => [
         {
@@ -208,25 +227,7 @@ export default function AllCourse() {
                     onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}`)}
                     onView={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}`)}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
-                    onClone={async () => {
-                        try {
-                            const response = await cloneCourse({ id: Number(row.original.id) }).unwrap();
-                            dispatch(
-                                showToast({
-                                    message: response?.message || "Course Cloned Successfully",
-                                    severity: "success"
-                                })
-                            )
-                        }
-                        catch (e: any) {
-                            dispatch(
-                                showToast({
-                                    message: e?.data?.message || "Unable to Clone Course",
-                                    severity: "error"
-                                })
-                            )
-                        }
-                    }}
+                    onClone={() => handleCourseClone(Number(row.original.id))}
                 />
             ),
         },
@@ -277,6 +278,7 @@ export default function AllCourse() {
                             <AllCourseGrid
                                 data={courses}
                                 onDelete={openDeleteConfirmation}
+                                onClone={handleCourseClone}
                             />}
                         <TablePagination
                             qp={qp}
