@@ -653,7 +653,7 @@ export default function NotificationManagementForm() {
                 handleConfirmationChange={() => { }}
                 isEditMode={!!id}
                 isLoading={creatingNotification || updatingNotification}
-                buttonLabel="Notification"
+                replaceLabel={isLoading ? "Creating Notification..." : "Create Notification"}
             />
         </form>
     )

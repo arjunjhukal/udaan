@@ -284,7 +284,7 @@ export default function CurriculumFormWithMedia({
                             isLoading={isLoading}
                             isEditMode={!!selectedCurriculum?.id}
                             handleConfirmationChange={handleClose}
-                            buttonLabel={"Curriculum"}
+                            replaceLabel={isLoading ? "Creating Curriculum..." : "Create Curriculum"}
                         />
                     </form>
                 </DialogContent>

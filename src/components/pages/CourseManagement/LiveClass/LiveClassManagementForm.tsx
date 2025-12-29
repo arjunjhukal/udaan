@@ -621,7 +621,7 @@ export default function LiveClassManagementForm() {
 
                 <FooterAction
                     handleConfirmationChange={() => navigate(-1)}
-                    buttonLabel={id ? " Live Class" : " Live Class"}
+                    replaceLabel={isLoading ? "Creating Live Class..." : "Create Live Class"}
                     isLoading={isLoading}
                     isEditMode={!!id}
                     isUpdating={updating}

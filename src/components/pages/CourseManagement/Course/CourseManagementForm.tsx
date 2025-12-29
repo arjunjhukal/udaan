@@ -447,7 +447,7 @@ export default function CourseManagementForm() {
                     isLoading={isLoading}
                     isUpdating={updating}
                     isEditMode={!!id}
-                    buttonLabel="Course"
+                    replaceLabel={isLoading ? "Creating Course..." : "Create Course"}
                 />
             </form >
         </div >

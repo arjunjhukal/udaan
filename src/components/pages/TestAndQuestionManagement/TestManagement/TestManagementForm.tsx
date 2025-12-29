@@ -493,7 +493,8 @@ export default function TestManagementForm() {
                 isLoading={creatingTest}
                 isUpdating={creatingTest}
                 isEditMode={!id}
-                buttonLabel={"Test"}
+                replaceLabel={creatingTest ? "Creating Test..." : "Create Test"}
+
             />
         </form>
     );

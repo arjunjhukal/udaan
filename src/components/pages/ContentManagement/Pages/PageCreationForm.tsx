@@ -133,7 +133,7 @@ export default function PageCreationForm() {
                 isEditMode={!!id}
                 isLoading={isLoading}
                 isUpdating={isLoading}
-                buttonLabel='Page'
+                replaceLabel={isLoading ? "Creating Page..." : "Create Page"}
             />
         </form>
     );

@@ -108,9 +108,9 @@ const DetailItem = ({
 };
 
 export default function CheckTestPaperRoot({ type }: { type?: string }) {
-	const { id, resultId } = useParams();
 	const navigate = useNavigate();
 	const theme = useTheme();
+	const { id, resultId } = useParams();
 	const { data } = useGetQuestionsListInTestQuery({
 		id: Number(id),
 		resultId: Number(resultId)

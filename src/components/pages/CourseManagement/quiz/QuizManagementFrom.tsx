@@ -16,7 +16,7 @@ export default function QuizManagementFrom({ open, setOpen }: Props) {
                     isLoading={false}
                     isUpdating={false}
                     isEditMode={false}
-                    buttonLabel="Quiz"
+                    replaceLabel={"Create Quiz"}
                 />
             </DialogContent>
         </Dialog>
