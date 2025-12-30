@@ -650,7 +650,7 @@ export default function NotificationManagementForm() {
             </div>
             {/* SCHEDULE NOTIFICATION START HERE */}
             <FooterAction
-                handleConfirmationChange={() => { }}
+                handleConfirmationChange={() => navigate(-1)}
                 isEditMode={!!id}
                 isLoading={creatingNotification || updatingNotification}
                 replaceLabel={isLoading ? "Creating Notification..." : "Create Notification"}

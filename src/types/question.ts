@@ -158,20 +158,7 @@ export const testValidationSchema = Yup.object().shape({
     pass_mark: Yup.number()
         .min(0, "Pass marks must be at least 0")
         .required("Pass marks is required"),
-    // .test(
-    //     "pass-marks-validation",
-    //     "Pass marks cannot exceed total possible marks",
-    //     function (value) {
-    //         const { test_type, full_marks, marks_per_question, total_questions } = this.parent;
 
-    //         const totalMarks =
-    //             test_type === "mcq"
-    //                 ? (marks_per_question || 0) * (total_questions || 0)
-    //                 : (full_marks || 0);
-
-    //         return value <= totalMarks;
-    //     }
-    // ),
 
     is_scheduled: Yup.boolean().default(false).required(),
     start_datetime: Yup.string().when("is_scheduled", { is: true, then: (schema) => schema.required("Start date & time is required"), otherwise: (schema) => schema.notRequired() }),

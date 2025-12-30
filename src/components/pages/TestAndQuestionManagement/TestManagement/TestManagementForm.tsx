@@ -103,6 +103,8 @@ export default function TestManagementForm() {
         }
     });
 
+    console.log(formik.errors)
+
     const categoryFilter = getCategoryFilterParams();
     const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });
     const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp, type: formik.values.test_type });
@@ -481,9 +483,9 @@ export default function TestManagementForm() {
                             itemIdKey="id"
                             placeholder="Search questions..."
                         />
-                        {/* {formik.touched.question_ids && formik.errors.question_ids && (
+                        {formik.touched.question_ids && formik.errors.question_ids && (
                             <FormHelperText error>{formik.errors.question_ids}</FormHelperText>
-                        )} */}
+                        )}
                     </div>
                 </div>
             </div>
