@@ -8,6 +8,7 @@ import {
     ListItemIcon,
     ListItemText
 } from "@mui/material";
+import { Brodcast } from "iconsax-reactjs";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -341,6 +342,18 @@ export default function PrimaryMenu() {
                                 </svg>
                             </ListItemIcon>
                             <ListItemText primary={t("messages.settings")} />
+                        </ListItemButton>
+                    </ListItem>
+                </CAN>
+                <CAN permissions={["add_activity_logs", "edit_activity_logs", "delete_activity_logs", "view_activity_logs"]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => navigate(PATH.ACTIVITY_LOG.ROOT)}
+                            className={location.pathname.startsWith(PATH.ACTIVITY_LOG.ROOT) ? "active" : ""}>
+                            <ListItemIcon>
+                                <Brodcast />
+                            </ListItemIcon>
+                            <ListItemText primary={t("messages.activity_log")} />
                         </ListItemButton>
                     </ListItem>
                 </CAN>

@@ -5,6 +5,7 @@ import App from "../App";
 import CategoryManagementRoot from "../components/pages/CategoryManagement";
 import AllCategories from "../components/pages/CategoryManagement/allCategory";
 
+import ActivityRoot from "../components/pages/ActivityLog";
 import ContentManagementRoot from "../components/pages/ContentManagement";
 import HomeScreens from "../components/pages/ContentManagement/HomeScreens";
 import BannerRoot from "../components/pages/ContentManagement/HomeScreens/Banner";
@@ -216,6 +217,10 @@ const router = createBrowserRouter([
 					{ path: PATH.SETTINGS.LINKED_DEVICE.ROOT, element: <LinkedDevices /> },
 					{ path: PATH.SETTINGS.APP_SETTINGS.ROOT, element: <AppSettingRoot /> },
 				]
+			},
+			{
+				path: PATH.ACTIVITY_LOG.ROOT,
+				element: <ActivityRoot />
 			}
 		],
 	},

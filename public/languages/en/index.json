@@ -114,6 +114,7 @@
         "created_at": "Created At",
         "actions": "Actions",
         "filter": "Filter",
+        "activity_log": "Activity Log",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",

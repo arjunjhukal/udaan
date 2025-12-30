@@ -169,5 +169,8 @@ export const PATH = {
 		APP_SETTINGS: {
 			ROOT: "/settings/app-settings"
 		}
+	},
+	ACTIVITY_LOG: {
+		ROOT: "/activity-log"
 	}
 };
