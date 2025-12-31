@@ -37,7 +37,7 @@ export default function CourseType({ formik }: Props) {
 
     return (
         <div className="course__type__wrapper">
-            <div className="grid grid-cols-12 gap-4">
+            <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4">
                 <div className="col-span-4">
                     <Typography variant="h4" className="mb-1!">
                         Course Type

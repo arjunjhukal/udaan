@@ -10,13 +10,13 @@ export default function CourseCard({ course, onDelete, onClone }: {
     const navigate = useNavigate();
 
     return (
-        <Box className="course__card rounded-md"
+        <Box className="course__card rounded-md overflow-hidden"
             sx={{
                 border: `1px solid ${theme.palette.separator.dark}`
             }}
         >
             <div className="course_card_image aspect-347/128 relative">
-                <img src={course.thumbnail_url || "/fallback.png"} alt="Course" className="w-full h-full object-contain" />
+                <img src={course.thumbnail_url || "/fallback.png"} alt="Course" className="w-full h-full object-cover" />
                 <div className="absolute! top-2.5 right-2.5">
                     <Actions
                         onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}

@@ -183,8 +183,9 @@ export default function TestManagementForm() {
     };
 
     return (
-        <form onSubmit={formik.handleSubmit}>
-            <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
+        <form onSubmit={formik.handleSubmit} className="flex flex-col h-full justify-between overflow-auto">
+            <Box className="flex flex-col gap-6 md:grid md:grid-cols-2 overflow-auto" sx={{
+            }}>
                 <div className="col-span-2">
                     <StyledToggleButtons
                         leftLabel="MCQ"
@@ -486,7 +487,7 @@ export default function TestManagementForm() {
                         )}
                     </div>
                 </div>
-            </div>
+            </Box>
 
             <FooterAction
                 handleConfirmationChange={() => { }}
