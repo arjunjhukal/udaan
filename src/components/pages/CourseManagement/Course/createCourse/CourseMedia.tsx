@@ -1,12 +1,13 @@
-import { Box, Skeleton } from "@mui/material";
-import React from "react";
-import { useAddCourseMediaByTypeMutation, useGetCourseMediaByTypeQuery } from "../../../../../services/courseApi";
+import { Box, Checkbox, Skeleton } from "@mui/material";
+import React, { useState } from "react";
+import { useAddCourseMediaByTypeMutation, useGetCourseMediaByTypeQuery, useRemoveCourseMediaByTypeMutation } from "../../../../../services/courseApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import SelectFromMedia from "../../../../molecules/MediaFileDragDrop/SelectFromMedia";
 import MediaCard from "../../../../organism/Cards/MediaCard";
 import EmptyRoute from "../../../../organism/EmptyRoute";
 import PageHeader from "../../../../organism/PageHeader";
+import TableFilter from "../../../../organism/TableFilter";
 
 type MediaType = "audios" | "notes" | "videos";
 
@@ -66,14 +67,15 @@ const mediaConfigs: Record<MediaType, MediaConfig> = {
 interface Props {
     type: MediaType;
     id?: string;
+    allowMultiple?: boolean;
 }
 
-export default function CourseMedia({ type, id }: Props) {
+export default function CourseMedia({ type, id, allowMultiple = true }: Props) {
     const dispatch = useAppDispatch();
 
     const [open, setOpen] = React.useState(false);
-
-
+    const [search, setSearch] = useState("");
+    const [selectedItems, setSelectedItems] = React.useState<Set<number>>(new Set());
     const config = mediaConfigs[type];
 
     const handleMediaAddition = () => {
@@ -81,9 +83,8 @@ export default function CourseMedia({ type, id }: Props) {
     };
     const { data, isLoading } = useGetCourseMediaByTypeQuery({ type, id: id || null }, { skip: !id || !type });
     const [addMediaToCourse] = useAddCourseMediaByTypeMutation();
-
+    const [removeMediaFromCourse] = useRemoveCourseMediaByTypeMutation();
     const handleMediaAssign = async (ids: number[]) => {
-
         if (!ids.length) {
             return dispatch(
                 showToast({
@@ -111,7 +112,42 @@ export default function CourseMedia({ type, id }: Props) {
         }
     }
 
+    const handleMediaRemoval = async () => {
+        try {
+            const response = await removeMediaFromCourse({ id: id || null, type, body: Array.from(selectedItems) }).unwrap();
+            dispatch(
+                showToast({
+                    message: response?.message || `Successfully removed ${type}`,
+                    severity: "success"
+                })
+            )
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || `Unable to remove ${type}`,
+                    severity: "error"
+                })
+            )
+        }
+    }
+
     const medias = data?.data?.data || [];
+
+    const handleToggleItem = (id: number) => {
+        setSelectedItems(prev => {
+            const newSet = new Set(prev);
+
+            if (!allowMultiple) {
+                return new Set([id]);
+            }
+
+            if (newSet.has(id)) newSet.delete(id);
+            else newSet.add(id);
+
+            return newSet;
+        });
+    };
     return (
         <>
             <PageHeader
@@ -126,6 +162,12 @@ export default function CourseMedia({ type, id }: Props) {
                     url: ""
                 } : undefined}
                 handleOpenPopup={config.buttonLabel ? handleMediaAddition : undefined}
+            />
+            <TableFilter
+                search={search}
+                setSearch={setSearch}
+                selectedRows={selectedItems}
+                handleRoleDelete={handleMediaRemoval}
             />
             {!isLoading && !medias?.length && <EmptyRoute
                 title={config.emptyTitle}
@@ -151,7 +193,16 @@ export default function CourseMedia({ type, id }: Props) {
                     ))
                 ) :
                     (medias.map((media) => (
-                        <MediaCard media={media} key={media.id} type={type} />
+                        <div className="flex gap-3 items-center" key={media.id} >
+                            <Checkbox
+                                color="primary"
+                                checked={selectedItems.has(media.id)}
+                                onChange={() => handleToggleItem(media.id)}
+                            />
+                            <div onClick={() => handleToggleItem(media.id)} className="cursor-pointer flex-1">
+                                <MediaCard media={media} type={type} />
+                            </div>
+                        </div>
                     )))}
             </div>
             <SelectFromMedia open={open} setOpen={setOpen} type={type} onSelect={(ids) => handleMediaAssign(ids)} />

@@ -1,23 +1,62 @@
-import { Box, Skeleton } from '@mui/material';
+import { Box, Checkbox, Skeleton } from '@mui/material';
 import { useState } from 'react';
-import { useGetCourseTestQuery } from '../../../../../../../services/courseApi';
+import { useGetCourseTestQuery, useRemoveTestToCourseMutation } from '../../../../../../../services/courseApi';
+import { showToast } from '../../../../../../../slice/toastSlice';
+import { useAppDispatch } from '../../../../../../../store/hook';
 import TestCard from '../../../../../../organism/Cards/TestCard';
 import EmptyRoute from '../../../../../../organism/EmptyRoute';
 import PageHeader from '../../../../../../organism/PageHeader';
 import TableFilter from '../../../../../../organism/TableFilter';
 import AssignTestDialog from './AssignTestDialog';
 
-export default function CourseTest({ id }: { id?: string }) {
+export default function CourseTest({ id, allowMultiple = true }: { id?: string; allowMultiple?: boolean; }) {
+    const dispatch = useAppDispatch();
     const [search, setSearch] = useState("")
     const [open, setOpen] = useState(false);
     const [qp, _setQp] = useState({
         pageIndex: 1,
         pageSize: 8
-    })
+    });
+    const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
     const { data, isLoading } = useGetCourseTestQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search, id: Number(id) }, { skip: !id });
+    const [removeTestFromCourse] = useRemoveTestToCourseMutation()
 
     const tests = data?.data?.data || [];
 
+    const handleToggleItem = (id: number) => {
+        setSelectedItems(prev => {
+            const newSet = new Set(prev);
+
+            if (!allowMultiple) {
+                return new Set([id]);
+            }
+
+            if (newSet.has(id)) newSet.delete(id);
+            else newSet.add(id);
+
+            return newSet;
+        });
+    };
+
+    const handleTestRemoval = async () => {
+        try {
+            const response = await removeTestFromCourse({ id: Number(id) || null, body: Array.from(selectedItems) }).unwrap();
+            dispatch(
+                showToast({
+                    message: response?.message || `Successfully removed test`,
+                    severity: "success"
+                })
+            )
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || `Unable to remove test`,
+                    severity: "error"
+                })
+            )
+        }
+    }
     return (
         <>
             <PageHeader
@@ -36,10 +75,10 @@ export default function CourseTest({ id }: { id?: string }) {
                 }}
             />
             <TableFilter
-                handleRoleDelete={() => { }}
+                handleRoleDelete={handleTestRemoval}
                 search={search}
                 setSearch={setSearch}
-                selectedRows={new Set<number | string>([])}
+                selectedRows={selectedItems}
             />
             {!isLoading && !tests.length && <EmptyRoute
                 title="No Test found"
@@ -59,7 +98,16 @@ export default function CourseTest({ id }: { id?: string }) {
                     ))
                 ) :
                     (tests.map((test) => (
-                        <TestCard test={test} key={test.id} />
+                        <div className="flex gap-3 items-center" key={test.id} >
+                            <Checkbox
+                                color="primary"
+                                checked={selectedItems.has(Number(test.id))}
+                                onChange={() => handleToggleItem(Number(test.id))}
+                            />
+                            <div onClick={() => handleToggleItem(Number(test.id))} className="cursor-pointer flex-1">
+                                <TestCard test={test} />
+                            </div>
+                        </div>
                     )))}
             </div>
 

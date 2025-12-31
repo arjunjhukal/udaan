@@ -174,7 +174,21 @@ export const courseApi = createApi({
             invalidatesTags: (_result, _error,) => [
                 { type: "Media", id: "LIST" }
             ],
-
+        }),
+        removeCourseMediaByType: builder.mutation<GlobalResponse, { id: string | null; type: courseTabType, body: number[] }>({
+            query: ({ id, type, body }) => {
+                const queryString = buildQueryParams({ type });
+                return {
+                    url: `/admin/course/${id}/media?${queryString}`,
+                    method: "DELETE",
+                    body: {
+                        ids: body
+                    }
+                };
+            },
+            invalidatesTags: (_result, _error,) => [
+                { type: "Media", id: "LIST" }
+            ],
         }),
         getCourseTest: builder.query<TestList, QueryParams & { id: number }>({
             query: ({ id, pageIndex, pageSize, search }) => {
@@ -211,6 +225,21 @@ export const courseApi = createApi({
             ],
 
         }),
+        removeTestToCourse: builder.mutation<GlobalResponse, { id: number | null; body: number[] }>({
+            query: ({ id, body }) => {
+                return {
+                    url: `/admin/course/${id}/test`,
+                    method: "DELETE",
+                    body: {
+                        ids: body
+                    }
+                };
+            },
+            invalidatesTags: (_result, _error,) => [
+                { type: "Test", id: "LIST" }
+            ],
+
+        }),
     })
 })
 
@@ -228,5 +257,7 @@ export const {
     useGetCourseMediaByTypeQuery,
     useAddCourseMediaByTypeMutation,
     useGetCourseTestQuery,
-    useAssignTestToCourseMutation
+    useAssignTestToCourseMutation,
+    useRemoveCourseMediaByTypeMutation,
+    useRemoveTestToCourseMutation
 } = courseApi;
