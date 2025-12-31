@@ -20,8 +20,10 @@ export default function ActivityRoot() {
             header: "S.No.",
             accessorKey: "sn",
             cell: ({ row }) => (
-                <Typography >{row.index + 1}</Typography>
-            ),
+                <Typography>
+                    {(qp.pageIndex - 1) * qp.pageSize + row.index + 1}
+                </Typography>
+            )
         },
         {
             header: "Log",
@@ -67,7 +69,7 @@ export default function ActivityRoot() {
                 <Typography >{row.original.type || "N/A"}</Typography>
             ),
         },
-    ], [])
+    ], [qp])
     return (
         <div className='activity__root pb-4 lg:pb-6'>
             <PageHeader

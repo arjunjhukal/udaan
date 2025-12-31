@@ -110,7 +110,7 @@ export default function AllTestListing() {
                         onChange={(e) => handleSelectRow(row.original.id || '', e.target.checked)}
                         color="primary"
                     />
-                    < Typography fontWeight={500} > {row.index + 1}</Typography >
+                    < Typography fontWeight={500} >  {(qp.pageIndex - 1) * qp.pageSize + row.index + 1}</Typography >
                 </Stack >
             ),
             size: 80,
@@ -172,7 +172,7 @@ export default function AllTestListing() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected])
+    ], [selectedRows, isAllSelected, isSomeSelected,qp])
 
 
     return (

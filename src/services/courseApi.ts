@@ -238,7 +238,6 @@ export const courseApi = createApi({
             invalidatesTags: (_result, _error,) => [
                 { type: "Test", id: "LIST" }
             ],
-
         }),
     })
 })

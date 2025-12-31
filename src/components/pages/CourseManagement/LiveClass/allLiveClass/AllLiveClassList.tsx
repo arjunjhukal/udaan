@@ -8,6 +8,7 @@ import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import { LiveClassTabs, type LiveClassPayload, type liveClassTabType } from "../../../../../types/liveClass";
 import { formatDate } from "../../../../../utils/dateFormat";
+import { useGetStatusStyle } from "../../../../../utils/getStyleBasedOnStatus";
 import Actions from "../../../../molecules/Action";
 import TabController from "../../../../molecules/TabController";
 import UdaanTable from "../../../../molecules/Table";
@@ -17,7 +18,6 @@ import EmptyRoute from "../../../../organism/EmptyRoute";
 import type { LayoutProps } from "../../../../organism/TableFilter";
 import TableFilter from "../../../../organism/TableFilter";
 import LiveClassGrid from "./LiveClassGrid";
-import { useGetStatusStyle } from "../../../../../utils/getStyleBasedOnStatus";
 
 export default function AllLiveClassList() {
   const navigate = useNavigate();
@@ -113,7 +113,7 @@ export default function AllLiveClassList() {
             onChange={(e) => handleSelectRow(row.original.id || '', e.target.checked)}
             color="primary"
           />
-          < Typography fontWeight={500} > {row.index + 1}</Typography >
+          < Typography fontWeight={500} >   {(qp.pageIndex - 1) * qp.pageSize + row.index + 1}</Typography >
         </Stack >
       ),
       size: 80,
@@ -188,7 +188,7 @@ export default function AllLiveClassList() {
         />
       ),
     },
-  ], [selectedRows, isAllSelected, isSomeSelected])
+  ], [selectedRows, isAllSelected, isSomeSelected,qp])
 
   return (
     <>

@@ -39,7 +39,7 @@ export default function UdaanTable<T extends object>({
     sortable = true,
     className,
     loading,
-    skeletonRows = 5,
+    skeletonRows = 8,
 }: UdaanTableProps<T>) {
     const table = useReactTable({
         data,

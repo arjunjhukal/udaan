@@ -108,7 +108,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                         onChange={(e) => handleSelectAll(e.target.checked)}
                         color="primary"
                     />
-                    <Typography variant='subtitle2'>ID</Typography>
+                    <Typography variant='subtitle2'>SN</Typography>
                 </Stack>
             ),
             accessorKey: "sno",
@@ -119,7 +119,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                         onChange={(e) => handleSelectRow(row.original.id || '', e.target.checked)}
                         color="primary"
                     />
-                    <Typography variant='subtitle2'>{row.original.id}</Typography>
+                    <Typography variant='subtitle2'>  {(qp.pageIndex - 1) * qp.pageSize + row.index + 1}</Typography>
                 </Stack>
             ),
             size: 80,
@@ -202,7 +202,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp])
     return (
         <>
             <TableFilter

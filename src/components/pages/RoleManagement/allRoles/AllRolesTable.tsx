@@ -116,7 +116,7 @@ export default function AllRolesTable() {
                         onChange={(e) => handleSelectRow(row.original.id || '', e.target.checked)}
                         color="primary"
                     />
-                    < Typography fontWeight={500} > {row.index + 1}</Typography >
+                    < Typography fontWeight={500} >  {(qp.pageIndex - 1) * qp.pageSize + row.index + 1}</Typography >
                 </Stack >
             ),
             size: 80,
@@ -158,12 +158,12 @@ export default function AllRolesTable() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, theme])
+    ], [selectedRows, isAllSelected, isSomeSelected, theme, qp])
 
 
 
     console.log({
-        rolesToDelete,selectedRows
+        rolesToDelete, selectedRows
     })
     return (
         <>
