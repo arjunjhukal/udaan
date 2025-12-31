@@ -269,11 +269,8 @@ export default function AllCourse() {
                     message={`We couldn't find any courses matching "${search}".`}
                 /> : (
                     <>
-                        <Box className="table__wrapper" sx={{
-                            // maxHeight: {
-                            //     xs: "calc(100vh - 334px)",
-                            //     lg: "calc(100vh - 300px)",
-                            // },
+                        <Box className="table__wrapper h-full" sx={{
+
                             overflow: "auto"
                         }}>
                             {layout === "table" ?

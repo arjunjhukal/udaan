@@ -164,7 +164,7 @@ export default function SubscriptionManagementRoot() {
     ], [selectedRows, search]);
 
     return (
-        <>
+        <div className="subscription__root h-full flex justify-between flex-col">
             <PageHeader
                 breadcrumb={[
                     {
@@ -232,6 +232,7 @@ export default function SubscriptionManagementRoot() {
                 </svg>
                 )}
             />
-        </>
+        </div>
     )
 }
+p

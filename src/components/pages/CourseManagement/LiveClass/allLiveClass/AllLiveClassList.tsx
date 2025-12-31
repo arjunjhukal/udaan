@@ -1,6 +1,8 @@
-import { Button, Checkbox, Stack, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Stack, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Add } from "iconsax-reactjs";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../../routes/PATH";
 import { useDeleteLiveClassMutation, useGetAllLiveClassQuery } from "../../../../../services/liveClass";
@@ -15,11 +17,13 @@ import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../../organism/EmptyRoute";
+import PageHeader from "../../../../organism/PageHeader";
 import type { LayoutProps } from "../../../../organism/TableFilter";
 import TableFilter from "../../../../organism/TableFilter";
 import LiveClassGrid from "./LiveClassGrid";
 
 export default function AllLiveClassList() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
@@ -188,24 +192,44 @@ export default function AllLiveClassList() {
         />
       ),
     },
-  ], [selectedRows, isAllSelected, isSomeSelected,qp])
+  ], [selectedRows, isAllSelected, isSomeSelected, qp])
 
   return (
-    <>
-      <TableFilter
-        search={search}
-        setSearch={setSearch}
-        selectedRows={selectedRows}
-        handleRoleDelete={openDeleteConfirmation}
-        layout={layout}
-        setLayout={setLayout}
-      />
-      <TabController
-        options={LiveClassTabs}
-        currentActive={activeTab}
-        setActiveTab={setActiveTab}
+    <div className="live__class__root h-full flex flex-col justify-between">
+      <div className="page__top">
+        <PageHeader
+          breadcrumb={[
+            {
+              title: t("menus.course_management.live_classes.root"),
+              icon: (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM14.66 13.73L13.38 14.47L12.1 15.21C10.45 16.16 9.1 15.38 9.1 13.48V12V10.52C9.1 8.61 10.45 7.84 12.1 8.79L13.38 9.53L14.66 10.27C16.31 11.22 16.31 12.78 14.66 13.73Z" fill="#1D82F5" />
+              </svg>
+              ),
+            }
+          ]}
+          cta={
+            {
+              icon: <Add />,
+              url: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT,
+              label: t("messages.empty_states.live_class.action"),
+            }
+          }
+        />
+        <TableFilter
+          search={search}
+          setSearch={setSearch}
+          selectedRows={selectedRows}
+          handleRoleDelete={openDeleteConfirmation}
+          layout={layout}
+          setLayout={setLayout}
+        />
+        <TabController
+          options={LiveClassTabs}
+          currentActive={activeTab}
+          setActiveTab={setActiveTab}
 
-      />
+        />
+      </div>
       {!isLoading && !liveClasses.length ? (
         <EmptyRoute
           title="No Live Class Found"
@@ -213,15 +237,20 @@ export default function AllLiveClassList() {
         />
       ) : (
         <>
-          {layout === "table" ? (
-            <UdaanTable
-              data={data?.data?.data || []}
-              columns={columns}
-              loading={isLoading}
-            />
-          ) : (
-            <LiveClassGrid liveClasses={liveClasses} />
-          )}
+          <Box className="table__wrapper h-full" sx={{
+            overflow: "auto"
+          }}>
+
+            {layout === "table" ? (
+              <UdaanTable
+                data={data?.data?.data || []}
+                columns={columns}
+                loading={isLoading}
+              />
+            ) : (
+              <LiveClassGrid liveClasses={liveClasses} />
+            )}
+          </Box>
 
           <TablePagination
             qp={qp}
@@ -244,6 +273,6 @@ export default function AllLiveClassList() {
         </svg>
         )}
       />
-    </>
+    </div>
   )
 }
