@@ -14,7 +14,7 @@ export interface BannerProps {
     btn_title: string;
     notifiable_type: NotifiableType | null;
     notifiable_id: number | null;
-    image_url?: string;
+    image_url: string | null;
     status: boolean;
 }
 
@@ -33,7 +33,7 @@ export const bannerInitialState = {
         btn_title: "",
         notifiable_type: null,
         notifiable_id: null,
-        image_url: "",
+        image_url: null,
         status: true
     },
     file: {

@@ -25,14 +25,25 @@ const bannerValidationSchema = Yup.object({
             .nullable()
             .when("notifiable_type", {
                 is: (value: string) => value !== "general",
-                then: (schema) =>
-                    schema.required("Button Link Value is required").typeError("Must be a valid ID"),
+                then: (schema) => schema.required("Button Link Value is required"),
                 otherwise: (schema) => schema.nullable()
             }),
-        status: Yup.boolean()
+        status: Yup.boolean(),
+        image_url: Yup.string().nullable()
     }),
+
     file: Yup.object({
-        image: Yup.mixed().required("Image is required")
+        image: Yup.mixed()
+            .nullable()
+            .test("image-required", "Image is required", function (value) {
+                const parent = this.from?.[1]?.value;
+                const image_url = parent?.json?.image_url;
+
+                if (image_url) {
+                    return true;
+                }
+                return value != null;
+            })
     })
 });
 
@@ -231,8 +242,8 @@ export default function BannerRoot() {
                                             onFileChange={(file) => handleFileChange(index, file)}
                                             error={touched?.file?.image && Boolean(errors?.file?.image)}
                                         />
-
-                                        {index < formik.values.banners.length - 1 && <Divider className="mt-6" />}
+                                        {touched?.file?.image && errors?.file?.image && <Typography color="error">{errors.file.image}</Typography>}
+                                        {index < formik.values.banners.length - 1 && <Divider className="my-6!" />}
                                     </Box>
                                 );
                             })}
@@ -243,7 +254,7 @@ export default function BannerRoot() {
                 </FieldArray>
 
                 <Divider className="mt-6!" />
-                <Box className="mt-6 flex justify-end gap-4">
+                <Box className="mt-6 flex justify-end gap-4 pb-4 lg:pb-6">
                     <Button onClick={() => formik.resetForm()} variant="contained" color="inherit">Cancel</Button>
                     <Button type="submit" variant="contained" disabled={isLoading}>{isLoading ? "Creating Banner..." : "Create Banner"}</Button>
                 </Box>
