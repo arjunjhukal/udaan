@@ -45,7 +45,7 @@ export default function CategoryFilter({
     return (
         <div className="input__field flex flex-col">
             <InputLabel className={isRequired ? "required" : ""}>Category</InputLabel>
-            <div className=" flex gap-3 h-full">
+            <div className=" flex gap-3 flex-wrap h-full xl:flex-nowrap">
                 {/* Mega Categories */}
                 {megaCategories ? <Box
                     sx={{
@@ -53,7 +53,7 @@ export default function CategoryFilter({
                         borderRadius: "8px",
                         padding: "8px",
                     }}
-                    className="w-full"
+                    className="w-full sm:w-[48%] xl:w-full"
                 >
                     <Typography
                         variant="caption"
@@ -106,7 +106,7 @@ export default function CategoryFilter({
                         borderRadius: "8px",
                         padding: "8px",
                     }}
-                    className="w-full"
+                    className="w-full sm:w-[48%] xl:w-full"
                 >
                     <Typography
                         variant="caption"
@@ -198,7 +198,7 @@ export default function CategoryFilter({
                         borderRadius: "8px",
                         padding: "8px",
                     }}
-                    className="w-full"
+                    className="w-full sm:w-[48%] xl:w-full"
                 >
                     <Typography
                         variant="caption"
@@ -290,7 +290,7 @@ export default function CategoryFilter({
                         borderRadius: "8px",
                         padding: "8px",
                     }}
-                    className="w-full"
+                    className="w-full sm:w-[48%] xl:w-full"
                 >
                     <Typography
                         variant="caption"

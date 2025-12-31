@@ -244,7 +244,6 @@ export default function CourseManagementForm() {
                     navigate(response.data && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(response.data.id))
                 }
                 catch (e: any) {
-                    console.log(e);
                     dispatch(
                         showToast({
                             message: e?.data?.message || "Unable to Create Course",
@@ -291,7 +290,6 @@ export default function CourseManagementForm() {
             setActiveTab(newValue)
         }
     }
-    console.log("formik", formik.errors)
     return (
         <div className="course__management__form__root">
             <form action="" onSubmit={formik.handleSubmit}>

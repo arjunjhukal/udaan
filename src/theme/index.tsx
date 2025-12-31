@@ -118,26 +118,151 @@ declare module "@mui/material/styles" {
 const commonThemeOptions: ThemeOptions = {
     typography: {
         fontFamily: '"Helvetica Neue", sans-serif',
-        h1: { fontWeight: 700, fontSize: "64px", lineHeight: "89.67px" },
-        h2: { fontWeight: 500, fontSize: "48px", lineHeight: "67.25px" },
-        h3: { fontWeight: 500, fontSize: "32px", lineHeight: "44.8px" },
-        h4: { fontWeight: 500, fontSize: "24px", lineHeight: "33.6px" },
-        h5: { fontWeight: 500, fontSize: "20px", lineHeight: "28px" },
-        h6: { fontWeight: 500, fontSize: "18px", lineHeight: "25.2px" },
-        body1: { fontWeight: 500, fontSize: "20px", lineHeight: "28px" },
-        body2: { fontWeight: 500, fontSize: "18px", lineHeight: "26px" },
-        subtitle1: { fontWeight: 400, fontSize: "16px", lineHeight: "22.4px" },
-        subtitle2: { fontWeight: 400, fontSize: "14px", lineHeight: "19.6px" },
-        caption: { fontWeight: 400, fontSize: "12px", lineHeight: "16.8px" },
+
+        h1: {
+            fontWeight: 700,
+            fontSize: "32px",       // xs
+            lineHeight: "44px",
+            "@media (min-width:900px)": {   // lg
+                fontSize: "48px",
+                lineHeight: "67px",
+            },
+            "@media (min-width:1200px)": {  // xl (above lg)
+                fontSize: "64px",
+                lineHeight: "90px",
+            },
+        },
+
+        h2: {
+            fontWeight: 500,
+            fontSize: "28px",
+            lineHeight: "39px",
+            "@media (min-width:900px)": {
+                fontSize: "36px",
+                lineHeight: "50px",
+            },
+            "@media (min-width:1200px)": {
+                fontSize: "48px",
+                lineHeight: "67px",
+            },
+        },
+
+        h3: {
+            fontWeight: 500,
+            fontSize: "22px",
+            lineHeight: "31px",
+            "@media (min-width:900px)": {
+                fontSize: "28px",
+                lineHeight: "39px",
+            },
+            "@media (min-width:1200px)": {
+                fontSize: "32px",
+                lineHeight: "45px",
+            },
+        },
+
+        h4: {
+            fontWeight: 500,
+            fontSize: "20px",
+            lineHeight: "28px",
+            "@media (min-width:900px)": {
+                fontSize: "22px",
+                lineHeight: "31px",
+            },
+            "@media (min-width:1200px)": {
+                fontSize: "24px",
+                lineHeight: "34px",
+            },
+        },
+
+        h5: {
+            fontWeight: 500,
+            fontSize: "18px",
+            lineHeight: "25px",
+            "@media (min-width:1200px)": {
+                fontSize: "20px",
+                lineHeight: "28px",
+            },
+        },
+
+        h6: {
+            fontWeight: 500,
+            fontSize: "16px",
+            lineHeight: "22px",
+            "@media (min-width:1200px)": {
+                fontSize: "18px",
+                lineHeight: "25px",
+            },
+        },
+
+        body1: {
+            fontWeight: 500,
+            fontSize: "16px",
+            lineHeight: "24px",
+            "@media (min-width:1200px)": {
+                fontSize: "20px",
+                lineHeight: "28px",
+            },
+        },
+
+        body2: {
+            fontWeight: 500,
+            fontSize: "14px",
+            lineHeight: "21px",
+            "@media (min-width:1200px)": {
+                fontSize: "18px",
+                lineHeight: "26px",
+            },
+        },
+
+        subtitle1: {
+            fontWeight: 400,
+            fontSize: "14px",
+            lineHeight: "20px",
+            "@media (min-width:1200px)": {
+                fontSize: "16px",
+                lineHeight: "22px",
+            },
+        },
+
+        subtitle2: {
+            fontWeight: 400,
+            fontSize: "13px",
+            lineHeight: "18px",
+            "@media (min-width:1200px)": {
+                fontSize: "14px",
+                lineHeight: "20px",
+            },
+        },
+
+        caption: {
+            fontWeight: 400,
+            fontSize: "11px",
+            lineHeight: "15px",
+            "@media (min-width:1200px)": {
+                fontSize: "12px",
+                lineHeight: "17px",
+            },
+        },
+
         overline: {
             fontWeight: 400,
             fontSize: "8px",
-            lineHeight: "11.2px",
+            lineHeight: "11px",
             textTransform: "unset",
             letterSpacing: "0px",
         },
-        button: { fontWeight: 400, textTransform: "none" },
+
+        button: {
+            fontWeight: 400,
+            textTransform: "none",
+            fontSize: "12px",
+            "@media (min-width:1200px)": {
+                fontSize: "16px",
+            },
+        },
     },
+
     shape: {
         borderRadius: 8,
     },

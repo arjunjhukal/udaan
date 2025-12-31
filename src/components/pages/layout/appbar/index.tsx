@@ -1,16 +1,11 @@
-import EmailIcon from "@mui/icons-material/Email";
 import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import {
 	AppBar,
 	Box,
 	IconButton,
-	OutlinedInput,
 	Stack,
-	Toolbar,
-	useTheme
+	Toolbar
 } from "@mui/material";
-import SearchIcon from "../../../../icons/SearchIcon";
 import Profile from "./Profile";
 import Setting from "./Setting";
 const drawerWidth = 356;
@@ -20,14 +15,13 @@ export default function CustomAppbar({
 }: {
 	handleDrawerToggle: () => void;
 }) {
-	const theme = useTheme();
 
 	return (
 		<AppBar
 			position="fixed"
 			sx={{
-				width: { sm: `calc(100% - ${drawerWidth}px)` },
-				ml: { sm: `${drawerWidth}px` },
+				width: { lg: `calc(100% - ${drawerWidth}px)` },
+				ml: { lg: `${drawerWidth}px` },
 				borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
 				borderRadius: 0,
 				padding: " 20px 24px",
@@ -35,23 +29,24 @@ export default function CustomAppbar({
 			}}
 			color="default"
 			elevation={0}>
-			<Toolbar sx={{ px: 3 }}>
+			<Toolbar className="px-0!">
 				<IconButton
 					color="inherit"
 					aria-label="open drawer"
 					edge="start"
 					onClick={handleDrawerToggle}
-					sx={{ mr: 2, display: { sm: "none" }, minHeight: "44px" }}>
+					sx={{ mr: 2, display: { lg: "none" }, minHeight: "44px" }}>
 					<MenuIcon />
 				</IconButton>
 				<Stack
 					sx={{
 						flexDirection: "row",
 						alignItems: "center",
-						justifyContent: "space-between",
+						// justifyContent: "space-between",
+						justifyContent: "end",
 						width: "100%",
 					}}>
-					<OutlinedInput
+					{/* <OutlinedInput
 						placeholder="Search"
 						name="search"
 						id="search"
@@ -59,21 +54,21 @@ export default function CustomAppbar({
 						sx={{
 							gap: "8px"
 						}}
-					/>
+					/> */}
 
 					<Box className="flex gap-4">
-						<IconButton sx={{
+						{/* <IconButton sx={{
 							background: theme.palette.separator.dark,
 							minWidth: "44px",
 						}}>
 							<NotificationsIcon />
-						</IconButton>
-						<IconButton sx={{
+						</IconButton> */}
+						{/* <IconButton sx={{
 							background: theme.palette.separator.dark,
 							minWidth: "44px",
 						}}>
 							<EmailIcon />
-						</IconButton>
+						</IconButton> */}
 						{/* <IconButton sx={{
 							background: theme.palette.separator.dark,
 							minWidth: "44px",

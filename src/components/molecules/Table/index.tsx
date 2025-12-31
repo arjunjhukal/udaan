@@ -53,7 +53,14 @@ export default function UdaanTable<T extends object>({
     const theme = useTheme();
     return (
         <Box className={className}>
-            <TableContainer sx={{ borderRadius: 2, border: `1px solid ${theme.palette.separator.dark}`, }}>
+            <TableContainer
+                sx={{
+                    borderRadius: 2,
+                    border: `1px solid ${theme.palette.separator.dark}`,
+                    overflowX: "auto",
+                    maxWidth: "100%",
+                }}
+                className="w-full">
                 <Table >
                     <TableHead>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -70,23 +77,8 @@ export default function UdaanTable<T extends object>({
                         ))}
                     </TableHead>
 
-                    {/* <TableBody>
-                        {table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id} className="px-5! py-6!">
-                                        <Typography variant="body2" color="text.dark">{flexRender(
-                                            cell.column.columnDef.cell,
-                                            cell.getContext()
-                                        )}</Typography>
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableBody> */}
                     <TableBody>
                         {loading ? (
-                            // Render skeleton rows
                             Array.from({ length: skeletonRows }).map((_, rowIndex) => (
                                 <TableRow key={`skeleton-${rowIndex}`}>
                                     {columns.map((_, cellIndex) => (
@@ -106,7 +98,6 @@ export default function UdaanTable<T extends object>({
                                 </TableRow>
                             ))
                         ) : (
-                            // Render actual data
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
                                     {row.getVisibleCells().map((cell) => (
@@ -125,7 +116,6 @@ export default function UdaanTable<T extends object>({
                     </TableBody>
                 </Table>
             </TableContainer>
-
         </Box>
     );
 }

@@ -1,4 +1,4 @@
-import { Tooltip, Typography } from '@mui/material';
+import { Box, Tooltip, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useGetAllActivityQuery } from '../../../services/activityApi';
@@ -71,26 +71,37 @@ export default function ActivityRoot() {
         },
     ], [qp])
     return (
-        <div className='activity__root pb-4 lg:pb-6'>
-            <PageHeader
-                breadcrumb={[
-                    {
-                        title: "Activity Log",
-                        icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM20 18c1.26-1.67 2-3.75 2-6s-.74-4.33-2-6M4 6c-1.26 1.67-2 3.75-2 6s.74 4.33 2 6M16.8 15.6c.75-1 1.2-2.25 1.2-3.6s-.45-2.6-1.2-3.6M7.2 8.4C6.45 9.4 6 10.65 6 12s.45 2.6 1.2 3.6" stroke="#1D82F5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>)
-                    }
-                ]}
-            />
-            <TableFilter
-                search={search}
-                setSearch={setSearch}
-                selectedRows={new Set<number | string>([])}
-                handleRoleDelete={() => { }}
-            />
-            <UdaanTable
-                data={data?.data?.data || []}
-                loading={isLoading}
-                columns={columns}
-            />
+        <div className='activity__root  flex flex-col justify-between h-full'>
+            <div className="page__top">
+
+                <PageHeader
+                    breadcrumb={[
+                        {
+                            title: "Activity Log",
+                            icon: (<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM20 18c1.26-1.67 2-3.75 2-6s-.74-4.33-2-6M4 6c-1.26 1.67-2 3.75-2 6s.74 4.33 2 6M16.8 15.6c.75-1 1.2-2.25 1.2-3.6s-.45-2.6-1.2-3.6M7.2 8.4C6.45 9.4 6 10.65 6 12s.45 2.6 1.2 3.6" stroke="#1D82F5" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>)
+                        }
+                    ]}
+                />
+                <TableFilter
+                    search={search}
+                    setSearch={setSearch}
+                    selectedRows={new Set<number | string>([])}
+                    handleRoleDelete={() => { }}
+                />
+            </div>
+            <Box className="table__wrapper" sx={{
+                // maxHeight: {
+                //     xs: "calc(100vh - 334px)",
+                //     lg: "calc(100vh - 300px)",
+                // },
+                overflow: "auto"
+            }}>
+                <UdaanTable
+                    data={data?.data?.data || []}
+                    loading={isLoading}
+                    columns={columns}
+                />
+            </Box>
             <TablePagination
                 qp={qp}
                 setQp={setQp}

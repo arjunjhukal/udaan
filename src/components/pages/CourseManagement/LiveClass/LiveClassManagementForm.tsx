@@ -63,7 +63,6 @@ export default function LiveClassManagementForm() {
         validationSchema: liveClassValidationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            console.log(values);
             if (id) {
                 try {
                     await updateLiveClass({ id: Number(id), body: values }).unwrap();
@@ -151,7 +150,6 @@ export default function LiveClassManagementForm() {
             : [],
     };
 
-    console.log(courseFilterParams)
 
     const { data: courses } = useGetAllCourseQuery({
         categoryFilter: courseFilterParams,

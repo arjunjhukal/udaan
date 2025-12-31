@@ -63,9 +63,8 @@ export default function ResponsiveDrawer(props: Props) {
 			<CustomAppbar handleDrawerToggle={handleDrawerToggle} />
 			<Box
 				component="nav"
-				sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+				sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
 				aria-label="mailbox folders">
-				{/* The implementation can be swapped with js to avoid SEO duplication of links. */}
 				<Drawer
 					container={container}
 					variant="temporary"
@@ -73,15 +72,16 @@ export default function ResponsiveDrawer(props: Props) {
 					onTransitionEnd={handleDrawerTransitionEnd}
 					onClose={handleDrawerClose}
 					sx={{
-						display: { xs: "block", sm: "none" },
+						display: { xs: "block", lg: "none" },
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
 							width: drawerWidth,
+							backgroundColor: (theme) => theme.palette.background.sidebar,
 						},
 					}}
 					slotProps={{
 						root: {
-							keepMounted: true, // Better open performance on mobile.
+							keepMounted: true,
 						},
 					}}>
 					{drawer}
@@ -89,7 +89,7 @@ export default function ResponsiveDrawer(props: Props) {
 				<Drawer
 					variant="permanent"
 					sx={{
-						display: { xs: "none", sm: "block" },
+						display: { xs: "none", lg: "block" },
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
 							width: drawerWidth,
@@ -104,10 +104,11 @@ export default function ResponsiveDrawer(props: Props) {
 				component="main"
 				sx={{
 					flexGrow: 1,
-					width: { sm: `calc(100% - ${drawerWidth}px)`, padding: "32px 24px" },
+					width: { lg: `calc(100% - ${drawerWidth}px)`, padding: "32px 24px" },
+					overflowX: "hidden"
 				}}>
 				<Toolbar sx={{ height: 100 }} />
-				<Box className="content px-8 pt-8 rounded-2xl overflow-y-auto flex flex-col" sx={{
+				<Box className="content p-4 lg:p-8  rounded-2xl overflow-y-auto flex flex-col" sx={{
 					background: theme.palette.primary.contrastText,
 					height: "calc(100vh - 165px)"
 

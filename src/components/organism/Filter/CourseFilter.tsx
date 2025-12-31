@@ -122,7 +122,7 @@ export const CourseFilter = ({
 
           {/* Teacher Filter */}
           {teachers && teachers.length ? <div className="user__filter">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap">
               <Typography variant="h5">Assigned Teachers</Typography>
               <OutlinedInput
                 value={searchTeacher}
@@ -136,7 +136,7 @@ export const CourseFilter = ({
               />
             </div>
             <Divider className="mb-3.5! mt-2!" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {teachers.length > 0 ? (
                 teachers.map((teacher) => (
                   <div className="col-span-1" key={teacher.id}>
@@ -174,7 +174,7 @@ export const CourseFilter = ({
               <Typography variant="h5">Course Type</Typography>
             </div>
             <Divider className="mb-3.5! mt-2!" />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-9">
+            <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {courseTypes.map((type) => (
                 <div className="col-span-1" key={type.value}>
                   <FormControlLabel

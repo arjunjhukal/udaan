@@ -2,6 +2,7 @@ import {
     Box,
     ClickAwayListener,
     Grow,
+    IconButton,
     List,
     ListItem,
     ListItemButton,
@@ -63,36 +64,46 @@ export default function ProfileMenu() {
             <Box
                 ref={anchorRef}
                 onClick={handleToggle}
-                className="flex gap-2 items-center p-2 justify-between rounded-md cursor-pointer"
-                sx={{
-                    border: `1px solid ${theme.palette.separator.dark}`,
-                    minWidth: "160px",
-                    "&:hover": { backgroundColor: theme.palette.action.hover },
-                }}
-            >
-                {user?.profile_url ? (
-                    <img
-                        src={user.profile_url}
-                        alt={`${user?.name} Profile Picture`}
-                        className="user__profile w-7 h-7 rounded-full"
-                    />
-                ) : (
-                    <Box
-                        className="flex items-center w-7 h-7 rounded-full justify-center"
-                        sx={{
-                            background: theme.palette.separator.dark,
-                        }}
-                    >
-                        <Typography variant="body1" color="text.dark">
-                            {user?.name ? user?.name.charAt(0).toUpperCase() : ""}
-                        </Typography>
-                    </Box>
-                )}
 
-                <Typography variant="subtitle2" color="text.dark">
-                    {user?.name}
-                </Typography>
-                <CustomCollapseIcon isOpen={open} />
+            >
+                <Box className="md:flex gap-2 items-center p-2 justify-between rounded-md cursor-pointer hidden"
+                    sx={{
+                        border: `1px solid ${theme.palette.separator.dark}`,
+                        minWidth: "160px",
+                        "&:hover": { backgroundColor: theme.palette.action.hover },
+                    }}>
+                    {user?.profile_url ? (
+                        <img
+                            src={user.profile_url}
+                            alt={`${user?.name} Profile Picture`}
+                            className="user__profile w-7 h-7 rounded-full"
+                        />
+                    ) : (
+                        <Box
+                            className="flex items-center w-7 h-7 rounded-full justify-center"
+                            sx={{
+                                background: theme.palette.separator.dark,
+                            }}
+                        >
+                            <Typography variant="body1" color="text.dark">
+                                {user?.name ? user?.name.charAt(0).toUpperCase() : ""}
+                            </Typography>
+                        </Box>
+                    )}
+
+                    <Typography variant="subtitle2" color="text.dark">
+                        {user?.name}
+                    </Typography>
+                    <CustomCollapseIcon isOpen={open} />
+                </Box>
+                <IconButton className="md:hidden! aspect-square" sx={{
+                    background: (theme) => theme.palette.separator.dark,
+                    minWidth: "44px",
+                }}>
+                    <Typography variant="body1" color="text.dark">
+                        {user?.name ? user?.name.charAt(0).toUpperCase() : ""}
+                    </Typography>
+                </IconButton>
             </Box>
 
             <Popper

@@ -1,10 +1,5 @@
-import {
-    ChevronLeft,
-    ChevronRight,
-    FirstPage,
-    LastPage
-} from '@mui/icons-material';
-import { Box, MenuItem, Pagination, Select, Typography } from '@mui/material';
+import { Box, MenuItem, Pagination, Select, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { ArrowLeft2, ArrowRight2 } from 'iconsax-reactjs';
 
 interface TablePaginationProps {
     qp: {
@@ -22,8 +17,10 @@ export default function TablePagination({
     totalPages,
     totalRecords
 }: TablePaginationProps) {
-    const pageSizeOptions = [8, 10, 20, 50, 100];
+    const theme = useTheme();
 
+    const pageSizeOptions = [8, 10, 20, 50, 100];
+    const isXs = useMediaQuery(theme.breakpoints.down("sm"));
     const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
 
         setQp({ ...qp, pageIndex: page });
@@ -63,17 +60,13 @@ export default function TablePagination({
     return (
         <Box
             sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '16px',
-                flexWrap: 'wrap',
-                gap: 2
+                background: (theme) => theme.palette.primary.contrastText
             }}
+            className="sticky -bottom-4 left-0 right-0 flex justify-between items-center gap-2 flex-wrap pt-4 lg:pt-4"
         >
             {/* Page Size Selector */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="caption" color='text.dark'>Show</Typography>
+            <Box className="hidden lg:flex items-center gap-1">
+                <Typography variant="subtitle2" color='text.dark'>Show</Typography>
                 <Select
                     value={qp.pageSize}
                     onChange={handlePageSizeChange}
@@ -86,7 +79,7 @@ export default function TablePagination({
                         </MenuItem>
                     ))}
                 </Select>
-                <Typography variant="caption" color='text.dark'>
+                <Typography variant="subtitle2" color='text.dark'>
                     per page {totalRecords ? `of ${totalRecords}` : ''}
                 </Typography>
             </Box>
@@ -105,7 +98,7 @@ export default function TablePagination({
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        background: 'white',
+                        background: (theme) => theme.palette.primary.contrastText,
                         cursor: qp.pageIndex === 1 ? 'not-allowed' : 'pointer',
                         opacity: qp.pageIndex === 1 ? 0.5 : 1,
 
@@ -114,7 +107,11 @@ export default function TablePagination({
                         }
                     }}
                 >
-                    <FirstPage fontSize="small" />
+                    <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8.74958 11.6199L4.94625 7.81655C4.49708 7.36738 4.49708 6.63238 4.94625 6.18322L8.74958 2.37988" stroke="#111827" strokeWidth="1.5" stroke-miterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M14.7496 11.6199L10.9463 7.81655C10.4971 7.36738 10.4971 6.63238 10.9463 6.18322L14.7496 2.37988" stroke="#111827" strokeWidth="1.5" stroke-miterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+
                 </Box>
 
                 {/* Previous Page Button */}
@@ -130,7 +127,7 @@ export default function TablePagination({
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        background: 'white',
+                        background: (theme) => theme.palette.primary.contrastText,
                         cursor: qp.pageIndex === 1 ? 'not-allowed' : 'pointer',
                         opacity: qp.pageIndex === 1 ? 0.5 : 1,
 
@@ -139,15 +136,15 @@ export default function TablePagination({
                         }
                     }}
                 >
-                    <ChevronLeft fontSize="small" />
+                    <ArrowLeft2 size={16} />
                 </Box>
 
                 <Pagination
                     count={totalPages}
                     page={qp.pageIndex}
                     onChange={handlePageChange}
-                    siblingCount={1}
-                    boundaryCount={1}
+                    siblingCount={isXs ? 0 : 1}
+                    boundaryCount={isXs ? 0 : 1}
                     shape="rounded"
                     showFirstButton={false}
                     showLastButton={false}
@@ -168,7 +165,7 @@ export default function TablePagination({
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        background: 'white',
+                        background: theme.palette.primary.contrastText,
                         cursor: qp.pageIndex === totalPages ? 'not-allowed' : 'pointer',
                         opacity: qp.pageIndex === totalPages ? 0.5 : 1,
 
@@ -177,7 +174,7 @@ export default function TablePagination({
                         }
                     }}
                 >
-                    <ChevronRight fontSize="small" />
+                    <ArrowRight2 size={16} />
                 </Box>
 
                 {/* Last Page Button */}
@@ -193,7 +190,7 @@ export default function TablePagination({
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        background: 'white',
+                        background: theme.palette.primary.contrastText,
                         cursor: qp.pageIndex === totalPages ? 'not-allowed' : 'pointer',
                         opacity: qp.pageIndex === totalPages ? 0.5 : 1,
 
@@ -202,7 +199,11 @@ export default function TablePagination({
                         }
                     }}
                 >
-                    <LastPage fontSize="small" />
+                    <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M11.2504 11.6199L15.0537 7.81655C15.5029 7.36738 15.5029 6.63238 15.0537 6.18322L11.2504 2.37988" stroke="#111827" strokeWidth="1.5" stroke-miterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M5.25042 11.6199L9.05375 7.81655C9.50292 7.36738 9.50292 6.63238 9.05375 6.18322L5.25042 2.37988" stroke="#111827" strokeWidth="1.5" stroke-miterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+
                 </Box>
             </Box>
         </Box>

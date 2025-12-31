@@ -81,7 +81,6 @@ export default function TestManagementForm() {
         validationSchema: testValidationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-            console.log(values);
             try {
                 const response = await createTest({ body: values }).unwrap();
                 dispatch(
@@ -103,7 +102,6 @@ export default function TestManagementForm() {
         }
     });
 
-    console.log(formik.errors)
 
     const categoryFilter = getCategoryFilterParams();
     const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });

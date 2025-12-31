@@ -81,7 +81,6 @@ function ActivityBlock({ currentType, formik }: { currentType: CourseTypeProps, 
 
     const [open, setOpen] = React.useState(false);
 
-    console.log("open value at course type", open);
     const handleClick = () => {
         setOpen(true);
     }

@@ -115,7 +115,7 @@
         "actions": "Actions",
         "filter": "Filter",
         "activity_log": "Activity Log",
-        "medias": "Medias",
+        "medias": "Media",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",

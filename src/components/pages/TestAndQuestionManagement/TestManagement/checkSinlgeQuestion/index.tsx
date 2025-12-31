@@ -64,71 +64,49 @@ export default function SingleStudentSingleQuestion() {
         },
         enableReinitialize: true,
         validationSchema: validationSchema(maxMarks),
-        onSubmit: async (values) => {
-            try {
-                const checkedAnswerMedia = Object.entries(values.drawings).map(([imageId, dataUrl]) => ({
-                    media_id: Number(imageId),
-                    media: dataUrl as string
-                }));
+        onSubmit: async () => {
+            // try {
+            //     const checkedAnswerMedia = Object.entries(values.drawings).map(([imageId, dataUrl]) => ({
+            //         media_id: Number(imageId),
+            //         media: dataUrl as string
+            //     }));
 
-                const response = await markSubjectiveQuestion({
-                    id: Number(id),
-                    resultId: Number(resultId),
-                    questionId: Number(questionId),
-                    body: {
-                        grade: Number(values.grade),
-                        feedback: values.feedback,
-                        checked_answer_media: checkedAnswerMedia
-                    }
-                }).unwrap();
+            //     const response = await markSubjectiveQuestion({
+            //         id: Number(id),
+            //         resultId: Number(resultId),
+            //         questionId: Number(questionId),
+            //         body: {
+            //             grade: Number(values.grade),
+            //             feedback: values.feedback,
+            //             checked_answer_media: checkedAnswerMedia
+            //         }
+            //     }).unwrap();
 
-                dispatch(
-                    showToast({
-                        message: response.message || 'Submitted evaluation successfully!',
-                        severity: 'success'
-                    })
-                );
+            //     dispatch(
+            //         showToast({
+            //             message: response.message || 'Submitted evaluation successfully!',
+            //             severity: 'success'
+            //         })
+            //     );
 
-                // Optionally reset form or navigate to next question
-                // formik.resetForm();
-            }
-            catch (error: any) {
-                console.error('Submission error:', error);
-                dispatch(
-                    showToast({
-                        message: error?.data?.message || 'Failed to submit evaluation. Please try again.',
-                        severity: 'error'
-                    })
-                );
-            }
+            //     // Optionally reset form or navigate to next question
+            //     // formik.resetForm();
+            // }
+            // catch (error: any) {
+            //     console.error('Submission error:', error);
+            //     dispatch(
+            //         showToast({
+            //             message: error?.data?.message || 'Failed to submit evaluation. Please try again.',
+            //             severity: 'error'
+            //         })
+            //     );
+            // }
         }
     });
 
     const questionIds = allAttendedQuestions?.data?.data?.map(item => item.id) || [];
     const currentIndex = questionIds.indexOf(Number(questionId));
     const isLastQuestion = currentIndex === questionIds.length - 1;
-
-    const submitEvaluation = async () => {
-        const checkedAnswerMedia = Object.entries(formik.values.drawings).map(([imageId, dataUrl]) => ({
-            media_id: Number(imageId),
-            media: dataUrl as string
-        }));
-
-        const response = await markSubjectiveQuestion({
-            id: Number(id),
-            resultId: Number(resultId),
-            questionId: Number(questionId),
-            body: {
-                grade: Number(formik.values.grade),
-                feedback: formik.values.feedback,
-                checked_answer_media: checkedAnswerMedia
-            }
-        }).unwrap();
-
-        return response;
-    };
-
-
 
     const handleNext = async () => {
         try {
@@ -143,7 +121,24 @@ export default function SingleStudentSingleQuestion() {
                 return;
             }
 
-            const response = await submitEvaluation();
+            const checkedAnswerMedia = Object.entries(formik.values.drawings).map(([imageId, dataUrl]) => ({
+                media_id: Number(imageId),
+                media: dataUrl as string
+            }));
+
+            console.log("log on submit", checkedAnswerMedia);
+            // const response = { message: "Ok sir" }
+            const response = await markSubjectiveQuestion({
+                id: Number(id),
+                resultId: Number(resultId),
+                questionId: Number(questionId),
+                body: {
+                    grade: Number(formik.values.grade),
+                    feedback: formik.values.feedback,
+                    checked_answer_media: checkedAnswerMedia
+                }
+            }).unwrap();
+
 
             dispatch(
                 showToast({
