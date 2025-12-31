@@ -23,6 +23,8 @@ import AllLiveClass from "../components/pages/CourseManagement/LiveClass/allLive
 import CreateLiveClassRoot from "../components/pages/CourseManagement/LiveClass/createLiveClass";
 import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
+import MediaManagementRoot from "../components/pages/MediaManagement";
+import AllMediaRoot from "../components/pages/MediaManagement/allMedia";
 import NotificationRoot from "../components/pages/NotificationManagement";
 import AllNotificationsRoot from "../components/pages/NotificationManagement/allNotification";
 import CreateNotificationRoot from "../components/pages/NotificationManagement/createNotification";
@@ -221,6 +223,12 @@ const router = createBrowserRouter([
 			{
 				path: PATH.ACTIVITY_LOG.ROOT,
 				element: <ActivityRoot />
+			},
+			{
+				element: <MediaManagementRoot />,
+				children: [
+					{ path: PATH.MEDIA_MANAGEMENT.ROOT, element: <AllMediaRoot /> },
+				]
 			}
 		],
 	},

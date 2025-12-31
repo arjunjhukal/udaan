@@ -172,5 +172,8 @@ export const PATH = {
 	},
 	ACTIVITY_LOG: {
 		ROOT: "/activity-log"
+	},
+	MEDIA_MANAGEMENT: {
+		ROOT: "/medias"
 	}
 };

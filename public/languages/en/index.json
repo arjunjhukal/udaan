@@ -115,6 +115,7 @@
         "actions": "Actions",
         "filter": "Filter",
         "activity_log": "Activity Log",
+        "medias": "Medias",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",
@@ -170,6 +171,11 @@
                 "title": "No Notifications Found",
                 "description": "Start adding notifications to send to the specific roles or students. Use the button below to create your first Notifications.",
                 "action": "Create Notifications"
+            },
+            "media_management": {
+                "title": "No Media Found",
+                "description": "Start adding media to manage and organize your content. Use the button below to upload your first media.",
+                "action": "Add Media"
             }
         },
         "toasts": {

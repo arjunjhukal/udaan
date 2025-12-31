@@ -5,6 +5,7 @@ export interface MediaProps {
     file_name: string,
     url: string,
     size: number
+    alt?:string;
 }
 
 export interface MediaList{

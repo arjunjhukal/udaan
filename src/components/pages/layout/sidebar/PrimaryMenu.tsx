@@ -8,7 +8,7 @@ import {
     ListItemIcon,
     ListItemText
 } from "@mui/material";
-import { Brodcast } from "iconsax-reactjs";
+import { AttachSquare, Brodcast } from "iconsax-reactjs";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -257,6 +257,18 @@ export default function PrimaryMenu() {
                         </Collapse>
                     </ListItem>
                 </CAN>
+
+                {/*Media Management */}
+                <ListItem disablePadding className="menu__item">
+                    <ListItemButton
+                        onClick={() => navigate(PATH.MEDIA_MANAGEMENT.ROOT)}
+                        className={location.pathname.startsWith(PATH.MEDIA_MANAGEMENT.ROOT) ? "active" : ""}>
+                        <ListItemIcon>
+                            <AttachSquare />
+                        </ListItemIcon>
+                        <ListItemText primary={t("messages.medias")} />
+                    </ListItemButton>
+                </ListItem>
 
                 {/* Subscription Management */}
                 <CAN permissions={["add_subscriptions", "edit_subscriptions", "delete_subscriptions", "view_subscriptions",]}>
