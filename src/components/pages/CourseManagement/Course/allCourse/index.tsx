@@ -175,7 +175,7 @@ export default function AllCourse() {
             header: "Course Name",
             accessorKey: "name",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">
+                <Typography fontWeight={500} variant="subtitle1" >
                     {row.original.name || "N/A"}
                 </Typography>
             ),

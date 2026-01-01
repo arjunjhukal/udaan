@@ -382,7 +382,7 @@ const commonThemeOptions: ThemeOptions = {
             styleOverrides: {
                 root: ({ theme }) => ({
                     ...theme.typography.subtitle1,
-                    padding: "16px",
+                    padding: "10px 16px",
                     borderRadius: "8px",
                     fontWeight: "500",
                 }),
