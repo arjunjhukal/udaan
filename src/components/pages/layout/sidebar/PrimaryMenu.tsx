@@ -54,7 +54,7 @@ export default function PrimaryMenu() {
     }, [location.pathname]);
 
     return (
-        <Box sx={{ padding: "0 32px 32px" }}>
+        <Box className="primary__menu relative" sx={{ padding: "0 32px 32px", maxHeight: "calc(100svh - 180px)", overflow: "auto" }}>
             <List>
                 <ListItem disablePadding className="menu__item">
                     <ListItemButton

@@ -181,3 +181,12 @@ body {
 ::-webkit-scrollbar-thumb:hover {
 	background-color: #A8A8A8;
 }
+
+.primary__menu {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.primary__menu::-webkit-scrollbar {
+	display: none;
+}
