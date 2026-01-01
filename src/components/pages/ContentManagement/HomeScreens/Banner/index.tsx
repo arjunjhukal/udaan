@@ -46,7 +46,7 @@ const validationSchema = Yup.object({
     banners: Yup.array().of(bannerValidationSchema).min(1, "At least one banner is required")
 });
 
-const notifiableTypes: NotifiableType[] = ['general', 'live_class', 'course', 'mcq', 'subjective'];
+const notifiableTypes: NotifiableType[] = ['general', 'live_class', 'course', 'mcq', 'subjective', 'offline'];
 
 type NotifiableOption = { id: number; label: string };
 
@@ -156,6 +156,7 @@ export default function BannerRoot() {
                                                         onChange={formik.handleChange}
                                                         onBlur={formik.handleBlur}
                                                         error={touched?.json?.title && Boolean(errors?.json?.title)}
+                                                        placeholder="Enter Top Label"
                                                     />
                                                     {touched?.json?.title && errors?.json?.title && <Typography color="error">{errors.json.title}</Typography>}
 
@@ -169,6 +170,7 @@ export default function BannerRoot() {
                                                         onChange={formik.handleChange}
                                                         onBlur={formik.handleBlur}
                                                         error={touched?.json?.sub_title && Boolean(errors?.json?.sub_title)}
+                                                        placeholder="Enter Heading"
                                                     />
                                                     {touched?.json?.sub_title && errors?.json?.sub_title && <Typography color="error">{errors.json.sub_title}</Typography>}
                                                 </div>
@@ -195,6 +197,7 @@ export default function BannerRoot() {
                                                     onChange={formik.handleChange}
                                                     onBlur={formik.handleBlur}
                                                     error={touched?.json?.btn_title && Boolean(errors?.json?.btn_title)}
+                                                    placeholder="Enter Button Label"
                                                 />
                                                 {touched?.json?.btn_title && errors?.json?.btn_title && <Typography color="error">{errors.json.btn_title}</Typography>}
                                             </div>

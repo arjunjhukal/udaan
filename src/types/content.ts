@@ -5,7 +5,7 @@ export type NotifiableType = 'general' |
     'live_class' |
     'course' |
     'mcq' |
-    'subjective'
+    'subjective' | "offline"
 
 export interface BannerProps {
     title: string;
