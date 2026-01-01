@@ -22,12 +22,7 @@ const bannerValidationSchema = Yup.object({
         btn_title: Yup.string().required("Button Label is required"),
         notifiable_type: Yup.string().required("Button Link Type is required"),
         notifiable_id: Yup.number()
-            .nullable()
-            .when("notifiable_type", {
-                is: (value: string) => value !== "general",
-                then: (schema) => schema.required("Button Link Value is required"),
-                otherwise: (schema) => schema.nullable()
-            }),
+            .nullable(),
         status: Yup.boolean(),
         image_url: Yup.string().nullable()
     }),
@@ -221,7 +216,7 @@ export default function BannerRoot() {
                                             </div>
 
                                             <div className="col-span-3">
-                                                <InputLabel className="required">Button Link Value</InputLabel>
+                                                <InputLabel >Button Link Value</InputLabel>
                                                 <Autocomplete
                                                     options={notifiableIds}
                                                     value={notifiableIds.find(item => item.id === banner.json.notifiable_id) || null}
