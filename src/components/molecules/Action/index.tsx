@@ -12,7 +12,7 @@ import {
     Popper,
     useTheme
 } from "@mui/material";
-import { Copy } from "iconsax-reactjs";
+import { ArrangeHorizontal, Copy, Send, Slash } from "iconsax-reactjs";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { showAttachment } from "../../../slice/attachmentSlice";
@@ -26,11 +26,14 @@ interface Props {
     deleting?: boolean;
     onSuspend?: () => void;
     onClone?: () => void;
+    onGenerateOtp?: () => void;
+    onStatus?: () => void;
     userStatus?: boolean;
     file?: string;
+    courseStatus?: "published" | "draft"
 }
 
-export default function Actions({ onEdit, onDelete, onView, deleting = false, onSuspend, userStatus, file, onClone }: Props) {
+export default function Actions({ onEdit, onDelete, onView, deleting = false, onSuspend, userStatus, file, onClone, onGenerateOtp, onStatus, courseStatus }: Props) {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLButtonElement | null>(null);
@@ -183,6 +186,28 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
                                                 <Copy size={20} color={theme.palette.separator.darker} />
                                             </ListItemIcon>
                                             <ListItemText primary={t("actions.clone")} />
+                                        </ListItemButton>
+                                    </ListItem> : ""}
+                                    {onGenerateOtp ? <ListItem className="menu__item action__item">
+                                        <ListItemButton sx={{
+                                            m: 0,
+                                            border: "none"
+                                        }} onClick={() => handleMenuClick(onGenerateOtp)}>
+                                            <ListItemIcon>
+                                                <ArrangeHorizontal size={20} color={theme.palette.separator.darker} />
+                                            </ListItemIcon>
+                                            <ListItemText primary={t("actions.generate_otp")} />
+                                        </ListItemButton>
+                                    </ListItem> : ""}
+                                    {onStatus ? <ListItem className="menu__item action__item">
+                                        <ListItemButton sx={{
+                                            m: 0,
+                                            border: "none"
+                                        }} onClick={() => handleMenuClick(onStatus)}>
+                                            <ListItemIcon>
+                                                {courseStatus === "draft" ? <Send size={20} color={theme.palette.separator.darker} /> : <Slash size={20} color={theme.palette.separator.darker} />}
+                                            </ListItemIcon>
+                                            <ListItemText primary={courseStatus === "draft" ? t("actions.publish") : t("actions.unpublish")} />
                                         </ListItemButton>
                                     </ListItem> : ""}
                                     {file ? <ListItem className="menu__item action__item view__item">

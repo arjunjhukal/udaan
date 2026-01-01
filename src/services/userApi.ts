@@ -77,6 +77,12 @@ export const userApi = createApi({
                 { type: "User", id: "LIST" }
             ],
         }),
+        generateOTP: builder.mutation<GlobalResponse & { data: { otp: string } }, { id: number }>({
+            query: ({ id }) => ({
+                url: `/admin/user/${id}/generate-otp`,
+                method: "POST",
+            })
+        })
     })
 })
 
@@ -86,5 +92,6 @@ export const {
     useEditUserMutation,
     useDeleteUserMutation,
     useGetUserByIdQuery,
-    useSuspendUserMutation
+    useSuspendUserMutation,
+    useGenerateOTPMutation
 } = userApi;

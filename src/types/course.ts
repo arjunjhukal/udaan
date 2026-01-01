@@ -36,6 +36,7 @@ export interface CourseSubscription {
 export interface CourseProps {
     id?: number;
     name: string;
+    status?: "published" | "draft"
     slug: string | null;
     duration: DurationProps;
     description: string;

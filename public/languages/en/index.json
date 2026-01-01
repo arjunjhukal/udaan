@@ -203,6 +203,9 @@
         "suspend": "Suspend",
         "unsuspend": "Un Suspend",
         "view_file": "View Attachment",
-        "clone": "Clone"
+        "clone": "Clone",
+        "generate_otp": "Generate OTP",
+        "publish": "Publish",
+        "unpublish": "Unpublish"
     }
 }

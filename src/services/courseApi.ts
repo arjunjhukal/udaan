@@ -21,6 +21,14 @@ export const courseApi = createApi({
             }),
             invalidatesTags: [{ type: "Course", id: "LIST" }]
         }),
+        changeCourseStatus: builder.mutation<GlobalResponse, { body: number[] }>({
+            query: ({ body }) => ({
+                url: `/admin/course/status`,
+                method: "POST",
+                body: { ids: body }
+            }),
+            invalidatesTags: [{ type: "Course", id: "LIST" }]
+        }),
         getAllCourse: builder.query<CourseList, QueryParams & { categoryFilter?: CategoryFilterParams }>({
             query: ({ pageIndex, pageSize, search, categoryFilter }) => {
                 // const params = new URLSearchParams();
@@ -244,6 +252,7 @@ export const courseApi = createApi({
 
 export const {
     useCreateCourseMutation,
+    useChangeCourseStatusMutation,
     useGetAllCourseQuery,
     useEditCourseMutation,
     useGetCourseByIdQuery,

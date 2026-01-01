@@ -27,7 +27,7 @@ export default function CourseCard({ course, onDelete, onClone }: {
                 </div>
 
             </div>
-            <Box className="course_card_content p-3 flex flex-col gap-3" sx={{
+            <Box className="course_card_content p-3 flex flex-col gap-3 h-full" sx={{
                 background: theme.palette.text.lightest
             }}>
                 <Typography variant="caption" className="px-2.5 py-1 rounded-md max-w-fit capitalize" sx={{
@@ -58,8 +58,8 @@ export default function CourseCard({ course, onDelete, onClone }: {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="col-span-1">
                         <div className="flex gap-1 items-center">
-                            <Typography variant="subtitle1" ><del>Rs.{course?.marked_price}</del></Typography>
-                            <Typography variant="h4">Rs.{course?.sale_price}</Typography>
+                            <Typography variant="subtitle1" ><del>Rs.{course?.marked_price?.split(".")[0]}</del></Typography>
+                            <Typography variant="h4">Rs.{course?.sale_price?.split(".")[0]}</Typography>
                         </div>
                     </div>
                     <div className="col-span-1 text-right">

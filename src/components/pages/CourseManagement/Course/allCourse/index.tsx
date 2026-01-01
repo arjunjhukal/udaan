@@ -1,12 +1,12 @@
 import { Add } from "@mui/icons-material";
-import { Box, Checkbox, Stack, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Stack, Tooltip, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import { PATH } from "../../../../../routes/PATH";
-import { useCloneCourseMutation, useDeleteCourseMutation, useGetAllCourseQuery } from "../../../../../services/courseApi";
+import { useChangeCourseStatusMutation, useCloneCourseMutation, useDeleteCourseMutation, useGetAllCourseQuery } from "../../../../../services/courseApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import { useCourseFilter } from "../../../../../store/useCourseFilter";
@@ -53,6 +53,7 @@ export default function AllCourse() {
         getCategoryFilterParams,
         filterDialogOpen,
         setFilterDialogOpen
+
     } = useCourseFilter();
 
     const categoryFilter = getCategoryFilterParams();
@@ -63,6 +64,7 @@ export default function AllCourse() {
         search,
         categoryFilter: { ...categoryFilter }
     });
+    const [changeStatus] = useChangeCourseStatusMutation();
 
     useEffect(() => {
         resetFilters();
@@ -145,6 +147,26 @@ export default function AllCourse() {
         }
     }
 
+    const handleCourseStatusChange = async (id: number) => {
+        try {
+            const response = await changeStatus({ body: [id] }).unwrap();
+            dispatch(
+                showToast({
+                    message: response?.message || "Course Published Successfully",
+                    severity: "success"
+                })
+            )
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to Publish Course",
+                    severity: "error"
+                })
+            )
+        }
+    }
+
     const columns = useMemo<ColumnDef<CourseProps>[]>(() => [
         {
             header: () => (
@@ -178,6 +200,20 @@ export default function AllCourse() {
                 <Typography fontWeight={500} variant="subtitle1" >
                     {row.original.name || "N/A"}
                 </Typography>
+            ),
+        },
+        {
+            header: "Status",
+            accessorKey: "status",
+            cell: ({ row }) => (
+                <Tooltip title={`Click to change status to ${row.original.status === "published" ? "Draft" : "Publish"}`}>
+                    <Button className="py-0.5! px-2! rounded-xl! capitalize!" sx={{
+                        color: (theme) => theme.palette.primary.contrastText,
+                        background: (theme) => row.original.status === "published" ? theme.palette.success.main : theme.palette.separator.darker
+                    }} onClick={() => handleCourseStatusChange(Number(row.original.id))}>
+                        <Typography variant="caption">{row.original.status || "N/A"}</Typography>
+                    </Button>
+                </Tooltip>
             ),
         },
         {
@@ -228,6 +264,8 @@ export default function AllCourse() {
                     onView={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}`)}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                     onClone={() => handleCourseClone(Number(row.original.id))}
+                    onStatus={() => handleCourseStatusChange(Number(row.original.id))}
+                    courseStatus={row.original.status || "draft"}
                 />
             ),
         },
