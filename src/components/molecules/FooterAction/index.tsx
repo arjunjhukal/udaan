@@ -22,7 +22,7 @@ export default function FooterAction({
 
     return (
         <Box
-            className="footer__action flex justify-end items-center gap-2 py-6 mt-8 sticky -bottom-5"
+            className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky bottom-0"
             sx={{
                 borderTop: `1px solid ${theme.palette.separator.dark}`,
                 background: theme.palette.primary.contrastText,

@@ -6,7 +6,7 @@ import TestManagementForm from "../TestManagementForm";
 export default function CreatTestRoot() {
     const { t } = useTranslation();
     return (
-        <>
+        <div className="create__test__root h-full flex flex-col justify-start">
             <PageHeader
                 breadcrumb={[
                     {
@@ -25,6 +25,6 @@ export default function CreatTestRoot() {
 
             />
             <TestManagementForm />
-        </>
+        </div>
     )
 }

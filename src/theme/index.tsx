@@ -354,9 +354,20 @@ const commonThemeOptions: ThemeOptions = {
                     color: theme.palette.textField.name,
                     marginBottom: "8px",
                     fontWeight: 400,
+                    lineHeight: "1.5",
+
                     [theme.breakpoints.down("lg")]: {
                         fontSize: "12px",
                     },
+
+                    "&.Mui-focused": {
+                        fontSize: "16px",
+                    },
+
+                    "&.MuiInputLabel-shrink": {
+                        fontSize: "12px",
+                    },
+
                     "&.required::after": {
                         content: '"*"',
                         display: "inline-block",
@@ -366,11 +377,12 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
+
         MuiOutlinedInput: {
             styleOverrides: {
                 root: ({ theme }) => ({
                     ...theme.typography.subtitle1,
-                    padding: "16px",
+                    padding: "10px 16px",
                     borderRadius: "8px",
                     fontWeight: "500",
                 }),

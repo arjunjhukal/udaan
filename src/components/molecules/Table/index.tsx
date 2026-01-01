@@ -66,7 +66,7 @@ export default function UdaanTable<T extends object>({
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableCell key={header.id} sx={{ fontWeight: 600 }} className="p-5!" >
+                                    <TableCell key={header.id} sx={{ fontWeight: 600 }} className="p-3! 2xl:p-5!" >
                                         <Typography variant="subtitle2" color="text.middle">{flexRender(
                                             header.column.columnDef.header,
                                             header.getContext()
@@ -82,7 +82,7 @@ export default function UdaanTable<T extends object>({
                             Array.from({ length: skeletonRows }).map((_, rowIndex) => (
                                 <TableRow key={`skeleton-${rowIndex}`}>
                                     {columns.map((_, cellIndex) => (
-                                        <TableCell key={`skeleton-cell-${cellIndex}`} className="px-5! py-6!">
+                                        <TableCell key={`skeleton-cell-${cellIndex}`} className="p-3! 2xl:px-5! 2xl:py-6!">
                                             <Skeleton
                                                 variant="text"
                                                 width={cellIndex === 0 ? "60%" : "80%"}
@@ -101,7 +101,7 @@ export default function UdaanTable<T extends object>({
                             table.getRowModel().rows.map((row) => (
                                 <TableRow key={row.id}>
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id} className="px-5! py-6!">
+                                        <TableCell key={cell.id} className="p-3! 2xl:px-5! 2xl:py-6!">
                                             <Typography variant="body2" color="text.dark">
                                                 {flexRender(
                                                     cell.column.columnDef.cell,

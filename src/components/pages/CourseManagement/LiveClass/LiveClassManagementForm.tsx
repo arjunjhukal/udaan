@@ -236,7 +236,7 @@ export default function LiveClassManagementForm() {
     ];
 
     return (
-        <div className="live__class__form">
+        <div className="live__class__form h-full flex flex-col justify-between overflow-auto">
             <form onSubmit={formik.handleSubmit}>
                 <Typography variant="body1" className="mb-4! font-medium!">
                     Basic Information

@@ -314,7 +314,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                         </Typography>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col md:grid grid-cols-2 gap-4">
                         {formik.values.options.map((option, index) => (
                             <div key={index} className="flex flex-col gap-4">
                                 <TextEditor
@@ -389,7 +389,7 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                 isLoading={isLoading}
                 isEditMode={isEditMode}
                 isUpdating={isLoading}
-          
+
                 replaceLabel={isLoading ? "Creating Question..." : "Create Question"}
             />
         </form>

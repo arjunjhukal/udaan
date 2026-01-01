@@ -6,7 +6,7 @@ import LiveClassManagementForm from "../LiveClassManagementForm";
 export default function CreateLiveClassRoot() {
     const { t } = useTranslation();
     return (
-        <>
+        <div className="h-full flex flex-col justify-start">
             <PageHeader
                 breadcrumb={[
                     {
@@ -23,6 +23,6 @@ export default function CreateLiveClassRoot() {
 
             />
             <LiveClassManagementForm />
-        </>
+        </div>
     )
 }
