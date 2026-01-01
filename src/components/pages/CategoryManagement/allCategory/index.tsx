@@ -30,7 +30,7 @@ export default function AllCategories() {
 
     const [qp, setQp] = React.useState({
         pageIndex: 1,
-        pageSize: 5,
+        pageSize: 20,
     });
     const [openConfirmDelete, setOpenConfirmDelete] = React.useState(false);
 
