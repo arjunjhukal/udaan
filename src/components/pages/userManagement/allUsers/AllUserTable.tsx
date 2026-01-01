@@ -5,7 +5,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
-import { useDeleteUserMutation, useGetAllUserQuery, useSuspendUserMutation } from "../../../../services/userApi";
+import { useDeleteUserMutation, useGenerateOTPMutation, useGetAllUserQuery, useSuspendUserMutation } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
@@ -14,6 +14,7 @@ import Actions from "../../../molecules/Action";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
+import OtpDialog from "../../../organism/Dialog/OtpDialog";
 import EmptyRoute from "../../../organism/EmptyRoute";
 import { CourseFilter } from "../../../organism/Filter/CourseFilter";
 import PageHeader from "../../../organism/PageHeader";
@@ -28,6 +29,7 @@ export default function AllUserTable() {
     const dispatch = useAppDispatch();
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
     const [search, setSearch] = React.useState<string>("");
+    const [openOtpPopup, setOpenOtpPopup] = useState(false);
     const [debouncedSearch, setDebouncedSearch] = useState<string>("");
     const [qp, setQp] = React.useState({
         pageIndex: 1,
@@ -53,7 +55,8 @@ export default function AllUserTable() {
     const { data, isLoading, isFetching } = useGetAllUserQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(",") });
     const [deleteUser, { isLoading: deleting }] = useDeleteUserMutation();
     const [suspendUser] = useSuspendUserMutation();
-
+    const [generateOtp] = useGenerateOTPMutation();
+    const [otp, setOtp] = useState<string>("");
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
             const allIndices = new Set(user.map((_, index) => index));
@@ -186,6 +189,28 @@ export default function AllUserTable() {
         }
     };
 
+
+    const handleUserOtpGeneration = async (id: number) => {
+        try {
+            const response = await generateOtp({ id }).unwrap();
+            dispatch(
+                showToast({
+                    message: response?.message || "OTP Generated Successfully",
+                    severity: "success"
+                })
+            )
+            setOtp(response?.data?.otp);
+            setOpenOtpPopup(true);
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to Generate OTP",
+                    severity: "error"
+                })
+            )
+        }
+    }
     const columns = useMemo<ColumnDef<RegisterUserProps>[]>(() => [
         {
             header: () => (
@@ -259,6 +284,7 @@ export default function AllUserTable() {
                         onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                         onSuspend={() => openSuspendConfirmation([row.original.id?.toString() || ""])}
                         userStatus={row.original.is_suspended}
+                        onGenerateOtp={() => handleUserOtpGeneration(Number(row.original.id))}
                     />
                     {row.original.is_suspended ? (
                         <IconButton
@@ -281,7 +307,7 @@ export default function AllUserTable() {
     const dialogContent = getDialogContent();
 
     return (
-        < div className="user__root h-full flex flex-col justify-between">
+        <div className="user__root h-full flex flex-col justify-between">
             <div className="page__top">
                 <PageHeader
                     breadcrumb={[
@@ -357,6 +383,11 @@ export default function AllUserTable() {
                 onChange={handleCategoryChange}
                 onApplyFilter={handleApplyFilter}
                 onResetFilter={resetFilters}
+            />
+            <OtpDialog
+                open={openOtpPopup}
+                setOpen={setOpenOtpPopup}
+                otp={otp}
             />
         </div>
     );
