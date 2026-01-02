@@ -39,16 +39,14 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
         setOpen(true);
     };
 
-
     const { data, isLoading } = useGetAllQuestionQuery({ ...qp, search: search, type: activeTab });
     const [deleteQuestion, { isLoading: deleting }] = useDeleteQuestionMutation();
-
 
     const questions = data?.data?.data || [];
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            const allIndices = new Set(questions.map((_, index) => index));
-            setSelectedRows(allIndices);
+            const allIds = new Set(questions.map((question) => question.id || ''));
+            setSelectedRows(allIds);
         } else {
             setSelectedRows(new Set());
         }

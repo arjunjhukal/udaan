@@ -40,10 +40,11 @@ export default function AllTestListing() {
 
 
     const tests = data?.data?.data || [];
+
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            const allIndices = new Set(tests.map((_, index) => index));
-            setSelectedRows(allIndices);
+            const allIds = new Set(tests.map((test) => test.id || ''));
+            setSelectedRows(allIds);
         } else {
             setSelectedRows(new Set());
         }
@@ -176,7 +177,7 @@ export default function AllTestListing() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp])
 
 
     return (

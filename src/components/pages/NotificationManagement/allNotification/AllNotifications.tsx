@@ -40,7 +40,7 @@ export default function AllNotifications() {
     const notifications = data?.data?.data || [];
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            const allIndices = new Set(notifications.map((_, index) => index));
+            const allIndices = new Set(notifications.map((notification) => notification.id||""));
             setSelectedRows(allIndices);
         } else {
             setSelectedRows(new Set());

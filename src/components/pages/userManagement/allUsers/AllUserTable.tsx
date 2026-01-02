@@ -59,7 +59,7 @@ export default function AllUserTable() {
     const [otp, setOtp] = useState<string>("");
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            const allIndices = new Set(user.map((_, index) => index));
+            const allIndices = new Set(user.map((user) => user.id || ""));
             setSelectedRows(allIndices);
         } else {
             setSelectedRows(new Set());
