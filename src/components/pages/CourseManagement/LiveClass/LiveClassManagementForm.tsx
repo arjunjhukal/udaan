@@ -157,7 +157,7 @@ export default function LiveClassManagementForm() {
         categoryFilter: courseFilterParams,
         pageIndex: qp.pageIndex,
         pageSize: qp.pageSize,
-        search: ""
+        search: search
     });
     const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
     useEffect(() => {
