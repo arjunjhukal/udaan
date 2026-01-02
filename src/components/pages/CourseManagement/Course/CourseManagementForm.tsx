@@ -464,7 +464,12 @@ export default function CourseManagementForm() {
                 isLoading={isLoading}
                 isUpdating={updating}
                 isEditMode={!!id}
-                replaceLabel={isLoading ? "Creating Course..." : "Create Course"}
+                replaceLabel={id ? isLoading
+                    ? "Updating Course..."
+                    : "Update Course"
+                    : isLoading
+                        ? "Creating Course..."
+                        : "Create Course"}
             />
         </form >
     )
