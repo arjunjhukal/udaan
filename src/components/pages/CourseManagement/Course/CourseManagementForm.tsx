@@ -283,6 +283,9 @@ export default function CourseManagementForm() {
 
     const handleFileChange = (file: File | null) => {
         formik.setFieldValue("thumbnail", file);
+        if (!file) {
+            formik.setFieldValue("thumbnail_url", "");
+        }
     };
     const handleTabChange = (newValue: courseTabType) => {
         if (!id) {

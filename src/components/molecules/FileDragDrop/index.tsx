@@ -53,10 +53,11 @@ export default function FileDragDrop({
         }
     }, [maxSize, onFileChange]);
 
+
     const removeImage = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation(); // prevent triggering file dialog
+        e.stopPropagation();
         setPreview(null);
-        onFileChange(null); // Notify parent that file is removed
+        onFileChange(null);
     }, [onFileChange]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
