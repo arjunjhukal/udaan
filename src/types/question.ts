@@ -158,7 +158,6 @@ export const testValidationSchema = Yup.object().shape({
         .min(0, "Pass marks must be at least 0")
         .required("Pass marks is required"),
 
-
     is_scheduled: Yup.boolean().default(false).required(),
     start_datetime: Yup.string().when("is_scheduled", { is: true, then: (schema) => schema.required("Start date & time is required"), otherwise: (schema) => schema.notRequired() }),
     end_datetime: Yup.string().when("is_scheduled", {

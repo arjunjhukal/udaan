@@ -119,10 +119,9 @@ export const liveClassValidationSchema = Yup.object({
         .min(1, "At least one teacher is required")
         .required("Teacher selection is required"),
 
-    courses: Yup.array()
-        .of(Yup.number())
+    course_ids: Yup.array()
         .min(1, "At least one course is required")
-        .required("Course selection is required"),
+        .required("At least one course is required"),
 
     // Registration type only applies for weekly
     registration_type: Yup.mixed<1 | 2 | 3 | 99>()

@@ -546,8 +546,7 @@ export default function LiveClassManagementForm() {
                             hasMore={hasMoreCourses}
                             selectedItems={formik.values.courses}
                             onSelectionChange={(selectedIds) => {
-                                formik.setFieldValue("courses", selectedIds);
-                                formik.setFieldTouched("courses", true);
+                                formik.setFieldValue("course_ids", selectedIds);
                             }}
                             fetchMore={fetchMoreCourses}
                             onSearch={handleCourseSearch}
