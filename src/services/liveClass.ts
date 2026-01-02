@@ -73,7 +73,8 @@ export const liveClassApi = createApi({
                 method: "POST",
                 body
             }),
-            invalidatesTags: (_result, _error,) => [
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: "Live_Class", id },
                 { type: "Live_Class", id: "LIST" }
             ],
         })
