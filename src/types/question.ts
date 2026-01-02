@@ -46,7 +46,6 @@ export interface QuestionList extends GlobalResponse {
         pagination: Pagination;
         overview: {
             test_type: TestTypeProps;
-
         }
     }
 }
@@ -85,13 +84,13 @@ export const TestInitialState: TestProps = {
         hours: 0,
         minutes: 0
     },
-    full_mark: 100,
-    pass_mark: 40,
+    full_mark: 0,
+    pass_mark: 0,
     start_datetime: null,
     end_datetime: null,
     course_ids: [],
     question_ids: [],
-    is_scheduled: false,
+    is_scheduled: true,
     total_questions: null,
     marks_per_question: 1,
 };
