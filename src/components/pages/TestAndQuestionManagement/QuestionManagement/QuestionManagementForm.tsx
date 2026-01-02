@@ -389,8 +389,12 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                 isLoading={isLoading}
                 isEditMode={isEditMode}
                 isUpdating={isLoading}
-
-                replaceLabel={isLoading ? "Creating Question..." : "Create Question"}
+                replaceLabel={isEditMode ? isLoading
+                    ? "Updating Question..."
+                    : "Update Question"
+                    : isLoading
+                        ? "Creating Question..."
+                        : "Create Question"}
             />
         </form>
     );
