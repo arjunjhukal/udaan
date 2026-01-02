@@ -1,7 +1,8 @@
 import { Box, Button, Divider, Stack, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { useGetAllLinkedDevicesQuery, useLogoutFromLinkedDeviceMutation } from "../../../../services/settingApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
@@ -16,9 +17,10 @@ export default function LinkedDevices() {
     const { data, isLoading } = useGetAllLinkedDevicesQuery();
     const [logout, { isLoading: loggingOut }] =
         useLogoutFromLinkedDeviceMutation();
-
+    const [loggingOutId, setLoggingOutId] = useState<number | null>(null);
     const handleLogout = async (id: number) => {
         try {
+            setLoggingOutId(id);
             await logout({ id }).unwrap();
 
             dispatch(
@@ -34,6 +36,8 @@ export default function LinkedDevices() {
                     severity: "error",
                 })
             );
+        } finally {
+            setLoggingOutId(null);
         }
     };
 
@@ -56,9 +60,11 @@ export default function LinkedDevices() {
                             <Typography fontWeight={400} className="capitalize">
                                 {row.original.location || "N/A"}
                             </Typography>
-                            <Typography fontWeight={400} variant="subtitle2" color="text.middle">
-                                {row.original.ip || "N/A"}
-                            </Typography>
+                            <Link to={`https://ip2location.com/demo/${row.original.ip}`} target="_blank">
+                                <Typography fontWeight={400} variant="subtitle2" color="text.middle">
+                                    {row.original.ip || "N/A"}
+                                </Typography>
+                            </Link>
                         </Box>
                     </Stack>
                 ),
@@ -93,20 +99,24 @@ export default function LinkedDevices() {
             {
                 header: "Action",
                 accessorKey: "action",
-                cell: ({ row }) => (
-                    <Button
-                        variant="text"
-                        color="error"
-                        disabled={loggingOut}
-                        onClick={() =>
-                            handleLogout(Number(row.original.id))
-                        }
-                    >
-                        <Typography className="capitalize">
-                            {loggingOut ? "Logging out..." : "Sign out"}
-                        </Typography>
-                    </Button>
-                ),
+                cell: ({ row }) => {
+                    const isLoggingOut = loggingOutId === row.original.id;
+
+                    return (
+                        <Button
+                            variant="text"
+                            color="error"
+                            disabled={isLoggingOut}
+                            onClick={() =>
+                                handleLogout(Number(row.original.id))
+                            }
+                        >
+                            <Typography className="capitalize">
+                                {isLoggingOut ? "Logging out..." : "Sign out"}
+                            </Typography>
+                        </Button>
+                    )
+                },
             },
         ],
         [loggingOut]
