@@ -23,11 +23,14 @@ import { useGetAllPositionQuery } from "../../../../services/positionApi";
 import { useGetAllUserQuery } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
+import type { CourseProps } from "../../../../types/course";
 import { initialLiveClassState, liveClassValidationSchema } from "../../../../types/liveClass";
+import { calcHasMore } from "../../../../utils/calculateHasMore";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
 import TextEditor from "../../../atoms/TextEditor";
 import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FooterAction from "../../../molecules/FooterAction";
+import InfiniteScrolling from "../../../molecules/InfiniteScrolling";
 import CategoryFilter from "../../../organism/CategoryFilter";
 
 type ZoomAccount = {
@@ -53,11 +56,12 @@ export default function LiveClassManagementForm() {
         position_ids: []
     });
 
-    const [qp, _setQp] = useState({
+    const [qp, setQp] = useState({
         pageIndex: 1,
         pageSize: 10
     });
-    // const [search, setSearch] = useState("")
+    const [search, setSearch] = useState("");
+    const [courseList, setCourseList] = useState<CourseProps[]>([]);
     const formik = useFormik({
         initialValues: initialLiveClassState,
         validationSchema: liveClassValidationSchema,
@@ -101,7 +105,6 @@ export default function LiveClassManagementForm() {
     const [updateLiveClass, { isLoading: updating }] = useEditLiveClassMutation();
     const { data: liveClassData } = useGetLiveClassByIdQuery({ id: Number(id) }, { skip: !id });
 
-    // Fetch zoom accounts (assuming you have a query for this)
     const zoomAccounts: { data: { data: ZoomAccount[] } } = {
         data: {
             data: [{ name: "udaanshaikshikkendra@gmail.com", id: 1 }, { name: "sushantsanu123@gmail.com", id: 2 }]
@@ -150,7 +153,7 @@ export default function LiveClassManagementForm() {
     };
 
 
-    const { data: courses } = useGetAllCourseQuery({
+    const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({
         categoryFilter: courseFilterParams,
         pageIndex: qp.pageIndex,
         pageSize: qp.pageSize,
@@ -233,6 +236,36 @@ export default function LiveClassManagementForm() {
         { label: "Cloud", value: "cloud" },
         { label: "None", value: "none" }
     ];
+
+    useEffect(() => {
+        if (!courses?.data?.data) return;
+
+        setCourseList(prev => {
+            if (qp.pageIndex === 1) {
+                return courses.data.data;
+            }
+
+            const existingIds = new Set(prev.map(course => course.id));
+            const newCourses = courses.data.data.filter(
+                course => !existingIds.has(course.id)
+            );
+
+            return [...prev, ...newCourses];
+        });
+    }, [courses, qp.pageIndex]);
+
+    const coursePagination = courses?.data?.pagination;
+    const hasMoreCourses = calcHasMore(coursePagination);
+
+    const fetchMoreCourses = () => {
+        if (hasMoreCourses) {
+            setQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
+        }
+    };
+
+    const handleCourseSearch = (searchTerm: string) => {
+        setSearch(searchTerm);
+    };
 
     return (
         <div className="live__class__form h-full flex flex-col justify-between overflow-auto">
@@ -497,7 +530,37 @@ export default function LiveClassManagementForm() {
                     {/* Link Courses */}
                     <div className="col-span-1">
                         <InputLabel className="required">Link Courses</InputLabel>
-                        <Autocomplete
+                        <OutlinedInput
+                            fullWidth
+                            placeholder="Search Course"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            endAdornment={
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.58317 17.5001C13.9554 17.5001 17.4998 13.9557 17.4998 9.58341C17.4998 5.21116 13.9554 1.66675 9.58317 1.66675C5.21092 1.66675 1.6665 5.21116 1.6665 9.58341C1.6665 13.9557 5.21092 17.5001 9.58317 17.5001Z" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path><path d="M18.3332 18.3334L16.6665 16.6667" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+                            }
+                        />
+                        <InfiniteScrolling
+                            key="course-list"
+                            scrollableId="course-scrollable"
+                            data={courseList || []}
+                            hasMore={hasMoreCourses}
+                            selectedItems={formik.values.courses}
+                            onSelectionChange={(selectedIds) => {
+                                formik.setFieldValue("courses", selectedIds);
+                                formik.setFieldTouched("courses", true);
+                            }}
+                            fetchMore={fetchMoreCourses}
+                            onSearch={handleCourseSearch}
+                            loading={loadingCourses}
+                            maxSelection={10}
+                            itemLabelKey="name"
+                            itemIdKey="id"
+                            placeholder="Search courses..."
+                        />
+                        {formik.touched.courses && formik.errors.courses && (
+                            <FormHelperText error>{formik.errors.courses}</FormHelperText>
+                        )}
+                        {/* <Autocomplete
                             multiple
                             options={courses?.data?.data || []}
                             getOptionLabel={(option) => option.name || ""}
@@ -513,7 +576,7 @@ export default function LiveClassManagementForm() {
                                     helperText={formik.touched.courses && formik.errors.courses}
                                 />
                             )}
-                        />
+                        /> */}
                     </div>
                 </div>
 

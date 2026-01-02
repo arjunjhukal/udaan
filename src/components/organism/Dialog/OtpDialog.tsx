@@ -25,13 +25,9 @@ export default function OtpDialog({ open, setOpen, otp }: OtpDialogProps) {
     const [copied, setCopied] = useState(false);
 
     const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(otp);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error('Failed to copy:', err);
-        }
+        await navigator.clipboard.writeText(otp);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
     };
 
     const handleClose = () => {
@@ -48,20 +44,20 @@ export default function OtpDialog({ open, setOpen, otp }: OtpDialogProps) {
             PaperProps={{
                 sx: {
                     borderRadius: 3,
-                    overflow: 'visible'
+                    bgcolor: theme.palette.background.paper,
                 }
             }}
         >
-            {/* Close Button */}
+            {/* Close */}
             <IconButton
                 onClick={handleClose}
                 sx={{
                     position: 'absolute',
                     right: 8,
                     top: 8,
-                    color: theme.palette.grey[500],
+                    color: theme.palette.text.middle,
                     '&:hover': {
-                        bgcolor: alpha(theme.palette.grey[500], 0.1)
+                        bgcolor: alpha(theme.palette.text.middle, 0.1)
                     }
                 }}
             >
@@ -70,7 +66,7 @@ export default function OtpDialog({ open, setOpen, otp }: OtpDialogProps) {
 
             {/* Header */}
             <DialogTitle sx={{ textAlign: 'center', pt: 4, pb: 2 }}>
-                <Typography variant="h5" fontWeight={700} mb={1}>
+                <Typography variant="h5" fontWeight={700}>
                     User OTP Code
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -79,24 +75,26 @@ export default function OtpDialog({ open, setOpen, otp }: OtpDialogProps) {
             </DialogTitle>
 
             <DialogContent sx={{ pb: 4, px: 3 }}>
-                <Stack spacing={3} flexDirection={"column"}>
+                <Stack spacing={3} flexDirection="column">
+                    {/* OTP Box */}
                     <Box
+                        onClick={handleCopy}
                         sx={{
                             position: 'relative',
-                            background: 'linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%)',
-                            border: `2px solid ${theme.palette.grey[300]}`,
+                            bgcolor: theme.palette.gray.gray1,
+                            border: `2px solid ${theme.palette.separator.dark}`,
                             borderRadius: 2,
                             p: 3,
                             textAlign: 'center',
-                            transition: 'all 0.3s ease',
                             cursor: 'pointer',
+                            transition: 'all 0.25s ease',
+
                             '&:hover': {
                                 borderColor: theme.palette.primary.main,
-                                transform: 'scale(1.02)',
-                                boxShadow: theme.shadows[4]
+                                boxShadow: theme.shadows[4],
+                                transform: 'scale(1.02)'
                             }
                         }}
-                        onClick={handleCopy}
                     >
                         <Typography
                             variant="h3"
@@ -104,23 +102,20 @@ export default function OtpDialog({ open, setOpen, otp }: OtpDialogProps) {
                             letterSpacing={4}
                             sx={{
                                 fontFamily: 'monospace',
-                                color: theme.palette.grey[900],
+                                color: theme.palette.text.dark,
                                 userSelect: 'all'
                             }}
                         >
                             {otp}
                         </Typography>
 
-                        {/* Copy indicator overlay */}
+                        {/* Copied Overlay */}
                         <Fade in={copied}>
                             <Box
                                 sx={{
                                     position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    background: alpha(theme.palette.success.main, 0.95),
+                                    inset: 0,
+                                    bgcolor: alpha(theme.palette.success.main, 0.95),
                                     borderRadius: 2,
                                     display: 'flex',
                                     alignItems: 'center',
@@ -129,8 +124,8 @@ export default function OtpDialog({ open, setOpen, otp }: OtpDialogProps) {
                                     gap: 1
                                 }}
                             >
-                                <TickCircle size={40} color="#fff" variant="Bold" />
-                                <Typography variant="body1" fontWeight={600} color="white">
+                                <TickCircle size={40} variant="Bold" color="white" />
+                                <Typography fontWeight={600} color="white">
                                     Copied!
                                 </Typography>
                             </Box>
@@ -140,32 +135,34 @@ export default function OtpDialog({ open, setOpen, otp }: OtpDialogProps) {
                     {/* Copy Button */}
                     <Button
                         fullWidth
-                        variant="contained"
                         size="large"
-                        startIcon={copied ? <TickCircle size={20} variant="Bold" /> : <Copy size={20} />}
+                        startIcon={
+                            copied
+                                ? <TickCircle size={20} variant="Bold" />
+                                : <Copy size={20} />
+                        }
                         onClick={handleCopy}
                         sx={{
-                            background: copied
+                            bgcolor: copied
                                 ? theme.palette.success.main
-                                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                : theme.palette.primary.main,
+                            color: theme.palette.primary.contrastText,
                             py: 1.5,
                             borderRadius: 2,
                             fontWeight: 600,
-                            textTransform: 'none',
                             fontSize: 16,
-                            transition: 'all 0.3s ease',
+
                             '&:hover': {
-                                background: copied
+                                bgcolor: copied
                                     ? theme.palette.success.dark
-                                    : 'linear-gradient(135deg, #5568d3 0%, #6941a5 100%)',
-                                transform: 'translateY(-2px)',
-                                boxShadow: theme.shadows[8]
+                                    : theme.palette.primary.hover,
+                                boxShadow: theme.shadows[8],
+                                transform: 'translateY(-2px)'
                             }
                         }}
                     >
                         {copied ? 'Copied to Clipboard!' : 'Copy to Clipboard'}
                     </Button>
-
                 </Stack>
             </DialogContent>
         </Dialog>
