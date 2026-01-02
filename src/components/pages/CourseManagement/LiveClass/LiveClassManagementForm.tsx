@@ -136,7 +136,6 @@ export default function LiveClassManagementForm() {
         }
     );
 
-    // Build course filter params from categoryFilters
     const courseFilterParams = {
         mega_category: categoryFilters?.mega_category || [],
         category: categoryFilters?.category
@@ -329,7 +328,7 @@ export default function LiveClassManagementForm() {
                         <InputLabel className="required">Start Day & Time</InputLabel>
                         <MakuraDatePicker
                             value={formik.values.schedule_date ? dayjs(formik.values.schedule_date) : null}
-                            onChange={(date: Dayjs | null) => formik.setFieldValue("schedule_date", date ? date.toISOString() : "")}
+                            onChange={(date: Dayjs | null) => formik.setFieldValue("schedule_date", date ? date.format('YYYY-MM-DDTHH:mm:ss') : "")}
                             includeTime={true}
                         />
                         {formik.touched.schedule_date && formik.errors.schedule_date && (
@@ -442,31 +441,12 @@ export default function LiveClassManagementForm() {
                                         <InputLabel className="required">End Date</InputLabel>
                                         <MakuraDatePicker
                                             value={formik.values.end_date ? dayjs(formik.values.end_date) : null}
-                                            onChange={(date: Dayjs | null) => formik.setFieldValue("end_date", date ? date.toISOString() : null)}
+                                            onChange={(date: Dayjs | null) => formik.setFieldValue("end_date", date ? date.format('YYYY-MM-DDTHH:mm:ss') : null)}
 
                                         />
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Registration Type (only for weekly) */}
-                            {/* <div className="col-span-1">
-                                <InputLabel className="required">Registration Type</InputLabel>
-                                <Autocomplete
-                                    options={registrationOptions}
-                                    getOptionLabel={(option) => option.label}
-                                    value={registrationOptions.find(opt => opt.value === formik.values?.registration_type) || null}
-                                    onChange={(_e, v) => formik.setFieldValue("registration_type", v?.value || 1)}
-                                    renderInput={(p) => (
-                                        <TextField
-                                            {...p}
-                                            placeholder="Select Registration Type"
-                                            error={formik.touched.registration_type && Boolean(formik.errors.registration_type)}
-                                            helperText={formik.touched.registration_type && formik.errors.registration_type}
-                                        />
-                                    )}
-                                />
-                            </div> */}
                         </>
                     )}
                 </div>

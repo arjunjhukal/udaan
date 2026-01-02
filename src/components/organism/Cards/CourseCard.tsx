@@ -63,7 +63,7 @@ export default function CourseCard({ course, onDelete, onClone }: {
                         </div>
                     </div>
                     <div className="col-span-1 text-right">
-                        <Button variant="contained" className="py-1.5! px-3!">View More</Button>
+                        <Button variant="contained" className="py-1.5! px-3!" onClick={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}>View More</Button>
                     </div>
                 </div>
             </Box>
