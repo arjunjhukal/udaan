@@ -1,6 +1,6 @@
 import type { Pagination } from "./roleAndPermission";
 
-export type PaymentMethodProps = "esewa" | "khalti" | "cash"
+export type PaymentMethodProps = "esewa" | "khalti" | "cash" | "fonepay"
 export type PaymentStatusProps = "success" | "installment"
 
 export interface TransactionPayload {

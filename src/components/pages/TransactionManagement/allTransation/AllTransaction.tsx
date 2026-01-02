@@ -183,6 +183,15 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
+            header: "Payment Mode",
+            accessorKey: "payment_method",
+            cell: ({ row }) => (
+                <Typography variant='subtitle2' className="capitalize">
+                    {row.original.payment_method || "N/A"}
+                </Typography>
+            ),
+        },
+        {
             header: "Created Date",
             accessorKey: "created_at",
             cell: ({ row }) => {
