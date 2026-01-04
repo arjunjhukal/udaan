@@ -490,7 +490,7 @@ export default function TestManagementForm() {
             </Box>
 
             <FooterAction
-                handleConfirmationChange={() => { }}
+                handleConfirmationChange={() => navigate(-1)}
                 isLoading={creatingTest}
                 isUpdating={creatingTest}
                 isEditMode={!id}

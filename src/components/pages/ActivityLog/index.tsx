@@ -69,6 +69,13 @@ export default function ActivityRoot() {
                 <Typography >{row.original.type || "N/A"}</Typography>
             ),
         },
+        {
+            header: "Date",
+            accessorKey: "date",
+            cell: ({ row }) => (
+                <Typography >{row.original.timestamp || "N/A"}</Typography>
+            ),
+        },
     ], [qp])
     return (
         <div className='activity__root  flex flex-col justify-between h-full'>
