@@ -15,6 +15,32 @@ export default function ActivityRoot() {
         pageSize: 20,
     });
     const { data, isLoading } = useGetAllActivityQuery({ ...qp, search });
+
+    const formatToNepalTime = (timestamp: string): string => {
+        if (!timestamp) return "N/A";
+
+        try {
+            const date = new Date(timestamp);
+
+            if (isNaN(date.getTime())) {
+                return "Invalid Date";
+            }
+
+            return new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Kathmandu',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            }).format(date);
+        } catch (error) {
+            console.error("Error formatting date:", error);
+            return "Invalid Date";
+        }
+    };
+
     const columns = useMemo<ColumnDef<ActivityProps>[]>(() => [
         {
             header: "S.No.",
@@ -73,10 +99,11 @@ export default function ActivityRoot() {
             header: "Date",
             accessorKey: "date",
             cell: ({ row }) => (
-                <Typography >{row.original.timestamp || "N/A"}</Typography>
+                <Typography >{formatToNepalTime(row.original.timestamp) || "N/A"}</Typography>
             ),
         },
-    ], [qp])
+    ], [qp]);
+
     return (
         <div className='activity__root  flex flex-col justify-between h-full'>
             <div className="page__top">
