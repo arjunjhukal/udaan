@@ -40,7 +40,6 @@ export default function UdaanTable<T extends object>({
     className,
     loading,
     skeletonRows = 8,
-    maxHeight
 }: UdaanTableProps<T>) {
     const table = useReactTable({
         data,

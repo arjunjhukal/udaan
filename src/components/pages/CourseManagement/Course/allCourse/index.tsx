@@ -244,6 +244,15 @@ export default function AllCourse() {
             ),
         },
         {
+            header: "Enrolled Student",
+            accessorKey: "enrolled_students",
+            cell: ({ row }) => (
+                <Typography >
+                    {row.original.enrolled_students || "N/A"}
+                </Typography>
+            ),
+        },
+        {
             header: "Created Date",
             accessorKey: "created_at",
             cell: ({ row }) => {

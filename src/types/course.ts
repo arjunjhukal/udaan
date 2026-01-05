@@ -53,6 +53,7 @@ export interface CourseProps {
     course_subscription?: CourseSubscription[] | null;
     marked_price?: string,
     sale_price?: string,
+    enrolled_students?: string;
 }
 
 export const initialCourseState: CourseProps = {
