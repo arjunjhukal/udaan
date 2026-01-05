@@ -18,10 +18,10 @@ export default function PageHeader(props: Props) {
     const theme = useTheme();
     const { breadcrumb, cta, description, handleOpenPopup } = props;
     return (
-        <Box className="page__header lg:grid lg:grid-cols-12  pb-4 mb-8 items-center" sx={{
+        <Box className="page__header lg:grid lg:grid-cols-12 pb-2 mb-4  2xl:pb-4 2xl:mb-8 items-center" sx={{
             borderBottom: `1px solid ${theme.palette.separator.dark}`
         }}>
-            <div className="header__content lg:col-span-9">
+            <div className="header__content lg:col-span-7">
                 <Stack
                     className="breadcrumb"
                     sx={(theme) => ({
@@ -71,7 +71,7 @@ export default function PageHeader(props: Props) {
                 </Stack>
                 {description ? <Typography variant="subtitle1">{description}</Typography> : ""}
             </div>
-            {cta || handleOpenPopup ? <div className="text-end lg:col-span-3">
+            {cta || handleOpenPopup ? <div className="text-end lg:col-span-5">
                 <Button variant="contained" color="primary" startIcon={cta && cta?.icon || <Add />} onClick={() => {
                     if (handleOpenPopup) {
                         return handleOpenPopup()

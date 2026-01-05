@@ -270,6 +270,11 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                             )}
                             fullWidth
                         />
+                        {formik.touched.megacategory_id && formik.errors.megacategory_id && (
+                            <Typography variant="caption" color="error">
+                                {formik.errors.megacategory_id}
+                            </Typography>
+                        )}
                     </div>
                 </div>
 

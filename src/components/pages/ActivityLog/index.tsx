@@ -15,6 +15,32 @@ export default function ActivityRoot() {
         pageSize: 20,
     });
     const { data, isLoading } = useGetAllActivityQuery({ ...qp, search });
+
+    const formatToNepalTime = (timestamp: string): string => {
+        if (!timestamp) return "N/A";
+
+        try {
+            const date = new Date(timestamp);
+
+            if (isNaN(date.getTime())) {
+                return "Invalid Date";
+            }
+
+            return new Intl.DateTimeFormat('en-US', {
+                timeZone: 'Asia/Kathmandu',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            }).format(date);
+        } catch (error) {
+            console.error("Error formatting date:", error);
+            return "Invalid Date";
+        }
+    };
+
     const columns = useMemo<ColumnDef<ActivityProps>[]>(() => [
         {
             header: "S.No.",
@@ -69,11 +95,18 @@ export default function ActivityRoot() {
                 <Typography >{row.original.type || "N/A"}</Typography>
             ),
         },
-    ], [qp])
-    return (
-        <div className='activity__root  flex flex-col justify-between h-full'>
-            <div className="page__top">
+        {
+            header: "Date",
+            accessorKey: "date",
+            cell: ({ row }) => (
+                <Typography >{formatToNepalTime(row.original.timestamp) || "N/A"}</Typography>
+            ),
+        },
+    ], [qp]);
 
+    return (
+        <div className='activity__root  flex flex-col justify-start h-full overflow-hidden'>
+            <div className="page__top">
                 <PageHeader
                     breadcrumb={[
                         {
@@ -89,17 +122,12 @@ export default function ActivityRoot() {
                     handleRoleDelete={() => { }}
                 />
             </div>
-            <Box className="table__wrapper" sx={{
-                // maxHeight: {
-                //     xs: "calc(100vh - 334px)",
-                //     lg: "calc(100vh - 300px)",
-                // },
-                overflow: "auto"
-            }}>
+            <Box className="table__wrapper h-full overflow-hidden">
                 <UdaanTable
                     data={data?.data?.data || []}
                     loading={isLoading}
                     columns={columns}
+                    maxHeight='calc(100%  - 400px)'
                 />
             </Box>
             <TablePagination

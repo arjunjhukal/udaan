@@ -121,13 +121,13 @@ const commonThemeOptions: ThemeOptions = {
 
         h1: {
             fontWeight: 700,
-            fontSize: "32px",       // xs
+            fontSize: "32px",
             lineHeight: "44px",
-            "@media (min-width:900px)": {   // lg
+            "@media (min-width:900px)": {
                 fontSize: "48px",
                 lineHeight: "67px",
             },
-            "@media (min-width:1200px)": {  // xl (above lg)
+            "@media (min-width:1200px)": {
                 fontSize: "64px",
                 lineHeight: "90px",
             },
@@ -658,7 +658,7 @@ const commonThemeOptions: ThemeOptions = {
                     ...theme.typography.subtitle2,
                     border: `1px solid ${theme.palette.separator.dark}`,
                     borderRadius: '4px',
-                    background: 'white',
+                    background: theme.palette.primary.contrastText,
                     minWidth: 34,
                     height: 34,
                     display: "flex",

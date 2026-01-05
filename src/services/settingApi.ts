@@ -1,6 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
+import type { QueryParams } from "../types";
 import type { AppSettingProps, ChangePasswordProps, LinkedDeviceList } from "../types/setting";
 import type { GlobalResponse, User } from "../types/user";
+import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
 
 export const settingApi = createApi({
@@ -16,9 +18,12 @@ export const settingApi = createApi({
             }),
         }),
 
-        getAllLinkedDevices: builder.query<LinkedDeviceList, void>({
-            query: () => ({
-                url: "/admin/settings/linked-device",
+        getAllLinkedDevices: builder.query<LinkedDeviceList, QueryParams>({
+            query: ({ pageIndex, pageSize }) => ({
+                url: `/admin/settings/linked-device?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize
+                })}`,
                 method: "GET",
             }),
             providesTags: ["LinkedDevice"],

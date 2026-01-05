@@ -31,7 +31,7 @@ export const questionApi = createApi({
         EditOrCreateQuestion: builder.mutation<GlobalResponse, { body: QuestionProps }>({
             query: ({ body }) => ({
                 url: body.id ? `admin/questions/${body.id}` : `admin/questions`,
-                method: body.id ? "PUT" : "POST",
+                method: body.id ? "POST" : "POST",
                 body
             }),
             invalidatesTags: (_result, _error, { body }) => [

@@ -107,10 +107,10 @@ export default function ResponsiveDrawer(props: Props) {
 					width: { lg: `calc(100% - ${drawerWidth}px)`, padding: "32px 24px" },
 					overflowX: "hidden"
 				}}>
-				<Toolbar sx={{ height: 100 }} />
+				<Toolbar sx={{ height: 70 }} />
 				<Box className="content p-4 lg:p-8  rounded-2xl overflow-y-auto flex flex-col" sx={{
 					background: theme.palette.primary.contrastText,
-					height: "calc(100vh - 165px)"
+					height: "calc(100vh - 135px)"
 
 				}}>
 					{props.children}

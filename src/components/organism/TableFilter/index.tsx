@@ -26,7 +26,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
         }
     };
     return (
-        <Box className={`md:grid md:grid-cols-12  items-center mb-8 ${categoryLayout ? "pb-2 mb-6" : ""}`}
+        <Box className={`md:grid md:grid-cols-12  items-center mb-4 2xl:mb-8 ${categoryLayout ? "pb-2 mb-6" : ""}`}
             sx={{
                 borderBottom: categoryLayout ? `1px solid ${theme.palette.separator.dark}` : ""
             }}

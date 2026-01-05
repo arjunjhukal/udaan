@@ -9,12 +9,16 @@ import { useAppDispatch } from "../../../../store/hook";
 import type { LinkedDeviceProps } from "../../../../types/setting";
 import { formatDateTime } from "../../../../utils/dateFormat";
 import UdaanTable from "../../../molecules/Table";
+import TablePagination from "../../../molecules/Table/Pagination";
 
 export default function LinkedDevices() {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
-
-    const { data, isLoading } = useGetAllLinkedDevicesQuery();
+    const [qp, setQp] = useState({
+        pageIndex: 1,
+        pageSize: 10,
+    })
+    const { data, isLoading } = useGetAllLinkedDevicesQuery(qp);
     const [logout, { isLoading: loggingOut }] =
         useLogoutFromLinkedDeviceMutation();
     const [loggingOutId, setLoggingOutId] = useState<number | null>(null);
@@ -61,7 +65,11 @@ export default function LinkedDevices() {
                                 {row.original.location || "N/A"}
                             </Typography>
                             <Link to={`https://ip2location.com/demo/${row.original.ip}`} target="_blank">
-                                <Typography fontWeight={400} variant="subtitle2" color="text.middle">
+                                <Typography fontWeight={400} variant="subtitle2" color="text.middle" sx={{
+                                    "&:hover": {
+                                        color: (theme) => theme.palette.primary.main
+                                    }
+                                }}>
                                     {row.original.ip || "N/A"}
                                 </Typography>
                             </Link>
@@ -123,7 +131,7 @@ export default function LinkedDevices() {
     );
 
     return (
-        <div className="linked__devices__page__root pb-4 lg:pb-6">
+        <div className="linked__devices__page__root">
             <Typography variant="h5">
                 {t("messages.linked_devices")}
             </Typography>
@@ -134,6 +142,12 @@ export default function LinkedDevices() {
                 loading={isLoading}
                 data={data?.data?.data || []}
                 columns={columns}
+                maxHeight="calc(100vh - 475px)"
+            />
+            <TablePagination
+                qp={qp}
+                setQp={setQp}
+                totalPages={data?.data?.pagination?.total_pages || 0}
             />
         </div>
     );
