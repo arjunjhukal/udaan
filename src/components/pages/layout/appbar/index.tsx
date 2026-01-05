@@ -24,7 +24,7 @@ export default function CustomAppbar({
 				ml: { lg: `${drawerWidth}px` },
 				borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
 				borderRadius: 0,
-				padding: " 20px 24px",
+				padding: " 8px 24px",
 				backgroundColor: (theme) => theme.palette.primary.contrastText,
 			}}
 			color="default"

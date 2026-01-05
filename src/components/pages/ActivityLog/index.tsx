@@ -105,9 +105,8 @@ export default function ActivityRoot() {
     ], [qp]);
 
     return (
-        <div className='activity__root  flex flex-col justify-between h-full'>
+        <div className='activity__root  flex flex-col justify-start h-full overflow-hidden'>
             <div className="page__top">
-
                 <PageHeader
                     breadcrumb={[
                         {
@@ -123,17 +122,12 @@ export default function ActivityRoot() {
                     handleRoleDelete={() => { }}
                 />
             </div>
-            <Box className="table__wrapper" sx={{
-                // maxHeight: {
-                //     xs: "calc(100vh - 334px)",
-                //     lg: "calc(100vh - 300px)",
-                // },
-                overflow: "auto"
-            }}>
+            <Box className="table__wrapper h-full overflow-hidden">
                 <UdaanTable
                     data={data?.data?.data || []}
                     loading={isLoading}
                     columns={columns}
+                    maxHeight='calc(100%  - 400px)'
                 />
             </Box>
             <TablePagination
