@@ -20,6 +20,7 @@ import {
 import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { PATH } from "../../../../routes/PATH";
 import { setMode, ThemeMode } from "../../../../slice/themeSlice";
 import { useAppDispatch, useAppSelector } from "../../../../store/hook";
 
@@ -53,7 +54,7 @@ export default function SettingMenu() {
         i18n.changeLanguage(newLang);
     };
 
-    const handleSettingsRedirect = () => navigate("/dashboard/settings");
+    const handleSettingsRedirect = () => navigate(PATH.SETTINGS.APP_SETTINGS.ROOT);
 
     return (
         <>
