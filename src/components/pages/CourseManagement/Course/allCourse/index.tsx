@@ -13,6 +13,7 @@ import { useCourseFilter } from "../../../../../store/useCourseFilter";
 import type { CourseProps } from "../../../../../types/course";
 import { formatDate } from "../../../../../utils/dateFormat";
 import Actions from "../../../../molecules/Action";
+import TabController from "../../../../molecules/TabController";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
@@ -36,6 +37,7 @@ export default function AllCourse() {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [coursesToDelete, setCoursesToDelete] = useState<string[]>([]);
     const [layout, setLayout] = useState<LayoutProps>("table");
+    const [activeTab, setActiveTab] = useState<"all" | "published" | "draft">("all");
     const [cloneCourse] = useCloneCourseMutation();
     const {
         selections,
@@ -62,7 +64,8 @@ export default function AllCourse() {
     const { data, isLoading } = useGetAllCourseQuery({
         ...qp,
         search,
-        categoryFilter: { ...categoryFilter }
+        categoryFilter: { ...categoryFilter },
+        status: activeTab
     });
     const [changeStatus] = useChangeCourseStatusMutation();
 
@@ -310,6 +313,15 @@ export default function AllCourse() {
                     onFilter={() => setFilterDialogOpen(true)}
                 />
             </div>
+            <TabController
+                options={[
+                    { label: "All Course", value: "all" },
+                    { label: "Published", value: "published" },
+                    { label: "Draft", value: "draft" }
+                ]}
+                currentActive={activeTab}
+                setActiveTab={setActiveTab}
+            />
             {
                 !isLoading && !courses.length ? <EmptyRoute
                     title="No Course Found"

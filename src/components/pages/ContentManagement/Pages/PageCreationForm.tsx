@@ -83,7 +83,7 @@ export default function PageCreationForm() {
     const isLoading = isCreating || isUpdating;
 
     return (
-        <form className="page__creation__root flex flex-col justify-between h-full" onSubmit={formik.handleSubmit}>
+        <form className="page__creation__root flex flex-col justify-between h-full general__content__box" onSubmit={formik.handleSubmit}>
             <div className="flex flex-col gap-4 md:grid md:grid-cols-2 lg:gap-6">
                 <div className="col-span-1">
                     <InputLabel className="required">Heading</InputLabel>

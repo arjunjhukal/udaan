@@ -29,7 +29,7 @@ export const courseApi = createApi({
             }),
             invalidatesTags: [{ type: "Course", id: "LIST" }]
         }),
-        getAllCourse: builder.query<CourseList, QueryParams & { categoryFilter?: CategoryFilterParams }>({
+        getAllCourse: builder.query<CourseList, QueryParams & { categoryFilter?: CategoryFilterParams; status: "all" | "published" | "draft" }>({
             query: ({ pageIndex, pageSize, search, categoryFilter }) => {
                 // const params = new URLSearchParams();
                 const queryString = buildQueryParams({
@@ -42,6 +42,7 @@ export const courseApi = createApi({
                     positions: categoryFilter?.positions,
                     teachers: categoryFilter?.teachers,
                     payment: categoryFilter?.course_type,
+                    status: status
                 })
                 return {
                     url: `/course?${queryString}`,
