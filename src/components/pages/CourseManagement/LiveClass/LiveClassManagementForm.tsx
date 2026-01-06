@@ -559,7 +559,7 @@ export default function LiveClassManagementForm() {
                         {formik.errors.courses && (
                             <FormHelperText error>{formik.errors.courses}</FormHelperText>
                         )}
-                        <Autocomplete
+                        {/* <Autocomplete
                             multiple
                             options={courses?.data?.data || []}
                             getOptionLabel={(option) => option.name || ""}
@@ -575,7 +575,7 @@ export default function LiveClassManagementForm() {
                                     helperText={formik.touched.courses && formik.errors.courses}
                                 />
                             )}
-                        />
+                        /> */}
                     </div>
                 </div>
 
