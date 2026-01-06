@@ -204,41 +204,34 @@ export default function ActivityRoot() {
                         <div className="category__filter">
                             <Typography variant="h5">Filter</Typography>
                             <Divider />
-                            {ActivityTypes.length ? <div className="type__filter w-full">
-                                <div className="flex items-center justify-between">
-                                    <Typography variant="h5">Activity Type</Typography>
-                                </div>
-                                <Divider className="mb-3.5! mt-2!" />
-                                <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-                                    {ActivityTypes.length > 0 && (
-                                        <div className="type__filter">
-                                            <Typography variant="h6">Activity Type</Typography>
-                                            <Divider className="mb-3.5! mt-2!" />
 
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                                                {ActivityTypes.map((type) => (
-                                                    <FormControlLabel
-                                                        key={type}
-                                                        label={type}
-                                                        control={
-                                                            <Checkbox
-                                                                checked={selectedActivityTypes.includes(type)}
-                                                                onChange={(e) =>
-                                                                    handleActivityTypeChange(type, e.target.checked)
-                                                                }
-                                                            />
+                            {ActivityTypes.length > 0 && (
+                                <div className="type__filter w-full py-4 lg:py-6">
+                                    <Typography variant="h6">Activity Type</Typography>
+                                    <Divider className="mb-3.5! mt-2!" />
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                        {ActivityTypes.map((type) => (
+                                            <FormControlLabel
+                                                key={type}
+                                                label={type}
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedActivityTypes.includes(type)}
+                                                        onChange={(e) =>
+                                                            handleActivityTypeChange(type, e.target.checked)
                                                         }
                                                     />
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
+                                                }
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
-                            </div> : ""}
+                            )}
                             <Divider />
 
                             {/* Action Footer */}
-                            <div className="action__footer flex justify-end items-center gap-2">
+                            <div className="action__footer flex justify-end items-center gap-2 mt-4 lg:mt-6">
                                 <Button onClick={handleResetFilter} className="font-medium!"
                                     sx={{
                                         background: (theme) => theme.palette.separator.dark,
