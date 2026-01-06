@@ -1,7 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
-import type { MediaList } from "../types/media";
+import type { MediaList, MediaProps } from "../types/media";
 import type { GlobalResponse } from "../types/user";
+import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
 
 export const mediaApi = createApi({
@@ -9,7 +10,7 @@ export const mediaApi = createApi({
     baseQuery: baseQuery,
     tagTypes: ["Media", "Notes", "Audio", "Video", "Images"],
     endpoints: (builder) => ({
-        uploadMedia: builder.mutation<GlobalResponse, { type: string, body: FormData }>({
+        uploadMedia: builder.mutation<GlobalResponse & { data: MediaProps[] }, { type: string, body: FormData }>({
             query: ({ type, body }) => ({
                 url: `/admin/media/${type}`,
                 method: "POST",
@@ -19,19 +20,8 @@ export const mediaApi = createApi({
         }),
         getallMedia: builder.query<MediaList, QueryParams & { type: string }>({
             query: ({ pageIndex, pageSize, search, type }) => {
-                const params = new URLSearchParams();
-
-                if (pageIndex) {
-                    params.append('page', (pageIndex).toString());
-                }
-                if (pageSize) {
-                    params.append('page_size', pageSize.toString());
-                }
-                if (search) {
-                    params.append('search', search.toString());
-                }
                 return {
-                    url: `/admin/media/${type}?${params.toString()}`,
+                    url: `/admin/media/${type}?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search })}}`,
                     method: "GET",
                 };
             },
@@ -59,7 +49,13 @@ export const mediaApi = createApi({
             }),
             invalidatesTags: [{ type: "Media", id: "LIST" }]
         }),
+        getAllMediaIrrespectiveOfType: builder.query<MediaList, QueryParams>(({
+            query: ({ pageIndex, pageSize, search }) => ({
+                url: `/admin/media?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search })}`,
+                method: "GET",
+            })
+        }))
     })
 })
 
-export const { useUploadMediaMutation, useGetallMediaQuery, useUploadMediaImageMutation } = mediaApi;
+export const { useUploadMediaMutation, useGetallMediaQuery, useUploadMediaImageMutation, useGetAllMediaIrrespectiveOfTypeQuery } = mediaApi;

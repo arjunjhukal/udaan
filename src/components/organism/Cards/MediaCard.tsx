@@ -1,7 +1,7 @@
 import { Box, Divider, Typography, useTheme } from '@mui/material';
 import type { courseTabType } from '../../../types/course';
 import type { MediaProps } from '../../../types/media';
-import { convertToMb } from '../../../utils/convertToMb';
+import { formatFileSize } from '../../../utils/convertToMb';
 
 
 const mediaUiConfig: any = {
@@ -71,7 +71,7 @@ export default function MediaCard({ media, type }: { media: MediaProps; type?: c
                 <Divider className='my-1.5!' />
 
                 <Typography color='text.middle' className='text-[12px]!'>
-                    {convertToMb(media.size)} MB
+                    {formatFileSize(media.size)}
                 </Typography>
             </div>
         </Box>

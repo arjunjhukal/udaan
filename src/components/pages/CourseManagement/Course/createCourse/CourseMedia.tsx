@@ -4,6 +4,7 @@ import { useAddCourseMediaByTypeMutation, useGetCourseMediaByTypeQuery, useRemov
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import SelectFromMedia from "../../../../molecules/MediaFileDragDrop/SelectFromMedia";
+import TablePagination from "../../../../molecules/Table/Pagination";
 import MediaCard from "../../../../organism/Cards/MediaCard";
 import EmptyRoute from "../../../../organism/EmptyRoute";
 import PageHeader from "../../../../organism/PageHeader";
@@ -72,7 +73,10 @@ interface Props {
 
 export default function CourseMedia({ type, id, allowMultiple = true }: Props) {
     const dispatch = useAppDispatch();
-
+    const [qp, setQp] = useState({
+        pageIndex: 1,
+        pageSize: 10,
+    })
     const [open, setOpen] = React.useState(false);
     const [search, setSearch] = useState("");
     const [selectedItems, setSelectedItems] = React.useState<Set<number>>(new Set());
@@ -81,7 +85,7 @@ export default function CourseMedia({ type, id, allowMultiple = true }: Props) {
     const handleMediaAddition = () => {
         setOpen((prev) => !prev);
     };
-    const { data, isLoading } = useGetCourseMediaByTypeQuery({ type, id: id || null }, { skip: !id || !type });
+    const { data, isLoading } = useGetCourseMediaByTypeQuery({ type, id: id || null, ...qp }, { skip: !id || !type });
     const [addMediaToCourse] = useAddCourseMediaByTypeMutation();
     const [removeMediaFromCourse] = useRemoveCourseMediaByTypeMutation();
     const handleMediaAssign = async (ids: number[]) => {
@@ -149,7 +153,7 @@ export default function CourseMedia({ type, id, allowMultiple = true }: Props) {
         });
     };
     return (
-        <>
+        <div className="media__root">
             <PageHeader
                 breadcrumb={[
                     {
@@ -205,7 +209,12 @@ export default function CourseMedia({ type, id, allowMultiple = true }: Props) {
                         </div>
                     )))}
             </div>
+            <TablePagination
+                qp={qp}
+                setQp={setQp}
+                totalPages={data?.data?.pagination?.total_pages || 0}
+            />
             <SelectFromMedia open={open} setOpen={setOpen} type={type} onSelect={(ids) => handleMediaAssign(ids)} />
-        </>
+        </div>
     );
 }

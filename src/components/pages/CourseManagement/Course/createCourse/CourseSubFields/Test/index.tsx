@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useGetCourseTestQuery, useRemoveTestToCourseMutation } from '../../../../../../../services/courseApi';
 import { showToast } from '../../../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../../../store/hook';
+import TablePagination from '../../../../../../molecules/Table/Pagination';
 import TestCard from '../../../../../../organism/Cards/TestCard';
 import EmptyRoute from '../../../../../../organism/EmptyRoute';
 import PageHeader from '../../../../../../organism/PageHeader';
@@ -13,7 +14,7 @@ export default function CourseTest({ id, allowMultiple = true }: { id?: string; 
     const dispatch = useAppDispatch();
     const [search, setSearch] = useState("")
     const [open, setOpen] = useState(false);
-    const [qp, _setQp] = useState({
+    const [qp, setQp] = useState({
         pageIndex: 1,
         pageSize: 8
     });
@@ -58,7 +59,7 @@ export default function CourseTest({ id, allowMultiple = true }: { id?: string; 
         }
     }
     return (
-        <>
+        <div className='course__test__root'>
             <PageHeader
                 breadcrumb={[
                     {
@@ -110,8 +111,12 @@ export default function CourseTest({ id, allowMultiple = true }: { id?: string; 
                         </div>
                     )))}
             </div>
-
+            <TablePagination
+                qp={qp}
+                setQp={setQp}
+                totalPages={data?.data?.pagination?.total_pages || 0}
+            />
             <AssignTestDialog open={open} setOpen={setOpen} selectedTestIds={tests.map((item) => Number(item.id))} />
-        </>
+        </div>
     )
 }

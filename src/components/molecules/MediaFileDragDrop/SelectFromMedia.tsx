@@ -6,6 +6,7 @@ import type { courseTabType } from "../../../types/course";
 import MediaCard from "../../organism/Cards/MediaCard";
 import EmptyRoute from "../../organism/EmptyRoute";
 import TableFilter from "../../organism/TableFilter";
+import TablePagination from "../Table/Pagination";
 
 interface Props {
     open: boolean;
@@ -19,9 +20,9 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
     const theme = useTheme();
     const [search, setSearch] = React.useState("");
     const [selectedItems, setSelectedItems] = React.useState<Set<number>>(new Set());
-    const [qp] = React.useState({
+    const [qp, setQp] = React.useState({
         pageIndex: 1,
-        pageSize: 50,
+        pageSize: 6,
     });
 
     const { data, isLoading } = useGetallMediaQuery({ ...qp, search, type: type });
@@ -46,6 +47,21 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
             return newSet;
         });
     };
+
+    const handleUploadSuccess = (uploadedIds: number[]) => {
+        setSelectedItems(prev => {
+            if (!allowMultiple) {
+                return new Set([uploadedIds[0]]);
+            }
+
+            const next = new Set(prev);
+            uploadedIds.forEach(id => next.add(id));
+            return next;
+        });
+
+        setQp(prev => ({ ...prev, pageIndex: 1 }));
+    };
+
 
 
     const handleAddMedia = () => {
@@ -114,7 +130,7 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                         border: `1px solid ${theme.palette.textField.border}`
                     }}
                 >
-                    <MediaFileDragDrop variant={getVariant()} type={type} />
+                    <MediaFileDragDrop variant={getVariant()} type={type} maxSize={5} onUploadSuccess={handleUploadSuccess} />
                     <Divider className="mb-6!" />
                     <TableFilter
                         search={search}
@@ -155,6 +171,7 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                             ))
                         )}
                     </div>
+                    <TablePagination qp={qp} setQp={setQp} totalPages={data?.data?.pagination?.total_pages || 0} />
                     <Box
                         className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky -bottom-5"
                         sx={{

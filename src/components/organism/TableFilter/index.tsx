@@ -16,8 +16,9 @@ interface TableFilterProps {
     categoryLayout?: boolean;
     title?: string;
     onPublish?: () => void;
+    startDate?: string;
 }
-export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish }: TableFilterProps) {
+export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, startDate }: TableFilterProps) {
     const theme = useTheme();
 
     const handleDeleteClick = () => {
@@ -123,8 +124,26 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                             </Typography>
                         </Button>
                     )}
+                    {startDate && (
+                        <Button
+                            startIcon={<Send variant="Bold" color={theme.palette.text.dark} />}
+                            sx={{
+                                border: `1px solid ${theme.palette.separator.dark}`,
+                                "& .MuiButton-startIcon": {
+                                    mr: {
+                                        xs: 0
+                                    }
+                                }
+                            }}
+                            className="py-2.5! px-3.5! rounded-md! text-center justify-center! gap-2! items-center!"
+                        >
+                            <Typography variant="subtitle2" color="text.dark" className="hidden! md:flex!">
+                                Publish
+                            </Typography>
+                        </Button>
+                    )}
                 </div>
             </div>
-        </Box>
+        </Box >
     )
 }

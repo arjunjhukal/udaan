@@ -5,6 +5,7 @@ import { useGetAllActivityQuery } from '../../../services/activityApi';
 import type { ActivityProps } from '../../../types/activity';
 import UdaanTable from '../../molecules/Table';
 import TablePagination from '../../molecules/Table/Pagination';
+import EmptyRoute from '../../organism/EmptyRoute';
 import PageHeader from '../../organism/PageHeader';
 import TableFilter from '../../organism/TableFilter';
 
@@ -123,12 +124,16 @@ export default function ActivityRoot() {
                 />
             </div>
             <Box className="table__wrapper h-full overflow-hidden">
-                <UdaanTable
+                {data?.data?.data.length ? <UdaanTable
                     data={data?.data?.data || []}
                     loading={isLoading}
                     columns={columns}
                     maxHeight='calc(100%  - 400px)'
+                /> : <EmptyRoute
+                    title="No Activity Found"
+                    message="There are currently no logs available for this transaction. Please check back later or verify the transaction process."
                 />
+                }
             </Box>
             <TablePagination
                 qp={qp}

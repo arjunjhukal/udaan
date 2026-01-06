@@ -1,4 +1,5 @@
 import { Box, Button, Typography, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { replace } from "react-router-dom";
 
 interface FooterActionProps {
@@ -18,6 +19,7 @@ export default function FooterAction({
     buttonLabel,
     replaceLabel
 }: FooterActionProps) {
+    const { t } = useTranslation();
     const theme = useTheme();
 
     return (
@@ -37,7 +39,9 @@ export default function FooterAction({
                 }}
                 onClick={handleConfirmationChange}
             >
-                Cancel
+                <Typography variant="subtitle2">
+                    {t("actions.cancel")}
+                </Typography>
             </Button>
 
             {/* CREATE / UPDATE BUTTON */}

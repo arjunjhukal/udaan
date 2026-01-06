@@ -25,7 +25,7 @@ export default function AssignTestDialog({ open, setOpen, selectedTestIds }: Pro
     const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
     const [qp, setQp] = useState({
         pageIndex: 1,
-        pageSize: 50,
+        pageSize: 8,
     });
 
     const { data, isLoading } = useGetAllTestQuery({ ...qp, search, });

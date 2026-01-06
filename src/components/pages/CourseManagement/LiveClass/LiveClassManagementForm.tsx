@@ -546,7 +546,7 @@ export default function LiveClassManagementForm() {
                             hasMore={hasMoreCourses}
                             selectedItems={formik.values.courses}
                             onSelectionChange={(selectedIds) => {
-                                formik.setFieldValue("course_ids", selectedIds);
+                                formik.setFieldValue("courses", selectedIds);
                             }}
                             fetchMore={fetchMoreCourses}
                             onSearch={handleCourseSearch}
@@ -556,10 +556,10 @@ export default function LiveClassManagementForm() {
                             itemIdKey="id"
                             placeholder="Search courses..."
                         />
-                        {formik.touched.courses && formik.errors.courses && (
+                        {formik.errors.courses && (
                             <FormHelperText error>{formik.errors.courses}</FormHelperText>
                         )}
-                        {/* <Autocomplete
+                        <Autocomplete
                             multiple
                             options={courses?.data?.data || []}
                             getOptionLabel={(option) => option.name || ""}
@@ -575,7 +575,7 @@ export default function LiveClassManagementForm() {
                                     helperText={formik.touched.courses && formik.errors.courses}
                                 />
                             )}
-                        /> */}
+                        />
                     </div>
                 </div>
 

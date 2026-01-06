@@ -19,7 +19,7 @@ export default function TablePagination({
 }: TablePaginationProps) {
     const theme = useTheme();
 
-    const pageSizeOptions = [8, 10, 20, 50, 100];
+    const pageSizeOptions = [6, 8, 10, 20, 50, 100];
     const isXs = useMediaQuery(theme.breakpoints.down("sm"));
     const handlePageChange = (_event: React.ChangeEvent<unknown>, page: number) => {
 
@@ -28,7 +28,7 @@ export default function TablePagination({
 
     const handlePageSizeChange = (event: any) => {
         setQp({
-            pageIndex: 1, // Reset to first page when changing page size
+            pageIndex: 1,
             pageSize: Number(event.target.value)
         });
     };

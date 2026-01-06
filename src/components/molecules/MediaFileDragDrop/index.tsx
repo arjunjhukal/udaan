@@ -9,7 +9,7 @@ import type { courseTabType } from "../../../types/course";
 interface MediaFileDragDropProps {
   variant?: "error" | "success";
   type: courseTabType;
-  onUploadSuccess?: () => void;
+  onUploadSuccess?: (uploadedId: number[]) => void;
   maxSize?: number;
 }
 
@@ -62,7 +62,10 @@ export default function MediaFileDragDrop({
       formData.append(`${type}[]`, file);
 
 
-      await uploadMedia({ type, body: formData }).unwrap();
+      const response = await uploadMedia({ type, body: formData }).unwrap();
+
+      const uploadedIds: number[] =
+        response?.data?.map((item: any) => item.id) ?? [];
 
       dispatch(
         showToast({
@@ -71,7 +74,9 @@ export default function MediaFileDragDrop({
         })
       );
 
-      onUploadSuccess?.();
+      if (uploadedIds.length) {
+        onUploadSuccess?.(uploadedIds);
+      }
     } catch (e: any) {
       dispatch(
         showToast({
