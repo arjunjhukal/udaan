@@ -1,4 +1,4 @@
-import { Box, Checkbox, Stack, Typography } from '@mui/material';
+import { Box, Checkbox, Stack, Tooltip, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -138,23 +138,34 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: "Course Name",
-            accessorKey: "course_name",
+            header: "Added By",
+            accessorKey: "added_by",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
-                    {row.original.course_name || "N/A"}
+                    {row.original.added_by || "N/A"}
                 </Typography>
             ),
         },
         {
-            header: "Email",
-            accessorKey: "email",
+            header: "Course Name",
+            accessorKey: "course_name",
             cell: ({ row }) => (
-                <Typography variant='subtitle2' className="">
-                    {row.original.email || "N/A"}
-                </Typography>
+                <Tooltip title={row.original.course_name}>
+                    <Typography variant='subtitle2' className="capitalize line-clamp-1">
+                        {row.original.course_name || "N/A"}
+                    </Typography>
+                </Tooltip>
             ),
         },
+        // {
+        //     header: "Email",
+        //     accessorKey: "email",
+        //     cell: ({ row }) => (
+        //         <Typography variant='subtitle2' className="">
+        //             {row.original.email || "N/A"}
+        //         </Typography>
+        //     ),
+        // },
         {
             header: "Contact No.",
             accessorKey: "contact",

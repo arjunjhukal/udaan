@@ -29,6 +29,7 @@ export const TransactionInitialState: TransactionPayload = {
 
 export interface TransactionResponse extends TransactionPayload {
     name: string;
+    added_by: string;
     course_name: string;
     email: string;
     contact: string;
