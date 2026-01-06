@@ -1,5 +1,8 @@
 import type { Pagination } from "./roleAndPermission";
 
+export type ActivityType = "settings" | "notifications" | "subjective_user" | "courses"
+
+export const ActivityTypes = ["settings", "notifications", "subjective_user", "courses"]
 export interface ActivityProps {
     id: number;
     username: string;
@@ -7,7 +10,7 @@ export interface ActivityProps {
     phone: string;
     status: "success" | "failed",
     log: string;
-    type: "settings" | "notifications" | "subjective_user" | "courses";
+    type: ActivityType;
     timestamp: string;
     device_type: "mobile" | "web"
 }

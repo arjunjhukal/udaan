@@ -1,8 +1,8 @@
-import { Box, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, Tooltip, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useGetAllActivityQuery } from '../../../services/activityApi';
-import type { ActivityProps } from '../../../types/activity';
+import { ActivityTypes, type ActivityProps, type ActivityType } from '../../../types/activity';
 import SortableHeader from '../../molecules/SortableHeader';
 import UdaanTable from '../../molecules/Table';
 import TablePagination from '../../molecules/Table/Pagination';
@@ -19,8 +19,18 @@ export default function ActivityRoot() {
     const [customRange, setCustomRange] = useState({
         startDate: "",
         endDate: ""
-    })
-    const { data, isLoading } = useGetAllActivityQuery({ ...qp, search, ...customRange });
+    });
+    const [sortBy, setSortBy] = useState<"asc" | "desc" | "">("");
+
+    const [selectedActivityTypes, setSelectedActivityTypes] = useState<string[]>([]);
+    const [appliedActivityTypes, setAppliedActivityTypes] = useState<string[]>([]);
+
+    const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+    const { data, isLoading } = useGetAllActivityQuery({
+        ...qp, search, ...customRange,
+        type: appliedActivityTypes.join(",") as ActivityType,
+        sort_by: sortBy
+    });
 
     const formatToNepalTime = (timestamp: string): string => {
         if (!timestamp) return "N/A";
@@ -102,7 +112,14 @@ export default function ActivityRoot() {
             ),
         },
         {
-            header: ({ column }) => <SortableHeader column={column} label='Date' />,
+            header: ({ column }) => <SortableHeader
+                column={column}
+                label="Date"
+                onSortChange={(order: "asc" | "desc") => {
+                    setSortBy(order);
+                    setQp((prev) => ({ ...prev, pageIndex: 1 }));
+                }}
+            />,
             accessorKey: "date",
             cell: ({ row }) => (
                 <Typography>{formatToNepalTime(row.original.timestamp) || "N/A"}</Typography>
@@ -112,6 +129,29 @@ export default function ActivityRoot() {
 
     const hasData = data?.data?.data && data.data.data.length > 0;
     const showEmptyState = !isLoading && !hasData;
+
+
+    const handleActivityTypeChange = (type: string, checked: boolean) => {
+        setSelectedActivityTypes((prev) =>
+            checked ? [...prev, type] : prev.filter((t) => t !== type)
+        );
+    };
+
+    const handleApplyFilter = () => {
+        setAppliedActivityTypes(selectedActivityTypes);
+        setQp((prev) => ({ ...prev, pageIndex: 1 }));
+        setFilterDialogOpen(false);
+    };
+
+    const handleResetFilter = () => {
+        setSelectedActivityTypes([]);
+        setAppliedActivityTypes([]);
+        setCustomRange({ startDate: "", endDate: "" });
+        setSearch("");
+        setQp((prev) => ({ ...prev, pageIndex: 1 }));
+        setFilterDialogOpen(false);
+    };
+
 
     return (
         <div className='activity__root flex flex-col justify-start h-full overflow-hidden'>
@@ -131,6 +171,7 @@ export default function ActivityRoot() {
                     handleRoleDelete={() => { }}
                     customRange={customRange}
                     setCustomRange={setCustomRange}
+                    onFilter={() => setFilterDialogOpen(true)}
                 />
             </div>
             <Box className="table__wrapper h-full overflow-hidden">
@@ -153,6 +194,71 @@ export default function ActivityRoot() {
                 setQp={setQp}
                 totalPages={data?.data?.pagination?.total_pages || 0}
             />
+            <Dialog open={filterDialogOpen}
+                onClose={() => setFilterDialogOpen(false)}
+                maxWidth="lg"
+                fullWidth>
+                <DialogContent>
+                    <div className="filter__wrapper flex flex-col gap-6">
+                        {/* Category Filter */}
+                        <div className="category__filter">
+                            <Typography variant="h5">Filter</Typography>
+                            <Divider />
+                            {ActivityTypes.length ? <div className="type__filter w-full">
+                                <div className="flex items-center justify-between">
+                                    <Typography variant="h5">Activity Type</Typography>
+                                </div>
+                                <Divider className="mb-3.5! mt-2!" />
+                                <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+                                    {ActivityTypes.length > 0 && (
+                                        <div className="type__filter">
+                                            <Typography variant="h6">Activity Type</Typography>
+                                            <Divider className="mb-3.5! mt-2!" />
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                                {ActivityTypes.map((type) => (
+                                                    <FormControlLabel
+                                                        key={type}
+                                                        label={type}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={selectedActivityTypes.includes(type)}
+                                                                onChange={(e) =>
+                                                                    handleActivityTypeChange(type, e.target.checked)
+                                                                }
+                                                            />
+                                                        }
+                                                    />
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div> : ""}
+                            <Divider />
+
+                            {/* Action Footer */}
+                            <div className="action__footer flex justify-end items-center gap-2">
+                                <Button onClick={handleResetFilter} className="font-medium!"
+                                    sx={{
+                                        background: (theme) => theme.palette.separator.dark,
+                                        color: (theme) => theme.palette.text.middle
+                                    }}>
+                                    {appliedActivityTypes ? "Reset & Close Filter" : "Cancel"}
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleApplyFilter}
+                                    className="font-medium!"
+                                >
+                                    Apply Filter
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
