@@ -1,8 +1,10 @@
-import { Box, Button, IconButton, OutlinedInput, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, IconButton, OutlinedInput, Stack, Typography, useTheme } from "@mui/material";
+import dayjs, { Dayjs } from "dayjs";
 import { Send } from "iconsax-reactjs";
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import FilterIcon from "../../../icons/FilterIcon";
 import SearchIcon from "../../../icons/SearchIcon";
+import UdaanDatePicker from "../DatePicker";
 
 export type LayoutProps = "table" | "grid"
 interface TableFilterProps {
@@ -16,15 +18,48 @@ interface TableFilterProps {
     categoryLayout?: boolean;
     title?: string;
     onPublish?: () => void;
-    startDate?: string;
+    customRange?: {
+        startDate: string;
+        endDate: string;
+    };
+    setCustomRange?: React.Dispatch<
+        React.SetStateAction<{ startDate: string; endDate: string }>
+    >;
 }
-export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, startDate }: TableFilterProps) {
+export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange }: TableFilterProps) {
     const theme = useTheme();
 
     const handleDeleteClick = () => {
         if (selectedRows.size > 0) {
             handleRoleDelete(Array.from(selectedRows).map((id) => id.toString()));
         }
+    };
+
+    const [startDate, setStartDate] = useState<Dayjs | null>(
+        customRange?.startDate ? dayjs(customRange.startDate) : null
+    );
+    const [endDate, setEndDate] = useState<Dayjs | null>(
+        customRange?.endDate ? dayjs(customRange.endDate) : null
+    );
+    const [showCustomRangeModal, setShowCustomRangeModal] = useState(false);
+
+    const handleApplyCustomRange = () => {
+        if (startDate && endDate && setCustomRange) {
+            setCustomRange({
+                startDate: startDate.format("YYYY-MM-DD"),
+                endDate: endDate.format("YYYY-MM-DD"),
+            });
+            setStartDate(null);
+            setEndDate(null);
+            setShowCustomRangeModal(false);
+            setShowCustomRangeModal(false);
+        }
+    };
+
+    const handleResetCustomRange = () => {
+        setStartDate(null);
+        setEndDate(null);
+        setShowCustomRangeModal(false);
     };
     return (
         <Box className={`md:grid md:grid-cols-12  items-center mb-4 2xl:mb-8 ${categoryLayout ? "pb-2 mb-6" : ""}`}
@@ -124,24 +159,52 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                             </Typography>
                         </Button>
                     )}
-                    {startDate && (
-                        <Button
-                            startIcon={<Send variant="Bold" color={theme.palette.text.dark} />}
-                            sx={{
-                                border: `1px solid ${theme.palette.separator.dark}`,
-                                "& .MuiButton-startIcon": {
-                                    mr: {
-                                        xs: 0
+                    {customRange ? (
+                        <>
+                            <Button
+                                startIcon={<Send variant="Bold" color={theme.palette.text.dark} />}
+                                sx={{
+                                    border: `1px solid ${theme.palette.separator.dark}`,
+                                    "& .MuiButton-startIcon": {
+                                        mr: {
+                                            xs: 0
+                                        }
                                     }
-                                }
-                            }}
-                            className="py-2.5! px-3.5! rounded-md! text-center justify-center! gap-2! items-center!"
-                        >
-                            <Typography variant="subtitle2" color="text.dark" className="hidden! md:flex!">
-                                Publish
-                            </Typography>
-                        </Button>
-                    )}
+                                }}
+                                className="py-2.5! px-3.5! rounded-md! text-center justify-center! gap-2! items-center!"
+                                onClick={() => setShowCustomRangeModal(true)}
+                            >
+                                <Typography variant="subtitle2" color="text.dark" className="hidden! md:flex!">
+                                    Filter By Date
+                                </Typography>
+                            </Button>
+
+                            <Dialog
+                                open={showCustomRangeModal}
+                                onClose={() => setShowCustomRangeModal(false)}
+                                maxWidth="xs"
+                                fullWidth
+                                PaperProps={{
+                                    sx: {
+                                        borderRadius: 3,
+                                        backgroundColor: (theme) => theme.palette.background.sidebar,
+                                        boxShadow: 3,
+                                        padding: 2,
+                                    },
+                                }}
+                            >
+                                <DialogContent sx={{ p: 0 }}>
+                                    <UdaanDatePicker
+                                        startDate={startDate}
+                                        endDate={endDate}
+                                        onStartDateChange={setStartDate}
+                                        onEndDateChange={setEndDate}
+                                        onApply={handleApplyCustomRange}
+                                        onReset={handleResetCustomRange}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        </>) : ""}
                 </div>
             </div>
         </Box >

@@ -10,12 +10,13 @@ export const activitiyApi = createApi({
     tagTypes: ["Activity"],
     endpoints: (builder) => ({
         getAllActivity: builder.query<ActivityList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => ({
+            query: ({ pageIndex, pageSize, search, startDate, endDate }) => ({
                 url: `/admin/activity-log?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
-
+                    start_date: startDate,
+                    end_date: endDate
                 })}`,
                 method: "GET"
             })
