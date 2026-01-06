@@ -544,9 +544,9 @@ export default function LiveClassManagementForm() {
                             scrollableId="course-scrollable"
                             data={courseList || []}
                             hasMore={hasMoreCourses}
-                            selectedItems={formik.values.course_ids}
+                            selectedItems={formik.values.courses}
                             onSelectionChange={(selectedIds) => {
-                                formik.setFieldValue("course_ids", selectedIds);
+                                formik.setFieldValue("courses", selectedIds);
                             }}
                             fetchMore={fetchMoreCourses}
                             onSearch={handleCourseSearch}
@@ -556,8 +556,8 @@ export default function LiveClassManagementForm() {
                             itemIdKey="id"
                             placeholder="Search courses..."
                         />
-                        {formik.errors.course_ids && (
-                            <FormHelperText error>{formik.errors.course_ids}</FormHelperText>
+                        {formik.touched.courses && formik.errors.courses && (
+                            <FormHelperText error>{formik.errors.courses}</FormHelperText>
                         )}
                         {/* <Autocomplete
                             multiple

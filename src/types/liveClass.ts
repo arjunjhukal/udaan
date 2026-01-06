@@ -17,7 +17,7 @@ export interface LiveClassPayload {
     monthly_day: number | null;
     end_date?: string | null;
     teacher_ids: number[];
-    course_ids: number[];
+    courses: number[];
     registration_type?: 1 | 2 | 3 | 99;        // only for weekly (free paid pre-approval)
     is_enable_recording: boolean;
     auto_recording?: "local" | "cloud" | "none";
@@ -50,7 +50,7 @@ export const initialLiveClassState: LiveClassPayload = {
     monthly_day: null,
     end_date: null,
     teacher_ids: [],
-    course_ids: [],
+    courses: [],
     registration_type: 99,
     is_enable_recording: true,
     auto_recording: "none",
@@ -119,7 +119,7 @@ export const liveClassValidationSchema = Yup.object({
         .min(1, "At least one teacher is required")
         .required("Teacher selection is required"),
 
-    course_ids: Yup.array()
+    courses: Yup.array()
         .min(1, "At least one course is required")
         .required("At least one course is required"),
 
