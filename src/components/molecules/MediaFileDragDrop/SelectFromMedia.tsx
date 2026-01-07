@@ -62,8 +62,6 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
         setQp(prev => ({ ...prev, pageIndex: 1 }));
     };
 
-
-
     const handleAddMedia = () => {
         if (onSelect && selectedItems.size > 0) {
             onSelect(Array.from(selectedItems));

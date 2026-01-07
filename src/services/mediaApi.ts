@@ -21,7 +21,7 @@ export const mediaApi = createApi({
         getallMedia: builder.query<MediaList, QueryParams & { type: string }>({
             query: ({ pageIndex, pageSize, search, type }) => {
                 return {
-                    url: `/admin/media/${type}?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search })}}`,
+                    url: `/admin/media/${type}?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search })}`,
                     method: "GET",
                 };
             },
@@ -54,8 +54,21 @@ export const mediaApi = createApi({
                 url: `/admin/media?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search })}`,
                 method: "GET",
             })
-        }))
+        })),
+        deleteMedia: builder.mutation<GlobalResponse, { media_ids: number[] }>({
+            query: (body) => ({
+                url: `/admin/media`,
+                method: "DELETE",
+                body
+            }),
+            invalidatesTags: [{ type: "Media", id: "LIST" }]
+        }),
     })
 })
 
-export const { useUploadMediaMutation, useGetallMediaQuery, useUploadMediaImageMutation, useGetAllMediaIrrespectiveOfTypeQuery } = mediaApi;
+export const {
+    useUploadMediaMutation,
+    useGetallMediaQuery,
+    useUploadMediaImageMutation, useGetAllMediaIrrespectiveOfTypeQuery,
+    useDeleteMediaMutation
+} = mediaApi;

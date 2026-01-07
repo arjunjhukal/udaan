@@ -64,7 +64,7 @@ export default function MediaCard({ media, type }: { media: MediaProps; type?: c
             </Box>
 
             <div className="content">
-                <Typography variant='subtitle2' fontWeight={500} className='line-clamp-1'>
+                <Typography variant='subtitle2' fontWeight={500} className='line-clamp-1 wrap-anywhere'>
                     {media.file_name}
                 </Typography>
 
