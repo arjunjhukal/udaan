@@ -41,7 +41,6 @@ export const useCourseFilter = () => {
     // Draft state (changes as user selects in dialog)
     const [selections, setSelections] = useState<SelectionType>(getInitialSelections);
 
-    // Applied state (only updates when "Apply Filter" is clicked)
     const [appliedSelections, setAppliedSelections] = useState<SelectionType>(getInitialSelections);
 
     const [searchTeacher, setSearchTeacher] = useState("");
@@ -228,6 +227,51 @@ export const useCourseFilter = () => {
         return params;
     }, [appliedSelections, appliedCourseTypes]);
 
+    const getSelectedCategoryFilterParams = useCallback((): CategoryFilterParams => {
+        const params: any = {};
+
+        // mega category
+        if (selections.mega_category?.length > 0) {
+            params.mega_category = selections.mega_category;
+        }
+
+        // category (flat)
+        const flatCategories = Object.values(selections.category || {}).flat();
+        if (flatCategories.length > 0) {
+            params.category = flatCategories;
+        }
+
+        // sub category (flat)
+        const flatSubCategories = Object.values(selections.sub_category || {}).flat();
+        if (flatSubCategories.length > 0) {
+            params.sub_category = flatSubCategories;
+        }
+
+        // positions (flat)
+        const flatPositions = Object.values(selections.position_ids || {}).flat();
+        if (flatPositions.length > 0) {
+            params.positions = flatPositions;
+        }
+
+        // teachers (array flat)
+        if (selections?.teacher_ids && selections?.teacher_ids?.length > 0) {
+            params.teachers = selections.teacher_ids;
+        }
+
+        if (selections.role_ids && selections.role_ids.length > 0) {
+            params.roles = selections.role_ids;
+        }
+
+        // course types (array flat)
+        if (courseTypes?.length > 0) {
+            params.payment = courseTypes;
+        }
+
+        return params;
+    }, [selections, courseTypes]);
+
+
+
 
     return {
         // State (draft - for dialog)
@@ -252,6 +296,7 @@ export const useCourseFilter = () => {
         handleApplyFilter,
         resetFilters,
         hasActiveFilters: hasActiveFilters(),
-        getCategoryFilterParams
+        getCategoryFilterParams,
+        getSelectedCategoryFilterParams
     };
 };

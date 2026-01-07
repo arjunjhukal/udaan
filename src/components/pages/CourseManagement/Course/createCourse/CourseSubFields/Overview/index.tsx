@@ -36,8 +36,6 @@ export default function CourseOverviewForm({
 }: Props) {
     const theme = useTheme();
 
-
-
     return (
         <div className="overview__form">
             <div className="grid grid-cols-2 gap-6">

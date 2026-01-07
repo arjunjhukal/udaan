@@ -1,7 +1,8 @@
-import { Autocomplete, Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, IconButton, InputLabel, OutlinedInput, TextField, Typography, useTheme } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, CircularProgress, Dialog, DialogContent, Divider, FormControlLabel, IconButton, InputLabel, OutlinedInput, TextField, Typography, useTheme } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useFormik } from "formik";
 import { useEffect, useMemo, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import * as Yup from "yup";
 import SearchIcon from "../../../icons/SearchIcon";
 import { useGetAllCourseQuery } from "../../../services/courseApi";
@@ -10,8 +11,10 @@ import { useGetAllUserQuery } from "../../../services/userApi";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
 import { useCourseFilter } from "../../../store/useCourseFilter";
+import type { CourseProps } from "../../../types/course";
 import { TransactionInitialState } from "../../../types/transaction";
 import type { RegisterUserProps } from "../../../types/user";
+import { calcHasMore } from "../../../utils/calculateHasMore";
 import FileDragDrop from "../../molecules/FileDragDrop";
 import UdaanTable from "../../molecules/Table";
 import CategoryFilter from "../../organism/CategoryFilter";
@@ -54,10 +57,11 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         pageIndex: 1,
         pageSize: 3,
     });
-    const [courseQp, _setCourseQp] = useState({
+    const [courseQp, setCourseQp] = useState({
         pageIndex: 1,
         pageSize: 10,
     });
+    const [courseList, setCourseList] = useState<CourseProps[]>([]);
 
 
 
@@ -223,15 +227,39 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         categories,
         subCategories,
         selections,
-        getCategoryFilterParams,
+        getSelectedCategoryFilterParams,
         handleCategoryChange
     } = useCourseFilter();
 
-    const categoryFilter = getCategoryFilterParams();
+    const categoryFilter = getSelectedCategoryFilterParams();
+    console.log(categoryFilter, "from transaction addition")
     const { data: courses } = useGetAllCourseQuery({ ...courseQp, search: searchCourse, categoryFilter: { ...categoryFilter } });
 
+    useEffect(() => {
+        if (!courses?.data?.data) return;
 
+        setCourseList(prev => {
+            if (courseQp.pageIndex === 1) {
+                return courses.data.data;
+            }
 
+            const existingIds = new Set(prev.map(course => course.id));
+            const newCourses = courses.data.data.filter(
+                course => !existingIds.has(course.id)
+            );
+
+            return [...prev, ...newCourses];
+        });
+    }, [courses, courseQp.pageIndex]);
+
+    const coursePagination = courses?.data?.pagination;
+    const hasMoreCourses = calcHasMore(coursePagination);
+
+    const fetchMoreCourses = () => {
+        if (hasMoreCourses) {
+            setCourseQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
+        }
+    };
     return (
         <Dialog open={open} onClose={handleClose}
             sx={{
@@ -315,22 +343,51 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                             py: "4px",
                                         }}
                                     />
-                                    <Box className="h-[187px] overflow-y-auto p-2.5 rounded-md flex flex-col mt-4" sx={{
+
+                                    <Box id="course__listing" className="h-[187px] overflow-y-auto p-2.5 rounded-md flex flex-col mt-4" sx={{
                                         border: `1px solid ${theme.palette.separator.dark}`
                                     }}>
-                                        {courses?.data?.data?.map((course) => (
-                                            <FormControlLabel
-                                                key={course.id}
-                                                label={course.name}
-                                                control={
-                                                    <Checkbox
-                                                        checked={formik.values.course_id === Number(course.id)}
-                                                        onChange={() => formik.setFieldValue("course_id", course.id)}
-                                                        color="primary"
-                                                    />
+                                        {isLoading ? (
+                                            <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
+                                                <CircularProgress size={24} />
+                                            </Box>
+                                        ) :
+                                            <InfiniteScroll
+                                                dataLength={courseList.length}
+                                                next={fetchMoreCourses}
+                                                hasMore={hasMoreCourses}
+                                                scrollableTarget={"course__listing"}
+                                                loader={
+                                                    <Box sx={{ textAlign: "center", p: 2 }}>
+                                                        <CircularProgress size={22} />
+                                                    </Box>
                                                 }
-                                            />
-                                        ))}
+                                                endMessage={
+                                                    courseList.length > 0 && (
+                                                        <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>
+                                                            No more items
+                                                        </Typography>
+                                                    )
+                                                }
+                                            >
+                                                {courseList.length === 0 ? (<Box sx={{ p: 3, textAlign: "center" }}>
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        {"No items available"}
+                                                    </Typography>
+                                                </Box>) : (courseList?.map((course) => (
+                                                    <FormControlLabel
+                                                        key={course.id}
+                                                        label={course.name}
+                                                        control={
+                                                            <Checkbox
+                                                                checked={formik.values.course_id === Number(course.id)}
+                                                                onChange={() => formik.setFieldValue("course_id", course.id)}
+                                                                color="primary"
+                                                            />
+                                                        }
+                                                    />
+                                                )))}
+                                            </InfiniteScroll>}
                                     </Box>
                                 </div>
                             </div>
