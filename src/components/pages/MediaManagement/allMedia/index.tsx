@@ -76,7 +76,6 @@ export default function AllMediaRoot() {
                 options={[
                     { label: "Notes", value: "notes" },
                     { label: "Audios", value: "audios" },
-                    { label: "Videos", value: "videos" },
                 ]}
                 currentActive={currentActive}
                 setActiveTab={setCurrentActive}
