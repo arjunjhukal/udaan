@@ -1,9 +1,6 @@
 import React from "react";
 import { useAppSelector } from "../store/hook";
 
-// roles.ts
-export type Role = "admin" | "editor" | "moderator" | "viewer" | "guest";
-
 interface CanProps {
 	permissions: string[];
 	children: React.ReactNode;

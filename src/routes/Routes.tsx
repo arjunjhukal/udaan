@@ -58,6 +58,7 @@ import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
 import { PATH } from "./PATH";
 import Private from "./Private";
+import Unauthorized from "./Unauthorized";
 
 const router = createBrowserRouter([
 	{
@@ -89,7 +90,7 @@ const router = createBrowserRouter([
 				element: <App />,
 			},
 			{
-				element: <CourseManagementRoot />,
+				element: <Unauthorized permissions={["add_courses", "edit_courses", "delete_courses", "view_courses"]}><CourseManagementRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.ROOT, element: <AllCourse /> },
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.CREATE_COURSE.ROOT, element: <CreateCourseRoot /> },
@@ -97,7 +98,7 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <LiveClassRoot />,
+				element: <Unauthorized permissions={["add_live_classes", "edit_live_classes", "delete_live_classes", "view_live_classes"]}> <LiveClassRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT, element: <AllLiveClass /> },
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT, element: <CreateLiveClassRoot /> },
@@ -105,13 +106,13 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <QuizManagementRoot />,
+				element: <Unauthorized permissions={["add_quizes", "edit_quizes", "delete_quizes", "view_quizes"]}><QuizManagementRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.COURSE_MANAGEMENT.QUIZ.ROOT, element: <AllQuizes /> },
 				],
 			},
 			{
-				element: <TestAndQuestionManagementRoot />,
+				element: <Unauthorized permissions={["add_questions", "edit_questions", "delete_questions", "view_questions", "add_tests", "edit_tests", "delete_tests", "view_tests"]}><TestAndQuestionManagementRoot /></Unauthorized>,
 				children: [
 					{
 						path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT,
@@ -151,7 +152,9 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <RoleManagementRoot />,
+				element: <Unauthorized permissions={["add_roles", "edit_roles", "delete_roles", "view_roles"]}>
+					<RoleManagementRoot />
+				</Unauthorized>,
 				children: [
 					{ path: PATH.ROLES.ROOT, element: <AllRoles /> },
 					{ path: PATH.ROLES.CREATE_ROLE.ROOT, element: <CreateRoleRoot /> },
@@ -159,7 +162,7 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <UserManagementRoot />,
+				element: <Unauthorized permissions={["add_users", "edit_users", "delete_users", "view_users"]}><UserManagementRoot /></Unauthorized>,
 				children: [
 					{ index: true, path: PATH.USER_MANAGEMENT.ROOT, element: <AllUsers /> },
 					{ path: PATH.USER_MANAGEMENT.CREATE_USER.ROOT, element: <CreateUser /> },
@@ -167,26 +170,37 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <CategoryManagementRoot />,
+				element: <Unauthorized permissions={["add_categories", "edit_categories", "delete_categories", "view_categories", "add_positions", "edit_positions", "delete_positions", "view_positions"]}
+				> <CategoryManagementRoot /></Unauthorized >,
 				children: [
-					{ path: PATH.CATEGORY_LEVEL_MANAGEMENT.CATEGORY.ROOT, element: <AllCategories /> },
-					{ path: PATH.CATEGORY_LEVEL_MANAGEMENT.LEVEL_POSITION.ROOT, element: <AllPositions /> },
+					{
+						path: PATH.CATEGORY_LEVEL_MANAGEMENT.CATEGORY.ROOT,
+						element: <Unauthorized permissions={["add_categories", "edit_categories", "delete_categories", "view_categories"]}>
+							<AllCategories />
+						</Unauthorized>
+					},
+					{
+						path: PATH.CATEGORY_LEVEL_MANAGEMENT.LEVEL_POSITION.ROOT, element:
+							<Unauthorized permissions={["add_positions", "edit_positions", "delete_positions", "view_positions"]}>
+								<AllPositions />
+							</Unauthorized>
+					},
 				],
 			},
 			{
 				path: PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT,
-				element: <SubscriptionManagementRoot />,
+				element: <Unauthorized permissions={["add_subscriptions", "edit_subscriptions", "delete_subscriptions", "view_subscriptions"]}> <SubscriptionManagementRoot /></Unauthorized>,
 			},
 			{
-
-				element: <TransactionManagementRoot />,
+				element:
+					<Unauthorized permissions={["add_transactions", "edit_transactions", "delete_transactions", "view_transactions"]}> <TransactionManagementRoot />
+					</Unauthorized>,
 				children: [
 					{ path: PATH.TRANSACTION_MANAGEMENT.ROOT, element: <AllTransactionRoot /> },
 				],
 			},
 			{
-
-				element: <NotificationRoot />,
+				element: <Unauthorized permissions={["add_notifications", "edit_notifications", "delete_notifications", "view_notifications"]}> <NotificationRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.NOTIFICATION_MANAGEMENT.ROOT, element: <AllNotificationsRoot /> },
 					{ path: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT, element: <CreateNotificationRoot /> },
@@ -195,7 +209,7 @@ const router = createBrowserRouter([
 			},
 			{
 				path: "/content-management",
-				element: <ContentManagementRoot />,
+				element: <Unauthorized permissions={["add_contents", "edit_contents", "delete_contents", "view_contents"]}> <ContentManagementRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.CONTENT_MANAGEMENT.SPLASH_SCREEN.ROOT, element: <SplashScreenRoot /> },
 					{ path: PATH.CONTENT_MANAGEMENT.ONBOARDING_SCREEN.ROOT, element: <OnBoardingScreenRoot /> },

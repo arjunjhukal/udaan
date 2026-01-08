@@ -114,7 +114,7 @@ export default function PrimaryMenu() {
                                         </ListItemButton>
                                     </ListItem>
                                 </CAN>
-                                <CAN permissions={["add_quizs", "edit_quizs", "delete_quizs", "view_quizs"]}>
+                                <CAN permissions={["add_quizes", "edit_quizes", "delete_quizes", "view_quizes"]}>
                                     <ListItem disablePadding className="menu__item">
                                         <ListItemButton
                                             onClick={() => navigate(PATH.COURSE_MANAGEMENT.QUIZ.ROOT)}
