@@ -200,9 +200,11 @@ export default function AllCourse() {
             header: "Course Name",
             accessorKey: "name",
             cell: ({ row }) => (
-                <Typography fontWeight={500} variant="subtitle1" >
-                    {row.original.name || "N/A"}
-                </Typography>
+                <Tooltip title={row.original.name} arrow>
+                    <Typography fontWeight={500} variant="subtitle1" className="line-clamp-1">
+                        {row.original.name || "N/A"}
+                    </Typography>
+                </Tooltip>
             ),
         },
         {

@@ -71,7 +71,7 @@ export default function ActivityRoot() {
             header: "Log",
             accessorKey: "log",
             cell: ({ row }) => (
-                <Tooltip title={row.original.log}>
+                <Tooltip title={row.original.log} arrow>
                     <Typography className='line-clamp-1' variant='subtitle2'>{row.original.log || "N/A"}</Typography>
                 </Tooltip>
             ),

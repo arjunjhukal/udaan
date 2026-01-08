@@ -150,7 +150,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             header: "Course Name",
             accessorKey: "course_name",
             cell: ({ row }) => (
-                <Tooltip title={row.original.course_name}>
+                <Tooltip title={row.original.course_name} arrow>
                     <Typography variant='subtitle2' className="capitalize line-clamp-1">
                         {row.original.course_name || "N/A"}
                     </Typography>

@@ -121,7 +121,7 @@ export const CourseFilter = ({
           </div>
 
           {/* Teacher Filter */}
-          {teachers && teachers.length ? <div className="user__filter">
+          {teachers ? <div className="user__filter">
             <div className="flex items-center justify-between flex-wrap">
               <Typography variant="h5">Assigned Teachers</Typography>
               <OutlinedInput
