@@ -14,6 +14,8 @@ import {
     useTheme,
 } from "@mui/material";
 import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { PATH } from "../../../../routes/PATH";
 import { useLogoutMutation } from "../../../../services/authApi";
 import { logout } from "../../../../slice/authSlice";
 import { showToast } from "../../../../slice/toastSlice";
@@ -24,6 +26,7 @@ import CustomCollapseIcon from "../../../atoms/CustomCollapseIcon";
 
 export default function ProfileMenu() {
     const theme = useTheme();
+    const navigate = useNavigate();
     const user = useAppSelector((state) => state.auth.user);
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
@@ -45,6 +48,7 @@ export default function ProfileMenu() {
 
 
     const onMyAccount = () => {
+        navigate(PATH.SETTINGS.PROFILE.ROOT)
     }
 
     const onLogout = async () => {

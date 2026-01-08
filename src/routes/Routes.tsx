@@ -226,7 +226,7 @@ const router = createBrowserRouter([
 				]
 			},
 			{
-				path: PATH.SETTINGS.ROOT, element: <SettingRoot />,
+				path: PATH.SETTINGS.ROOT, element: <Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}><SettingRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.SETTINGS.PROFILE.ROOT, element: <ProfilePageRoot /> },
 					{ path: PATH.SETTINGS.CHANGE_PASSWORD.ROOT, element: <ChangePassword /> },
