@@ -1,6 +1,6 @@
 import { Box, Button, Dialog, DialogContent, IconButton, OutlinedInput, Stack, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { Send } from "iconsax-reactjs";
+import { Add, Send } from "iconsax-reactjs";
 import { useState, type Dispatch, type SetStateAction } from "react";
 import FilterIcon from "../../../icons/FilterIcon";
 import SearchIcon from "../../../icons/SearchIcon";
@@ -25,8 +25,9 @@ interface TableFilterProps {
     setCustomRange?: React.Dispatch<
         React.SetStateAction<{ startDate: string; endDate: string }>
     >;
+    assignToCourse?: () => void;
 }
-export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange }: TableFilterProps) {
+export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse }: TableFilterProps) {
     const theme = useTheme();
 
     const handleDeleteClick = () => {
@@ -62,7 +63,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
         setShowCustomRangeModal(false);
     };
     return (
-        <Box className={`md:grid md:grid-cols-12  items-center mb-4 2xl:mb-8 ${categoryLayout ? "pb-2 mb-6" : ""}`}
+        <Box className={`md:grid md:grid-cols-12  items-center mb-2 2xl:mb-4 ${categoryLayout ? "pb-2 mb-6" : ""}`}
             sx={{
                 borderBottom: categoryLayout ? `1px solid ${theme.palette.separator.dark}` : ""
             }}
@@ -205,6 +206,20 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                                 </DialogContent>
                             </Dialog>
                         </>) : ""}
+                    {assignToCourse && (
+                        <Button
+                            color="primary"
+                            variant="contained"
+                            startIcon={<Add />}
+
+                            className="py-2.5! px-3.5! rounded-md! text-center justify-center! gap-2! items-center!"
+                            onClick={() => assignToCourse()}
+                        >
+                            <Typography variant="subtitle2" className="hidden! md:flex!">
+                                Assign To Course
+                            </Typography>
+                        </Button>
+                    )}
                 </div>
             </div>
         </Box >

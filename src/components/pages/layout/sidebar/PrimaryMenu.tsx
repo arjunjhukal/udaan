@@ -54,7 +54,7 @@ export default function PrimaryMenu() {
     }, [location.pathname]);
 
     return (
-        <Box className="primary__menu relative" sx={{ padding: "0 32px 32px", maxHeight: "calc(100svh - 180px)", overflow: "auto" }}>
+        <Box className="primary__menu relative" sx={{ padding: "0 32px 32px", maxHeight: { xs: "calc(100svh - 150px)", "2xl": "calc(100svh - 180px)" }, overflow: "auto" }}>
             <List>
                 <ListItem disablePadding className="menu__item">
                     <ListItemButton
@@ -259,16 +259,18 @@ export default function PrimaryMenu() {
                 </CAN>
 
                 {/*Media Management */}
-                <ListItem disablePadding className="menu__item">
-                    <ListItemButton
-                        onClick={() => navigate(PATH.MEDIA_MANAGEMENT.ROOT)}
-                        className={location.pathname.startsWith(PATH.MEDIA_MANAGEMENT.ROOT) ? "active" : ""}>
-                        <ListItemIcon>
-                            <AttachSquare />
-                        </ListItemIcon>
-                        <ListItemText primary={t("messages.medias")} />
-                    </ListItemButton>
-                </ListItem>
+                <CAN permissions={["add_medias", "edit_medias", "delete_medias", "view_medias",]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => navigate(PATH.MEDIA_MANAGEMENT.ROOT)}
+                            className={location.pathname.startsWith(PATH.MEDIA_MANAGEMENT.ROOT) ? "active" : ""}>
+                            <ListItemIcon>
+                                <AttachSquare />
+                            </ListItemIcon>
+                            <ListItemText primary={t("messages.medias")} />
+                        </ListItemButton>
+                    </ListItem>
+                </CAN>
 
                 {/* Subscription Management */}
                 <CAN permissions={["add_subscriptions", "edit_subscriptions", "delete_subscriptions", "view_subscriptions",]}>

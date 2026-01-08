@@ -179,156 +179,158 @@ export default function UserManagementForm() {
 
     return (
         <>
-            <form onSubmit={formik.handleSubmit}>
-                <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-2 mb-6">
-                    <div className="col-span-1">
-                        <FileDragDrop
-                            onFileChange={handleFileChange}
-                            initialFile={formik.values.profile}
-                            initialPreview={formik.values.profile_url}
-                            error={formik.touched.profile && Boolean(formik.errors.profile)}
-                            helperText={formik.touched.profile && formik.errors.profile ? String(formik.errors.profile) : ""}
-                        />
-                    </div>
-                    <div className="col-span-1">
-                        <div className="input__field mb-6">
-                            <InputLabel className="required" htmlFor="name">Name</InputLabel>
-                            <OutlinedInput
-                                name="name"
-                                id="name"
-                                fullWidth
-                                placeholder="Enter name"
-                                value={formik.values.name}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.name && Boolean(formik.errors.name)}
+            <form onSubmit={formik.handleSubmit} className="h-full flex flex-col justify-between">
+                <div className="top">
+                    <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-2 mb-6">
+                        <div className="col-span-1">
+                            <FileDragDrop
+                                onFileChange={handleFileChange}
+                                initialFile={formik.values.profile}
+                                initialPreview={formik.values.profile_url}
+                                error={formik.touched.profile && Boolean(formik.errors.profile)}
+                                helperText={formik.touched.profile && formik.errors.profile ? String(formik.errors.profile) : ""}
                             />
-                            {formik.touched.name && formik.errors.name && (
-                                <FormHelperText error>{formik.errors.name}</FormHelperText>
-                            )}
                         </div>
-                        <div className="input__field">
-                            <InputLabel className="required" htmlFor="designation">Designation</InputLabel>
-                            <OutlinedInput
-                                name="designation"
-                                id="designation"
-                                fullWidth
-                                placeholder="Enter designation"
-                                value={formik.values.designation}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.designation && Boolean(formik.errors.designation)}
-                            />
-                            {formik.touched.designation && formik.errors.designation && (
-                                <FormHelperText error>{formik.errors.designation}</FormHelperText>
-                            )}
+                        <div className="col-span-1">
+                            <div className="input__field mb-6">
+                                <InputLabel className="required" htmlFor="name">Name</InputLabel>
+                                <OutlinedInput
+                                    name="name"
+                                    id="name"
+                                    fullWidth
+                                    placeholder="Enter name"
+                                    value={formik.values.name}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.name && Boolean(formik.errors.name)}
+                                />
+                                {formik.touched.name && formik.errors.name && (
+                                    <FormHelperText error>{formik.errors.name}</FormHelperText>
+                                )}
+                            </div>
+                            <div className="input__field">
+                                <InputLabel className="required" htmlFor="designation">Designation</InputLabel>
+                                <OutlinedInput
+                                    name="designation"
+                                    id="designation"
+                                    fullWidth
+                                    placeholder="Enter designation"
+                                    value={formik.values.designation}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.designation && Boolean(formik.errors.designation)}
+                                />
+                                {formik.touched.designation && formik.errors.designation && (
+                                    <FormHelperText error>{formik.errors.designation}</FormHelperText>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-3 mb-6">
-                    <div className="col-span-1">
-                        <div className="input__field">
-                            <InputLabel className="required" htmlFor="role">Role</InputLabel>
-                            <Select
-                                fullWidth
-                                name="role"
-                                id="role"
-                                value={formik.values.role?.id || ""}
-                                onChange={(e) => {
+                    <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-3 mb-6">
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required" htmlFor="role">Role</InputLabel>
+                                <Select
+                                    fullWidth
+                                    name="role"
+                                    id="role"
+                                    value={formik.values.role?.id || ""}
+                                    onChange={(e) => {
 
-                                    const selectedRole = roles?.data?.data?.find((r) => r.id === Number(e.target.value));
-                                    formik.setFieldValue("role", selectedRole || null);
-                                }}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.role && Boolean(formik.errors.role)}
-                            >
-                                {roles?.data?.data?.map((item) => (
-                                    <MenuItem key={item.id} value={item.id} className="capitalize">
-                                        {item.name.split("_").join(" ")}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                            {formik.touched.role && formik.errors.role && (
-                                <FormHelperText error>{String(formik.errors.role)}</FormHelperText>
-                            )}
+                                        const selectedRole = roles?.data?.data?.find((r) => r.id === Number(e.target.value));
+                                        formik.setFieldValue("role", selectedRole || null);
+                                    }}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.role && Boolean(formik.errors.role)}
+                                >
+                                    {roles?.data?.data?.map((item) => (
+                                        <MenuItem key={item.id} value={item.id} className="capitalize">
+                                            {item.name.split("_").join(" ")}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                                {formik.touched.role && formik.errors.role && (
+                                    <FormHelperText error>{String(formik.errors.role)}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required" htmlFor="email">Email Address</InputLabel>
+                                <OutlinedInput
+                                    name="email"
+                                    id="email"
+                                    fullWidth
+                                    placeholder="Enter email"
+                                    value={formik.values.email}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.email && Boolean(formik.errors.email)}
+                                />
+                                {formik.touched.email && formik.errors.email && (
+                                    <FormHelperText error>{formik.errors.email}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required" htmlFor="phone">Phone No.</InputLabel>
+                                <OutlinedInput
+                                    name="phone"
+                                    id="phone"
+                                    fullWidth
+                                    placeholder="Enter phone"
+                                    value={formik.values.phone}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.phone && Boolean(formik.errors.phone)}
+                                />
+                                {formik.touched.phone && formik.errors.phone && (
+                                    <FormHelperText error>{formik.errors.phone}</FormHelperText>
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <div className="col-span-1">
-                        <div className="input__field">
-                            <InputLabel className="required" htmlFor="email">Email Address</InputLabel>
-                            <OutlinedInput
-                                name="email"
-                                id="email"
-                                fullWidth
-                                placeholder="Enter email"
-                                value={formik.values.email}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.email && Boolean(formik.errors.email)}
-                            />
-                            {formik.touched.email && formik.errors.email && (
-                                <FormHelperText error>{formik.errors.email}</FormHelperText>
-                            )}
-                        </div>
-                    </div>
-                    <div className="col-span-1">
-                        <div className="input__field">
-                            <InputLabel className="required" htmlFor="phone">Phone No.</InputLabel>
-                            <OutlinedInput
-                                name="phone"
-                                id="phone"
-                                fullWidth
-                                placeholder="Enter phone"
-                                value={formik.values.phone}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.phone && Boolean(formik.errors.phone)}
-                            />
-                            {formik.touched.phone && formik.errors.phone && (
-                                <FormHelperText error>{formik.errors.phone}</FormHelperText>
-                            )}
-                        </div>
-                    </div>
-                </div>
 
-                <Typography variant="h6" className="pb-2 mb-8!" sx={{
-                    borderBottom: `1px solid ${theme.palette.textField.border}`
-                }}>Password Credentials</Typography>
+                    <Typography variant="h6" className="pb-2 mb-8!" sx={{
+                        borderBottom: `1px solid ${theme.palette.textField.border}`
+                    }}>Password Credentials</Typography>
 
-                <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-3">
-                    <div className="col-span-1">
-                        <div className="input__field">
-                            <InputLabel className="required" htmlFor="password">Password</InputLabel>
-                            <Password
-                                name="password"
-                                id="password"
-                                value={formik.values.password}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.password && Boolean(formik.errors.password)}
-                                placeholder="Enter password"
-                            />
-                            {formik.touched.password && formik.errors.password && (
-                                <FormHelperText error>{formik.errors.password}</FormHelperText>
-                            )}
+                    <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-3">
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required" htmlFor="password">Password</InputLabel>
+                                <Password
+                                    name="password"
+                                    id="password"
+                                    value={formik.values.password}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.password && Boolean(formik.errors.password)}
+                                    placeholder="Enter password"
+                                />
+                                {formik.touched.password && formik.errors.password && (
+                                    <FormHelperText error>{formik.errors.password}</FormHelperText>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                    <div className="col-span-1">
-                        <div className="input__field">
-                            <InputLabel className="required" htmlFor="password_confirmation">Confirm Password</InputLabel>
-                            <Password
-                                name="password_confirmation"
-                                id="password_confirmation"
-                                value={formik.values.password_confirmation}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                error={formik.touched.password_confirmation && Boolean(formik.errors.password_confirmation)}
-                                placeholder="Confirm password"
-                            />
-                            {formik.touched.password_confirmation && formik.errors.password_confirmation && (
-                                <FormHelperText error>{formik.errors.password_confirmation}</FormHelperText>
-                            )}
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required" htmlFor="password_confirmation">Confirm Password</InputLabel>
+                                <Password
+                                    name="password_confirmation"
+                                    id="password_confirmation"
+                                    value={formik.values.password_confirmation}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.password_confirmation && Boolean(formik.errors.password_confirmation)}
+                                    placeholder="Confirm password"
+                                />
+                                {formik.touched.password_confirmation && formik.errors.password_confirmation && (
+                                    <FormHelperText error>{formik.errors.password_confirmation}</FormHelperText>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

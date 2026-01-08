@@ -102,7 +102,6 @@ export default function TestManagementForm() {
         }
     });
 
-
     const categoryFilter = getCategoryFilterParams();
     const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });
     const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp, type: formik.values.test_type });

@@ -32,6 +32,7 @@ export default function SortableHeader({
 
     return (
         <Typography
+
             onClick={handleClick}
             className="flex items-center gap-1 cursor-pointer select-none"
         >

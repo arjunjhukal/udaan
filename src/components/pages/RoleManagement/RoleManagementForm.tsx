@@ -211,7 +211,7 @@ export default function RoleManagementForm() {
 
     return (
         <>
-            <form onSubmit={formik.handleSubmit}>
+            <form onSubmit={formik.handleSubmit} className="h-full flex flex-col justify-between">
                 <div className="grid grid-cols-2">
                     <div className="col-span-2 md:col-span-1">
                         <div className="input__field mb-6">
@@ -237,7 +237,9 @@ export default function RoleManagementForm() {
                         </Typography>
                     </div>
                 </div>
-                <UdaanTable columns={columns} data={formik.values.permissions || []} loading={isLoading || loadingRole} />
+                <div className="top h-full overflow-auto">
+                    <UdaanTable columns={columns} data={formik.values.permissions || []} loading={isLoading || loadingRole} />
+                </div>
                 <Box
                     className="footer__action flex justify-end items-center gap-2 py-6 mt-8 sticky -bottom-5"
                     sx={{

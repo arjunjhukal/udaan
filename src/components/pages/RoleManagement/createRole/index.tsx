@@ -6,7 +6,7 @@ import RoleManagementForm from "../RoleManagementForm";
 export default function CreateRoleRoot() {
     const { t } = useTranslation();
     return (
-        <>
+        <div className="h-full flex-col flex justify-start">
             <PageHeader
                 breadcrumb={[
                     {
@@ -25,6 +25,6 @@ export default function CreateRoleRoot() {
 
             />
             <RoleManagementForm />
-        </>
+        </div>
     )
 }

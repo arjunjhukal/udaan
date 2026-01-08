@@ -6,7 +6,7 @@ import UserManagementForm from '../UserManagementForm';
 export default function CreateUser() {
     const { t } = useTranslation();
     return (
-        <div className="create__user__root">
+        <div className="create__user__root h-full flex flex-col justify-start">
             <PageHeader
                 breadcrumb={[
                     {

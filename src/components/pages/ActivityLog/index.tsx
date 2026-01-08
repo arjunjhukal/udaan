@@ -62,7 +62,7 @@ export default function ActivityRoot() {
             header: "S.No.",
             accessorKey: "sn",
             cell: ({ row }) => (
-                <Typography>
+                <Typography variant='subtitle2'>
                     {(qp.pageIndex - 1) * qp.pageSize + row.index + 1}
                 </Typography>
             )
@@ -72,7 +72,7 @@ export default function ActivityRoot() {
             accessorKey: "log",
             cell: ({ row }) => (
                 <Tooltip title={row.original.log}>
-                    <Typography className='line-clamp-1'>{row.original.log || "N/A"}</Typography>
+                    <Typography className='line-clamp-1' variant='subtitle2'>{row.original.log || "N/A"}</Typography>
                 </Tooltip>
             ),
         },
@@ -87,28 +87,28 @@ export default function ActivityRoot() {
             header: "Username",
             accessorKey: "username",
             cell: ({ row }) => (
-                <Typography>{row.original.username || "N/A"}</Typography>
+                <Typography variant='subtitle2'>{row.original.username || "N/A"}</Typography>
             ),
         },
         {
             header: "Email",
             accessorKey: "email",
             cell: ({ row }) => (
-                <Typography>{row.original.email || "N/A"}</Typography>
+                <Typography variant='subtitle2'>{row.original.email || "N/A"}</Typography>
             ),
         },
         {
             header: "Phone",
             accessorKey: "phone",
             cell: ({ row }) => (
-                <Typography>{row.original.phone || "N/A"}</Typography>
+                <Typography variant='subtitle2'>{row.original.phone || "N/A"}</Typography>
             ),
         },
         {
             header: "Type",
             accessorKey: "type",
             cell: ({ row }) => (
-                <Typography>{row.original.type || "N/A"}</Typography>
+                <Typography variant='subtitle2'>{row.original.type || "N/A"}</Typography>
             ),
         },
         {
@@ -122,7 +122,7 @@ export default function ActivityRoot() {
             />,
             accessorKey: "date",
             cell: ({ row }) => (
-                <Typography>{formatToNepalTime(row.original.timestamp) || "N/A"}</Typography>
+                <Typography variant='subtitle2' className='text-nowrap'>{formatToNepalTime(row.original.timestamp) || "N/A"}</Typography>
             ),
         },
     ], [qp]);

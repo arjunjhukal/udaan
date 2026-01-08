@@ -43,11 +43,14 @@ export default function ResponsiveDrawer(props: Props) {
 		<div>
 			<Toolbar
 				sx={{
-					padding: "32px 32px 56px",
+					padding: {
+						xs: "32px 32px 16px",
+						"2xl": "32px 32px 56px"
+					},
 					justifyContent: "center",
 				}}>
 				<Link to={"/"}>
-					<img src="/logo.svg" alt="" width={137} height={73} />
+					<img src="/logo.svg" alt="" width={137} height={73} className="max-w-120 mx-auto" />
 				</Link>
 			</Toolbar>
 			<PrimaryMenu />
@@ -104,13 +107,13 @@ export default function ResponsiveDrawer(props: Props) {
 				component="main"
 				sx={{
 					flexGrow: 1,
-					width: { lg: `calc(100% - ${drawerWidth}px)`, padding: "32px 24px" },
+					width: { lg: `calc(100% - ${drawerWidth}px)`, padding: "32px 16px 16px" },
 					overflowX: "hidden"
 				}}>
 				<Toolbar sx={{ height: 70 }} />
-				<Box className="content p-4 lg:p-8  rounded-2xl overflow-y-auto flex flex-col" sx={{
+				<Box className="content p-4 lg:p-6 rounded-2xl overflow-y-auto flex flex-col" sx={{
 					background: theme.palette.primary.contrastText,
-					height: "calc(100vh - 135px)"
+					height: "calc(100vh - 125px)"
 
 				}}>
 					{props.children}

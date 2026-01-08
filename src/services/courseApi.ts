@@ -199,6 +199,21 @@ export const courseApi = createApi({
                 { type: "Media", id: "LIST" }
             ],
         }),
+        assignMediaToCourse: builder.mutation<GlobalResponse, { course_ids: number[]; type: courseTabType, media_ids: number[] }>({
+            query: ({ course_ids, type, media_ids }) => {
+                return {
+                    url: `/admin/course/media/${type}/assign`,
+                    method: "POST",
+                    body: {
+                        course_ids: course_ids,
+                        media_ids: media_ids
+                    }
+                };
+            },
+            invalidatesTags: (_result, _error,) => [
+                { type: "Media", id: "LIST" }
+            ],
+        }),
         getCourseTest: builder.query<TestList, QueryParams & { id: number }>({
             query: ({ id, pageIndex, pageSize, search }) => {
                 const queryString = buildQueryParams({
@@ -265,8 +280,9 @@ export const {
     useDeleteCourseCurriculumMutation,
     useGetCourseMediaByTypeQuery,
     useAddCourseMediaByTypeMutation,
+    useAssignMediaToCourseMutation,
     useGetCourseTestQuery,
     useAssignTestToCourseMutation,
     useRemoveCourseMediaByTypeMutation,
-    useRemoveTestToCourseMutation
+    useRemoveTestToCourseMutation,
 } = courseApi;
