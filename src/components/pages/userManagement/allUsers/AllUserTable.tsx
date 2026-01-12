@@ -3,7 +3,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Add } from "iconsax-reactjs";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
 import { useDeleteUserMutation, useGenerateOTPMutation, useGetAllUserQuery, useSuspendUserMutation } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
@@ -25,7 +24,6 @@ type ActionType = "delete" | "suspend" | "activate";
 export default function AllUserTable() {
     const { t } = useTranslation();
 
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
     const [search, setSearch] = React.useState<string>("");
@@ -189,7 +187,6 @@ export default function AllUserTable() {
         }
     };
 
-
     const handleUserOtpGeneration = async (id: number) => {
         try {
             const response = await generateOtp({ id }).unwrap();
@@ -211,6 +208,7 @@ export default function AllUserTable() {
             )
         }
     }
+
     const columns = useMemo<ColumnDef<RegisterUserProps>[]>(() => [
         {
             header: () => (
@@ -279,8 +277,8 @@ export default function AllUserTable() {
                 <Box className="flex">
                     <Actions
                         deleting={deleting}
-                        onEdit={() => navigate(`${PATH.USER_MANAGEMENT.EDIT_USER.ROOT(row.original.id?.toString() || "")}`)}
-                        onView={() => navigate(`${PATH.USER_MANAGEMENT.EDIT_USER.ROOT(row.original.id?.toString() || "")}`)}
+                        editUrl={PATH.USER_MANAGEMENT.EDIT_USER.ROOT(row.original.id?.toString() || "")}
+                        viewUrl={PATH.USER_MANAGEMENT.EDIT_USER.ROOT(row.original.id?.toString() || "")}
                         onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                         onSuspend={() => openSuspendConfirmation([row.original.id?.toString() || ""])}
                         userStatus={row.original.is_suspended}

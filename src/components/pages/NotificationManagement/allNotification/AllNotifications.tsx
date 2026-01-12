@@ -2,7 +2,6 @@ import { Box, Checkbox, Stack, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
 import { useDeleteNotificationMutation, useGetAllNotificationQuery, } from "../../../../services/notificationApi";
 import { showToast } from "../../../../slice/toastSlice";
@@ -21,7 +20,6 @@ import TableFilter from "../../../organism/TableFilter";
 
 export default function AllNotifications() {
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
     const { t } = useTranslation();
 
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
@@ -40,7 +38,7 @@ export default function AllNotifications() {
     const notifications = data?.data?.data || [];
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            const allIndices = new Set(notifications.map((notification) => notification.id||""));
+            const allIndices = new Set(notifications.map((notification) => notification.id || ""));
             setSelectedRows(allIndices);
         } else {
             setSelectedRows(new Set());
@@ -173,8 +171,8 @@ export default function AllNotifications() {
             cell: ({ row }) => (
                 <Actions
                     deleting={deleting}
-                    onEdit={() => navigate(PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(Number(row.original.id)))}
-                    onView={() => navigate(PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(Number(row.original.id)))}
+                    editUrl={PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(Number(row.original.id))}
+                    viewUrl={PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(Number(row.original.id))}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                 />
             ),

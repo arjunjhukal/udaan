@@ -3,7 +3,6 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Add } from 'iconsax-reactjs';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { PATH } from '../../../../../routes/PATH';
 import { useDeleteTestMutation, useGetAllTestQuery } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
@@ -20,10 +19,7 @@ import TestGridLayout from './TestGridLayout';
 
 export default function AllTestListing() {
     const { t } = useTranslation();
-
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-
 
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
     const [search, setSearch] = useState<string>("");
@@ -171,13 +167,13 @@ export default function AllTestListing() {
             cell: ({ row }) => (
                 <Actions
                     deleting={deleting}
-                    onEdit={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(Number(row.original.id)))}
-                    onView={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(Number(row.original.id)))}
+                    editUrl={PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(Number(row.original.id))}
+                    viewUrl={PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(Number(row.original.id))}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp])
 
 
     return (

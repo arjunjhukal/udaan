@@ -274,8 +274,8 @@ export default function AllCourse() {
             cell: ({ row }) => (
                 <Actions
                     deleting={deleting}
-                    onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}`)}
-                    onView={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}`)}
+                    editUrl={PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}
+                    viewUrl={PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                     onClone={() => handleCourseClone(Number(row.original.id))}
                     onStatus={() => handleCourseStatusChange(Number(row.original.id))}

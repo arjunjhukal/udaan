@@ -1,7 +1,6 @@
 import { Checkbox, Stack, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { PATH } from '../../../../routes/PATH';
 import { useDeletePagesMutation, useGetAllPagesQuery } from '../../../../services/pageApi';
 import { showToast } from '../../../../slice/toastSlice';
@@ -16,7 +15,6 @@ import EmptyRoute from '../../../organism/EmptyRoute';
 import TableFilter from '../../../organism/TableFilter';
 
 export default function PageListing() {
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
     const [search, setSearch] = useState<string>("");
@@ -150,8 +148,8 @@ export default function PageListing() {
             cell: ({ row }) => (
                 <Actions
                     deleting={deleting}
-                    onEdit={() => navigate(`${PATH.CONTENT_MANAGEMENT.PAGES.EDIT_PAGE.ROOT(row.original.id?.toString() || "")}`)}
-                    onView={() => navigate(`${PATH.CONTENT_MANAGEMENT.PAGES.EDIT_PAGE.ROOT(row.original.id?.toString() || "")}`)}
+                    editUrl={PATH.CONTENT_MANAGEMENT.PAGES.EDIT_PAGE.ROOT(row.original.id?.toString() || "")}
+                    viewUrl={PATH.CONTENT_MANAGEMENT.PAGES.EDIT_PAGE.ROOT(row.original.id?.toString() || "")}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                 />
             ),

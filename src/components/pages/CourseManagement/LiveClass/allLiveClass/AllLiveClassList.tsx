@@ -3,7 +3,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Add } from "iconsax-reactjs";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../../routes/PATH";
 import { useDeleteLiveClassMutation, useGetAllLiveClassQuery } from "../../../../../services/liveClass";
 import { showToast } from "../../../../../slice/toastSlice";
@@ -24,7 +23,6 @@ import LiveClassGrid from "./LiveClassGrid";
 
 export default function AllLiveClassList() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
   const [search, setSearch] = useState<string>("");
@@ -186,8 +184,8 @@ export default function AllLiveClassList() {
       cell: ({ row }) => (
         <Actions
           deleting={deleting}
-          onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(row.original.id)}`)}
-          onView={() => navigate(`${PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(row.original.id)}`)}
+          editUrl={PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(row.original.id)}
+          viewUrl={PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(row.original.id)}
           onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
         />
       ),

@@ -3,7 +3,6 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Add } from 'iconsax-reactjs';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { PATH } from '../../../../routes/PATH';
 import { useDeleteRoleMutation, useGetAllRolesQuery } from '../../../../services/roleAndPermissionApi';
 import { showToast } from '../../../../slice/toastSlice';
@@ -20,10 +19,9 @@ import TableFilter from '../../../organism/TableFilter';
 
 export default function AllRolesTable() {
     const { t } = useTranslation();
-
     const theme = useTheme();
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
+
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
     const [search, setSearch] = React.useState<string>("");
     const [debouncedSearch, setDebouncedSearch] = useState<string>("");
@@ -33,6 +31,7 @@ export default function AllRolesTable() {
     })
     const [openConfirm, setOpenConfirm] = React.useState(false);
     const [rolesToDelete, setRolesToDelete] = React.useState<string[]>([]);
+    
     const { data, isLoading } = useGetAllRolesQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch });
     const [deleteRole, { isLoading: deleting }] = useDeleteRoleMutation();
 
@@ -157,8 +156,8 @@ export default function AllRolesTable() {
             cell: ({ row }) => (
                 <Actions
                     deleting={deleting}
-                    onEdit={() => navigate(`${PATH.ROLES.EDIT_ROLE.ROOT(row.original.id?.toString() || "")}`)}
-                    onView={() => navigate(`${PATH.ROLES.EDIT_ROLE.ROOT(row.original.id?.toString() || "")}`)}
+                    editUrl={PATH.ROLES.EDIT_ROLE.ROOT(row.original.id?.toString() || "")}
+                    viewUrl={PATH.ROLES.EDIT_ROLE.ROOT(row.original.id?.toString() || "")}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                 />
             ),
@@ -171,7 +170,7 @@ export default function AllRolesTable() {
         rolesToDelete, selectedRows
     })
     return (
-        <div className='roles__root h-full flex flex-col justify-between'>
+        <div className='roles__root h-full flex flex-col justify-start'>
             <div className="page__top">
                 <PageHeader
                     breadcrumb={[
@@ -200,7 +199,7 @@ export default function AllRolesTable() {
                     handleRoleDelete={openDeleteConfirmation} // Changed to open dialog instead
                 />
             </div>
-            {!isLoading && !roles.length ? <EmptyRoles /> : <Box className="table__wrapper h-full overflow-auto">
+            {!isLoading && !roles.length ? <EmptyRoles /> : <Box className="table__wrapper  overflow-auto flex flex-col justify-start">
                 <UdaanTable
                     loading={isLoading}
                     data={roles}

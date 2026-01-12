@@ -19,8 +19,8 @@ export default function CourseCard({ course, onDelete, onClone }: {
                 <img src={course.thumbnail_url || "/fallback.png"} alt="Course" className="w-full h-full object-cover" />
                 <div className="absolute! top-2.5 right-2.5">
                     <Actions
-                        onEdit={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}
-                        onView={() => navigate(`${PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}`)}
+                        editUrl={PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}
+                        viewUrl={PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}
                         onDelete={() => onDelete([course.id?.toString() || ""])}
                         onClone={() => onClone && onClone(Number(course?.id))}
                     />
