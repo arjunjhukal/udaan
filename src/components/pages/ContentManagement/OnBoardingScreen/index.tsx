@@ -25,14 +25,6 @@ const onBoardingCardsValidationSchema = Yup.object({
 });
 
 const onBoardingValidationSchema = Yup.object({
-    icon_url: Yup.string().nullable(),
-
-    icon: Yup.mixed<File>().when("icon_url", {
-        is: (value: string | null | undefined) => !value,
-        then: (schema) => schema.required("Icon is required"),
-        otherwise: (schema) => schema.notRequired(),
-    }),
-
     title: Yup.string().required("Title is required"),
     description: Yup.string().required("Description is required"),
 
@@ -107,6 +99,11 @@ export default function OnBoardingScreenRoot() {
                         if (item.icon instanceof File) {
                             formData.append(`pages[${pageIndex}][items][${itemIndex}][icon]`, item.icon);
                         }
+
+                        if (item.icon_url) {
+                            formData.append(`pages[${pageIndex}][items][${itemIndex}][icon_url]`, item.icon_url);
+                        }
+
                         formData.append(`pages[${pageIndex}][items][${itemIndex}][title]`, item.title);
                         formData.append(`pages[${pageIndex}][items][${itemIndex}][description]`, item.description);
                     });
