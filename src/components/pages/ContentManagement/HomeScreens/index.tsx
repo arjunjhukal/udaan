@@ -6,7 +6,7 @@ export default function HomeScreens() {
     const { t } = useTranslation();
 
     return (
-        <div className="home__screen__layout">
+        <div className="home__screen__layout h-full overflow-hidden flex flex-col justify-start">
             <div className="page__header flex flex-col gap-1.5">
                 <Typography variant="h5">{t("menus.content_management.home_screen.root")}</Typography>
                 <Typography variant="subtitle2" color="text.middle">{t("menus.content_management.home_screen.message")}</Typography>
