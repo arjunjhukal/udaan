@@ -21,7 +21,7 @@ const onBoardingCardsValidationSchema = Yup.object({
     }),
 
     title: Yup.string().required("Title is required"),
-    description: Yup.string().required("Description is required"),
+    // description: Yup.string().required("Description is required"),
 });
 
 const onBoardingValidationSchema = Yup.object({
@@ -200,7 +200,6 @@ export default function OnBoardingScreenRoot() {
                                             <div>
                                                 <FileDragDrop
                                                     label="Page Icon"
-                                                    required
                                                     initialPreview={page.icon_url}
                                                     onFileChange={(file) =>
                                                         formik.setFieldValue(`pages[${pageIndex}].icon`, file)
