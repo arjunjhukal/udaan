@@ -152,9 +152,9 @@ export const courseApi = createApi({
                 { type: "Media", id: "LIST" }
             ],
         }),
-        getCourseMediaByType: builder.query<MediaList, { id: string | null; type: courseTabType }>({
-            query: ({ id, type }) => {
-                const queryString = buildQueryParams({ type });
+        getCourseMediaByType: builder.query<MediaList, { id: string | null; type: courseTabType, qp: QueryParams, search: string }>({
+            query: ({ id, type, qp, search }) => {
+                const queryString = buildQueryParams({ type, page: qp.pageIndex, page_size: qp.pageSize, search: search });
 
                 return {
                     url: `/admin/course/${id}/media?${queryString}`,

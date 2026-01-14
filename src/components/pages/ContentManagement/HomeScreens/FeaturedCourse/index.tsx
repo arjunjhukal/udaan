@@ -82,9 +82,7 @@ export default function FeaturedCourseRoot() {
 
                     <Divider className="my-6" />
                     <Box className="mt-6 flex justify-end gap-4">
-                        <Button onClick={() => formik.resetForm()} variant="contained" color="inherit">
-                            Cancel
-                        </Button>
+
                         <Button type="submit" variant="contained" disabled={isLoading}>
                             {isLoading ? "Adding Featured Courses..." : "Add Featured Courses"}
                         </Button>

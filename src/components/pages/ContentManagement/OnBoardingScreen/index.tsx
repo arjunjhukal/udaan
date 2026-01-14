@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Divider, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Divider, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
 import { FieldArray, FormikProvider, useFormik } from "formik";
 import { Add, ArrowDown2, Trash } from "iconsax-reactjs";
 import { useTranslation } from "react-i18next";
@@ -9,7 +9,6 @@ import { useAppDispatch } from "../../../../store/hook";
 import type { OnBoardingProps } from "../../../../types/content";
 import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FileDragDrop from "../../../molecules/FileDragDrop";
-import FooterAction from "../../../molecules/FooterAction";
 
 const onBoardingCardsValidationSchema = Yup.object({
     icon_url: Yup.string().nullable(),
@@ -478,9 +477,15 @@ export default function OnBoardingScreenRoot() {
                     </FieldArray>
                 </div>
 
-                <FooterAction
-                    replaceLabel={isLoading ? "Updating Onboarding Screen..." : "Update Onboarding Screen"}
-                />
+                <Box
+                    className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky bottom-0"
+                    sx={{
+                        borderTop: (theme) => `1px solid ${theme.palette.separator.dark}`,
+                    }}
+                >
+                    <Button variant="contained" color="primary">{isLoading ? "Updating Onboarding Screen..." : "Update Onboarding Screen"}</Button>
+                </Box>
+
             </form>
         </FormikProvider>
     );

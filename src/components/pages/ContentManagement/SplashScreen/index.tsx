@@ -1,4 +1,4 @@
-import { Divider, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
+import { Box, Button, Divider, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import * as Yup from "yup";
@@ -6,7 +6,6 @@ import { useAddOrUpdateSplashScreenMutation, useGetSplashScreenQuery } from "../
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import FileDragDrop from "../../../molecules/FileDragDrop";
-import FooterAction from "../../../molecules/FooterAction";
 
 const validationSchema = Yup.object({
     splash_icon_url: Yup.string().nullable(),
@@ -82,7 +81,7 @@ export default function SplashScreenRoot() {
                 <Divider className="mt-4! mb-6!" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                   
+
                     <div>
                         <FileDragDrop
                             label="Splash Icon"
@@ -151,8 +150,14 @@ export default function SplashScreenRoot() {
                         </div>
                     </div>
                 </div>
-                <FooterAction
-                    replaceLabel={isLoading ? "Updating Splash Screen" : "Update Splash Screen"} />
+                <Box
+                    className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky bottom-0"
+                    sx={{
+                        borderTop: (theme) => `1px solid ${theme.palette.separator.dark}`,
+                    }}
+                >
+                    <Button variant="contained" color="primary">{isLoading ? "Updating Splash Screen" : "Update Splash Screen"}</Button>
+                </Box>
             </form>
         </>
     )

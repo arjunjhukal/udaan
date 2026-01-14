@@ -137,14 +137,6 @@ export default function WelcomePopupRoot() {
             <Divider className="mt-6!" />
 
             <Box className="mt-6 flex justify-end gap-4">
-                <Button
-                    type="button"
-                    onClick={() => formik.resetForm()}
-                    variant="contained"
-                    color="inherit"
-                >
-                    Cancel
-                </Button>
 
                 <Button type="submit" variant="contained" disabled={isLoading}>
                     {isLoading ? "Creating..." : "Create"}

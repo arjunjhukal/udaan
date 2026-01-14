@@ -44,7 +44,7 @@ export default function TestManagementForm() {
         subCategories,
         handleCategoryChange,
         selections,
-        getCategoryFilterParams,
+        getSelectedCategoryFilterParams,
     } = useCourseFilter();
 
     const { data: editData } = useGetTestByIdQuery(
@@ -102,7 +102,7 @@ export default function TestManagementForm() {
         }
     });
 
-    const categoryFilter = getCategoryFilterParams();
+    const categoryFilter = getSelectedCategoryFilterParams();
     const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });
     const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp, type: formik.values.test_type });
     const [createTest, { isLoading: creatingTest }] = useEditOrCreateTestMutation();

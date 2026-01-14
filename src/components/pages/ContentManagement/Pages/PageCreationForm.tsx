@@ -129,7 +129,7 @@ export default function PageCreationForm() {
                 </div>
             </div>
             <FooterAction
-                handleConfirmationChange={() => { }}
+                handleConfirmationChange={() => navigate(-1)}
                 isEditMode={!!id}
                 isLoading={isLoading}
                 isUpdating={isLoading}

@@ -253,7 +253,6 @@ export default function BannerRoot() {
                 </div>
                 <Divider className="mt-6!" />
                 <Box className="mt-6 flex justify-end gap-4 pb-4 lg:pb-6">
-                    <Button onClick={() => formik.resetForm()} variant="contained" color="inherit">Cancel</Button>
                     <Button type="submit" variant="contained" disabled={isLoading}>{isLoading ? "Creating Banner..." : "Create Banner"}</Button>
                 </Box>
             </form>

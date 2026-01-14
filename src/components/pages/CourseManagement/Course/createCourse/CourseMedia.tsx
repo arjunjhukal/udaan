@@ -85,7 +85,7 @@ export default function CourseMedia({ type, id, allowMultiple = true }: Props) {
     const handleMediaAddition = () => {
         setOpen((prev) => !prev);
     };
-    const { data, isLoading } = useGetCourseMediaByTypeQuery({ type, id: id || null, ...qp }, { skip: !id || !type });
+    const { data, isLoading } = useGetCourseMediaByTypeQuery({ type, id: id || null, qp, search }, { skip: !id || !type });
     const [addMediaToCourse] = useAddCourseMediaByTypeMutation();
     const [removeMediaFromCourse] = useRemoveCourseMediaByTypeMutation();
     const handleMediaAssign = async (ids: number[]) => {
