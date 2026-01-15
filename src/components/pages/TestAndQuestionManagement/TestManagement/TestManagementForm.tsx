@@ -463,6 +463,11 @@ export default function TestManagementForm() {
                 <div className="col-span-2">
                     <div className="input__field">
                         <InputLabel className="required">Select Questions ({formik.values.question_ids.length})</InputLabel>
+                        <OutlinedInput
+                            placeholder="Search Questions"
+                            value={questionQp.search}
+                            onChange={(e) => handleQuestionSearch(e.target.value)}
+                        />
                         <InfiniteScrolling
                             key="question-list"
                             scrollableId="question-scrollable"

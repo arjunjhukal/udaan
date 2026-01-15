@@ -38,7 +38,7 @@ const validationSchema = Yup.object({
     transaction_id: Yup.string()
         .required("Transaction/Bill No. is required"),
     payment_method: Yup.string()
-        .oneOf(["esewa", "khalti", "cash"])
+        .oneOf(["esewa", "khalti", "cash", "fonepay"])
         .required("Payment method is required"),
     status: Yup.string()
         .oneOf(["success", "installment"])
@@ -63,9 +63,6 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     });
     const [courseList, setCourseList] = useState<CourseProps[]>([]);
 
-
-
-    // Fetch transaction data when editing or viewing
     const { data: transactionData, isLoading: loadingTransaction } = useGetTransactionByIdQuery(
         transactionId as number,
         { skip: !transactionId }
@@ -147,6 +144,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                     }))
                     formik.resetForm();
                     handleClose();
+                    resetFilters()
                 }
                 catch (e: any) {
                     dispatch(showToast({
@@ -166,6 +164,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                     }))
                     formik.resetForm();
                     handleClose();
+                    resetFilters()
                 }
                 catch (e: any) {
                     dispatch(showToast({
@@ -228,7 +227,8 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         subCategories,
         selections,
         getSelectedCategoryFilterParams,
-        handleCategoryChange
+        handleCategoryChange,
+        resetFilters
     } = useCourseFilter();
 
     const categoryFilter = getSelectedCategoryFilterParams();

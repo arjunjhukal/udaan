@@ -2,6 +2,7 @@ import { Box, Checkbox, CircularProgress, FormControlLabel, Typography, useTheme
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { v4 as uuidv4 } from "uuid";
+import { renderHtml } from "../../../utils/renderHtml";
 
 interface InfiniteScrollingProps {
     data: any[];
@@ -128,7 +129,7 @@ export default function InfiniteScrolling({
                                             }
                                             label={
                                                 <Box>
-                                                    <Typography variant="subtitle1">{item[itemLabelKey]}</Typography>
+                                                    <Typography variant="subtitle1">{renderHtml(item[itemLabelKey])}</Typography>
                                                 </Box>
                                             }
                                         />

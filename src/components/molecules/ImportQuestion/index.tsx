@@ -193,10 +193,12 @@ export default function ImportQuestion({
 
 
     return (
-        <form onSubmit={formik.handleSubmit}>
+        <form onSubmit={formik.handleSubmit} className="h-full overflow-hidden">
             <Box
-                className="flex flex-col justify-start items-start gap-3 p-3  rounded-lg"
-
+                className="flex flex-col justify-start items-start gap-3 p-3  rounded-lg  overflow-auto"
+                sx={{
+                    height: "calc(100% - 150px)"
+                }}
             >
                 {formik.values.questions.length ? formik.values.questions.map((question, questionIndex) => (
                     <Box className="question__box w-full pb-4 mb-4 lg:pb-8 lg:mb-8 border-b last:border-b-0 last:mb-0 last:pb-0" key={question.id} sx={{ borderColor: (theme) => theme.palette.separator.dark }}>
@@ -213,6 +215,7 @@ export default function ImportQuestion({
                 )) : ""}
             </Box>
             <FooterAction
+                handleConfirmationChange={onClose}
                 isLoading={saving}
                 replaceLabel="Verify & Submit"
             />

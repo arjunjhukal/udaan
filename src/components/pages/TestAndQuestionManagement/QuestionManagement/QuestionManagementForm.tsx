@@ -1,6 +1,7 @@
 import { Add } from "@mui/icons-material";
 import {
     Autocomplete,
+    Box,
     Button,
     Checkbox,
     FormControlLabel,
@@ -159,128 +160,134 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
     );
 
     return (
-        <form onSubmit={formik.handleSubmit}>
-            <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
-                <div className="col-span-1">
-                    <div className="input__field">
-                        <InputLabel>Question Type</InputLabel>
-                        <Autocomplete
-                            disableClearable
-                            options={questionTypes}
-                            value={selectedQuestionType || questionTypes[0]}
-                            onChange={(_, newValue) => {
-                                formik.setFieldValue("question_type", newValue.value);
-                                if (newValue.value === "subjective") {
-                                    formik.setFieldValue("options", []);
-                                } else if (
-                                    newValue.value === "mcq" &&
-                                    formik.values.options.length === 0
-                                ) {
-                                    formik.setFieldValue("options", [
-                                        { id: null, option: "", is_correct: false }
-                                    ]);
-                                }
-                            }}
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    placeholder="Select Question Type"
-                                    error={
-                                        formik.touched.question_type &&
-                                        Boolean(formik.errors.question_type)
-                                    }
-                                    helperText={
-                                        formik.touched.question_type &&
-                                        formik.errors.question_type
-                                    }
-                                />
-                            )}
-                            fullWidth
-                        />
-                    </div>
-                </div>
-
-                {formik.values.question_type === "subjective" ?
+        <form onSubmit={formik.handleSubmit} className="h-full overflow-hidden">
+            <Box
+                className="flex flex-col justify-start items-start gap-3 p-3  rounded-lg  overflow-auto"
+                sx={{
+                    height: "calc(100% - 150px)"
+                }}
+            >
+                <div className="flex flex-col gap-6 md:grid md:grid-cols-2 w-full">
                     <div className="col-span-1">
                         <div className="input__field">
-                            <InputLabel>
-                                Question Weight{" "}
-                                <Typography
-                                    variant="subtitle2"
-                                    color="text.secondary"
-                                    className="inline-block"
-                                >
-                                    Marks this question holds.
-                                </Typography>
-                            </InputLabel>
-                            <OutlinedInput
+                            <InputLabel>Question Type</InputLabel>
+                            <Autocomplete
+                                disableClearable
+                                options={questionTypes}
+                                value={selectedQuestionType || questionTypes[0]}
+                                onChange={(_, newValue) => {
+                                    formik.setFieldValue("question_type", newValue.value);
+                                    if (newValue.value === "subjective") {
+                                        formik.setFieldValue("options", []);
+                                    } else if (
+                                        newValue.value === "mcq" &&
+                                        formik.values.options.length === 0
+                                    ) {
+                                        formik.setFieldValue("options", [
+                                            { id: null, option: "", is_correct: false }
+                                        ]);
+                                    }
+                                }}
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        placeholder="Select Question Type"
+                                        error={
+                                            formik.touched.question_type &&
+                                            Boolean(formik.errors.question_type)
+                                        }
+                                        helperText={
+                                            formik.touched.question_type &&
+                                            formik.errors.question_type
+                                        }
+                                    />
+                                )}
                                 fullWidth
-                                name="points"
-                                value={formik.values.points}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                placeholder="Enter Total Marks"
-                                type="number"
-                                error={formik.touched.points && Boolean(formik.errors.points)}
                             />
-                            {formik.touched.points && formik.errors.points && (
+                        </div>
+                    </div>
+
+                    {formik.values.question_type === "subjective" ?
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel>
+                                    Question Weight{" "}
+                                    <Typography
+                                        variant="subtitle2"
+                                        color="text.secondary"
+                                        className="inline-block"
+                                    >
+                                        Marks this question holds.
+                                    </Typography>
+                                </InputLabel>
+                                <OutlinedInput
+                                    fullWidth
+                                    name="points"
+                                    value={formik.values.points}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    placeholder="Enter Total Marks"
+                                    type="number"
+                                    error={formik.touched.points && Boolean(formik.errors.points)}
+                                />
+                                {formik.touched.points && formik.errors.points && (
+                                    <Typography variant="caption" color="error">
+                                        {formik.errors.points}
+                                    </Typography>
+                                )}
+                            </div>
+                        </div> : <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel>Contains Image Options</InputLabel>
+                                <YesNoSwitch
+                                    checked={formik.values.has_image_in_option}
+                                    onChange={(e) => formik.setFieldValue("has_image_in_option", e.target.checked)}
+                                />
+                            </div>
+                        </div>
+                    }
+
+                    <div className="col-span-2">
+                        <div className="input__field">
+                            <InputLabel>Mega Category</InputLabel>
+                            <Autocomplete
+                                options={megaCategories}
+                                loading={isLoading}
+                                value={selectedMegaCategory || null}
+                                onChange={(_, newValue: any) =>
+                                    formik.setFieldValue("megacategory_id", newValue?.id || null)
+                                }
+                                getOptionLabel={(option: any) => option.name || ""}
+                                isOptionEqualToValue={(option: any, value: any) =>
+                                    option.id === value.id
+                                }
+                                renderInput={(params) => (
+                                    <TextField
+                                        {...params}
+                                        placeholder="Select Mega Category"
+                                        error={
+                                            formik.touched.megacategory_id &&
+                                            Boolean(formik.errors.megacategory_id)
+                                        }
+                                        helperText={
+                                            formik.touched.megacategory_id &&
+                                            formik.errors.megacategory_id
+                                        }
+                                    />
+                                )}
+                                fullWidth
+                            />
+                            {formik.touched.megacategory_id && formik.errors.megacategory_id && (
                                 <Typography variant="caption" color="error">
-                                    {formik.errors.points}
+                                    {formik.errors.megacategory_id}
                                 </Typography>
                             )}
                         </div>
-                    </div> : <div className="col-span-1">
+                    </div>
+
+                    <div className="col-span-2">
                         <div className="input__field">
-                            <InputLabel>Contains Image Options</InputLabel>
-                            <YesNoSwitch
-                                checked={formik.values.has_image_in_option}
-                                onChange={(e) => formik.setFieldValue("has_image_in_option", e.target.checked)}
-                            />
-                        </div>
-                    </div>
-                }
-
-                <div className="col-span-2">
-                    <div className="input__field">
-                        <InputLabel>Mega Category</InputLabel>
-                        <Autocomplete
-                            options={megaCategories}
-                            loading={isLoading}
-                            value={selectedMegaCategory || null}
-                            onChange={(_, newValue: any) =>
-                                formik.setFieldValue("megacategory_id", newValue?.id || null)
-                            }
-                            getOptionLabel={(option: any) => option.name || ""}
-                            isOptionEqualToValue={(option: any, value: any) =>
-                                option.id === value.id
-                            }
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    placeholder="Select Mega Category"
-                                    error={
-                                        formik.touched.megacategory_id &&
-                                        Boolean(formik.errors.megacategory_id)
-                                    }
-                                    helperText={
-                                        formik.touched.megacategory_id &&
-                                        formik.errors.megacategory_id
-                                    }
-                                />
-                            )}
-                            fullWidth
-                        />
-                        {formik.touched.megacategory_id && formik.errors.megacategory_id && (
-                            <Typography variant="caption" color="error">
-                                {formik.errors.megacategory_id}
-                            </Typography>
-                        )}
-                    </div>
-                </div>
-
-                <div className="col-span-2">
-                    <div className="input__field">
-                        {/* <InputLabel>Question</InputLabel>
+                            {/* <InputLabel>Question</InputLabel>
                         <OutlinedInput
                             fullWidth
                             name="question"
@@ -297,98 +304,99 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                                 {formik.errors.question}
                             </Typography>
                         )} */}
-                        <TextEditor
-                            label={`Question`}
-                            value={formik.values.question}
-                            onChange={(value) => formik.setFieldValue("question", value)}
-                            onBlur={() => formik.setFieldTouched("question")}
-                            error={
-                                formik.touched.question &&
-                                (formik.errors.question as any)
-                            }
-                        />
+                            <TextEditor
+                                label={`Question`}
+                                value={formik.values.question}
+                                onChange={(value) => formik.setFieldValue("question", value)}
+                                onBlur={() => formik.setFieldTouched("question")}
+                                error={
+                                    formik.touched.question &&
+                                    (formik.errors.question as any)
+                                }
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {isMCQ && (
-                <>
-                    <div className="mt-6">
-                        <Typography variant="subtitle1" color="text.primary">
-                            Answer Options
-                        </Typography>
-                    </div>
+                {isMCQ && (
+                    <>
+                        <div className="mt-6">
+                            <Typography variant="subtitle1" color="text.primary">
+                                Answer Options
+                            </Typography>
+                        </div>
 
-                    <div className="flex flex-col md:grid grid-cols-2 gap-4">
-                        {formik.values.options.map((option, index) => (
-                            <div key={index} className="flex flex-col gap-4">
-                                <TextEditor
-                                    label={`Option ${index + 1}`}
-                                    value={option.option}
-                                    onChange={(value) => handleOptionChange(index, value)}
-                                    onBlur={() =>
-                                        formik.setFieldTouched(`options.${index}.option`, true)
-                                    }
-                                    error={
-                                        formik.touched.options?.[index]?.option &&
-                                        (formik.errors.options?.[index] as any)?.option
-                                    }
-                                />
-
-                                <div className="flex items-center gap-4">
-                                    <FormControlLabel
-                                        label="Mark Correct Answer"
-                                        control={
-                                            <Checkbox
-                                                color="success"
-                                                checked={option.is_correct}
-                                                onChange={() => handleCorrectAnswerChange(index)}
-                                            />
+                        <div className="flex flex-col md:grid grid-cols-2 gap-4">
+                            {formik.values.options.map((option, index) => (
+                                <div key={index} className="flex flex-col gap-4">
+                                    <TextEditor
+                                        label={`Option ${index + 1}`}
+                                        value={option.option}
+                                        onChange={(value) => handleOptionChange(index, value)}
+                                        onBlur={() =>
+                                            formik.setFieldTouched(`options.${index}.option`, true)
                                         }
-                                        className="items-center!"
+                                        error={
+                                            formik.touched.options?.[index]?.option &&
+                                            (formik.errors.options?.[index] as any)?.option
+                                        }
                                     />
-                                    {formik.values.options.length > 1 && (
-                                        <Button
-                                            onClick={() => removeOption(index)}
-                                            color="error"
-                                            size="small"
-                                            className="gap-1! items-center!"
-                                        >
-                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M17.5 4.98332C14.725 4.70832 11.9333 4.56665 9.15 4.56665C7.5 4.56665 5.85 4.64998 4.2 4.81665L2.5 4.98332" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                                <path d="M7.08331 4.14175L7.26665 3.05008C7.39998 2.25841 7.49998 1.66675 8.90831 1.66675H11.0916C12.5 1.66675 12.6083 2.29175 12.7333 3.05841L12.9166 4.14175" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                                <path d="M15.7084 7.6167L15.1667 16.0084C15.075 17.3167 15 18.3334 12.675 18.3334H7.32502C5.00002 18.3334 4.92502 17.3167 4.83335 16.0084L4.29169 7.6167" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                                <path d="M8.60834 13.75H11.3833" stroke="#848484" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                                <path d="M7.91669 10.4167H12.0834" stroke="#848484" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
-                                            <Typography variant="subtitle1">Delete</Typography>
-                                        </Button>
-                                    )}
+
+                                    <div className="flex items-center gap-4">
+                                        <FormControlLabel
+                                            label="Mark Correct Answer"
+                                            control={
+                                                <Checkbox
+                                                    color="success"
+                                                    checked={option.is_correct}
+                                                    onChange={() => handleCorrectAnswerChange(index)}
+                                                />
+                                            }
+                                            className="items-center!"
+                                        />
+                                        {formik.values.options.length > 1 && (
+                                            <Button
+                                                onClick={() => removeOption(index)}
+                                                color="error"
+                                                size="small"
+                                                className="gap-1! items-center!"
+                                            >
+                                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M17.5 4.98332C14.725 4.70832 11.9333 4.56665 9.15 4.56665C7.5 4.56665 5.85 4.64998 4.2 4.81665L2.5 4.98332" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="M7.08331 4.14175L7.26665 3.05008C7.39998 2.25841 7.49998 1.66675 8.90831 1.66675H11.0916C12.5 1.66675 12.6083 2.29175 12.7333 3.05841L12.9166 4.14175" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="M15.7084 7.6167L15.1667 16.0084C15.075 17.3167 15 18.3334 12.675 18.3334H7.32502C5.00002 18.3334 4.92502 17.3167 4.83335 16.0084L4.29169 7.6167" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="M8.60834 13.75H11.3833" stroke="#848484" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                    <path d="M7.91669 10.4167H12.0834" stroke="#848484" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                                <Typography variant="subtitle1">Delete</Typography>
+                                            </Button>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
 
-                    {formik.touched.options && typeof formik.errors.options === "string" && (
-                        <Typography variant="caption" color="error" className="mt-2 block">
-                            {formik.errors.options}
-                        </Typography>
-                    )}
+                        {formik.touched.options && typeof formik.errors.options === "string" && (
+                            <Typography variant="caption" color="error" className="mt-2 block">
+                                {formik.errors.options}
+                            </Typography>
+                        )}
 
-                    {formik.values.options.length < 4 && (
-                        <Button
-                            variant="text"
-                            color="primary"
-                            className="font-medium! mt-4"
-                            startIcon={<Add />}
-                            onClick={addOption}
-                        >
-                            Add Options
-                        </Button>
-                    )}
-                </>
-            )}
+                        {formik.values.options.length < 4 && (
+                            <Button
+                                variant="text"
+                                color="primary"
+                                className="font-medium! mt-4"
+                                startIcon={<Add />}
+                                onClick={addOption}
+                            >
+                                Add Options
+                            </Button>
+                        )}
+                    </>
+                )}
 
+            </Box>
             <FooterAction
                 handleConfirmationChange={() => setOpen(false)}
                 isLoading={isLoading}

@@ -37,13 +37,15 @@ export default function QuestionManagementModal({ open, setOpen, editData }: Pro
                     minWidth: {
                         md: "664px",
                         xl: "1266px"
-                    }
+                    },
+                    height: "90vh",
+                    overflow: "hidden"
                 },
             }}
         >
             <DialogContent sx={{
                 background: theme.palette.primary.contrastText
-            }}>
+            }} className="h-full overflow-hidden">
                 {!editData && (
                     <TabController
                         options={[

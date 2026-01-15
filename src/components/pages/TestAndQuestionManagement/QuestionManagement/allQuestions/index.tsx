@@ -7,6 +7,7 @@ import { useDeleteQuestionMutation, useGetAllQuestionQuery } from '../../../../.
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import type { QuestionProps, QuestionTypeProps } from '../../../../../types/question';
+import { renderHtml } from '../../../../../utils/renderHtml';
 import Actions from '../../../../molecules/Action';
 import TabController from '../../../../molecules/TabController';
 import UdaanTable from '../../../../molecules/Table';
@@ -127,7 +128,7 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
             accessorKey: "question",
             cell: ({ row }) => (
                 <Typography fontWeight={500} >
-                    {row.original.question || "N/A"}
+                    {renderHtml(row.original.question) || "N/A"}
                 </Typography>
             ),
         },
