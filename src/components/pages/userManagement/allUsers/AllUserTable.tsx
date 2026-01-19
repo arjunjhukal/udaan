@@ -3,6 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Add } from "iconsax-reactjs";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import CAN from "../../../../routes/CAN";
 import { PATH } from "../../../../routes/PATH";
 import { useDeleteUserMutation, useGenerateOTPMutation, useGetAllUserQuery, useSuspendUserMutation } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
@@ -335,27 +336,29 @@ export default function AllUserTable() {
                     onFilter={() => setFilterDialogOpen(true)}
                 />
             </div>
-            {!user.length && !isLoading ? (
-                <EmptyRoute
-                    icon={(<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2.6665C8.50663 2.6665 5.66663 5.5065 5.66663 8.99984C5.66663 12.4265 8.34663 15.1998 11.84 15.3198C11.9466 15.3065 12.0533 15.3065 12.1333 15.3198C12.16 15.3198 12.1733 15.3198 12.2 15.3198C12.2133 15.3198 12.2133 15.3198 12.2266 15.3198C15.64 15.1998 18.32 12.4265 18.3333 8.99984C18.3333 5.5065 15.4933 2.6665 12 2.6665Z" fill="#1D82F5" />
-                        <path d="M18.7733 18.8668C15.0533 16.3868 8.98661 16.3868 5.23995 18.8668C3.54661 20.0002 2.61328 21.5335 2.61328 23.1735C2.61328 24.8135 3.54661 26.3335 5.22661 27.4535C7.09328 28.7068 9.54661 29.3335 11.9999 29.3335C14.4533 29.3335 16.9066 28.7068 18.7733 27.4535C20.4533 26.3202 21.3866 24.8002 21.3866 23.1468C21.3733 21.5068 20.4533 19.9868 18.7733 18.8668Z" fill="#1D82F5" />
-                        <path d="M26.6534 9.78664C26.8667 12.3733 25.0267 14.64 22.48 14.9466C22.4667 14.9466 22.4667 14.9466 22.4534 14.9466H22.4134C22.3334 14.9466 22.2534 14.9466 22.1867 14.9733C20.8934 15.04 19.7067 14.6266 18.8134 13.8666C20.1867 12.64 20.9734 10.8 20.8134 8.79997C20.72 7.71997 20.3467 6.7333 19.7867 5.8933C20.2934 5.63997 20.88 5.47997 21.48 5.42664C24.0934 5.19997 26.4267 7.14664 26.6534 9.78664Z" fill="#1D82F5" />
-                        <path d="M29.32 22.1199C29.2133 23.4132 28.3867 24.5332 27 25.2932C25.6667 26.0265 23.9867 26.3732 22.32 26.3332C23.28 25.4665 23.84 24.3865 23.9467 23.2399C24.08 21.5865 23.2933 19.9999 21.72 18.7332C20.8267 18.0265 19.7867 17.4665 18.6533 17.0532C21.6 16.1999 25.3067 16.7732 27.5867 18.6132C28.8133 19.5999 29.44 20.8399 29.32 22.1199Z" fill="#1D82F5" />
-                    </svg>)}
-                    title="No Users Found"
-                    message="Start adding users to manage access and roles within the system. Use the button below to add your first user."
-                    cta={{ label: "Create User", url: PATH.USER_MANAGEMENT.CREATE_USER.ROOT }}
-                />
-            ) : (
-                <Box className="h-full overflow-auto table__wrapper">
-                    <UdaanTable
-                        loading={isLoading || isFetching}
-                        data={user}
-                        columns={columns}
+            <CAN permissions={[search ? "view_users add_users" : "view_users"]}>
+                {!user.length && !isLoading ? (
+                    <EmptyRoute
+                        icon={(<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2.6665C8.50663 2.6665 5.66663 5.5065 5.66663 8.99984C5.66663 12.4265 8.34663 15.1998 11.84 15.3198C11.9466 15.3065 12.0533 15.3065 12.1333 15.3198C12.16 15.3198 12.1733 15.3198 12.2 15.3198C12.2133 15.3198 12.2133 15.3198 12.2266 15.3198C15.64 15.1998 18.32 12.4265 18.3333 8.99984C18.3333 5.5065 15.4933 2.6665 12 2.6665Z" fill="#1D82F5" />
+                            <path d="M18.7733 18.8668C15.0533 16.3868 8.98661 16.3868 5.23995 18.8668C3.54661 20.0002 2.61328 21.5335 2.61328 23.1735C2.61328 24.8135 3.54661 26.3335 5.22661 27.4535C7.09328 28.7068 9.54661 29.3335 11.9999 29.3335C14.4533 29.3335 16.9066 28.7068 18.7733 27.4535C20.4533 26.3202 21.3866 24.8002 21.3866 23.1468C21.3733 21.5068 20.4533 19.9868 18.7733 18.8668Z" fill="#1D82F5" />
+                            <path d="M26.6534 9.78664C26.8667 12.3733 25.0267 14.64 22.48 14.9466C22.4667 14.9466 22.4667 14.9466 22.4534 14.9466H22.4134C22.3334 14.9466 22.2534 14.9466 22.1867 14.9733C20.8934 15.04 19.7067 14.6266 18.8134 13.8666C20.1867 12.64 20.9734 10.8 20.8134 8.79997C20.72 7.71997 20.3467 6.7333 19.7867 5.8933C20.2934 5.63997 20.88 5.47997 21.48 5.42664C24.0934 5.19997 26.4267 7.14664 26.6534 9.78664Z" fill="#1D82F5" />
+                            <path d="M29.32 22.1199C29.2133 23.4132 28.3867 24.5332 27 25.2932C25.6667 26.0265 23.9867 26.3732 22.32 26.3332C23.28 25.4665 23.84 24.3865 23.9467 23.2399C24.08 21.5865 23.2933 19.9999 21.72 18.7332C20.8267 18.0265 19.7867 17.4665 18.6533 17.0532C21.6 16.1999 25.3067 16.7732 27.5867 18.6132C28.8133 19.5999 29.44 20.8399 29.32 22.1199Z" fill="#1D82F5" />
+                        </svg>)}
+                        title="No Users Found"
+                        message="Start adding users to manage access and roles within the system. Use the button below to add your first user."
+                        cta={{ label: "Create User", url: PATH.USER_MANAGEMENT.CREATE_USER.ROOT }}
                     />
-                </Box>
-            )}
+                ) : (
+                    <Box className="h-full overflow-auto table__wrapper">
+                        <UdaanTable
+                            loading={isLoading || isFetching}
+                            data={user}
+                            columns={columns}
+                        />
+                    </Box>
+                )}
+            </CAN>
 
             <TablePagination
                 qp={qp}
