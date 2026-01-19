@@ -111,6 +111,7 @@ export default function InfiniteScrolling({
                                 return (
                                     <Box
                                         key={stableKey}
+                                        className="item__wrapper flex flex-col "
                                     // sx={{
                                     //     borderBottom: "1px solid",
                                     //     borderColor: "divider",

@@ -357,7 +357,7 @@ export default function CourseManagementForm() {
                                         }
                                         inputProps={{ min: 0, max: 999 }}
                                     />
-                                    <Typography variant="body2" color="text.middle">Hrs</Typography>
+                                    <Typography variant="body2" color="text.middle">Months</Typography>
                                 </div>
                                 <Box color={"gray.gray3"}>:</Box>
                                 <div className="minutes__wrapper flex items-center gap-2 flex-1">
@@ -375,7 +375,7 @@ export default function CourseManagementForm() {
                                         }
                                         inputProps={{ min: 0, max: 59 }}
                                     />
-                                    <Typography variant="body2" color="text.middle">Mins</Typography>
+                                    <Typography variant="body2" color="text.middle">Days</Typography>
                                 </div>
                             </div>
                             {formik.touched.duration && formik.errors.duration && (

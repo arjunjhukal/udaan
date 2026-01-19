@@ -99,11 +99,21 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     const [addTransaction, { isLoading: creatingTransaction }] = useAddTransactionMutation();
     const [updateTransaction, { isLoading: updatingTransaction }] = useUpdateTransactionByIdMutation();
 
+    const generateInvoiceId = (studentId?: number) => {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const timestamp = Date.now();
+
+        return `UDAAN-INVOICE-${year}${month}${day}-${timestamp}${studentId ? `-${studentId}` : ''}`;
+    };
+
     const formik = useFormik({
         initialValues: transaction ? {
             student_id: transaction.student_id || 0,
             course_id: transaction.course_id || 0,
-            invoice_id: transaction.invoice_id || "",
+            invoice_id: transaction.invoice_id || ``,
             transaction_id: transaction.transaction_id || "",
             payment_method: transaction.payment_method || "",
             status: transaction.status || "",
@@ -178,9 +188,21 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         }
     });
 
-    const handleSelectRow = (id: number) => {
+    useEffect(() => {
+        if (!transactionId && formik.values.student_id > 0 && !formik.values.invoice_id) {
+            const newInvoiceId = generateInvoiceId(formik.values.student_id);
+            formik.setFieldValue("invoice_id", newInvoiceId);
+        }
+    }, [formik.values.student_id, transactionId]);
 
+
+    const handleSelectRow = (id: number) => {
         formik.setFieldValue("student_id", Number(id));
+
+        if (!transactionId) {
+            const newInvoiceId = generateInvoiceId(Number(id));
+            formik.setFieldValue("invoice_id", newInvoiceId);
+        }
     };
 
     const columns = useMemo<ColumnDef<RegisterUserProps>[]>(() => [
