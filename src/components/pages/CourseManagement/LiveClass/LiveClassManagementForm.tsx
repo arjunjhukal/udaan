@@ -108,7 +108,7 @@ export default function LiveClassManagementForm() {
     const zoomAccounts: { data: { data: ZoomAccount[] } } = {
         data: {
             data: [
-                { name: "udaanshaikshikkendra@gmail.com", id: 1 }, 
+                { name: "udaanshaikshikkendra@gmail.com", id: 1 },
                 { name: "sushantsanu123@gmail.com", id: 2 },
                 { name: "udaanshaikshikkendra805@gmail.com", id: 3 }
             ]
@@ -555,7 +555,7 @@ export default function LiveClassManagementForm() {
                             fetchMore={fetchMoreCourses}
                             onSearch={handleCourseSearch}
                             loading={loadingCourses}
-                            maxSelection={10}
+                            maxSelection={200}
                             itemLabelKey="name"
                             itemIdKey="id"
                             placeholder="Search courses..."

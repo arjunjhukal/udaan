@@ -2,6 +2,7 @@ import { Box, Divider, Typography } from '@mui/material';
 import { Outlet, useParams } from 'react-router-dom';
 import { useGetSingleStudentResultQuery } from '../../../../../services/questionApi';
 import { msToHMS } from '../../../../../utils/parseDateTime';
+import { renderHtml } from '../../../../../utils/renderHtml';
 
 export default function SingleStudentAnswerLayout() {
     const { id, resultId } = useParams();
@@ -40,7 +41,7 @@ export default function SingleStudentAnswerLayout() {
                 <div className='flex justify-start items-center gap-6 lg:gap-8 2xl:gap-14 flex-wrap'>
                     {overviewListing.map((overview) => (
                         <div className="card" key={overview.title}>
-                            <Typography variant='subtitle2' color='text.middle' className='mb-1!'>{overview.title}</Typography>
+                            <Typography variant='subtitle2' color='text.middle' className='mb-1!'>{renderHtml(overview.title)}</Typography>
                             <Typography variant='subtitle2' className='flex items-center gap-1 justify-start'>{overview?.icon}{overview.value || "N/A"}</Typography>
                         </div>
                     ))}
