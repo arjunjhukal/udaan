@@ -128,6 +128,7 @@ export default function OnBoardingScreenRoot() {
         }
     });
 
+    console.log("Formik errors:", formik.errors);
 
 
     return (
@@ -483,7 +484,7 @@ export default function OnBoardingScreenRoot() {
                         borderTop: (theme) => `1px solid ${theme.palette.separator.dark}`,
                     }}
                 >
-                    <Button variant="contained" color="primary">{isLoading ? "Updating Onboarding Screen..." : "Update Onboarding Screen"}</Button>
+                    <Button type="submit" variant="contained" color="primary">{isLoading ? "Updating Onboarding Screen..." : "Update Onboarding Screen"}</Button>
                 </Box>
 
             </form>

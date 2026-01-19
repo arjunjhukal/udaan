@@ -156,7 +156,7 @@ export default function SplashScreenRoot() {
                         borderTop: (theme) => `1px solid ${theme.palette.separator.dark}`,
                     }}
                 >
-                    <Button variant="contained" color="primary">{isLoading ? "Updating Splash Screen" : "Update Splash Screen"}</Button>
+                    <Button variant="contained" type="submit" color="primary">{isLoading ? "Updating Splash Screen" : "Update Splash Screen"}</Button>
                 </Box>
             </form>
         </>
