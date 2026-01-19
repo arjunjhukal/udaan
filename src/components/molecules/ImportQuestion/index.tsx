@@ -85,6 +85,7 @@ export default function ImportQuestion({
             questions: questions.map(q => ({
                 id: q.id,
                 question: q.question,
+                question_type: q.question_type,
                 options: q.options.map(opt => ({
                     id: opt.id,
                     option: opt.option,

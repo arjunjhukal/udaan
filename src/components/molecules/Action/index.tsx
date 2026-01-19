@@ -173,6 +173,7 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
                                                     <path d="M2.5 18.3334H17.5" stroke="#9CA3B0" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
                                                 </svg>
                                             </ListItemIcon>
+                                            <ListItemText primary={t("actions.edit")} />
                                         </ListItemButton>
                                     </ListItem> : ""}
                                     {onDelete ? <ListItem className="menu__item action__item delete__item">
