@@ -336,7 +336,7 @@ export default function AllUserTable() {
                     onFilter={() => setFilterDialogOpen(true)}
                 />
             </div>
-            <CAN permissions={search ? ["view_users add_users"] : ["view_users"]}>
+            <CAN permissions={search ? ["view_users", "add_users"] : ["view_users"]}>
                 {!user.length && !isLoading ? (
                     <EmptyRoute
                         icon={(<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
