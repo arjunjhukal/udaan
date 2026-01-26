@@ -157,6 +157,7 @@ export const questionApi = createApi({
         getTestFeedback: builder.query<GlobalResponse & {
             data: {
                 feedback: string;
+                video_url: string;
             }
         }, { id?: number, resultId?: number }>({
             query: ({ id, resultId }) => ({

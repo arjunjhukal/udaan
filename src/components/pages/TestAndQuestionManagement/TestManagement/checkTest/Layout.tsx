@@ -14,7 +14,7 @@ export default function QuestionAnswerLisitingLayout() {
             </div>
             <div className="col-span-5 lg:col-span-4 sticky top-0 self-start">
                 <aside className="feedback__form">
-                    <FeedbackForm data={data?.data || null} test={test?.data || null} testId={id} />
+                    <FeedbackForm data={data?.data || null} test={test?.data || null} testId={id} resultId={resultId}/>
                 </aside>
             </div>
         </div>

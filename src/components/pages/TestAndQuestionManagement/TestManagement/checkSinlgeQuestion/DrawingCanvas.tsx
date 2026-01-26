@@ -1,7 +1,7 @@
 import { Redo, Undo } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { Brush2, Eraser, Trash } from 'iconsax-reactjs';
-import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import { type MouseEvent, type TouchEvent, useEffect, useRef, useState } from 'react';
 
 type Tool = 'pen' | 'eraser';
 
@@ -38,47 +38,113 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
 
   const colors = ['#000000', '#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF'];
 
-  /* -------------------- Init Canvas -------------------- */
+  /* -------------------- Canvas Initialization -------------------- */
+  const initializeCanvas = (imageId: number) => {
+    const canvas = canvasRefs.current[imageId];
+    const imageEl = imageRefs.current[imageId];
+    if (!canvas || !imageEl) return;
+
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    if (!ctx) return;
+
+    // Set canvas internal resolution to match image display size
+    const rect = imageEl.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+
+    ctxRefs.current[imageId] = ctx;
+
+    // Initialize history if not exists
+    if (!historyRefs.current[imageId]) {
+      historyRefs.current[imageId] = [];
+      historyStepRefs.current[imageId] = -1;
+    }
+
+    // Restore existing drawing or save initial blank state
+    if (drawings[imageId]) {
+      restoreCanvas(drawings[imageId], ctx, canvas);
+    }
+
+    saveState(imageId);
+  };
+
   useEffect(() => {
     images.forEach((img) => {
-      const canvas = canvasRefs.current[img.id];
-      const imageEl = imageRefs.current[img.id];
-      if (!canvas || !imageEl) return;
-
-      const ctx = canvas.getContext('2d', { willReadFrequently: true });
-      if (!ctx) return;
-
-      // Match canvas size to actual image dimensions
-      canvas.width = imageEl.offsetWidth;
-      canvas.height = imageEl.offsetHeight;
-
-      ctxRefs.current[img.id] = ctx;
-      historyRefs.current[img.id] = [];
-      historyStepRefs.current[img.id] = -1;
-
-      if (drawings[img.id]) {
-        restoreCanvas(drawings[img.id], ctx, canvas);
-        saveState(img.id);
-      } else {
-        saveState(img.id);
+      if (imageRefs.current[img.id]) {
+        initializeCanvas(img.id);
       }
     });
-  }, [images]);
 
-  /* -------------------- Drawing -------------------- */
+    // Handle window resize
+    const handleResize = () => {
+      images.forEach((img) => {
+        const canvas = canvasRefs.current[img.id];
+        const imageEl = imageRefs.current[img.id];
+        const ctx = ctxRefs.current[img.id];
+        if (!canvas || !imageEl || !ctx) return;
+
+        // Save current state before resize
+        const currentDrawing = canvas.toDataURL('image/png');
+
+        // Update canvas dimensions
+        const rect = imageEl.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+
+        // Restore drawing at new dimensions
+        if (currentDrawing) {
+          restoreCanvas(currentDrawing, ctx, canvas);
+        }
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [images, drawings]);
+
+  /* -------------------- Coordinate Calculation -------------------- */
+  const getCoordinates = (
+    e: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>,
+    canvas: HTMLCanvasElement
+  ) => {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+
+    let clientX: number;
+    let clientY: number;
+
+    if ('touches' in e) {
+      const touch = e.touches[0] || e.changedTouches[0];
+      if (!touch) return { x: 0, y: 0 };
+      clientX = touch.clientX;
+      clientY = touch.clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  };
+
+  /* -------------------- Drawing Functions -------------------- */
   const startDrawing = (
-    e: MouseEvent<HTMLCanvasElement>,
+    e: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>,
     imageId: number
   ) => {
+    e.preventDefault();
+
     const canvas = canvasRefs.current[imageId];
     const ctx = ctxRefs.current[imageId];
     if (!canvas || !ctx) return;
 
     setActiveImageId(imageId);
+    setIsDrawing(true);
 
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const { x, y } = getCoordinates(e, canvas);
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -86,46 +152,40 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     ctx.lineJoin = 'round';
     ctx.strokeStyle = color;
     ctx.lineWidth = tool === 'eraser' ? lineWidth * 3 : lineWidth;
-    ctx.globalCompositeOperation =
-      tool === 'eraser' ? 'destination-out' : 'source-over';
-
-    setIsDrawing(true);
+    ctx.globalCompositeOperation = tool === 'eraser' ? 'destination-out' : 'source-over';
   };
 
   const draw = (
-    e: MouseEvent<HTMLCanvasElement>,
+    e: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>,
     imageId: number
   ) => {
     if (!isDrawing || activeImageId !== imageId) return;
+
+    e.preventDefault();
 
     const canvas = canvasRefs.current[imageId];
     const ctx = ctxRefs.current[imageId];
     if (!canvas || !ctx) return;
 
-    const rect = canvas.getBoundingClientRect();
-    ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+    const { x, y } = getCoordinates(e, canvas);
+    ctx.lineTo(x, y);
     ctx.stroke();
   };
 
   const stopDrawing = (imageId: number) => {
     if (!isDrawing) return;
 
-    const canvas = canvasRefs.current[imageId];
     const ctx = ctxRefs.current[imageId];
-    if (!canvas || !ctx) return;
+    if (!ctx) return;
 
     ctx.closePath();
     setIsDrawing(false);
 
     saveState(imageId);
-
-    const data = canvas.toDataURL('image/png');
-    const updated = { ...drawings, [imageId]: data };
-    setDrawings(updated);
-    onChange?.(updated);
+    updateDrawings(imageId);
   };
 
-  /* -------------------- History -------------------- */
+  /* -------------------- History Management -------------------- */
   const saveState = (imageId: number) => {
     const canvas = canvasRefs.current[imageId];
     if (!canvas) return;
@@ -134,11 +194,13 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     const step = historyStepRefs.current[imageId] ?? -1;
 
     const data = canvas.toDataURL('image/png');
-    const next = history.slice(0, step + 1);
-    next.push(data);
 
-    historyRefs.current[imageId] = next;
-    historyStepRefs.current[imageId] = next.length - 1;
+    // Remove any future states if we're not at the end
+    const newHistory = history.slice(0, step + 1);
+    newHistory.push(data);
+
+    historyRefs.current[imageId] = newHistory;
+    historyStepRefs.current[imageId] = newHistory.length - 1;
   };
 
   const undo = () => {
@@ -149,6 +211,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
 
     historyStepRefs.current[activeImageId] = step - 1;
     restoreFromHistory(activeImageId);
+    updateDrawings(activeImageId);
   };
 
   const redo = () => {
@@ -161,6 +224,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
 
     historyStepRefs.current[activeImageId] = step + 1;
     restoreFromHistory(activeImageId);
+    updateDrawings(activeImageId);
   };
 
   const restoreFromHistory = (imageId: number) => {
@@ -170,10 +234,13 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
 
     const step = historyStepRefs.current[imageId];
     const data = historyRefs.current[imageId][step];
-    restoreCanvas(data, ctx, canvas);
+
+    if (data) {
+      restoreCanvas(data, ctx, canvas);
+    }
   };
 
-  /* -------------------- Clear -------------------- */
+  /* -------------------- Clear Canvas -------------------- */
   const clearCanvas = () => {
     if (!activeImageId) return;
 
@@ -190,7 +257,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     onChange?.(updated);
   };
 
-  /* -------------------- Utils -------------------- */
+  /* -------------------- Utility Functions -------------------- */
   const restoreCanvas = (
     dataUrl: string,
     ctx: CanvasRenderingContext2D,
@@ -200,28 +267,22 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     img.src = dataUrl;
     img.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     };
   };
 
-  const handleImageLoad = (imageId: number) => {
+  const updateDrawings = (imageId: number) => {
     const canvas = canvasRefs.current[imageId];
-    const imageEl = imageRefs.current[imageId];
-    if (!canvas || !imageEl) return;
+    if (!canvas) return;
 
-    // Set canvas dimensions to match loaded image
-    canvas.width = imageEl.offsetWidth;
-    canvas.height = imageEl.offsetHeight;
+    const data = canvas.toDataURL('image/png');
+    const updated = { ...drawings, [imageId]: data };
+    setDrawings(updated);
+    onChange?.(updated);
+  };
 
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    if (!ctx) return;
-
-    ctxRefs.current[imageId] = ctx;
-
-    // Restore existing drawing if any
-    if (drawings[imageId]) {
-      restoreCanvas(drawings[imageId], ctx, canvas);
-    }
+  const handleImageLoad = (imageId: number) => {
+    initializeCanvas(imageId);
   };
 
   /* -------------------- Render -------------------- */
@@ -230,96 +291,169 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
       className="rounded-md py-3 px-4"
       sx={{ border: (t) => `1px solid ${t.palette.separator.dark}` }}
     >
-      <Typography variant="caption" color='text.middle' className="mb-4! block">
+      <Typography variant="caption" color="text.middle" className="mb-4! block">
         Answer
       </Typography>
 
-      {/* ===== Global Toolbar ===== */}
-      <div className="mb-4 p-4 bg-gray-100 rounded-lg flex flex-wrap gap-4 items-center">
+      <div
+        className="mb-4 p-4 bg-gray-100 rounded-lg flex flex-wrap gap-4 items-center sticky -top-4 z-10"
+        style={{ backgroundColor: '#f3f4f6' }}
+      >
+        {/* Tools */}
         <div className="flex gap-2">
           <button
             onClick={() => setTool('pen')}
-            className={`p-2 rounded ${tool === 'pen' ? 'bg-blue-500 text-white' : 'bg-white'}`}
+            className={`p-2 rounded transition-colors ${tool === 'pen' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-200'
+              }`}
+            title="Pen"
           >
             <Brush2 size={20} />
           </button>
           <button
             onClick={() => setTool('eraser')}
-            className={`p-2 rounded ${tool === 'eraser' ? 'bg-blue-500 text-white' : 'bg-white'}`}
+            className={`p-2 rounded transition-colors ${tool === 'eraser' ? 'bg-blue-500 text-white' : 'bg-white hover:bg-gray-200'
+              }`}
+            title="Eraser"
           >
             <Eraser size={20} />
           </button>
         </div>
 
-        <div className="flex gap-2">
+        {/* Colors */}
+        <div className="flex gap-2 flex-wrap">
           {colors.map((c) => (
             <button
               key={c}
               onClick={() => setColor(c)}
-              className={`w-8 h-8 rounded border-2 ${color === c ? 'border-blue-500' : 'border-gray-300'
+              className={`w-8 h-8 rounded border-2 transition-all ${color === c ? 'border-blue-500 scale-110' : 'border-gray-300 hover:scale-105'
                 }`}
               style={{ backgroundColor: c }}
+              title={c}
             />
           ))}
         </div>
 
+        {/* Line Width */}
         <div className="flex items-center gap-2">
-          <span className="text-sm">Size</span>
+          <span className="text-sm whitespace-nowrap">Size</span>
           <input
             type="range"
             min={1}
             max={20}
             value={lineWidth}
             onChange={(e) => setLineWidth(+e.target.value)}
+            className="w-20"
           />
-          <span className="text-sm">{lineWidth}px</span>
+          <span className="text-sm whitespace-nowrap">{lineWidth}px</span>
         </div>
 
+        {/* Actions */}
         <div className="flex gap-2 ml-auto">
-          <button onClick={undo} className="p-2 bg-white rounded">
+          <button
+            onClick={undo}
+            className="p-2 bg-white rounded hover:bg-gray-200 transition-colors"
+            title="Undo"
+            disabled={!activeImageId || (historyStepRefs.current[activeImageId] ?? 0) <= 0}
+          >
             <Undo />
           </button>
-          <button onClick={redo} className="p-2 bg-white rounded">
+          <button
+            onClick={redo}
+            className="p-2 bg-white rounded hover:bg-gray-200 transition-colors"
+            title="Redo"
+            disabled={
+              !activeImageId ||
+              (historyStepRefs.current[activeImageId] ?? 0) >=
+              ((historyRefs.current[activeImageId]?.length ?? 1) - 1)
+            }
+          >
             <Redo />
           </button>
-          <button onClick={clearCanvas} className="p-2 bg-white rounded flex items-center gap-1">
+          <button
+            onClick={clearCanvas}
+            className="p-2 bg-white rounded hover:bg-gray-200 transition-colors flex items-center gap-1"
+            title="Clear current canvas"
+            disabled={!activeImageId}
+          >
             <Trash size={18} />
-            <Typography variant="subtitle2">Clear All</Typography>
+            <Typography variant="subtitle2">Clear</Typography>
           </button>
         </div>
       </div>
 
-      {/* ===== Canvas Loop ===== */}
-      <Box sx={{
-        maxHeight: `calc(100vh - 500px)`,
-        overflow: "auto"
-      }}>
+      {/* ===== Scrollable Canvas Area ===== */}
+      <Box
+        sx={{
+          maxHeight: 'calc(100vh - 350px)',
+          overflow: 'auto',
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: '#f1f1f1',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: '#888',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            background: '#555',
+          },
+        }}
+      >
         {images.map((img) => (
           <div
             key={img.id}
             className="mb-8 relative"
+            onClick={() => setActiveImageId(img.id)}
           >
+            {/* Image */}
             <img
               ref={(el) => {
                 imageRefs.current[img.id] = el;
               }}
               src={img.url}
-              alt=""
-              className="w-full block"
+              alt={`Question ${img.id}`}
+              className="w-full block pointer-events-none select-none"
               onLoad={() => handleImageLoad(img.id)}
+              draggable={false}
             />
+
+            {/* Canvas Overlay */}
             <canvas
               ref={(el) => {
                 canvasRefs.current[img.id] = el;
               }}
-              className="absolute top-0 left-0 w-full h-full cursor-crosshair"
+              className="absolute top-0 left-0 w-full h-full"
+              style={{
+                cursor: tool === 'pen' ? 'crosshair' : 'pointer',
+                touchAction: 'none',
+              }}
               onMouseDown={(e) => startDrawing(e, img.id)}
               onMouseMove={(e) => draw(e, img.id)}
               onMouseUp={() => stopDrawing(img.id)}
               onMouseLeave={() => stopDrawing(img.id)}
+              onTouchStart={(e) => startDrawing(e, img.id)}
+              onTouchMove={(e) => draw(e, img.id)}
+              onTouchEnd={() => stopDrawing(img.id)}
+              onTouchCancel={() => stopDrawing(img.id)}
             />
+
+            {/* Active Indicator */}
+            {activeImageId === img.id && (
+              <div className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                Active
+              </div>
+            )}
           </div>
         ))}
+
+        {images.length === 0 && (
+          <div className="text-center py-12 text-gray-400">
+            No images to draw on
+          </div>
+        )}
       </Box>
     </Box>
   );

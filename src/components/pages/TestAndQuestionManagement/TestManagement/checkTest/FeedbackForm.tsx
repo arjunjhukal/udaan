@@ -1,6 +1,6 @@
 import { Box, Button, Divider, OutlinedInput, Stack, Typography } from '@mui/material';
-import { useState } from 'react';
-import { useSubmitTestFeedbackMutation } from '../../../../../services/questionApi';
+import { useEffect, useState } from 'react';
+import { useGetTestFeedbackQuery, useSubmitTestFeedbackMutation } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import type { StudentSubmitTestProps, TestProps } from '../../../../../types/question';
@@ -8,12 +8,18 @@ import { msToHMS } from '../../../../../utils/parseDateTime';
 import TextEditor from '../../../../atoms/TextEditor';
 import { PercentageDonutChart } from '../../../../organism/Charts/PercentageDonut';
 
-export default function FeedbackForm({ data, test, testId }: { data: StudentSubmitTestProps | null; test: TestProps | null; testId?: string }) {
+export default function FeedbackForm({ data, test, testId, resultId }: { data: StudentSubmitTestProps | null; test: TestProps | null; testId?: string; resultId?: string }) {
     const dispatch = useAppDispatch();
     const [feedback, setFeedback] = useState<string>("");
     const [videoUrl, setVideoUrl] = useState<string>("");
     const { hours, minutes } = msToHMS(data?.timer || 0);
     const [submitTestFeedback, isLoading] = useSubmitTestFeedbackMutation();
+    const { data: feeback } = useGetTestFeedbackQuery({ id: Number(testId), resultId: Number(resultId) }, { skip: !testId || !resultId });
+
+    useEffect(() => {
+        setFeedback(feeback?.data?.feedback || "");
+        setVideoUrl(feeback?.data?.video_url || "");
+    }, [feeback])
 
     const handleSubmitFeedback = async () => {
         if (!data || !test) return;

@@ -65,42 +65,7 @@ export default function SingleStudentSingleQuestion() {
         enableReinitialize: true,
         validationSchema: validationSchema(maxMarks),
         onSubmit: async () => {
-            // try {
-            //     const checkedAnswerMedia = Object.entries(values.drawings).map(([imageId, dataUrl]) => ({
-            //         media_id: Number(imageId),
-            //         media: dataUrl as string
-            //     }));
 
-            //     const response = await markSubjectiveQuestion({
-            //         id: Number(id),
-            //         resultId: Number(resultId),
-            //         questionId: Number(questionId),
-            //         body: {
-            //             grade: Number(values.grade),
-            //             feedback: values.feedback,
-            //             checked_answer_media: checkedAnswerMedia
-            //         }
-            //     }).unwrap();
-
-            //     dispatch(
-            //         showToast({
-            //             message: response.message || 'Submitted evaluation successfully!',
-            //             severity: 'success'
-            //         })
-            //     );
-
-            //     // Optionally reset form or navigate to next question
-            //     // formik.resetForm();
-            // }
-            // catch (error: any) {
-            //     console.error('Submission error:', error);
-            //     dispatch(
-            //         showToast({
-            //             message: error?.data?.message || 'Failed to submit evaluation. Please try again.',
-            //             severity: 'error'
-            //         })
-            //     );
-            // }
         }
     });
 
@@ -188,7 +153,7 @@ export default function SingleStudentSingleQuestion() {
                     </Typography>
                 )}
             </div>
-            <div className="col-span-5 lg:col-span-4 sticky top-0 self-start">
+            <div className="col-span-5 lg:col-span-4 sticky top-0 lg:self-start">
                 <Box className="feedback__form rounded-md overflow-hidden" sx={{
                     border: (theme) => `1px solid ${theme.palette.separator.dark}`
                 }}>

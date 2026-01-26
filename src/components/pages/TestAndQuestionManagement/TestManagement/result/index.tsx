@@ -1,6 +1,7 @@
 import { Divider, Typography } from "@mui/material";
 import { ArrowRight2, UserSquare } from "iconsax-reactjs";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { PATH } from "../../../../../routes/PATH";
 import { useGetTestByIdQuery } from "../../../../../services/questionApi";
 import { formatDate } from "../../../../../utils/dateFormat";
 
@@ -11,11 +12,11 @@ export default function ResultRoot() {
     return (
         <div className="result__layout">
             {resultId ? <div className="breadcrumb flex items-center gap-1.5 mb-4">
-                <Typography onClick={() => navigate(-1)} className="flex items-center gap-1" color="text.middle"><UserSquare /> Student Results</Typography>
-                <Typography color="text.middle"><ArrowRight2 /></Typography>
-                <Typography onClick={() => navigate(-1)} className="flex items-center gap-1" color="text.middle"><UserSquare />{data?.data?.name}</Typography>
-                <Typography color="text.middle"><ArrowRight2 /></Typography>
-                <Typography className="flex items-center gap-1" color="text.middle"><UserSquare />Results</Typography>
+                <Typography variant="subtitle2" onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(Number(id)))} className="flex items-center gap-1 cursor-pointer" color="text.middle"><UserSquare /> Student Results</Typography>
+                <Typography variant="subtitle2" color="text.middle"><ArrowRight2 size={16} /></Typography>
+                <Typography variant="subtitle2" onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(Number(id)))} className="flex items-center gap-1 cursor-pointer" color="text.middle"><UserSquare />{data?.data?.name}</Typography>
+                <Typography variant="subtitle2" color="text.middle"><ArrowRight2 size={16} /></Typography>
+                <Typography variant="subtitle2" className="flex items-center gap-1" color="text.middle"><UserSquare />Results</Typography>
             </div> : ""}
             <div className="page__header flex items-center justify-start gap-3 mb-4">
                 <Typography variant="h3">{data?.data?.name}</Typography>
@@ -23,7 +24,7 @@ export default function ResultRoot() {
                     background: (theme) => theme.palette.separator.dark,
                 }}>{data?.data?.test_type}</Typography>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
                 {data?.data?.question_ids?.length ?
                     <>
                         <Typography className="flex items-center gap-1" variant='subtitle1' color='text.middle'>
