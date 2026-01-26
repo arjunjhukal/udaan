@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { useTheme } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import CustomAppbar from "../appbar";
 import PrimaryMenu from "./PrimaryMenu";
 
@@ -23,7 +23,10 @@ export default function ResponsiveDrawer(props: Props) {
 	const { window } = props;
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	const [isClosing, setIsClosing] = React.useState(false);
+	const location = useLocation();
+	const pathname = location.pathname;
 	const theme = useTheme();
+
 	const handleDrawerClose = () => {
 		setIsClosing(true);
 		setMobileOpen(false);
@@ -38,6 +41,12 @@ export default function ResponsiveDrawer(props: Props) {
 			setMobileOpen(!mobileOpen);
 		}
 	};
+
+	React.useEffect(() => {
+		if (mobileOpen) {
+			handleDrawerClose();
+		}
+	}, [pathname]);
 
 	const drawer = (
 		<div>
