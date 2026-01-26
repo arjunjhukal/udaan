@@ -40,7 +40,7 @@ export default function CourseCard({ course, onDelete, onClone }: {
                         <path d="M12.8333 6.99984C12.8333 10.2198 10.22 12.8332 6.99996 12.8332C3.77996 12.8332 1.16663 10.2198 1.16663 6.99984C1.16663 3.77984 3.77996 1.1665 6.99996 1.1665C10.22 1.1665 12.8333 3.77984 12.8333 6.99984Z" stroke="#111827" stroke-linecap="round" stroke-linejoin="round" />
                         <path d="M9.16418 8.85503L7.35585 7.77586C7.04085 7.58919 6.78418 7.14003 6.78418 6.77253V4.38086" stroke="#111827" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
-                        {course?.duration?.hours} hours and {course?.duration?.minutes} Mins</Typography>
+                        {course?.duration?.hours} Months and {course?.duration?.minutes} Days</Typography>
 
                     {course?.subjects ?
                         <>

@@ -447,7 +447,6 @@ export default function TestManagementForm() {
                                     fetchMore={fetchMoreCourses}
                                     onSearch={handleCourseSearch}
                                     loading={loadingCourses}
-                                    maxSelection={10}
                                     itemLabelKey="name"
                                     itemIdKey="id"
                                     placeholder="Search courses..."

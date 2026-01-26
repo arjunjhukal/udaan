@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Stack, Typography } from '@mui/material';
+import { Box, Button, Divider, OutlinedInput, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useSubmitTestFeedbackMutation } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
@@ -11,13 +11,14 @@ import { PercentageDonutChart } from '../../../../organism/Charts/PercentageDonu
 export default function FeedbackForm({ data, test, testId }: { data: StudentSubmitTestProps | null; test: TestProps | null; testId?: string }) {
     const dispatch = useAppDispatch();
     const [feedback, setFeedback] = useState<string>("");
+    const [videoUrl, setVideoUrl] = useState<string>("");
     const { hours, minutes } = msToHMS(data?.timer || 0);
     const [submitTestFeedback, isLoading] = useSubmitTestFeedbackMutation();
 
     const handleSubmitFeedback = async () => {
         if (!data || !test) return;
         try {
-            const response = await submitTestFeedback({ id: Number(testId), resultId: data.id, body: { feedback } }).unwrap();
+            const response = await submitTestFeedback({ id: Number(testId), resultId: data.id, body: { feedback, video_url: videoUrl } }).unwrap();
             dispatch(
                 showToast({
                     message: response.message || "Feedback submitted successfully.",
@@ -39,13 +40,13 @@ export default function FeedbackForm({ data, test, testId }: { data: StudentSubm
         <Box className="feedback__form p-4 rounded-md" sx={{
             background: (theme) => theme.palette.gray.gray1
         }}>
-            <Box className="mb-8 text-center">
+            <Box className="mb-6 text-center">
                 <div className="chart__wrapper max-w-32 mx-auto mb-4">
                     <PercentageDonutChart value={Number(data?.total_marks)} />
                 </div>
                 <Typography variant='body1' color='text.dark' className='font-medium!'>{test?.name}</Typography>
             </Box>
-            <Box className="p-4 rounded-lg flex justify-between items-center mb-6" sx={{
+            <Box className="p-4 rounded-lg flex justify-between items-center mb-4" sx={{
                 background: (theme) => theme.palette.primary.contrastText
             }}>
                 <Box>
@@ -62,7 +63,7 @@ export default function FeedbackForm({ data, test, testId }: { data: StudentSubm
             </Box>
             <Box>
                 <Typography variant='subtitle1' className='mb-2!'>Add Feedback</Typography>
-                <Box className="input__field" sx={{
+                <Box className="input__field rounded-md" sx={{
                     background: (theme) => theme.palette.primary.contrastText
                 }}>
                     <TextEditor
@@ -72,6 +73,19 @@ export default function FeedbackForm({ data, test, testId }: { data: StudentSubm
                         onBlur={() => { }} />
                 </Box>
             </Box>
+            <div className="mt-4">
+                <Typography variant='subtitle1' className='mb-2!'>Add Feedback Video</Typography>
+                <Box className="input__field rounded-md" sx={{
+                    background: (theme) => theme.palette.primary.contrastText
+                }}>
+                    <OutlinedInput
+                        placeholder='Feedback video URL'
+                        fullWidth
+                        value={videoUrl}
+                        onChange={(e) => setVideoUrl(e.target.value)}
+                    />
+                </Box>
+            </div>
             <Stack className="gap-2 mt-6">
                 <Button variant='contained' color='primary' fullWidth onClick={() => handleSubmitFeedback()}>{(data?.test_type === "mcq") ? "Submit & Next" : "Submit"}</Button>
             </Stack>

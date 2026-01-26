@@ -46,10 +46,10 @@ export default function NotificationManagementForm() {
         positions,
         selections,
         handleCategoryChange,
-        getCategoryFilterParams
+        getSelectedCategoryFilterParams
     } = useCourseFilter();
 
-    const categoryFilter = getCategoryFilterParams();
+    const categoryFilter = getSelectedCategoryFilterParams();
     const { data: courses, isLoading } = useGetAllCourseQuery({ ...qp, categoryFilter: { ...categoryFilter } });
     const [createNotification, { isLoading: creatingNotification }] = useCreateNotificationMutation();
     const { data } = useGetNotificationByIdQuery({ id: Number(id) }, { skip: !id });
@@ -440,7 +440,6 @@ export default function NotificationManagementForm() {
                                     fetchMore={fetchMoreCourses}
                                     onSearch={handleCourseSearch}
                                     loading={isLoading}
-                                    maxSelection={10}
                                     itemLabelKey="name"
                                     itemIdKey="id"
                                     placeholder="Search courses..."

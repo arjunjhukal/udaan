@@ -152,7 +152,10 @@ export default function AssignToCourseDialog({ open, setOpen, selectedMedia, typ
                                     fetchMore={fetchMoreCourses}
                                     onSearch={handleCourseSearch}
                                     loading={loadingCourses}
+<<<<<<< Updated upstream
                                     maxSelection={10}
+=======
+>>>>>>> Stashed changes
                                     itemLabelKey="name"
                                     itemIdKey="id"
                                     placeholder="Search courses..."

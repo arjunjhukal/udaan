@@ -146,7 +146,7 @@ export const questionApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
-        submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string } }>({
+        submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string, video_url?: string } }>({
             query: ({ id, resultId, body }) => ({
                 url: `/admin/test/${id}/result/${resultId}/feedback`,
                 method: "POST",
