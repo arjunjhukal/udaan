@@ -153,6 +153,10 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     ctx.strokeStyle = color;
     ctx.lineWidth = tool === 'eraser' ? lineWidth * 3 : lineWidth;
     ctx.globalCompositeOperation = tool === 'eraser' ? 'destination-out' : 'source-over';
+    
+    // Draw a point in case it's just a click (no movement)
+    ctx.lineTo(x, y);
+    ctx.stroke();
   };
 
   const draw = (
@@ -295,9 +299,11 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
         Answer
       </Typography>
 
-      <div
-        className="mb-4 p-4 bg-gray-100 rounded-lg flex flex-wrap gap-4 items-center sticky -top-4 z-10"
-        style={{ backgroundColor: '#f3f4f6' }}
+      <Box
+        className="mb-4 p-4 rounded-lg flex flex-wrap gap-4 items-center sticky -top-4 z-10"
+        sx={{
+          background: (theme) => theme.palette.separator.dark
+        }}
       >
         {/* Tools */}
         <div className="flex gap-2">
@@ -379,7 +385,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
             <Typography variant="subtitle2">Clear</Typography>
           </button>
         </div>
-      </div>
+      </Box>
 
       {/* ===== Scrollable Canvas Area ===== */}
       <Box
@@ -436,13 +442,13 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
               onMouseLeave={() => stopDrawing(img.id)}
               onTouchStart={(e) => startDrawing(e, img.id)}
               onTouchMove={(e) => draw(e, img.id)}
-              onTouchEnd={() => stopDrawing(img.id)}
-              onTouchCancel={() => stopDrawing(img.id)}
+              // onTouchEnd={() => stopDrawing(img.id)}
+              // onTouchCancel={() => stopDrawing(img.id)}
             />
 
             {/* Active Indicator */}
             {activeImageId === img.id && (
-              <div className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+              <div className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-normal">
                 Active
               </div>
             )}
