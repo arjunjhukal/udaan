@@ -1,7 +1,9 @@
 import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, Tooltip, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
-import { useGetAllActivityQuery } from '../../../services/activityApi';
+import { useDownloadCsvMutation, useGetAllActivityQuery } from '../../../services/activityApi';
+import { showToast } from '../../../slice/toastSlice';
+import { useAppDispatch } from '../../../store/hook';
 import { DeviceFilter, StatusFilter, type DeviceType, type Status } from '../../../types';
 import { ActivityTypes, type ActivityProps, type ActivityType } from '../../../types/activity';
 import SortableHeader from '../../molecules/SortableHeader';
@@ -12,6 +14,7 @@ import PageHeader from '../../organism/PageHeader';
 import TableFilter from '../../organism/TableFilter';
 
 export default function ActivityRoot() {
+    const dispatch = useAppDispatch();
     const [search, setSearch] = useState("");
     const [qp, setQp] = useState({
         pageIndex: 1,
@@ -41,6 +44,9 @@ export default function ActivityRoot() {
         status: appliedStatus.join(",") as Status,
         sort_by: sortBy,
     });
+
+    const [downloadActivity, { isLoading: downloading }] = useDownloadCsvMutation();
+
 
     const formatToNepalTime = (timestamp: string): string => {
         if (!timestamp) return "N/A";
@@ -183,6 +189,20 @@ export default function ActivityRoot() {
         setFilterDialogOpen(false);
     };
 
+    const handleDownload = async () => {
+        try {
+            await downloadActivity({ type: "activity_logs" }).unwrap();
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to download Activity",
+                    severity: "error"
+                })
+            )
+        }
+    }
+
     return (
         <div className='activity__root flex flex-col justify-start h-full overflow-hidden'>
             <div className="page__top">
@@ -204,6 +224,8 @@ export default function ActivityRoot() {
                     setCustomRange={setCustomRange}
                     setDays={setDays}
                     handleResetFilter={handleResetFilter}
+                    onDownload={handleDownload}
+                    donwloading={downloading}
                 />
             </div>
             <Box className="table__wrapper h-full overflow-hidden">

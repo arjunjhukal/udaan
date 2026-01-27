@@ -33,6 +33,11 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [questionsToDelete, setQuestionsToDelete] = useState<string[]>([]);
     const [activeTab, setActiveTab] = useState<QuestionTypeProps>("mcq");
+    const [customRange, setCustomRange] = useState({
+        startDate: "",
+        endDate: ""
+    });
+    const [days, setDays] = useState<number | null>(null);
     const [editQuestion, setEditQuestion] = useState<QuestionProps | null>(null);
 
     const handleEdit = (question: QuestionProps) => {
@@ -40,7 +45,10 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
         setOpen(true);
     };
 
-    const { data, isLoading } = useGetAllQuestionQuery({ ...qp, search: search, type: activeTab });
+    const { data, isLoading } = useGetAllQuestionQuery({
+        ...qp, search: search, type: activeTab, ...customRange,
+        days,
+    });
     const [deleteQuestion, { isLoading: deleting }] = useDeleteQuestionMutation();
 
     const questions = data?.data?.data || [];
@@ -147,6 +155,12 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
     ], [selectedRows, isAllSelected, isSomeSelected, qp])
 
 
+    const handleResetFilter = () => {
+        setCustomRange({ startDate: "", endDate: "" });
+        setSearch("");
+        setDays(null);
+        setQp((prev) => ({ ...prev, pageIndex: 1 }));
+    };
     return (
         <div className='all__question__root h-full flex flex-col justify-between'>
             <div className="page__top">
@@ -182,6 +196,10 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
                     setSearch={setSearch}
                     selectedRows={selectedRows}
                     handleRoleDelete={openDeleteConfirmation}
+                    customRange={customRange}
+                    setCustomRange={setCustomRange}
+                    setDays={setDays}
+                    handleResetFilter={handleResetFilter}
                 />
             </div>
 

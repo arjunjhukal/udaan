@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { QueryParams } from "../types";
+import type { CategoryFilterParams, QueryParams } from "../types";
 import type { QuestionList, QuestionProps, QuestionTypeProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
@@ -39,13 +39,16 @@ export const questionApi = createApi({
                 ...(body.id ? [{ type: "Questions" as const, id: body.id }] : [])
             ]
         }),
-        getAllQuestion: builder.query<QuestionList, QueryParams & { type?: QuestionTypeProps }>({
-            query: ({ type, pageIndex, pageSize, search }) => {
+        getAllQuestion: builder.query<QuestionList, QueryParams & { type?: QuestionTypeProps; days: number | null; }>({
+            query: ({ type, pageIndex, pageSize, search, days, startDate, endDate }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
-                    type: type
+                    type: type,
+                    start_date: startDate,
+                    end_date: endDate,
+                    days: days,
                 });
                 return {
                     url: `admin/questions?${queryString}`,
@@ -82,13 +85,20 @@ export const questionApi = createApi({
                 ...(body.id ? [{ type: "Test" as const, id: body.id }] : [])
             ]
         }),
-        getAllTest: builder.query<TestList, QueryParams & { type?: TestTypeProps }>({
-            query: ({ pageIndex, pageSize, search, type }) => {
+        getAllTest: builder.query<TestList, QueryParams & { type?: TestTypeProps; days: number | null; categoryFilter?: CategoryFilterParams; }>({
+            query: ({ pageIndex, pageSize, search, type, days, startDate, endDate, categoryFilter }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
-                    type: type
+                    type: type,
+                    start_date: startDate,
+                    end_date: endDate,
+                    days: days,
+                    mega_categories: categoryFilter?.mega_category,
+                    categories: categoryFilter?.category,
+                    sub_categories: categoryFilter?.sub_category,
+                    positions: categoryFilter?.positions,
                 });
                 return {
                     url: `/admin/test?${queryString}`,

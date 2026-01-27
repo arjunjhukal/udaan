@@ -1,3 +1,4 @@
+import { Download } from "@mui/icons-material";
 import { Box, Button, ClickAwayListener, Dialog, DialogContent, Grow, IconButton, List, ListItem, ListItemButton, ListItemText, OutlinedInput, Paper, Popper, Stack, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { Add, Send } from "iconsax-reactjs";
@@ -28,8 +29,12 @@ interface TableFilterProps {
     assignToCourse?: () => void;
     setDays?: React.Dispatch<React.SetStateAction<number | null>>;
     handleResetFilter?: () => void;
+    onDownload?: () => void;
+    donwloading?: boolean;
 }
-export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter }: TableFilterProps) {
+export default function TableFilter({
+    search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter, onDownload, donwloading
+}: TableFilterProps) {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLButtonElement | null>(null);
@@ -93,7 +98,6 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                         gap: "8px"
                     }}
                 /> : <Typography variant="h5" color="text.dark">{title}</Typography>}
-
             </div>
             <div className="col-span-6">
                 <div className="flex justify-end items-center gap-3 filter__right">
@@ -247,6 +251,20 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                                                             <ListItemText primary="Custom Range" />
                                                         </ListItemButton>
                                                     </ListItem>
+                                                    <ListItem className="menu__item action__item delete__item">
+                                                        <ListItemButton
+
+                                                            sx={{ m: 0, border: "none" }}
+                                                            onClick={() => {
+                                                                setOpen(false);
+                                                                handleResetFilter?.();
+                                                                handleResetCustomRange();
+                                                            }}
+                                                        >
+
+                                                            <ListItemText primary="Reset Filter" />
+                                                        </ListItemButton>
+                                                    </ListItem>
                                                 </List>
                                             </ClickAwayListener>
                                         </Paper>
@@ -296,6 +314,13 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                             </Typography>
                         </Button>
                     )}
+                    {onDownload ? <Button onClick={onDownload} disabled={donwloading} startIcon={<Download sx={{
+                        color: (theme) => theme.palette.primary.black
+                    }} />} sx={{
+                        border: `1px solid ${theme.palette.separator.dark}`
+                    }} className="py-2.5! px-3.5! rounded-md!">
+                        <Typography variant="subtitle1" color="text.dark">{donwloading ? "Downloading" : "Download"}</Typography>
+                    </Button> : ""}
                 </div>
             </div>
         </Box >

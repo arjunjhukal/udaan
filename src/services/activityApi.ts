@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { DeviceType, QueryParams, Status } from "../types";
 import type { ActivityList, ActivityType } from "../types/activity";
+import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
 
@@ -30,8 +31,14 @@ export const activitiyApi = createApi({
                 })}`,
                 method: "GET"
             })
+        }),
+        downloadCsv: builder.mutation<GlobalResponse, { type: "users" | "activity_logs" | "transactions" }>({
+            query: ({ type }) => ({
+                url: `/admin/csv?${buildQueryParams({ module: type })}`,
+                method: "GET"
+            })
         })
     })
 })
 
-export const { useGetAllActivityQuery } = activitiyApi;
+export const { useGetAllActivityQuery, useDownloadCsvMutation } = activitiyApi;

@@ -1,7 +1,8 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { QueryParams } from "../types";
+import type { CategoryFilterParams, QueryParams } from "../types";
 import type { LiveClassList, LiveClassPayload, liveClassTabType } from "../types/liveClass";
 import type { GlobalResponse } from "../types/user";
+import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
 
 export const liveClassApi = createApi({
@@ -19,25 +20,22 @@ export const liveClassApi = createApi({
                 { type: "Live_Class", id: "LIST" }
             ],
         }),
-        getAllLiveClass: builder.query<LiveClassList, QueryParams & { status?: liveClassTabType }>({
-            query: ({ pageIndex, pageSize, search, status }) => {
-                const params = new URLSearchParams();
-
-                if (pageIndex) {
-                    params.append('page', (pageIndex).toString());
-                }
-                if (pageSize) {
-                    params.append('page_size', pageSize.toString());
-                }
-                if (search) {
-                    params.append('search', search.toString());
-                }
-                if (status) {
-                    params.append('status', status.toString());
-                }
-
+        getAllLiveClass: builder.query<LiveClassList, QueryParams & { status?: liveClassTabType; days: number | null, categoryFilter?: CategoryFilterParams; }>({
+            query: ({ pageIndex, pageSize, search, status, days, startDate, endDate ,categoryFilter}) => {
                 return {
-                    url: `/admin/course/live?${params.toString()}`,
+                    url: `/admin/course/live?${buildQueryParams({
+                        page: pageIndex,
+                        page_size: pageSize,
+                        search: search,
+                        status: status,
+                        start_date: startDate,
+                        end_date: endDate,
+                        days: days,
+                        mega_categories: categoryFilter?.mega_category,
+                        categories: categoryFilter?.category,
+                        sub_categories: categoryFilter?.sub_category,
+                        positions: categoryFilter?.positions,
+                    })}`,
                     method: "GET",
                 };
             },

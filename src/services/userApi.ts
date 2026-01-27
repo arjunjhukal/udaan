@@ -18,14 +18,17 @@ export const userApi = createApi({
             invalidatesTags: [{ type: "User", id: "LIST" }]
         }),
 
-        getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus }>({
-            query: ({ pageIndex, pageSize, search, role, status }) => {
+        getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days: number | null; }>({
+            query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate }) => {
                 const params = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
                     role: role,
-                    status: status
+                    status: status,
+                    start_date: startDate,
+                    end_date: endDate,
+                    days: days,
                 });
 
                 return {

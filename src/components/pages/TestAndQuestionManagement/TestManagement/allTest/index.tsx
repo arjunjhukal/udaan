@@ -7,12 +7,14 @@ import { PATH } from '../../../../../routes/PATH';
 import { useDeleteTestMutation, useGetAllTestQuery } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
+import { useCourseFilter } from '../../../../../store/useCourseFilter';
 import type { TestProps } from '../../../../../types/question';
 import Actions from '../../../../molecules/Action';
 import UdaanTable from '../../../../molecules/Table';
 import TablePagination from '../../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../../organism/ConfirmationDialog';
 import EmptyRoute from '../../../../organism/EmptyRoute';
+import { CourseFilter } from '../../../../organism/Filter/CourseFilter';
 import PageHeader from '../../../../organism/PageHeader';
 import TableFilter, { type LayoutProps } from '../../../../organism/TableFilter';
 import TestGridLayout from './TestGridLayout';
@@ -30,8 +32,34 @@ export default function AllTestListing() {
     const [layout, setLayout] = useState<LayoutProps>('table');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [testsToDelete, setTestsToDelete] = useState<string[]>([]);
+    const [customRange, setCustomRange] = useState({
+        startDate: "",
+        endDate: ""
+    });
+    const [days, setDays] = useState<number | null>(null);
 
-    const { data, isLoading } = useGetAllTestQuery({ ...qp, search: search, });
+    const {
+        selections,
+        megaCategories,
+        categories,
+        subCategories,
+        positions,
+        loadingMegaCategory,
+        handleCategoryChange,
+        handleApplyFilter,
+        resetFilters,
+        getCategoryFilterParams,
+        filterDialogOpen,
+        setFilterDialogOpen
+    } = useCourseFilter();
+
+    const categoryFilter = getCategoryFilterParams();
+
+    const { data, isLoading } = useGetAllTestQuery({
+        ...qp, search: search, ...customRange,
+        days,
+        categoryFilter: { ...categoryFilter },
+    });
     const [deleteTest, { isLoading: deleting }] = useDeleteTestMutation();
 
 
@@ -176,6 +204,13 @@ export default function AllTestListing() {
     ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp])
 
 
+    const handleResetFilter = () => {
+        setCustomRange({ startDate: "", endDate: "" });
+        setSearch("");
+        setDays(null);
+        setQp((prev) => ({ ...prev, pageIndex: 1 }));
+        resetFilters();
+    };
     return (
         <div className='test__list__root h-full flex flex-col justify-between' >
             <div className="page__top">
@@ -205,7 +240,12 @@ export default function AllTestListing() {
                     selectedRows={selectedRows}
                     handleRoleDelete={openDeleteConfirmation}
                     layout={layout}
+                    onFilter={() => setFilterDialogOpen(true)}
                     setLayout={setLayout}
+                    customRange={customRange}
+                    setCustomRange={setCustomRange}
+                    setDays={setDays}
+                    handleResetFilter={handleResetFilter}
                 />
             </div>
 
@@ -248,7 +288,19 @@ export default function AllTestListing() {
                 </svg>
                 )}
             />
-
+            <CourseFilter
+                open={filterDialogOpen}
+                onClose={() => setFilterDialogOpen(false)}
+                megaCategories={megaCategories}
+                categories={categories}
+                subCategories={subCategories}
+                positions={positions}
+                selections={selections}
+                onChange={handleCategoryChange}
+                loadingMegaCategory={loadingMegaCategory}
+                onApplyFilter={handleApplyFilter}
+                onResetFilter={handleResetFilter}
+            />
         </div>
     )
 }

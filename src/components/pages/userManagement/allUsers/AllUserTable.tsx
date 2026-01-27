@@ -51,16 +51,23 @@ export default function AllUserTable() {
     } = useCourseFilter();
 
     const [otp, setOtp] = useState<string>("");
-
+    const [customRange, setCustomRange] = useState({
+        startDate: "",
+        endDate: ""
+    });
+    const [days, setDays] = useState<number | null>(null);
     const [activeTab, setActiveTab] = useState<UserStatus>("all");
 
     const categoryFilter = getCategoryFilterParams();
 
-    const { data, isLoading, isFetching } = useGetAllUserQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(","),status:activeTab });
+    const { data, isLoading, isFetching } = useGetAllUserQuery({
+        pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(","), status: activeTab, ...customRange,
+        days,
+    });
     const [deleteUser, { isLoading: deleting }] = useDeleteUserMutation();
     const [suspendUser] = useSuspendUserMutation();
     const [generateOtp] = useGenerateOTPMutation();
-    
+
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
@@ -311,6 +318,13 @@ export default function AllUserTable() {
 
     const dialogContent = getDialogContent();
 
+
+    const handleResetFilter = () => {
+        setCustomRange({ startDate: "", endDate: "" });
+        setSearch("");
+        setDays(null);
+        setQp((prev) => ({ ...prev, pageIndex: 1 }));
+    };
     return (
         <div className="user__root h-full flex flex-col justify-between">
             <div className="page__top">
@@ -334,13 +348,6 @@ export default function AllUserTable() {
                         }
                     }
                 />
-                <TableFilter
-                    search={search}
-                    setSearch={setSearch}
-                    selectedRows={selectedRows}
-                    handleRoleDelete={openDeleteConfirmation}
-                    onFilter={() => setFilterDialogOpen(true)}
-                />
                 <TabController
                     options={[
                         { label: "All", value: "all" },
@@ -349,6 +356,18 @@ export default function AllUserTable() {
                     setActiveTab={(newValue: string) => setActiveTab(newValue as UserStatus)}
                     currentActive={activeTab}
                 />
+                <TableFilter
+                    search={search}
+                    setSearch={setSearch}
+                    selectedRows={selectedRows}
+                    handleRoleDelete={openDeleteConfirmation}
+                    onFilter={() => setFilterDialogOpen(true)}
+                    customRange={customRange}
+                    setCustomRange={setCustomRange}
+                    setDays={setDays}
+                    handleResetFilter={handleResetFilter}
+                />
+
             </div>
 
             {!user.length && !isLoading ? (

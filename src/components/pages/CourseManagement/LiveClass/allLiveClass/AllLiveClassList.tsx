@@ -7,6 +7,7 @@ import { PATH } from "../../../../../routes/PATH";
 import { useDeleteLiveClassMutation, useGetAllLiveClassQuery } from "../../../../../services/liveClass";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
+import { useCourseFilter } from "../../../../../store/useCourseFilter";
 import { LiveClassTabs, type LiveClassPayload, type liveClassTabType } from "../../../../../types/liveClass";
 import { formatDate } from "../../../../../utils/dateFormat";
 import { useGetStatusStyle } from "../../../../../utils/getStyleBasedOnStatus";
@@ -16,6 +17,7 @@ import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../../organism/EmptyRoute";
+import { CourseFilter } from "../../../../organism/Filter/CourseFilter";
 import PageHeader from "../../../../organism/PageHeader";
 import type { LayoutProps } from "../../../../organism/TableFilter";
 import TableFilter from "../../../../organism/TableFilter";
@@ -34,8 +36,39 @@ export default function AllLiveClassList() {
   const [liveClassToDelete, setLiveClassToDelete] = useState<string[]>([]);
   const [layout, setLayout] = useState<LayoutProps>("table");
   const [activeTab, setActiveTab] = useState<liveClassTabType>("ongoing");
+  const [customRange, setCustomRange] = useState({
+    startDate: "",
+    endDate: ""
+  });
+  const [days, setDays] = useState<number | null>(null);
+
   const getStatusStyle = useGetStatusStyle();
-  const { data, isLoading } = useGetAllLiveClassQuery({ ...qp, search: search, status: activeTab });
+
+  const {
+    selections,
+    megaCategories,
+    categories,
+    subCategories,
+    positions,
+    loadingMegaCategory,
+    handleCategoryChange,
+    handleApplyFilter,
+    resetFilters,
+    getCategoryFilterParams,
+    filterDialogOpen,
+    setFilterDialogOpen
+  } = useCourseFilter();
+
+  const categoryFilter = getCategoryFilterParams();
+
+  const { data, isLoading } = useGetAllLiveClassQuery({
+    ...qp,
+    search: search,
+    status: activeTab,
+    ...customRange,
+    days,
+    categoryFilter: { ...categoryFilter },
+  });
   const [deleteLiveClass, { isLoading: deleting }] = useDeleteLiveClassMutation();
 
   const liveClasses = data?.data?.data || [];
@@ -192,6 +225,13 @@ export default function AllLiveClassList() {
     },
   ], [selectedRows, isAllSelected, isSomeSelected, qp])
 
+  const handleResetFilter = () => {
+    resetFilters();
+    setCustomRange({ startDate: "", endDate: "" });
+    setSearch("");
+    setDays(null);
+    setQp((prev) => ({ ...prev, pageIndex: 1 }));
+  };
   return (
     <div className="live__class__root h-full flex flex-col justify-between">
       <div className="page__top">
@@ -219,7 +259,12 @@ export default function AllLiveClassList() {
           selectedRows={selectedRows}
           handleRoleDelete={openDeleteConfirmation}
           layout={layout}
+          onFilter={() => setFilterDialogOpen(true)}
           setLayout={setLayout}
+          customRange={customRange}
+          setCustomRange={setCustomRange}
+          setDays={setDays}
+          handleResetFilter={handleResetFilter}
         />
         <TabController
           options={LiveClassTabs}
@@ -270,6 +315,20 @@ export default function AllLiveClassList() {
           <path d="M19.2297 8.14C18.9897 7.89 18.6597 7.75 18.3197 7.75H5.67975C5.33975 7.75 4.99975 7.89 4.76975 8.14C4.53975 8.39 4.40975 8.73 4.42975 9.08L5.04975 19.34C5.15975 20.86 5.29975 22.76 8.78975 22.76H15.2097C18.6997 22.76 18.8398 20.87 18.9497 19.34L19.5697 9.09C19.5897 8.73 19.4597 8.39 19.2297 8.14ZM13.6597 17.75H10.3297C9.91975 17.75 9.57975 17.41 9.57975 17C9.57975 16.59 9.91975 16.25 10.3297 16.25H13.6597C14.0697 16.25 14.4097 16.59 14.4097 17C14.4097 17.41 14.0697 17.75 13.6597 17.75ZM14.4997 13.75H9.49975C9.08975 13.75 8.74975 13.41 8.74975 13C8.74975 12.59 9.08975 12.25 9.49975 12.25H14.4997C14.9097 12.25 15.2497 12.59 15.2497 13C15.2497 13.41 14.9097 13.75 14.4997 13.75Z" fill="#1D82F5" />
         </svg>
         )}
+      />
+
+      <CourseFilter
+        open={filterDialogOpen}
+        onClose={() => setFilterDialogOpen(false)}
+        megaCategories={megaCategories}
+        categories={categories}
+        subCategories={subCategories}
+        positions={positions}
+        selections={selections}
+        onChange={handleCategoryChange}
+        loadingMegaCategory={loadingMegaCategory}
+        onApplyFilter={handleApplyFilter}
+        onResetFilter={handleResetFilter}
       />
     </div>
   )
