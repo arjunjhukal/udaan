@@ -18,7 +18,7 @@ export const userApi = createApi({
             invalidatesTags: [{ type: "User", id: "LIST" }]
         }),
 
-        getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days: number | null; }>({
+        getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days?: number | null; }>({
             query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate }) => {
                 const params = buildQueryParams({
                     page: pageIndex,
