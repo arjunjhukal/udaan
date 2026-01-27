@@ -39,7 +39,7 @@ export const questionApi = createApi({
                 ...(body.id ? [{ type: "Questions" as const, id: body.id }] : [])
             ]
         }),
-        getAllQuestion: builder.query<QuestionList, QueryParams & { type?: QuestionTypeProps; days: number | null; }>({
+        getAllQuestion: builder.query<QuestionList, QueryParams & { type?: QuestionTypeProps; days?: number | null; }>({
             query: ({ type, pageIndex, pageSize, search, days, startDate, endDate }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
