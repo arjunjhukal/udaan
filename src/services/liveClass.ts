@@ -20,8 +20,8 @@ export const liveClassApi = createApi({
                 { type: "Live_Class", id: "LIST" }
             ],
         }),
-        getAllLiveClass: builder.query<LiveClassList, QueryParams & { status?: liveClassTabType; days: number | null, categoryFilter?: CategoryFilterParams; }>({
-            query: ({ pageIndex, pageSize, search, status, days, startDate, endDate ,categoryFilter}) => {
+        getAllLiveClass: builder.query<LiveClassList, QueryParams & { status?: liveClassTabType; days?: number | null, categoryFilter?: CategoryFilterParams; }>({
+            query: ({ pageIndex, pageSize, search, status, days, startDate, endDate, categoryFilter }) => {
                 return {
                     url: `/admin/course/live?${buildQueryParams({
                         page: pageIndex,

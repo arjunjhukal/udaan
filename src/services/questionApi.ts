@@ -85,7 +85,7 @@ export const questionApi = createApi({
                 ...(body.id ? [{ type: "Test" as const, id: body.id }] : [])
             ]
         }),
-        getAllTest: builder.query<TestList, QueryParams & { type?: TestTypeProps; days: number | null; categoryFilter?: CategoryFilterParams; }>({
+        getAllTest: builder.query<TestList, QueryParams & { type?: TestTypeProps; days?: number | null; categoryFilter?: CategoryFilterParams; }>({
             query: ({ pageIndex, pageSize, search, type, days, startDate, endDate, categoryFilter }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
