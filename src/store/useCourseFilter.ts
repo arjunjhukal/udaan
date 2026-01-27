@@ -20,7 +20,7 @@ const getInitialSelections = (): SelectionType => {
                 sub_category: typeof parsed.sub_category === 'object' && parsed.sub_category !== null ? parsed.sub_category : {},
                 position_ids: Array.isArray(parsed.position_ids) ? parsed.position_ids : [],
                 teacher_ids: Array.isArray(parsed.teacher_ids) ? parsed.teacher_ids : [],
-                role_ids: Array.isArray(parsed.role_ids) ? parsed.role_ids : []
+                role_ids: Array.isArray(parsed.role_ids) ? parsed.role_ids : [],
             };
         }
     } catch (error) {
@@ -33,7 +33,8 @@ const getInitialSelections = (): SelectionType => {
         sub_category: {},
         position_ids: [],
         teacher_ids: [],
-        role_ids: []
+        role_ids: [],
+
     };
 };
 
@@ -44,8 +45,22 @@ export const useCourseFilter = () => {
     const [appliedSelections, setAppliedSelections] = useState<SelectionType>(getInitialSelections);
 
     const [searchTeacher, setSearchTeacher] = useState("");
+
     const [courseTypes, setCourseTypes] = useState<string[]>([]);
     const [appliedCourseTypes, setAppliedCourseTypes] = useState<string[]>([]);
+
+    const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+    const [appliedStatus, setAppliedStatus] = useState<string[]>([]);
+
+    const [selectedDeviceType, setSelectedDeviceType] = useState<string[]>([]);
+    const [appliedDeviceType, setAppliedDeviceType] = useState<string[]>([]);
+
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string[]>([]);
+    const [appliedPaymentMethod, setAppliedPaymentMethod] = useState<string[]>([]);
+
+    const [selectedAudience, setSelectedAudience] = useState<string[]>([]);
+    const [appliedAudience, setAppliedAudience] = useState<string[]>([]);
+
     const [filterDialogOpen, setFilterDialogOpen] = useState(false);
 
     const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
@@ -137,11 +152,37 @@ export const useCourseFilter = () => {
         });
     }, []);
 
-    const handleApplyFilter = useCallback((selectedCourseTypes: string[]) => {
+    const handleApplyFilter = useCallback((
+        selectedCourseTypes: string[],
+        selectedStatusTypes?: string[],
+        selectedDeviceTypes?: string[],
+        selectedPaymentMethod?: string[],
+        selectedAudience?: string[]
+    ) => {
         // Apply the draft selections to the actual applied state
         setAppliedSelections(selections);
         setAppliedCourseTypes(selectedCourseTypes);
         setCourseTypes(selectedCourseTypes);
+
+        // Only update status if provided
+        if (selectedStatusTypes !== undefined) {
+            setSelectedStatus(selectedStatusTypes);
+            setAppliedStatus(selectedStatusTypes);
+        }
+
+        // Only update device if provided
+        if (selectedDeviceTypes !== undefined) {
+            setSelectedDeviceType(selectedDeviceTypes);
+            setAppliedDeviceType(selectedDeviceTypes);
+        }
+        if (selectedPaymentMethod !== undefined) {
+            setSelectedPaymentMethod(selectedPaymentMethod);
+            setAppliedPaymentMethod(selectedPaymentMethod);
+        }
+        if (selectedAudience !== undefined) {
+            setSelectedAudience(selectedAudience);
+            setAppliedAudience(selectedAudience);
+        }
 
         // Save to localStorage
         try {
@@ -164,6 +205,14 @@ export const useCourseFilter = () => {
         setAppliedSelections(emptySelections);
         setCourseTypes([]);
         setAppliedCourseTypes([]);
+        setSelectedStatus([]);
+        setAppliedStatus([]);
+        setSelectedDeviceType([]);
+        setAppliedDeviceType([]);
+        setSelectedPaymentMethod([]);
+        setAppliedPaymentMethod([]);
+        setSelectedAudience([]);
+        setAppliedAudience([]);
         localStorage.removeItem(STORAGE_KEY);
     }, []);
 
@@ -179,9 +228,10 @@ export const useCourseFilter = () => {
             appliedSelections.position_ids.length > 0 ||
             appliedSelections?.teacher_ids && appliedSelections.teacher_ids.length > 0 ||
             appliedSelections?.role_ids && appliedSelections.role_ids.length > 0 ||
-            appliedCourseTypes.length > 0
+            appliedCourseTypes.length > 0 || appliedStatus.length > 0 ||
+            appliedDeviceType.length > 0 || appliedPaymentMethod.length > 0 || appliedAudience.length > 0
         );
-    }, [appliedSelections, appliedCourseTypes]);
+    }, [appliedSelections, appliedCourseTypes, appliedCourseTypes, appliedDeviceType]);
 
     // Build category filter params for API - NOW READS FROM APPLIED SELECTIONS
     const getCategoryFilterParams = useCallback((): CategoryFilterParams => {
@@ -223,9 +273,21 @@ export const useCourseFilter = () => {
         if (appliedCourseTypes?.length > 0) {
             params.payment = appliedCourseTypes;
         }
+        if (appliedStatus?.length > 0) {
+            params.status = appliedStatus;
+        }
+        if (appliedDeviceType?.length > 0) {
+            params.device = appliedDeviceType;
+        }
+        if (appliedPaymentMethod?.length > 0) {
+            params.payment_method = appliedPaymentMethod;
+        }
+        if (appliedAudience?.length > 0) {
+            params.target_audience = appliedAudience;
+        }
 
         return params;
-    }, [appliedSelections, appliedCourseTypes]);
+    }, [appliedSelections, appliedCourseTypes, appliedDeviceType, appliedStatus, appliedPaymentMethod, appliedAudience]);
 
     const getSelectedCategoryFilterParams = useCallback((): CategoryFilterParams => {
         const params: any = {};
@@ -267,21 +329,33 @@ export const useCourseFilter = () => {
             params.payment = courseTypes;
         }
 
+        if (selectedStatus?.length > 0) {
+            params.status = selectedStatus;
+        }
+        if (selectedDeviceType?.length > 0) {
+            params.device = selectedDeviceType;
+        }
+        if (selectedPaymentMethod?.length > 0) {
+            params.payment_method = selectedPaymentMethod;
+        }
+        if (selectedAudience?.length > 0) {
+            params.target_audience = selectedAudience;
+        }
+
         return params;
-    }, [selections, courseTypes]);
-
-
-
+    }, [selections, courseTypes, selectedDeviceType, selectedStatus, selectedPaymentMethod, selectedAudience]);
 
     return {
-        // State (draft - for dialog)
         selections,
         searchTeacher,
         setSearchTeacher,
         filterDialogOpen,
         setFilterDialogOpen,
         courseTypes,
-
+        device: selectedDeviceType,
+        status: selectedStatus,
+        paymentMethod: selectedPaymentMethod,
+        targetAudience: selectedAudience,
         // Data
         megaCategories: megaCategories?.data || [],
         categories: categories?.data || [],

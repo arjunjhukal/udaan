@@ -79,6 +79,7 @@ export default function UdaanDatePicker({
     };
 
     const days = generateCalendarDays();
+
     const months = [
         "January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
@@ -87,7 +88,6 @@ export default function UdaanDatePicker({
 
     return (
         <Box>
-            {/* Month and Year Selectors */}
             <Box className="flex gap-2 mb-4">
                 <Select
                     value={currentMonth}
@@ -138,13 +138,11 @@ export default function UdaanDatePicker({
                     ))}
                 </Select>
             </Box>
-
-            {/* Weekday Headers */}
             <Box className="grid grid-cols-7 gap-1 mb-2">
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
                     <Typography
                         key={day}
-                        className="text-center !text-[10px] py-1"
+                        className="text-center text-[10px]! py-1"
                         sx={{ color: theme.palette.text?.middle }}
                     >
                         {day}

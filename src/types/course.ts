@@ -1,3 +1,4 @@
+import type { DeviceType, Status } from ".";
 import type { MediaProps } from "./media";
 import type { Pagination } from "./roleAndPermission";
 import type { GlobalResponse } from "./user";
@@ -10,6 +11,8 @@ export interface SelectionType {
     teacher_ids?: number[];
     role_ids?: number[];
     course_type?: CourseTypeProps[];
+    device?: DeviceType[];
+    status?: Status[];
 }
 
 export type CourseTypeProps = "free" | "expiry" | "subscription"
@@ -71,6 +74,7 @@ export const initialCourseState: CourseProps = {
         category: {},
         sub_category: {},
         position_ids: [],
+
     },
     about_this_course: "",
     teachers: [],
@@ -84,6 +88,7 @@ export const initialCourseState: CourseProps = {
     },
     free_type_description: "",
     course_subscription: [],
+
 };
 
 export interface CourseList extends GlobalResponse {

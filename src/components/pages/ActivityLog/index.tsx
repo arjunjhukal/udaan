@@ -2,6 +2,7 @@ import { Box, Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel
 import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useGetAllActivityQuery } from '../../../services/activityApi';
+import { DeviceFilter, StatusFilter, type DeviceType, type Status } from '../../../types';
 import { ActivityTypes, type ActivityProps, type ActivityType } from '../../../types/activity';
 import SortableHeader from '../../molecules/SortableHeader';
 import UdaanTable from '../../molecules/Table';
@@ -24,12 +25,21 @@ export default function ActivityRoot() {
 
     const [selectedActivityTypes, setSelectedActivityTypes] = useState<string[]>([]);
     const [appliedActivityTypes, setAppliedActivityTypes] = useState<string[]>([]);
-
+    const [selectedDeviceType, setSelectedDeviceType] = useState<DeviceType[]>([]);
+    const [appliedDeviceType, setAppliedDeviceType] = useState<DeviceType[]>([]);
+    const [selectedStatus, setSelectedStatus] = useState<Status[]>([]);
+    const [appliedStatus, setAppliedStatus] = useState<Status[]>([]);
+    const [days, setDays] = useState<number | null>(null);
     const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+
     const { data, isLoading } = useGetAllActivityQuery({
-        ...qp, search, ...customRange,
+        ...qp, search,
+        ...customRange,
+        days,
         type: appliedActivityTypes.join(",") as ActivityType,
-        sort_by: sortBy
+        device_type: appliedDeviceType.join(",") as DeviceType,
+        status: appliedStatus.join(",") as Status,
+        sort_by: sortBy,
     });
 
     const formatToNepalTime = (timestamp: string): string => {
@@ -136,9 +146,22 @@ export default function ActivityRoot() {
             checked ? [...prev, type] : prev.filter((t) => t !== type)
         );
     };
+    const handleStatusChange = (type: Status, checked: boolean) => {
+        setSelectedStatus((prev) =>
+            checked ? [...prev, type] : prev.filter((t) => t !== type)
+        );
+    };
+    const handleDeviceChange = (type: DeviceType, checked: boolean) => {
+        setSelectedDeviceType((prev) =>
+            checked ? [...prev, type] : prev.filter((t) => t !== type)
+        );
+    };
 
     const handleApplyFilter = () => {
         setAppliedActivityTypes(selectedActivityTypes);
+        setAppliedDeviceType(selectedDeviceType);
+        setAppliedStatus(selectedStatus);
+
         setQp((prev) => ({ ...prev, pageIndex: 1 }));
         setFilterDialogOpen(false);
     };
@@ -146,12 +169,19 @@ export default function ActivityRoot() {
     const handleResetFilter = () => {
         setSelectedActivityTypes([]);
         setAppliedActivityTypes([]);
+
+        setSelectedDeviceType([]);
+        setAppliedDeviceType([]);
+
+        setSelectedStatus([]);
+        setAppliedStatus([]);
+
         setCustomRange({ startDate: "", endDate: "" });
         setSearch("");
+        setDays(null);
         setQp((prev) => ({ ...prev, pageIndex: 1 }));
         setFilterDialogOpen(false);
     };
-
 
     return (
         <div className='activity__root flex flex-col justify-start h-full overflow-hidden'>
@@ -169,9 +199,11 @@ export default function ActivityRoot() {
                     setSearch={setSearch}
                     selectedRows={new Set<number | string>([])}
                     handleRoleDelete={() => { }}
+                    onFilter={() => setFilterDialogOpen(true)}
                     customRange={customRange}
                     setCustomRange={setCustomRange}
-                    onFilter={() => setFilterDialogOpen(true)}
+                    setDays={setDays}
+                    handleResetFilter={handleResetFilter}
                 />
             </div>
             <Box className="table__wrapper h-full overflow-hidden">
@@ -200,21 +232,74 @@ export default function ActivityRoot() {
                 fullWidth>
                 <DialogContent>
                     <div className="filter__wrapper flex flex-col gap-6">
-                        {/* Category Filter */}
                         <div className="category__filter">
                             <Typography variant="h5">Filter</Typography>
                             <Divider />
 
+                            {DeviceFilter.length > 0 && (
+                                <div className="type__filter w-full pt-4 pb-4">
+                                    <Typography variant="h6">Device Type</Typography>
+                                    <Divider className="mb-3.5! mt-2!" />
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                                        {DeviceFilter.map((type) => (
+                                            <FormControlLabel
+                                                className='items-center!'
+                                                key={type.value}
+                                                label={type.label}
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedDeviceType.includes(type.value as DeviceType)}
+                                                        onChange={(e) =>
+                                                            handleDeviceChange(type.value as DeviceType, e.target.checked)
+                                                        }
+
+                                                    />
+                                                }
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            {StatusFilter.length > 0 && (
+                                <div className="type__filter w-full pt-4 pb-4">
+                                    <Typography variant="h6">Status</Typography>
+                                    <Divider className="mb-3.5! mt-2!" />
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                                        {StatusFilter.map((status) => (
+                                            <FormControlLabel
+                                                key={status.value}
+                                                label={status.label}
+                                                control={
+                                                    <Checkbox
+                                                        checked={selectedStatus.includes(status.value as Status)}
+                                                        onChange={(e) =>
+                                                            handleStatusChange(
+                                                                status.value as Status,
+                                                                e.target.checked
+                                                            )
+                                                        }
+                                                    />
+                                                }
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+
                             {ActivityTypes.length > 0 && (
-                                <div className="type__filter w-full py-4 lg:py-6">
+                                <div className="type__filter w-full pt-4 pb-4">
                                     <Typography variant="h6">Activity Type</Typography>
                                     <Divider className="mb-3.5! mt-2!" />
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                                         {ActivityTypes.map((type) => (
                                             <FormControlLabel
+                                                className='items-center!'
                                                 key={type}
-                                                label={type}
+                                                label={<Typography className='capitalize!' color='text.middle'>{type}</Typography>}
                                                 control={
                                                     <Checkbox
                                                         checked={selectedActivityTypes.includes(type)}
@@ -228,6 +313,7 @@ export default function ActivityRoot() {
                                     </div>
                                 </div>
                             )}
+
                             <Divider />
 
                             {/* Action Footer */}

@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { QueryParams } from "../types";
+import type { CategoryFilterParams, DeviceType, QueryParams, Status } from "../types";
 import type { TransactionList, TransactionPayload } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
@@ -18,12 +18,22 @@ export const transactionApi = createApi({
             }),
             invalidatesTags: [{ type: "Transaction", id: "LIST" }]
         }),
-        getAllTransactions: builder.query<TransactionList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => {
+        getAllTransactions: builder.query<TransactionList, QueryParams & { categoryFilter?: CategoryFilterParams; status?: Status, payment_method?: string, days?: number | null; device_type?: DeviceType; }>({
+            query: ({ pageIndex, pageSize, search, startDate, endDate, days, status, categoryFilter, device_type, payment_method }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
+                    start_date: startDate,
+                    end_date: endDate,
+                    days: days,
+                    device_type: device_type,
+                    status: status,
+                    payment_method: payment_method,
+                    mega_categories: categoryFilter?.mega_category,
+                    categories: categoryFilter?.category,
+                    sub_categories: categoryFilter?.sub_category,
+                    positions: categoryFilter?.positions,
                 });
 
                 return {
@@ -52,8 +62,8 @@ export const transactionApi = createApi({
                 method: "POST",
                 body: body
             }),
-            invalidatesTags: (_result, _error, arg) => [
-                { type: "Transaction", id: arg.id },
+            invalidatesTags: (_result, _error, _arg) => [
+                // { type: "Transaction", id: arg.id },
                 { type: "Transaction", id: "LIST" }
             ]
         }),

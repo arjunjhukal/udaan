@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import type { QueryParams } from "../types";
+import type { QueryParams, UserStatus } from "../types";
 import type { GlobalResponse, RegisterUserProps, UserList } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -17,13 +17,15 @@ export const userApi = createApi({
             }),
             invalidatesTags: [{ type: "User", id: "LIST" }]
         }),
-        getAllUser: builder.query<UserList, QueryParams & { role?: number | string }>({
-            query: ({ pageIndex, pageSize, search, role }) => {
+
+        getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus }>({
+            query: ({ pageIndex, pageSize, search, role, status }) => {
                 const params = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
-                    role: role
+                    role: role,
+                    status: status
                 });
 
                 return {

@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
-import type { NotificationList, NotificationPayload } from "../types/notification";
+import type { CompletionStatus, DeliveryMethodsType, NotificationList, NotificationPayload, TargetStudentType } from "../types/notification";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -18,11 +18,17 @@ export const notificationApi = createApi({
             }),
             invalidatesTags: [{ type: "Notifications", id: "LIST" }],
         }),
-        getAllNotification: builder.query<NotificationList, QueryParams>({
-            query: ({ pageIndex, pageSize }) => {
+        getAllNotification: builder.query<NotificationList, QueryParams & { days: number | null, status: CompletionStatus, delivey_method: DeliveryMethodsType, target_audience: TargetStudentType }>({
+            query: ({ pageIndex, pageSize, startDate, endDate, days, status, delivey_method, target_audience }) => {
                 const queryParams = buildQueryParams({
                     page: pageIndex,
-                    page_size: pageSize
+                    page_size: pageSize,
+                    start_date: startDate,
+                    end_date: endDate,
+                    days: days,
+                    status: status,
+                    delivery_method: delivey_method,
+                    target_audience: target_audience
                 })
                 return {
                     url: `/admin/notification?${queryParams}`,

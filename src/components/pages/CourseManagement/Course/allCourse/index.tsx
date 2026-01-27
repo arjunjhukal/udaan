@@ -55,11 +55,15 @@ export default function AllCourse() {
         getCategoryFilterParams,
         filterDialogOpen,
         setFilterDialogOpen
-
     } = useCourseFilter();
 
     const categoryFilter = getCategoryFilterParams();
 
+    const courseTypes = [
+        { value: "free", label: "Free" },
+        { value: "subscription", label: "Subscription" },
+        { value: "expiry", label: "Expiry" }
+    ];
 
     const { data, isLoading } = useGetAllCourseQuery({
         ...qp,
@@ -386,6 +390,7 @@ export default function AllCourse() {
                 setSearchTeacher={setSearchTeacher}
                 onApplyFilter={handleApplyFilter}
                 onResetFilter={resetFilters}
+                courseTypes={courseTypes || []}
             />
         </div>
     )

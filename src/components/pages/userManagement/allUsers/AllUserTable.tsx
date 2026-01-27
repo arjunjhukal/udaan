@@ -8,8 +8,10 @@ import { useDeleteUserMutation, useGenerateOTPMutation, useGetAllUserQuery, useS
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
+import type { UserStatus } from "../../../../types";
 import type { RegisterUserProps } from "../../../../types/user";
 import Actions from "../../../molecules/Action";
+import TabController from "../../../molecules/TabController";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
@@ -48,13 +50,18 @@ export default function AllUserTable() {
         roles,
     } = useCourseFilter();
 
+    const [otp, setOtp] = useState<string>("");
+
+    const [activeTab, setActiveTab] = useState<UserStatus>("all");
+
     const categoryFilter = getCategoryFilterParams();
 
-    const { data, isLoading, isFetching } = useGetAllUserQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(",") });
+    const { data, isLoading, isFetching } = useGetAllUserQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(","),status:activeTab });
     const [deleteUser, { isLoading: deleting }] = useDeleteUserMutation();
     const [suspendUser] = useSuspendUserMutation();
     const [generateOtp] = useGenerateOTPMutation();
-    const [otp, setOtp] = useState<string>("");
+    
+
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
             const allIndices = new Set(user.map((user) => user.id || ""));
@@ -333,6 +340,14 @@ export default function AllUserTable() {
                     selectedRows={selectedRows}
                     handleRoleDelete={openDeleteConfirmation}
                     onFilter={() => setFilterDialogOpen(true)}
+                />
+                <TabController
+                    options={[
+                        { label: "All", value: "all" },
+                        { label: "Suspended", value: "suspended" },
+                    ]}
+                    setActiveTab={(newValue: string) => setActiveTab(newValue as UserStatus)}
+                    currentActive={activeTab}
                 />
             </div>
 

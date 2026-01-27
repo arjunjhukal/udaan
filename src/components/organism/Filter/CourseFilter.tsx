@@ -1,6 +1,7 @@
 import { Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, OutlinedInput, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 import SearchIcon from "../../../icons/SearchIcon";
+import type { DeviceType, Status } from "../../../types";
 import type { CategoryProps } from "../../../types/category";
 import type { SelectionType } from "../../../types/course";
 import type { positionProps } from "../../../types/position";
@@ -24,10 +25,16 @@ interface Props {
   roles?: RoleProps[];
   searchTeacher?: string;
   setSearchTeacher?: (newValue: string) => void;
-  onApplyFilter: (courseTypes: string[]) => void;
+  onApplyFilter: (courseTypes: string[], status?: string[], device?: string[], payment_method?: string[], target_audience?: string[]) => void;
+
   onResetFilter: () => void;
   open: boolean;
   onClose: () => void;
+  courseTypes?: { value: string; label: string }[];
+  status?: { label: string; value: Status }[];
+  deviceType?: { label: string; value: DeviceType }[];
+  paymentMethod?: { label: string; value: string }[];
+  targetAudience?: { label: string; value: string }[]
 }
 
 export const CourseFilter = ({
@@ -45,16 +52,19 @@ export const CourseFilter = ({
   onApplyFilter,
   onResetFilter,
   open,
-  onClose
+  onClose,
+  courseTypes,
+  status,
+  deviceType,
+  paymentMethod,
+  targetAudience
 }: Props) => {
   const theme = useTheme();
   const [selectedCourseTypes, setSelectedCourseTypes] = useState<string[]>([]);
-
-  const courseTypes = [
-    { value: "free", label: "Free" },
-    { value: "subscription", label: "Subscription" },
-    { value: "expiry", label: "Expiry" }
-  ];
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [selectedDevice, setSelectedDeviceType] = useState<string[]>([]);
+  const [selectedPaymentMode, setSelectedPaymentMode] = useState<string[]>([]);
+  const [selectedAudience, setSelectedAudience] = useState<string[]>([]);
 
   const handleCourseTypeChange = (type: string, checked: boolean) => {
     setSelectedCourseTypes(prev => {
@@ -65,18 +75,57 @@ export const CourseFilter = ({
       }
     });
   };
+  const handleStatusChange = (type: string, checked: boolean) => {
+    setSelectedStatus(prev => {
+      if (checked) {
+        return [...prev, type];
+      } else {
+        return prev.filter(t => t !== type);
+      }
+    });
+  };
+  const handleDeviceChange = (type: string, checked: boolean) => {
+    setSelectedDeviceType(prev => {
+      if (checked) {
+        return [...prev, type];
+      } else {
+        return prev.filter(t => t !== type);
+      }
+    });
+  };
+  const hanldePaymentMethodChange = (type: string, checked: boolean) => {
+    setSelectedPaymentMode(prev => {
+      if (checked) {
+        return [...prev, type];
+      } else {
+        return prev.filter(t => t !== type);
+      }
+    });
+  };
+  const handleSelectedAudienceChange = (type: string, checked: boolean) => {
+    setSelectedAudience(prev => {
+      if (checked) {
+        return [...prev, type];
+      } else {
+        return prev.filter(t => t !== type);
+      }
+    });
+  };
 
   const handleApplyFilter = () => {
-    onApplyFilter(selectedCourseTypes);
+    onApplyFilter(selectedCourseTypes, selectedStatus, selectedDevice, selectedPaymentMode, selectedAudience);
     onClose();
   };
 
   const handleResetFilter = () => {
     setSelectedCourseTypes([]);
+    setSelectedStatus([]);
+    setSelectedDeviceType([]);
+    setSelectedPaymentMode([]);
+    setSelectedAudience([]);
     onResetFilter();
     onClose();
   };
-
 
 
   const handleTeacherChange = (teacherId: number, checked: boolean) => {
@@ -86,6 +135,7 @@ export const CourseFilter = ({
       : currentTeachers.filter(id => id !== teacherId);
     onChange("teacher", updatedTeachers);
   };
+
   const handleRoleChange = (roleId: number, checked: boolean) => {
     const currentRoles = selections.role_ids || [];
     const updatedRoles = checked
@@ -121,7 +171,7 @@ export const CourseFilter = ({
           </div>
 
           {/* Teacher Filter */}
-          {teachers ? <div className="user__filter">
+          {teachers.length > 0 ? <div className="user__filter">
             <div className="flex items-center justify-between flex-wrap">
               <Typography variant="h5">Assigned Teachers</Typography>
               <OutlinedInput
@@ -206,6 +256,98 @@ export const CourseFilter = ({
                       <Checkbox
                         checked={selections?.role_ids?.includes(Number(role.id)) || false}
                         onChange={(e) => handleRoleChange(Number(role.id), e.target.checked)}
+                      />
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div> : ""}
+          {/* Status Filter */}
+          {status && status.length ? <div className="role__filter">
+            <div className="flex items-center justify-between">
+              <Typography variant="h5">Status</Typography>
+            </div>
+            <Divider className="mb-3.5! mt-2!" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-9">
+              {status.map((item) => (
+                <div className="col-span-1" key={item.value}>
+                  <FormControlLabel
+                    className="items-center!"
+                    label={item.label.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
+                    control={
+                      <Checkbox
+                        checked={selectedStatus.includes(item.value)}
+                        onChange={(e) => handleStatusChange(item.value, e.target.checked)}
+                      />
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div> : ""}
+          {/* Device Filter */}
+          {deviceType && deviceType.length ? <div className="role__filter">
+            <div className="flex items-center justify-between">
+              <Typography variant="h5">Device Type</Typography>
+            </div>
+            <Divider className="mb-3.5! mt-2!" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-9">
+              {deviceType.map((device) => (
+                <div className="col-span-1" key={device.value}>
+                  <FormControlLabel
+                    className="items-center!"
+                    label={device.label.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
+                    control={
+                      <Checkbox
+                        checked={selectedDevice.includes(device.value)}
+                        onChange={(e) => handleDeviceChange(device.value, e.target.checked)}
+                      />
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div> : ""}
+          {/* Payment Method Filter */}
+          {paymentMethod && paymentMethod.length ? <div className="role__filter">
+            <div className="flex items-center justify-between">
+              <Typography variant="h5">Method</Typography>
+            </div>
+            <Divider className="mb-3.5! mt-2!" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-9">
+              {paymentMethod.map((method) => (
+                <div className="col-span-1" key={method.value}>
+                  <FormControlLabel
+                    className="items-center!"
+                    label={method.label.split("_").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
+                    control={
+                      <Checkbox
+                        checked={selectedPaymentMode.includes(method.value)}
+                        onChange={(e) => hanldePaymentMethodChange(method.value, e.target.checked)}
+                      />
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div> : ""}
+          {/* Audience Filter */}
+          {targetAudience && targetAudience.length ? <div className="role__filter">
+            <div className="flex items-center justify-between">
+              <Typography variant="h5">Target Audience</Typography>
+            </div>
+            <Divider className="mb-3.5! mt-2!" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-9">
+              {targetAudience.map((method: any) => (
+                <div className="col-span-1" key={method.value}>
+                  <FormControlLabel
+                    className="items-center!"
+                    label={method.label}
+                    control={
+                      <Checkbox
+                        checked={selectedAudience.includes(method.value)}
+                        onChange={(e) => handleSelectedAudienceChange(method.value, e.target.checked)}
                       />
                     }
                   />

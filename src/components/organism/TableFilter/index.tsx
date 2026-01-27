@@ -1,7 +1,7 @@
-import { Box, Button, Dialog, DialogContent, IconButton, OutlinedInput, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, ClickAwayListener, Dialog, DialogContent, Grow, IconButton, List, ListItem, ListItemButton, ListItemText, OutlinedInput, Paper, Popper, Stack, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { Add, Send } from "iconsax-reactjs";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import FilterIcon from "../../../icons/FilterIcon";
 import SearchIcon from "../../../icons/SearchIcon";
 import UdaanDatePicker from "../DatePicker";
@@ -26,9 +26,22 @@ interface TableFilterProps {
         React.SetStateAction<{ startDate: string; endDate: string }>
     >;
     assignToCourse?: () => void;
+    setDays?: React.Dispatch<React.SetStateAction<number | null>>;
+    handleResetFilter?: () => void;
 }
-export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse }: TableFilterProps) {
+export default function TableFilter({ search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter }: TableFilterProps) {
     const theme = useTheme();
+    const [open, setOpen] = useState(false);
+    const anchorRef = useRef<HTMLButtonElement | null>(null);
+
+    const handleToggle = () => setOpen((prev) => !prev);
+
+    const handleClose = (event: Event | React.SyntheticEvent) => {
+        if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+            return;
+        }
+        setOpen(false);
+    };
 
     const handleDeleteClick = () => {
         if (selectedRows.size > 0) {
@@ -163,6 +176,7 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                     {customRange ? (
                         <>
                             <Button
+                                ref={anchorRef}
                                 startIcon={<Send variant="Bold" color={theme.palette.text.dark} />}
                                 sx={{
                                     border: `1px solid ${theme.palette.separator.dark}`,
@@ -173,13 +187,72 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                                     }
                                 }}
                                 className="py-2.5! px-3.5! rounded-md! text-center justify-center! gap-2! items-center!"
-                                onClick={() => setShowCustomRangeModal(true)}
+                                onClick={() => handleToggle()}
                             >
                                 <Typography variant="subtitle2" color="text.dark" className="hidden! md:flex!">
                                     Filter By Date
                                 </Typography>
                             </Button>
 
+                            <Popper
+                                open={open}
+                                anchorEl={anchorRef.current}
+                                transition
+                                placement="bottom-end"
+                                disablePortal
+                                sx={{ zIndex: 10 }}
+                            >
+                                {({ TransitionProps }) => (
+                                    <Grow {...TransitionProps}>
+                                        <Paper elevation={3}>
+                                            <ClickAwayListener onClickAway={handleClose}>
+                                                <List className="min-w-[180px] p-2!">
+                                                    <ListItem className="menu__item action__item">
+                                                        <ListItemButton
+                                                            sx={{ m: 0, border: "none" }}
+                                                            onClick={() => { setOpen(false); setDays?.(1) }}
+                                                        >
+                                                            <ListItemText primary="Today" />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                    <ListItem className="menu__item action__item">
+                                                        <ListItemButton
+                                                            sx={{ m: 0, border: "none" }}
+                                                            onClick={() => { setOpen(false); setDays?.(7) }}
+                                                        >
+                                                            <ListItemText primary="This Week" />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                    <ListItem className="menu__item action__item">
+                                                        <ListItemButton
+                                                            sx={{ m: 0, border: "none" }}
+                                                            onClick={() => { setOpen(false); setDays?.(30) }}
+                                                        >
+                                                            <ListItemText primary="This Month" />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                    <ListItem className="menu__item action__item">
+                                                        <ListItemButton
+                                                            sx={{ m: 0, border: "none" }}
+                                                            onClick={() => { setOpen(false); setDays?.(365) }}
+                                                        >
+                                                            <ListItemText primary="This Year" />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                    <ListItem className="menu__item action__item">
+                                                        <ListItemButton
+                                                            sx={{ m: 0, border: "none" }}
+                                                            onClick={() => { setOpen(false); setShowCustomRangeModal(true) }}
+                                                        >
+                                                            <ListItemText primary="Custom Range" />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                </List>
+                                            </ClickAwayListener>
+                                        </Paper>
+                                    </Grow>
+                                )}
+                            </Popper>
                             <Dialog
                                 open={showCustomRangeModal}
                                 onClose={() => setShowCustomRangeModal(false)}
@@ -201,7 +274,10 @@ export default function TableFilter({ search, setSearch, selectedRows, handleRol
                                         onStartDateChange={setStartDate}
                                         onEndDateChange={setEndDate}
                                         onApply={handleApplyCustomRange}
-                                        onReset={handleResetCustomRange}
+                                        onReset={() => {
+                                            handleResetFilter?.()
+                                            handleResetCustomRange()
+                                        }}
                                     />
                                 </DialogContent>
                             </Dialog>

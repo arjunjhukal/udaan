@@ -11,10 +11,6 @@ import PrimaryMenu from "./PrimaryMenu";
 const drawerWidth = 356;
 
 interface Props {
-	/**
-	 * Injected by the documentation to work in an iframe.
-	 * Remove this when copying and pasting into your project.
-	 */
 	window?: () => Window;
 	children: React.ReactNode;
 }

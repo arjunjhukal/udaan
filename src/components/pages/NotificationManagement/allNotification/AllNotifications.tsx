@@ -6,7 +6,8 @@ import { PATH } from "../../../../routes/PATH";
 import { useDeleteNotificationMutation, useGetAllNotificationQuery, } from "../../../../services/notificationApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
-import type { NotificationPayload } from "../../../../types/notification";
+import { useCourseFilter } from "../../../../store/useCourseFilter";
+import type { CompletionStatus, DeliveryMethodsType, NotificationPayload, TargetStudentType } from "../../../../types/notification";
 import { formatDateCustom } from "../../../../utils/dateFormat";
 import { renderHtml } from "../../../../utils/renderHtml";
 import Actions from "../../../molecules/Action";
@@ -15,6 +16,7 @@ import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../organism/EmptyRoute";
+import { CourseFilter } from "../../../organism/Filter/CourseFilter";
 import PageHeader from "../../../organism/PageHeader";
 import TableFilter from "../../../organism/TableFilter";
 
@@ -30,8 +32,36 @@ export default function AllNotifications() {
     })
     const [openConfirm, setOpenConfirm] = useState(false);
     const [notificationToDelete, setNotificationToDelete] = useState<string[]>([]);
+    const [customRange, setCustomRange] = useState({
+        startDate: "",
+        endDate: ""
+    });
+    const [days, setDays] = useState<number | null>(null);
 
-    const { data, isLoading } = useGetAllNotificationQuery({ ...qp, search: search, });
+    const {
+        selections,
+        loadingMegaCategory,
+        handleCategoryChange,
+        handleApplyFilter,
+        resetFilters,
+        filterDialogOpen,
+        setFilterDialogOpen,
+        status,
+        paymentMethod,
+        targetAudience
+    } = useCourseFilter();
+
+
+    const { data, isLoading } = useGetAllNotificationQuery({
+        ...qp,
+        search: search,
+        ...customRange,
+        days,
+        status: status.join(",") as CompletionStatus,
+        delivey_method: paymentMethod.join(",") as DeliveryMethodsType,
+        target_audience: targetAudience.join(",") as TargetStudentType
+    });
+
     const [deleteNotification, { isLoading: deleting }] = useDeleteNotificationMutation();
 
 
@@ -179,6 +209,12 @@ export default function AllNotifications() {
         },
     ], [selectedRows, isAllSelected, isSomeSelected, qp])
 
+    const handleResetFilter = () => {
+        setCustomRange({ startDate: "", endDate: "" });
+        setSearch("");
+        setDays(null);
+        setQp((prev) => ({ ...prev, pageIndex: 1 }));
+    };
     return (
         <div className="all__notification__root h-full flex flex-col justify-between">
             <div className="page__top">
@@ -200,7 +236,12 @@ export default function AllNotifications() {
                     search={search}
                     setSearch={setSearch}
                     selectedRows={selectedRows}
+                    onFilter={() => setFilterDialogOpen(true)}
                     handleRoleDelete={openDeleteConfirmation}
+                    customRange={customRange}
+                    setCustomRange={setCustomRange}
+                    setDays={setDays}
+                    handleResetFilter={handleResetFilter}
                 />
             </div>
             {!isLoading && !notifications.length ?
@@ -240,6 +281,33 @@ export default function AllNotifications() {
                     <path d="M19.2297 8.14C18.9897 7.89 18.6597 7.75 18.3197 7.75H5.67975C5.33975 7.75 4.99975 7.89 4.76975 8.14C4.53975 8.39 4.40975 8.73 4.42975 9.08L5.04975 19.34C5.15975 20.86 5.29975 22.76 8.78975 22.76H15.2097C18.6997 22.76 18.8398 20.87 18.9497 19.34L19.5697 9.09C19.5897 8.73 19.4597 8.39 19.2297 8.14ZM13.6597 17.75H10.3297C9.91975 17.75 9.57975 17.41 9.57975 17C9.57975 16.59 9.91975 16.25 10.3297 16.25H13.6597C14.0697 16.25 14.4097 16.59 14.4097 17C14.4097 17.41 14.0697 17.75 13.6597 17.75ZM14.4997 13.75H9.49975C9.08975 13.75 8.74975 13.41 8.74975 13C8.74975 12.59 9.08975 12.25 9.49975 12.25H14.4997C14.9097 12.25 15.2497 12.59 15.2497 13C15.2497 13.41 14.9097 13.75 14.4997 13.75Z" fill="#1D82F5" />
                 </svg>
                 )}
+            />
+
+            <CourseFilter
+                open={filterDialogOpen}
+                onClose={() => setFilterDialogOpen(false)}
+
+                selections={selections}
+                onChange={handleCategoryChange}
+                loadingMegaCategory={loadingMegaCategory}
+                onApplyFilter={handleApplyFilter}
+                onResetFilter={resetFilters}
+                status={[
+                    { label: "Completed", value: "completed" },
+                    { label: "Not Completed", value: "not_completed" },
+                ]}
+                paymentMethod={[
+                    { label: "Push", value: "push_notification" },
+                    { label: "Email", value: "email_notification" },
+                    { label: "Notice Board", value: "notice_board" },
+                    { label: "SMS", value: "sms_notification" },
+
+                ]}
+                targetAudience={[
+                    { label: "Purchased", value: "purchased" },
+                    { label: "Not Purchased", value: "not_purchased" },
+                    { label: "Free Trial", value: "free_trial" },
+                ]}
             />
         </div>
     )

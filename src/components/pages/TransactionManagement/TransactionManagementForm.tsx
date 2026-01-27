@@ -18,6 +18,7 @@ import { calcHasMore } from "../../../utils/calculateHasMore";
 import FileDragDrop from "../../molecules/FileDragDrop";
 import UdaanTable from "../../molecules/Table";
 import CategoryFilter from "../../organism/CategoryFilter";
+import { paymentOptions } from "../../../types";
 
 interface Props {
     open: boolean;
@@ -84,12 +85,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         setOpen(false);
     };
 
-    const paymentOptions = [
-        { label: "Esewa", value: "esewa" },
-        { label: "Khalti", value: "khalti" },
-        { label: "Cash", value: "cash" },
-        { label: "Fonepay", value: "fonepay" },
-    ];
+   
 
     const paymentStatus = [
         { label: "Success", value: "success" },

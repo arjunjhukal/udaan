@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDeleteTransactionMutation, useGetAllTransactionsQuery } from '../../../../services/transactionApi';
 import { showToast } from '../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../store/hook';
+import { useCourseFilter } from '../../../../store/useCourseFilter';
+import { DeviceFilter, paymentOptions, StatusFilter, type DeviceType, type Status } from '../../../../types';
 import type { TransactionResponse } from '../../../../types/transaction';
 import { formatDate } from '../../../../utils/dateFormat';
 import Actions from '../../../molecules/Action';
@@ -13,6 +15,7 @@ import UdaanTable from '../../../molecules/Table';
 import TablePagination from '../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../organism/ConfirmationDialog';
 import EmptyRoute from '../../../organism/EmptyRoute';
+import { CourseFilter } from '../../../organism/Filter/CourseFilter';
 import PageHeader from '../../../organism/PageHeader';
 import TableFilter from '../../../organism/TableFilter';
 import TransactionManagementForm from '../TransactionManagementForm';
@@ -32,12 +35,46 @@ export default function AllTransaction({ open, setOpen }: Props) {
         pageIndex: 1,
         pageSize: 8,
     })
+    const [customRange, setCustomRange] = useState({
+        startDate: "",
+        endDate: ""
+    });
+    const [days, setDays] = useState<number | null>(null);
 
     const [selectedTransaction, setSelectedTransaction] = useState<TransactionResponse | null>(null);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState<string[]>([]);
 
-    const { data, isLoading } = useGetAllTransactionsQuery({ ...qp, search });
+    const {
+        selections,
+        megaCategories,
+        categories,
+        subCategories,
+        positions,
+        loadingMegaCategory,
+        handleCategoryChange,
+        handleApplyFilter,
+        resetFilters,
+        getCategoryFilterParams,
+        filterDialogOpen,
+        setFilterDialogOpen,
+        device,
+        status,
+        paymentMethod
+    } = useCourseFilter();
+
+    const categoryFilter = getCategoryFilterParams();
+
+    const { data, isLoading, isFetching } = useGetAllTransactionsQuery({
+        ...qp,
+        search,
+        categoryFilter: { ...categoryFilter },
+        device_type: device.join(",") as DeviceType,
+        status: status.join(",") as Status,
+        days,
+        payment_method: paymentMethod.join(",")
+    });
+
     const [deleteTransaction, { isLoading: deleting }] = useDeleteTransactionMutation();
 
     const transactions = data?.data?.data || [];
@@ -50,6 +87,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             setSelectedRows(new Set());
         }
     };
+
     const handleSelectRow = (id: number | string, checked: boolean) => {
         const newSelected = new Set(selectedRows);
         if (checked) {
@@ -98,9 +136,6 @@ export default function AllTransaction({ open, setOpen }: Props) {
         setSelectedTransaction(transaction);
         setOpen(true);
     };
-
-
-
 
     const columns = useMemo<ColumnDef<TransactionResponse>[]>(() => [
         {
@@ -157,15 +192,6 @@ export default function AllTransaction({ open, setOpen }: Props) {
                 </Tooltip>
             ),
         },
-        // {
-        //     header: "Email",
-        //     accessorKey: "email",
-        //     cell: ({ row }) => (
-        //         <Typography variant='subtitle2' className="">
-        //             {row.original.email || "N/A"}
-        //         </Typography>
-        //     ),
-        // },
         {
             header: "Contact No.",
             accessorKey: "contact",
@@ -226,7 +252,17 @@ export default function AllTransaction({ open, setOpen }: Props) {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp]);
+
+
+    const handleResetFilter = () => {
+        resetFilters();
+        setCustomRange({ startDate: "", endDate: "" });
+        setSearch("");
+        setDays(null);
+        setQp((prev) => ({ ...prev, pageIndex: 1 }));
+    }
+
     return (
         <div className='transaction__root h-full flex flex-col justify-between'>
             <div className="page__top">
@@ -249,6 +285,11 @@ export default function AllTransaction({ open, setOpen }: Props) {
                     setSearch={setSearch}
                     selectedRows={selectedRows}
                     handleRoleDelete={openDeleteConfirmation}
+                    onFilter={() => setFilterDialogOpen(true)}
+                    customRange={customRange}
+                    setCustomRange={setCustomRange}
+                    setDays={setDays}
+                    handleResetFilter={handleResetFilter}
                 />
             </div>
             {
@@ -261,7 +302,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                             <UdaanTable
                                 data={transactions}
                                 columns={columns}
-                                loading={isLoading}
+                                loading={isLoading || isFetching}
                             />
                         </Box>
 
@@ -293,6 +334,24 @@ export default function AllTransaction({ open, setOpen }: Props) {
                 setOpen={setOpen}
                 transactionId={selectedTransaction?.id}
             />
+
+            <CourseFilter
+                open={filterDialogOpen}
+                onClose={() => setFilterDialogOpen(false)}
+                megaCategories={megaCategories}
+                categories={categories}
+                subCategories={subCategories}
+                positions={positions}
+                selections={selections}
+                onChange={handleCategoryChange}
+                loadingMegaCategory={loadingMegaCategory}
+                onApplyFilter={handleApplyFilter}
+                onResetFilter={resetFilters}
+                status={StatusFilter || []}
+                deviceType={DeviceFilter || []}
+                paymentMethod={paymentOptions || []}
+            />
+
         </div>
     )
 }
