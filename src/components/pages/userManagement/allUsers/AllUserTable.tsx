@@ -4,6 +4,7 @@ import { Add } from "iconsax-reactjs";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PATH } from "../../../../routes/PATH";
+import { useDownloadCsvMutation } from "../../../../services/activityApi";
 import { useDeleteUserMutation, useGenerateOTPMutation, useGetAllUserQuery, useSuspendUserMutation } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
@@ -67,7 +68,7 @@ export default function AllUserTable() {
     const [deleteUser, { isLoading: deleting }] = useDeleteUserMutation();
     const [suspendUser] = useSuspendUserMutation();
     const [generateOtp] = useGenerateOTPMutation();
-
+    const [downloadUsers, { isLoading: downloading }] = useDownloadCsvMutation();
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
@@ -325,6 +326,31 @@ export default function AllUserTable() {
         setDays(null);
         setQp((prev) => ({ ...prev, pageIndex: 1 }));
     };
+
+    const handleDownload = async () => {
+        try {
+            const blob = await downloadUsers({ type: "users" }).unwrap();
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = "users.csv";
+            document.body.appendChild(a);
+            a.click();
+
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to download Activity",
+                    severity: "error"
+                })
+            )
+        }
+    }
     return (
         <div className="user__root h-full flex flex-col justify-between">
             <div className="page__top">
@@ -366,6 +392,8 @@ export default function AllUserTable() {
                     setCustomRange={setCustomRange}
                     setDays={setDays}
                     handleResetFilter={handleResetFilter}
+                    onDownload={handleDownload}
+                    donwloading={downloading}
                 />
 
             </div>

@@ -191,7 +191,18 @@ export default function ActivityRoot() {
 
     const handleDownload = async () => {
         try {
-            await downloadActivity({ type: "activity_logs" }).unwrap();
+            const blob = await downloadActivity({ type: "activity_logs" }).unwrap();
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = "activity_logs.csv";
+            document.body.appendChild(a);
+            a.click();
+
+            a.remove();
+            window.URL.revokeObjectURL(url);
         }
         catch (e: any) {
             dispatch(

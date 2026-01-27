@@ -3,6 +3,7 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { useDownloadCsvMutation } from '../../../../services/activityApi';
 import { useDeleteTransactionMutation, useGetAllTransactionsQuery } from '../../../../services/transactionApi';
 import { showToast } from '../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../store/hook';
@@ -76,6 +77,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
     });
 
     const [deleteTransaction, { isLoading: deleting }] = useDeleteTransactionMutation();
+    const [downloadTransactions, { isLoading: downloading }] = useDownloadCsvMutation();
 
     const transactions = data?.data?.data || [];
 
@@ -263,6 +265,31 @@ export default function AllTransaction({ open, setOpen }: Props) {
         setQp((prev) => ({ ...prev, pageIndex: 1 }));
     }
 
+    const handleDownload = async () => {
+        try {
+            const blob = await downloadTransactions({ type: "transactions" }).unwrap();
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            a.href = url;
+            a.download = "transactions.csv";
+            document.body.appendChild(a);
+            a.click();
+
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to download Activity",
+                    severity: "error"
+                })
+            )
+        }
+    }
+
     return (
         <div className='transaction__root h-full flex flex-col justify-between'>
             <div className="page__top">
@@ -290,6 +317,8 @@ export default function AllTransaction({ open, setOpen }: Props) {
                     setCustomRange={setCustomRange}
                     setDays={setDays}
                     handleResetFilter={handleResetFilter}
+                    onDownload={handleDownload}
+                    donwloading={downloading}
                 />
             </div>
             {

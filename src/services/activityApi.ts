@@ -32,10 +32,11 @@ export const activitiyApi = createApi({
                 method: "GET"
             })
         }),
-        downloadCsv: builder.mutation<GlobalResponse, { type: "users" | "activity_logs" | "transactions" }>({
+        downloadCsv: builder.mutation<Blob & GlobalResponse, { type: "users" | "activity_logs" | "transactions" }>({
             query: ({ type }) => ({
                 url: `/admin/csv?${buildQueryParams({ module: type })}`,
-                method: "GET"
+                method: "GET",
+                responseHandler: (response) => response.blob()
             })
         })
     })
