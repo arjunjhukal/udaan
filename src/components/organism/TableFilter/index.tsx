@@ -63,17 +63,18 @@ export default function TableFilter({
     const [showCustomRangeModal, setShowCustomRangeModal] = useState(false);
 
     const handleApplyCustomRange = () => {
-        if (startDate && endDate && setCustomRange) {
-            setCustomRange({
-                startDate: startDate.format("YYYY-MM-DD"),
-                endDate: endDate.format("YYYY-MM-DD"),
-            });
-            setStartDate(null);
-            setEndDate(null);
-            setShowCustomRangeModal(false);
-            setShowCustomRangeModal(false);
-        }
+        if (!startDate || !setCustomRange) return;
+
+        setCustomRange({
+            startDate: startDate.format("YYYY-MM-DD"),
+            endDate: endDate ? endDate.format("YYYY-MM-DD") : "",
+        });
+
+        setStartDate(null);
+        setEndDate(null);
+        setShowCustomRangeModal(false);
     };
+
 
     const handleResetCustomRange = () => {
         setStartDate(null);
