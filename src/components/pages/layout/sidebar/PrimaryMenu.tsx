@@ -8,7 +8,7 @@ import {
     ListItemIcon,
     ListItemText
 } from "@mui/material";
-import { AttachSquare, Brodcast } from "iconsax-reactjs";
+import { AttachSquare, Brodcast, Pharagraphspacing } from "iconsax-reactjs";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -127,6 +127,21 @@ export default function PrimaryMenu() {
                                 </CAN>
                             </List>
                         </Collapse>
+                    </ListItem>
+                </CAN>
+                <CAN permissions={["add_enrollments", "edit_enrollments", "delete_enrollments", "view_enrollments"]}>
+                    <ListItem disablePadding className="menu__item">
+
+                        <ListItemButton
+                            onClick={() => navigate(PATH.ENROLLMENT.ROOT)}
+                            className={location.pathname.startsWith(PATH.ENROLLMENT.ROOT) ? "active-nested" : ""}>
+                            <ListItemIcon>
+                                <Pharagraphspacing />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={t("menus.enrollment.root")}
+                            />
+                        </ListItemButton>
                     </ListItem>
                 </CAN>
 

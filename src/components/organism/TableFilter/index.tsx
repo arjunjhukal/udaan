@@ -11,8 +11,8 @@ export type LayoutProps = "table" | "grid"
 interface TableFilterProps {
     search: string;
     setSearch: (newValue: string) => void;
-    selectedRows: Set<string | number>;
-    handleRoleDelete: (selectedRoleIds: string[]) => void;
+    selectedRows?: Set<string | number>;
+    handleRoleDelete?: (selectedRoleIds: string[]) => void;
     onFilter?: () => void;
     layout?: LayoutProps
     setLayout?: Dispatch<SetStateAction<LayoutProps>>;
@@ -49,8 +49,8 @@ export default function TableFilter({
     };
 
     const handleDeleteClick = () => {
-        if (selectedRows.size > 0) {
-            handleRoleDelete(Array.from(selectedRows).map((id) => id.toString()));
+        if (selectedRows && selectedRows.size > 0) {
+            handleRoleDelete?.(Array.from(selectedRows).map((id) => id.toString()));
         }
     };
 
@@ -102,7 +102,7 @@ export default function TableFilter({
             </div>
             <div className="col-span-6">
                 <div className="flex justify-end items-center gap-3 filter__right">
-                    {selectedRows.size > 0 ? <IconButton
+                    {selectedRows  && selectedRows.size > 0 ? <IconButton
                         sx={{
                             border: `1px solid ${theme.palette.separator.dark}`
                         }} className={`rounded-md! ${categoryLayout ? "" : "py-2.5! px-3.5! "}`}

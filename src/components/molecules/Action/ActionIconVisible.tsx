@@ -1,15 +1,25 @@
 import { IconButton, useTheme } from "@mui/material";
+import { ArchiveBox, ArrowRotateRight } from "iconsax-reactjs";
 
 export default function ActionIconVisible({
 	onDelete,
 	onEdit,
 	onView,
+	onTrash,
+	activeTab,
+	trashing,
+	deleting,
 }: {
 	onDelete?: () => void;
 	onEdit?: () => void;
 	onView?: () => void;
+	onTrash?: () => void;
+	activeTab?: "active" | "archived",
+	trashing?: boolean;
+	deleting?: boolean;
 }) {
 	const theme = useTheme();
+	console.log(activeTab);
 	return (
 		<div className="action__group flex justify-end gap-3">
 			{onEdit ? (
@@ -61,6 +71,7 @@ export default function ActionIconVisible({
 			)}
 			{onDelete ? (
 				<IconButton
+					disabled={deleting}
 					className="p-1.5 rounded-md!"
 					sx={{
 						border: `1px solid ${theme.palette.separator.darker}`,
@@ -145,6 +156,27 @@ export default function ActionIconVisible({
 							fill="#848484"
 						/>
 					</svg>
+				</IconButton>
+			) : (
+				""
+			)}
+			{onTrash ? (
+				<IconButton
+					disabled={trashing}
+					className="p-1.5 rounded-md!"
+					sx={{
+						border: `1px solid ${theme.palette.separator.darker}`,
+						background: theme.palette.primary.contrastText,
+						"&:hover": {
+							color: theme.palette.primary.contrastText,
+							background: activeTab === "active" ? theme.palette.error.main : theme.palette.success.main,
+						},
+					}}
+					onClick={(e) => {
+						e.stopPropagation();
+						onTrash();
+					}}>
+					{activeTab === "active" ? <ArchiveBox size={16} /> : <ArrowRotateRight size={16} />}
 				</IconButton>
 			) : (
 				""

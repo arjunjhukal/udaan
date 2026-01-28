@@ -30,6 +30,10 @@ export const PATH = {
 				ROOT: (id?: number) =>
 					id ? `/courses/${id}` : "/courses/:id",
 			},
+			ANALYTICS: {
+				ROOT: (id?: number) =>
+					id ? `/courses/${id}/analytics` : "/courses/:id/analytics",
+			}
 		},
 		LIVE_CLASSES: {
 			ROOT: "/live-classes",
@@ -60,6 +64,9 @@ export const PATH = {
 		LEVEL_POSITION: {
 			ROOT: "/position"
 		},
+	},
+	ENROLLMENT: {
+		ROOT: "/enrollment",
 	},
 	ROLES: {
 		ROOT: "/role-management",

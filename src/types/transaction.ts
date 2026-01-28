@@ -26,6 +26,7 @@ export const TransactionInitialState: TransactionPayload = {
     image: null,
 };
 
+export type TransactionCourseStatus = "purchase" | "free_trial_expired" | "free_trial" | "purchase_expired" | "assigned";
 
 export interface TransactionResponse extends TransactionPayload {
     name: string;
@@ -34,6 +35,7 @@ export interface TransactionResponse extends TransactionPayload {
     email: string;
     contact: string;
     created_at: string;
+    course_status?: TransactionCourseStatus
 }
 
 export interface TransactionList {

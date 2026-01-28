@@ -61,7 +61,7 @@ export default function AllLiveClassList() {
 
   const categoryFilter = getCategoryFilterParams();
 
-  const { data, isLoading } = useGetAllLiveClassQuery({
+  const { data, isLoading, isFetching } = useGetAllLiveClassQuery({
     ...qp,
     search: search,
     status: activeTab,
@@ -288,7 +288,7 @@ export default function AllLiveClassList() {
               <UdaanTable
                 data={data?.data?.data || []}
                 columns={columns}
-                loading={isLoading}
+                loading={isLoading || isFetching}
               />
             ) : (
               <LiveClassGrid liveClasses={liveClasses} />

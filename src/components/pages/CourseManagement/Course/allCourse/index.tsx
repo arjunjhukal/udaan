@@ -65,7 +65,7 @@ export default function AllCourse() {
         { value: "expiry", label: "Expiry" }
     ];
 
-    const { data, isLoading } = useGetAllCourseQuery({
+    const { data, isLoading, isFetching } = useGetAllCourseQuery({
         ...qp,
         search,
         categoryFilter: { ...categoryFilter },
@@ -343,7 +343,7 @@ export default function AllCourse() {
                                     <UdaanTable
                                         data={courses}
                                         columns={columns}
-                                        loading={isLoading}
+                                        loading={isLoading || isFetching}
                                     />
                                 </> :
                                 <AllCourseGrid

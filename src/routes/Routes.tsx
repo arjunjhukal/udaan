@@ -17,12 +17,15 @@ import PageCreationForm from "../components/pages/ContentManagement/Pages/PageCr
 import SplashScreenRoot from "../components/pages/ContentManagement/SplashScreen";
 import CourseManagementRoot from "../components/pages/CourseManagement/Course";
 import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
+import CourseAnalyticsRootLayout from "../components/pages/CourseManagement/Course/analytics";
 import CreateCourseRoot from "../components/pages/CourseManagement/Course/createCourse";
 import LiveClassRoot from "../components/pages/CourseManagement/LiveClass";
 import AllLiveClass from "../components/pages/CourseManagement/LiveClass/allLiveClass";
 import CreateLiveClassRoot from "../components/pages/CourseManagement/LiveClass/createLiveClass";
 import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
+import EnrollmentRoot from "../components/pages/Enrollments";
+import AllEntrollments from "../components/pages/Enrollments/AllEnrollments";
 import MediaManagementRoot from "../components/pages/MediaManagement";
 import AllMediaRoot from "../components/pages/MediaManagement/allMedia";
 import NotificationRoot from "../components/pages/NotificationManagement";
@@ -95,7 +98,16 @@ const router = createBrowserRouter([
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.ROOT, element: <AllCourse /> },
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.CREATE_COURSE.ROOT, element: <CreateCourseRoot /> },
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(), element: <CreateCourseRoot /> },
+					{ path: PATH.COURSE_MANAGEMENT.COURSES.ANALYTICS.ROOT(), element: <CourseAnalyticsRootLayout /> },
 				],
+			},
+			{
+				element: <Unauthorized permissions={["add_courses", "edit_courses", "delete_courses", "view_courses"]} >
+					<EnrollmentRoot />
+				</Unauthorized>,
+				children: [
+					{ path: "/enrollment", element: <AllEntrollments /> }
+				]
 			},
 			{
 				element: <Unauthorized permissions={["add_live_classes", "edit_live_classes", "delete_live_classes", "view_live_classes"]}> <LiveClassRoot /></Unauthorized>,

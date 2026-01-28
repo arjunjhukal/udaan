@@ -186,3 +186,11 @@ export const initialCurriculumInitialState: CurriculumProps = {
     chapters: null,
     parent_id: null,
 };
+
+
+export interface AnalyticsProps {
+    type: "success" | "info" | "error" | "warning";
+    title: string;
+    value: string;
+    description: string;
+}

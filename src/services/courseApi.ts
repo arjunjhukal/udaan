@@ -1,9 +1,10 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CurriculumType } from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
+import type { AnalyticsProps, CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
 import type { MediaList } from "../types/media";
 import type { TestList } from "../types/question";
+import type { TransactionList } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -11,7 +12,7 @@ import { baseQuery } from "./baseQuery";
 export const courseApi = createApi({
     reducerPath: "courseApi",
     baseQuery: baseQuery,
-    tagTypes: ["Course", "Curriculum", "Media", "Test"],
+    tagTypes: ["Course", "Curriculum", "Media", "Test", "Archive"],
     endpoints: (builder) => ({
         createCourse: builder.mutation<{ data: CourseProps, message: string }, { body: FormData }>({
             query: ({ body }) => ({
@@ -263,6 +264,51 @@ export const courseApi = createApi({
                 { type: "Test", id: "LIST" }
             ],
         }),
+        getCourseAnalytics: builder.query<{ data: AnalyticsProps[] }, { id: number }>({
+            query: ({ id }) => ({
+                url: `/admin/course/${id}/analytics`,
+                method: "GET"
+            })
+        }),
+        getEnrollmentAnalytics: builder.query<{ data: AnalyticsProps[] }, void>({
+            query: () => ({
+                url: `/admin/enrollment/analytics`,
+                method: "GET"
+            })
+        }),
+        getEnrolledStudents: builder.query<TransactionList, QueryParams & { id: number; status?: "active" | "archived"; }>({
+            query: ({ id, search, status, pageIndex, pageSize }) => ({
+                url: `/admin/course/${id}/user?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search,
+                    type: status,
+                })}`,
+                method: "GET"
+            }),
+            providesTags: (result) =>
+                result?.data?.data
+                    ? [
+                        ...result.data.data.map((course) => ({ type: "Archive" as const, id: course.id })),
+                        { type: "Archive", id: "LIST" },
+                    ]
+                    : [{ type: "Archive", id: "LIST" }],
+        }),
+        enrolledStudents: builder.mutation<GlobalResponse, { id: number | null; user_id: number | null; }>({
+            query: ({ id, user_id }) => ({
+                url: `/admin/course/${id}/user`,
+                method: "POST",
+                body: { user_id }
+            }),
+            invalidatesTags: [{ type: "Archive", id: "LIST" }]
+        }),
+        archiveEnrolledStudent: builder.mutation<GlobalResponse, { id: number; transactionId: number }>({
+            query: ({ id, transactionId }) => ({
+                url: `/admin/course/${id}/user/archive/${transactionId}`,
+                method: "POST"
+            }),
+            invalidatesTags: [{ type: "Archive", id: "LIST" }]
+        }),
     })
 })
 
@@ -285,4 +331,10 @@ export const {
     useAssignTestToCourseMutation,
     useRemoveCourseMediaByTypeMutation,
     useRemoveTestToCourseMutation,
+    useGetCourseAnalyticsQuery,
+    useGetEnrollmentAnalyticsQuery,
+    useGetEnrolledStudentsQuery,
+    useEnrolledStudentsMutation,
+    useArchiveEnrolledStudentMutation,
+
 } = courseApi;

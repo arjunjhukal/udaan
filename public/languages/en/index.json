@@ -15,6 +15,13 @@
             "delete_role": "Delete Role",
             "view_role": "View Role"
         },
+        "enrollment": {
+            "root": "Enrollment",
+            "create_enrollment": "Enroll Student",
+            "edit_enrollment": "Edit Enrollment",
+            "delete_enrollment": "Delete Enrollment",
+            "view_enrollment": "View Enrollment"
+        },
         "course_management": {
             "root": "Course Management",
             "courses": {
@@ -116,6 +123,10 @@
         "filter": "Filter",
         "activity_log": "Activity Log",
         "medias": "Media",
+        "analytics": "Analytics",
+        "course": "Course",
+        "courses": "Courses",
+        "enrolled_users": "Enrolled Users",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",
