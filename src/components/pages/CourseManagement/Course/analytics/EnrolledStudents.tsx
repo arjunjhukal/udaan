@@ -180,8 +180,8 @@ export default function EnrolledStudents({ id }: { id: number }) {
                 />
                 <TabController
                     options={[
-                        { label: "Active", value: "active" },
-                        { label: "Archived", value: "archived" },
+                        { label: `Active Students`, value: "active" },
+                        { label: `Archived Students`, value: "archived" },
                     ]}
                     setActiveTab={(newValue: "active" | "archived") => setActiveTab(newValue)}
                     currentActive={activeTab}
@@ -218,7 +218,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
                 setQp={setQp}
                 totalPages={data?.data?.pagination?.total_pages || 0}
             />
-            <EnrollStudentForm open={open} setOpen={setOpen} id={id}/>
+            <EnrollStudentForm open={open} setOpen={setOpen} id={id} />
         </div>
     )
 }
