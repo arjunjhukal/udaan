@@ -11,6 +11,7 @@ import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import type { RegisterUserProps } from "../../../../../types/user";
 import UdaanTable from "../../../../molecules/Table";
+import TablePagination from "../../../../molecules/Table/Pagination";
 
 interface Props {
     open: boolean;
@@ -30,7 +31,7 @@ export default function EnrollStudentForm({ open, setOpen, id }: Props) {
     const theme = useTheme();
     const [search, setSearch] = useState("");
     const [debounceSearch, setDebounceSearch] = useState("");
-    const [qp, _setQp] = useState({
+    const [qp, setQp] = useState({
         pageIndex: 1,
         pageSize: 10,
     });
@@ -121,8 +122,6 @@ export default function EnrollStudentForm({ open, setOpen, id }: Props) {
         },
     ], [formik.values.student_id]);
 
-
-
     return (
         <Dialog open={open} onClose={handleClose}
             sx={{
@@ -170,10 +169,17 @@ export default function EnrollStudentForm({ open, setOpen, id }: Props) {
                             )}
                         </div>
 
-                        <UdaanTable
-                            columns={columns}
-                            loading={isLoading}
-                            data={data?.data?.data || []}
+                        <div className="h-full overflow-auto">
+                            <UdaanTable
+                                columns={columns}
+                                loading={isLoading}
+                                data={data?.data?.data || []}
+                            />
+                        </div>
+                        <TablePagination
+                            qp={qp}
+                            setQp={setQp}
+                            totalPages={data?.data?.pagination?.total_pages || 0}
                         />
                         <Divider />
 

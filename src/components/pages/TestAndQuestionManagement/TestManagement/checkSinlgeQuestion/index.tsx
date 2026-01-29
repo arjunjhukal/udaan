@@ -6,6 +6,7 @@ import { PATH } from '../../../../../routes/PATH';
 import { useGetMarkedSubjectiveQuestionQuery, useGetQuestionsListInTestQuery, useGetSingleQuestionInTestQuery, useMarkSubjectiveQuestionMutation } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
+import { renderHtml } from '../../../../../utils/renderHtml';
 import TextEditor from '../../../../atoms/TextEditor';
 import DrawingCanvas from './DrawingCanvas';
 
@@ -16,14 +17,14 @@ const validationSchema = (max: number) => Yup.object({
         .max(max, `Marks cannot exceed ${max}`)
         .typeError('Must be a valid number'),
     feedback: Yup.string(),
-    drawings: Yup.mixed().test(
-        'has-drawings',
-        'At least one drawing is required',
-        (value) => {
-            if (!value || typeof value !== 'object') return false;
-            return Object.keys(value).length > 0;
-        }
-    )
+    // drawings: Yup.mixed().test(
+    //     'has-drawings',
+    //     'At least one drawing is required',
+    //     (value) => {
+    //         if (!value || typeof value !== 'object') return false;
+    //         return Object.keys(value).length > 0;
+    //     }
+    // )
 });
 
 export default function SingleStudentSingleQuestion() {
@@ -91,8 +92,7 @@ export default function SingleStudentSingleQuestion() {
                 media: dataUrl as string
             }));
 
-            console.log("log on submit", checkedAnswerMedia);
-            // const response = { message: "Ok sir" }
+
             const response = await markSubjectiveQuestion({
                 id: Number(id),
                 resultId: Number(resultId),
@@ -121,7 +121,7 @@ export default function SingleStudentSingleQuestion() {
                     Number(nextQuestionId)
                 ));
             } else {
-                console.log("This is the last question! Redirect to results or completion page.");
+                navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(Number(id)))
             }
         } catch (error: any) {
             console.error("Submission failed, cannot proceed:", error);
@@ -138,7 +138,7 @@ export default function SingleStudentSingleQuestion() {
         <div className="flex flex-col md:grid md:grid-cols-12 gap-4 lg:gap-6">
             <div className="col-span-7 lg:col-span-8">
                 <Typography variant='subtitle1' color='text.dark' className='mb-5!'>
-                    {data?.data?.question}
+                    {renderHtml(data?.data?.question || "")}
                 </Typography>
                 <DrawingCanvas
                     images={data?.data?.media_files}
