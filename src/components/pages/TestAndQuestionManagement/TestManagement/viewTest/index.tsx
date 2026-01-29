@@ -11,7 +11,7 @@ export default function ViewTestRoot() {
     const { data } = useGetTestByIdQuery({ id: Number(id) }, { skip: !id });
     const { data: overview } = useGetTestOverviewQuery({ id: Number(id) }, { skip: !id });
     const { data: questions } = useGetTestQuestionsQuery({ id: Number(id) }, { skip: !id });
-    const [activeTab, setActiveTab] = useState("questions");
+    const [activeTab, setActiveTab] = useState("results");
 
     const overviewListing = [
         {
@@ -66,12 +66,12 @@ export default function ViewTestRoot() {
 
     const tabs = [
         {
-            key: "questions",
-            label: "Questions",
-        },
-        {
             key: "results",
             label: "Students Result",
+        },
+        {
+            key: "questions",
+            label: "Questions",
         },
     ];
 

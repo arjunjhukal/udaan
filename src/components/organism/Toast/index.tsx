@@ -43,7 +43,7 @@ export default function Toast() {
 			sx={{
 				width: {
 					xs: "100%",
-					md: "500px",
+					sm: "500px",
 				},
 			}}>
 			<Box
