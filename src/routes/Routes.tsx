@@ -26,6 +26,9 @@ import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
 import EnrollmentRoot from "../components/pages/Enrollments";
 import AllEntrollments from "../components/pages/Enrollments/AllEnrollments";
+import GorkhapatraRoot from "../components/pages/Gorkhapatra";
+import AllGorkhapatraRoot from "../components/pages/Gorkhapatra/allGorkhapatra";
+import CreateGorkhapatraRoot from "../components/pages/Gorkhapatra/createGorkhapatra";
 import MediaManagementRoot from "../components/pages/MediaManagement";
 import AllMediaRoot from "../components/pages/MediaManagement/allMedia";
 import NotificationRoot from "../components/pages/NotificationManagement";
@@ -212,11 +215,23 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_notifications", "edit_notifications", "delete_notifications", "view_notifications"]}> <NotificationRoot /></Unauthorized>,
+				element: <Unauthorized permissions={["add_notifications", "edit_notifications", "delete_notifications", "view_notifications"]}>
+					<NotificationRoot />
+				</Unauthorized>,
 				children: [
 					{ path: PATH.NOTIFICATION_MANAGEMENT.ROOT, element: <AllNotificationsRoot /> },
 					{ path: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT, element: <CreateNotificationRoot /> },
 					{ path: PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(), element: <CreateNotificationRoot /> },
+				],
+			},
+			{
+				element: <Unauthorized permissions={["add_gorkhapatras", "edit_gorkhapatras", "delete_gorkhapatras", "view_gorkhapatras"]}>
+					<GorkhapatraRoot />
+				</Unauthorized>,
+				children: [
+					{ path: PATH.GORKHAPATRA.ROOT, element: <AllGorkhapatraRoot /> },
+					{ path: PATH.GORKHAPATRA.CREATE_GORKHAPATRA.ROOT, element: <CreateGorkhapatraRoot /> },
+					{ path: PATH.GORKHAPATRA.EDIT_GORKHAPATRA.ROOT(), element: <CreateGorkhapatraRoot /> },
 				],
 			},
 			{

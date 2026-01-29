@@ -1,5 +1,7 @@
 export type StatusVariant = "success" | "info" | "warning" | "error";
 
+export type PublishedStatus = "draft" | "published"
+
 export function statusMap<T extends string>(map: Record<T, StatusVariant>) {
     return (key: T): StatusVariant => {
         return map[key] ?? "info";
@@ -13,4 +15,8 @@ export const getTransactionStatusVariant = statusMap<TransactionCourseStatus>({
     free_trial: "success",
     free_trial_expired: "error",
     purchase_expired: "error",
+});
+export const getPublishedStatus = statusMap<PublishedStatus>({
+    published: "success",
+    draft: "warning",
 });

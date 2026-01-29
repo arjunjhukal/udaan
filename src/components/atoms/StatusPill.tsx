@@ -3,13 +3,13 @@ import type { StatusVariant } from '../../utils/statusMap'
 
 export default function StatusPill({ status, variant }: { variant: StatusVariant, status: string }) {
     return (
-        <Box className="p-1 rounded-full"
+        <Box className="py-1 px-2! rounded-full"
             sx={{
                 color: (theme) => theme.palette[variant].main,
                 background: (theme) => theme.palette[variant].light,
             }}
         >
-            <Typography variant='subtitle2' className='text-center'>{status}</Typography>
+            <Typography variant='subtitle2' className='text-center w-full'>{status}</Typography>
         </Box>
     )
 }

@@ -1,6 +1,6 @@
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
-import { FormHelperText, InputLabel } from "@mui/material";
+import { Box, FormHelperText, InputLabel } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useUploadMediaImageMutation } from "../../services/mediaApi";
 
@@ -74,7 +74,9 @@ export default function TextEditor({
     }, [value]);
 
     return (
-        <div className="input__field">
+        <Box className="input__field" sx={{
+            height: "calc(100%)"
+        }}>
             {label ? <InputLabel className={required ? "required" : ""}>
                 {label}
             </InputLabel> : ""}
@@ -83,7 +85,7 @@ export default function TextEditor({
                 className="editor__wrapper"
                 style={{
                     border: "1px solid #E5E7EB",
-                    height: "251px",
+                    height: "100%",
                     padding: "16px",
                     borderRadius: "8px",
                     overflowY: "auto",
@@ -115,6 +117,6 @@ export default function TextEditor({
             </div>
 
             {error && <FormHelperText error>{error}</FormHelperText>}
-        </div>
+        </Box>
     );
 }
