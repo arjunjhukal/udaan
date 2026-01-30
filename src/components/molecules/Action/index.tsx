@@ -21,7 +21,7 @@ import { useAppDispatch } from "../../../store/hook";
 import AttachmentViewerDialog from "../../organism/Dialog/AttachmentViewerDialog";
 interface Props {
     onEdit?: () => void;
-    onDelete: () => void;
+    onDelete?: () => void;
     onView?: () => void;
     viewUrl?: string;
     editUrl?: string;

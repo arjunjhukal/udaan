@@ -18,7 +18,7 @@ export default function PageHeader(props: Props) {
     const theme = useTheme();
     const { breadcrumb, cta, description, handleOpenPopup } = props;
     return (
-        <Box className="page__header lg:grid lg:grid-cols-12 pb-1 mb-2  2xl:pb-2 2xl:mb-4 items-center" sx={{
+        <Box className="page__header justify-between flex flex-wrap gap-2 lg:grid lg:grid-cols-12 pb-1 mb-2  2xl:pb-2 2xl:mb-4 items-center" sx={{
             borderBottom: `1px solid ${theme.palette.separator.dark}`
         }}>
             <div className="header__content lg:col-span-7">

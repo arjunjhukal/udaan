@@ -16,12 +16,12 @@ import Actions from "../../../molecules/Action";
 import TabController from "../../../molecules/TabController";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
+import GorkhapatraCard from "../../../organism/Cards/GorkhapatraCard";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../organism/EmptyRoute";
 import PageHeader from "../../../organism/PageHeader";
 import type { LayoutProps } from "../../../organism/TableFilter";
 import TableFilter from "../../../organism/TableFilter";
-import GorkhapatraGridView from "./GorkhapatraGridView";
 
 
 export default function AllGorkhapatraRoot() {
@@ -320,7 +320,16 @@ export default function AllGorkhapatraRoot() {
                                         columns={columns}
                                         loading={isLoading}
                                     />
-                                </> : <GorkhapatraGridView data={gorkhapatras} />
+                                </> : <div className="flex flex-col gap-4 md:grid md:grid-cols-2 lg:grid-cols-3">
+                                    {gorkhapatras.map((gorkhapatra) => (
+                                        <GorkhapatraCard
+                                            data={gorkhapatra} key={gorkhapatra.title + gorkhapatra.id}
+                                            editUrl={gorkhapatra.id != null ? PATH.GORKHAPATRA.EDIT_GORKHAPATRA.ROOT(gorkhapatra.id) : undefined}
+                                            viewUrl={gorkhapatra.id != null ? PATH.GORKHAPATRA.EDIT_GORKHAPATRA.ROOT(gorkhapatra.id) : undefined}
+                                            onDelete={() => openDeleteConfirmation([gorkhapatra.id?.toString() || ""])}
+                                        />
+                                    ))}
+                                </div>
                             }
                         </Box>
                         <TablePagination

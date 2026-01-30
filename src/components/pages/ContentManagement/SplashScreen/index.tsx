@@ -68,7 +68,7 @@ export default function SplashScreenRoot() {
 
     return (
         <>
-            <form onSubmit={formik.handleSubmit} className="splash__root">
+            <form onSubmit={formik.handleSubmit} className="splash__root h-full overflow-auto flex flex-col">
                 <div className="page__header flex flex-col gap-1.5">
                     <Typography variant="h5">
                         {t("menus.content_management.splash_screen.root")}
@@ -81,7 +81,6 @@ export default function SplashScreenRoot() {
                 <Divider className="mt-4! mb-6!" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                     <div>
                         <FileDragDrop
                             label="Splash Icon"
@@ -154,6 +153,7 @@ export default function SplashScreenRoot() {
                     className="footer__action flex justify-end items-center gap-2 pt-6 mt-8 sticky bottom-0"
                     sx={{
                         borderTop: (theme) => `1px solid ${theme.palette.separator.dark}`,
+                        background: (theme) => ` ${theme.palette.primary.contrastText}`,
                     }}
                 >
                     <Button variant="contained" type="submit" color="primary">{isLoading ? "Updating Splash Screen" : "Update Splash Screen"}</Button>

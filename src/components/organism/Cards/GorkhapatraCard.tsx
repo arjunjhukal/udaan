@@ -7,8 +7,9 @@ import type { GorkhapatraProps, GorkhapatraTypes } from '../../../types/gorkhapa
 import { formatDateForDisplay } from '../../../utils/dateFormat';
 import { getGorkhapatraStatus } from '../../../utils/statusMap';
 import StatusPill from '../../atoms/StatusPill';
+import Actions from '../../molecules/Action';
 
-export default function GorkhapatraCard({ data }: { data: GorkhapatraProps }) {
+export default function GorkhapatraCard({ data, viewUrl, editUrl, onDelete }: { data: GorkhapatraProps; viewUrl?: string; editUrl?: string; onDelete?: () => void }) {
     const variant = getGorkhapatraStatus(data.type || "descriptive" as GorkhapatraTypes);
     const date = formatDateForDisplay(data?.created_at);
     return (
@@ -16,7 +17,7 @@ export default function GorkhapatraCard({ data }: { data: GorkhapatraProps }) {
             border: (theme) => `1px solid ${theme.palette.textField.border}`
         }}>
             <div className="top__wrapper">
-                <Box className="image__wrapper aspect-316/128 rounded-md overflow-hidden relative flex flex-col justify-center items-center" sx={{
+                <Box className="image__wrapper aspect-316/132 rounded-md overflow-hidden relative flex flex-col justify-center items-center" sx={{
                     background: (theme) => theme.palette.primary.dark
                 }}>
                     {data?.thumbnail_url ? <img src={data?.thumbnail_url} alt={data?.title} className='w-full h-full object-cover' /> : <>
@@ -24,9 +25,16 @@ export default function GorkhapatraCard({ data }: { data: GorkhapatraProps }) {
                         <Typography variant='h3' color='primary.contrastText' fontWeight={600}>{t("messages.gorkhapatra")}</Typography>
                         <Typography variant='body2' color='info.main'>{data?.title}</Typography>
                     </>}
-                    {data.type ? <div className="absolute top-4 left-4">
+                    {data.type ? <div className="absolute top-2 left-2">
                         <StatusPill variant={variant} status={data?.type} />
                     </div> : ""}
+                    <div className="absolute top-0 right-2">
+                        <Actions
+                            editUrl={editUrl}
+                            viewUrl={viewUrl}
+                            onDelete={onDelete}
+                        />
+                    </div>
                 </Box>
                 <div className="content__box pt-2 px-2">
                     <Link to={PATH.GORKHAPATRA.EDIT_GORKHAPATRA.ROOT(Number(data.id))}>

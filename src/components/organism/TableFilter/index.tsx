@@ -82,7 +82,7 @@ export default function TableFilter({
         setShowCustomRangeModal(false);
     };
     return (
-        <Box className={`md:grid md:grid-cols-12  items-center mb-2 2xl:mb-4 ${categoryLayout ? "pb-2 mb-6" : ""}`}
+        <Box className={`flex flex-wrap gap-2  md:grid md:grid-cols-12 mb-2 2xl:mb-4 ${categoryLayout ? "pb-2 mb-6" : ""}`}
             sx={{
                 borderBottom: categoryLayout ? `1px solid ${theme.palette.separator.dark}` : ""
             }}
@@ -101,7 +101,7 @@ export default function TableFilter({
                 /> : <Typography variant="h5" color="text.dark">{title}</Typography>}
             </div>
             <div className="col-span-6">
-                <div className="flex justify-end items-center gap-3 filter__right">
+                <div className="flex md:justify-end items-center gap-3 filter__right">
                     {selectedRows && selectedRows.size > 0 ? <IconButton
                         sx={{
                             border: `1px solid ${theme.palette.separator.dark}`
