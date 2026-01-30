@@ -102,7 +102,7 @@ export default function TableFilter({
             </div>
             <div className="col-span-6">
                 <div className="flex justify-end items-center gap-3 filter__right">
-                    {selectedRows  && selectedRows.size > 0 ? <IconButton
+                    {selectedRows && selectedRows.size > 0 ? <IconButton
                         sx={{
                             border: `1px solid ${theme.palette.separator.dark}`
                         }} className={`rounded-md! ${categoryLayout ? "" : "py-2.5! px-3.5! "}`}

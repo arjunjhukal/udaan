@@ -191,7 +191,6 @@ export default function PrimaryMenu() {
                     </ListItem>
                 </CAN>
 
-
                 {/* Role Management */}
                 <CAN permissions={["add_roles", "edit_roles", "delete_roles", "view_roles"]}>
                     <ListItem disablePadding className="menu__item">
@@ -340,6 +339,20 @@ export default function PrimaryMenu() {
                                 </svg>
                             </ListItemIcon>
                             <ListItemText primary={t("menus.notification_management.root")} />
+                        </ListItemButton>
+                    </ListItem>
+                </CAN>
+                <CAN permissions={["add_gorkhapatras", "edit_gorkhapatras", "delete_gorkhapatras", "view_gorkhapatras",]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => navigate(PATH.GORKHAPATRA.ROOT)}
+                            className={location.pathname.startsWith(PATH.GORKHAPATRA.ROOT) ? "active" : ""}>
+                            <ListItemIcon>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                    <path d="M10.5 2.16667H13C13.221 2.16667 13.433 2.25446 13.5893 2.41074C13.7455 2.56702 13.8333 2.77899 13.8333 3V12.1667C13.8333 12.6087 13.6577 13.0326 13.3452 13.3452C13.0326 13.6577 12.6087 13.8333 12.1667 13.8333M12.1667 13.8333C11.7246 13.8333 11.3007 13.6577 10.9882 13.3452C10.6756 13.0326 10.5 12.6087 10.5 12.1667V1.33333C10.5 1.11232 10.4122 0.900358 10.2559 0.744078C10.0996 0.587798 9.88768 0.5 9.66667 0.5H1.33333C1.11232 0.5 0.900358 0.587798 0.744078 0.744078C0.587798 0.900358 0.5 1.11232 0.5 1.33333V11.3333C0.5 11.9964 0.763392 12.6323 1.23223 13.1011C1.70107 13.5699 2.33696 13.8333 3 13.8333H12.1667ZM3.83333 3.83333H7.16667M3.83333 7.16667H7.16667M3.83333 10.5H7.16667" stroke="white" stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </ListItemIcon>
+                            <ListItemText primary={t("menus.gorkhapatra.root")} />
                         </ListItemButton>
                     </ListItem>
                 </CAN>

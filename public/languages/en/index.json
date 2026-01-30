@@ -103,6 +103,9 @@
         },
         "notification_management": {
             "root": "Notification Management"
+        },
+        "gorkhapatra": {
+            "root": "Gorkhapatra Creations"
         }
     },
     "messages": {
@@ -127,6 +130,7 @@
         "course": "Course",
         "courses": "Courses",
         "enrolled_users": "Enrolled Users",
+        "gorkhapatra": "Gorkhapatra",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",
@@ -183,6 +187,10 @@
                 "description": "Start adding notifications to send to the specific roles or students. Use the button below to create your first Notifications.",
                 "action": "Create Notifications"
             },
+            "gorkhapatra": {
+                "title": "No Gorkhapatra Found",
+                "description": "No Gorkhapatra available yet. Click the button below to create a new Gorkhapatra."
+            },
             "media_management": {
                 "title": "No Media Found",
                 "description": "Start adding media to manage and organize your content. Use the button below to upload your first media.",
@@ -207,6 +215,7 @@
         }
     },
     "actions": {
+        "create": "Create",
         "edit": "Edit",
         "view": "View",
         "delete": "Delete",
@@ -217,6 +226,7 @@
         "clone": "Clone",
         "generate_otp": "Generate OTP",
         "publish": "Publish",
-        "unpublish": "Unpublish"
+        "unpublish": "Unpublish",
+        "draft": "Save as Draft"
     }
 }

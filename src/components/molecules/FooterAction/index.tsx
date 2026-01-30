@@ -1,3 +1,4 @@
+import SaveIcon from '@mui/icons-material/Save';
 import { Box, Button, Typography, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { replace } from "react-router-dom";
@@ -9,6 +10,7 @@ interface FooterActionProps {
     isEditMode?: boolean;
     replaceLabel?: string;
     buttonLabel?: string;
+    onDraft?: () => void;
 }
 
 export default function FooterAction({
@@ -17,7 +19,8 @@ export default function FooterAction({
     isUpdating = false,
     isEditMode = false,
     buttonLabel,
-    replaceLabel
+    replaceLabel,
+    onDraft
 }: FooterActionProps) {
     const { t } = useTranslation();
     const theme = useTheme();
@@ -30,6 +33,11 @@ export default function FooterAction({
                 background: theme.palette.primary.contrastText,
             }}
         >
+            {onDraft ? <Button variant="outlined" color="primary" startIcon={<SaveIcon />} onClick={onDraft}>
+                <Typography variant="subtitle2">
+                    {t("actions.draft")}
+                </Typography>
+            </Button> : ""}
             {/* CANCEL BUTTON */}
             <Button
                 variant="contained"

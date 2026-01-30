@@ -132,6 +132,16 @@ export const PATH = {
 				id ? `/notification-management/${id}` : "/notification-management/:id",
 		},
 	},
+	GORKHAPATRA: {
+		ROOT: "/gorkhapatra",
+		CREATE_GORKHAPATRA: {
+			ROOT: "/gorkhapatra/create"
+		},
+		EDIT_GORKHAPATRA: {
+			ROOT: (id?: number) =>
+				id ? `/gorkhapatra/${id}/edit` : "/gorkhapatra/:id/edit",
+		},
+	},
 	CONTENT_MANAGEMENT: {
 		ROOT: "/content-management",
 		SPLASH_SCREEN: {
