@@ -8,6 +8,7 @@ export function statusMap<T extends string>(map: Record<T, StatusVariant>) {
     };
 }
 
+import type { GorkhapatraTypes } from "../types/gorkhapatra";
 import type { TransactionCourseStatus } from "../types/transaction";
 
 export const getTransactionStatusVariant = statusMap<TransactionCourseStatus>({
@@ -19,4 +20,9 @@ export const getTransactionStatusVariant = statusMap<TransactionCourseStatus>({
 export const getPublishedStatus = statusMap<PublishedStatus>({
     published: "success",
     draft: "warning",
+});
+
+export const getGorkhapatraStatus = statusMap<GorkhapatraTypes>({
+    mcqs: "success",
+    descriptive: "warning",
 });

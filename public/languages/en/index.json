@@ -131,6 +131,7 @@
         "courses": "Courses",
         "enrolled_users": "Enrolled Users",
         "gorkhapatra": "Gorkhapatra",
+        "views": "Views",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",

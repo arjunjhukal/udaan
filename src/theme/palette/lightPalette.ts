@@ -5,6 +5,7 @@ export const lightPalette = {
         light: "#D9F0FF",
         black: "#111827",
         white: "#FFFFFF",
+        dark: "#19176A"
     },
     button: {
         main: "#1D82F5",
