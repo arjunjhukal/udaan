@@ -189,11 +189,9 @@ export default function AllGorkhapatraRoot() {
             header: "Description",
             accessorKey: "description",
             cell: ({ row }) => (
-                <Tooltip title={renderHtml(row.original.description)} arrow>
-                    <Typography fontWeight={500} variant="subtitle1" className="line-clamp-1">
-                        {renderHtml(row.original.description || "-")}
-                    </Typography>
-                </Tooltip>
+                <Typography fontWeight={500} variant="subtitle1" className="line-clamp-1">
+                    {renderHtml(row.original.description || "-")}
+                </Typography>
             ),
         },
         {

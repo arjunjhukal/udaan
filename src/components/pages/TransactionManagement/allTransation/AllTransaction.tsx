@@ -73,7 +73,8 @@ export default function AllTransaction({ open, setOpen }: Props) {
         device_type: device.join(",") as DeviceType,
         status: status.join(",") as Status,
         days,
-        payment_method: paymentMethod.join(",")
+        payment_method: paymentMethod.join(","),
+        ...customRange
     });
 
     const [deleteTransaction, { isLoading: deleting }] = useDeleteTransactionMutation();
