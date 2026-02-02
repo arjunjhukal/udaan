@@ -114,6 +114,17 @@ export default function PrimaryMenu() {
                                         </ListItemButton>
                                     </ListItem>
                                 </CAN>
+                                <CAN permissions={["add_sets", "edit_sets", "delete_sets", "view_sets"]}>
+                                    <ListItem disablePadding className="menu__item">
+                                        <ListItemButton
+                                            onClick={() => navigate(PATH.COURSE_MANAGEMENT.SET.ROOT)}
+                                            className={location.pathname.startsWith(PATH.COURSE_MANAGEMENT.SET.ROOT) ? "active-nested" : ""}>
+                                            <ListItemText
+                                                primary={t("menus.course_management.set.root")}
+                                            />
+                                        </ListItemButton>
+                                    </ListItem>
+                                </CAN>
                                 <CAN permissions={["add_quizes", "edit_quizes", "delete_quizes", "view_quizes"]}>
                                     <ListItem disablePadding className="menu__item">
                                         <ListItemButton
