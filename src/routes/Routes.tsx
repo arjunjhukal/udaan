@@ -22,6 +22,9 @@ import CreateCourseRoot from "../components/pages/CourseManagement/Course/create
 import LiveClassRoot from "../components/pages/CourseManagement/LiveClass";
 import AllLiveClass from "../components/pages/CourseManagement/LiveClass/allLiveClass";
 import CreateLiveClassRoot from "../components/pages/CourseManagement/LiveClass/createLiveClass";
+import SetRoot from "../components/pages/CourseManagement/Sets";
+import AllSets from "../components/pages/CourseManagement/Sets/AllSets";
+import CreateSet from "../components/pages/CourseManagement/Sets/CreateSet";
 import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
 import EnrollmentRoot from "../components/pages/Enrollments";
@@ -118,6 +121,14 @@ const router = createBrowserRouter([
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT, element: <AllLiveClass /> },
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT, element: <CreateLiveClassRoot /> },
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(), element: <CreateLiveClassRoot /> },
+				],
+			},
+			{
+				element: <Unauthorized permissions={["add_sets", "edit_sets", "delete_sets", "view_sets"]}><SetRoot /></Unauthorized>,
+				children: [
+					{ path: PATH.COURSE_MANAGEMENT.SET.ROOT, element: <AllSets /> },
+					{ path: PATH.COURSE_MANAGEMENT.SET.CREATE_SET.ROOT, element: <CreateSet /> },
+					{ path: PATH.COURSE_MANAGEMENT.SET.EDIT_SET.ROOT(), element: <CreateSet /> },
 				],
 			},
 			{

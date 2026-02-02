@@ -6,7 +6,7 @@ import EnrollmentAnalytics from "./EnrollmentAnalytics";
 export default function EnrollmentRoot() {
     const { t } = useTranslation();
     return (
-        <div className="enrollment__root h-full flex flex-col overflow-hidden">
+        <div className="enrollment__root">
             <PageHeader
                 breadcrumb={[
                     {

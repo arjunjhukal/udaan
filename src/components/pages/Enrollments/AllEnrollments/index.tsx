@@ -155,7 +155,7 @@ export default function AllEntrollments() {
     ], [navigate, qp])
 
     return (
-        <div className="all__enrollment__root flex flex-col overflow-hidden h-full">
+        <div className="all__enrollment__root">
             <div className="page__top">
                 <PageHeader
                     breadcrumb={[
@@ -173,7 +173,6 @@ export default function AllEntrollments() {
                     setSearch={setSearch}
                     onFilter={() => setFilterDialogOpen(true)}
                 />
-
             </div>
             {
                 !isLoading && !courses.length ? <EmptyRoute

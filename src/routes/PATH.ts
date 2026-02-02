@@ -54,6 +54,16 @@ export const PATH = {
 				ROOT: (id?: string) =>
 					id ? `/quiz/${id}` : "/quiz/:id",
 			},
+		},
+		SET: {
+			ROOT: "/sets",
+			CREATE_SET: {
+				ROOT: "/set/create-set",
+			},
+			EDIT_SET: {
+				ROOT: (id?: string) =>
+					id ? `/set/${id}` : "/set/:id",
+			},
 		}
 	},
 	CATEGORY_LEVEL_MANAGEMENT: {
