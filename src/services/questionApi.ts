@@ -156,7 +156,7 @@ export const questionApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
-        submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string, video_url?: string } }>({
+        submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string } }>({
             query: ({ id, resultId, body }) => ({
                 url: `/admin/test/${id}/result/${resultId}/feedback`,
                 method: "POST",
@@ -172,6 +172,27 @@ export const questionApi = createApi({
         }, { id?: number, resultId?: number }>({
             query: ({ id, resultId }) => ({
                 url: `/admin/test/${id}/result/${resultId}/feedback`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
+        submitTestSample: builder.mutation<GlobalResponse, { id?: number, body: FormData }>({
+            query: ({ id, body }) => ({
+                url: `/admin/test/${id}/sample`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+        }),
+        getTestSample: builder.query<GlobalResponse & {
+            data: {
+                sample: File | null;
+                sample_url: string;
+                video_url: string;
+            }
+        }, { id?: number, resultId?: number }>({
+            query: ({ id }) => ({
+                url: `/admin/test/${id}/sample`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
@@ -265,5 +286,7 @@ export const {
     useGetSingleQuestionInTestQuery,
     useMarkSubjectiveQuestionMutation,
     useGetMarkedSubjectiveQuestionQuery,
-    usePublishTestResultsMutation
+    usePublishTestResultsMutation,
+    useSubmitTestSampleMutation,
+    useGetTestSampleQuery
 } = questionApi;

@@ -12,7 +12,7 @@ export const gorkhapatraApi = createApi({
     endpoints: (builder) => ({
         createGorkhapatra: builder.mutation<GlobalResponse, FormData>({
             query: (body) => ({
-                url: "/gorkhapatra",
+                url: "/admin/gorkhapatra",
                 method: "POST",
                 body
             }),
@@ -32,7 +32,7 @@ export const gorkhapatraApi = createApi({
                 });
 
                 return {
-                    url: `/admin/gorkhapatra?${params}`,
+                    url: `/gorkhapatra?${params}`,
                     method: "GET",
                 };
             },

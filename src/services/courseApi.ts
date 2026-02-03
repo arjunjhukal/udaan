@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CurriculumType } from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { AnalyticsProps, CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
+import type { AnalyticsProps, courseClonePropertyProps, CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
 import type { MediaList } from "../types/media";
 import type { TestList } from "../types/question";
 import type { TransactionList } from "../types/transaction";
@@ -86,10 +86,11 @@ export const courseApi = createApi({
                 { type: "Course", id: "LIST" }
             ],
         }),
-        cloneCourse: builder.mutation<GlobalResponse, { id: number }>({
-            query: ({ id }) => ({
+        cloneCourse: builder.mutation<GlobalResponse, { id: number, properties: courseClonePropertyProps[] }>({
+            query: ({ id, properties }) => ({
                 url: `/admin/course/${id}/clone`,
                 method: "POST",
+                body: properties
             }),
             invalidatesTags: (_result, _error,) => [
                 { type: "Course", id: "LIST" }

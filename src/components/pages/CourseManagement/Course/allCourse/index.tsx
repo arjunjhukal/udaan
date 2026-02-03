@@ -1,16 +1,17 @@
 import { Add } from "@mui/icons-material";
-import { Box, Button, Checkbox, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, FormControlLabel, IconButton, List, ListItem, Stack, Tooltip, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
+import { Copy } from "iconsax-reactjs";
 import { PATH } from "../../../../../routes/PATH";
 import { useChangeCourseStatusMutation, useCloneCourseMutation, useDeleteCourseMutation, useGetAllCourseQuery } from "../../../../../services/courseApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import { useCourseFilter } from "../../../../../store/useCourseFilter";
-import type { CourseProps } from "../../../../../types/course";
+import type { courseClonePropertyProps, CourseProps } from "../../../../../types/course";
 import { formatDate } from "../../../../../utils/dateFormat";
 import Actions from "../../../../molecules/Action";
 import TabController from "../../../../molecules/TabController";
@@ -25,6 +26,13 @@ import TableFilter from "../../../../organism/TableFilter";
 import AllCourseGrid from "./AllCourseGrid";
 
 export default function AllCourse() {
+    const cloneOptions = [
+        { label: "Curriculums", value: "curriculums" },
+        { label: "Media", value: "media" },
+        { label: "Live Classes", value: "live_classes" },
+        { label: "Tests", value: "tests" },
+    ];
+
     const { t } = useTranslation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
@@ -33,12 +41,19 @@ export default function AllCourse() {
     const [qp, setQp] = useState({
         pageIndex: 1,
         pageSize: 8,
-    })
+    });
+    const [courseToClone, setCourseToClone] = useState<number | null>(null);
+    const [openCloneDialog, setOpenCloneDialog] = useState(false);
+    const [selectedCloneProperties, setSelectedCloneProperties] =
+        useState<courseClonePropertyProps[]>([]);
+
+
     const [openConfirm, setOpenConfirm] = useState(false);
     const [coursesToDelete, setCoursesToDelete] = useState<string[]>([]);
     const [layout, setLayout] = useState<LayoutProps>("table");
     const [activeTab, setActiveTab] = useState<"all" | "published" | "draft">("all");
     const [cloneCourse] = useCloneCourseMutation();
+
     const {
         selections,
         megaCategories,
@@ -134,25 +149,37 @@ export default function AllCourse() {
         }
     }
 
-    const handleCourseClone = async (id: number) => {
+    const handleCourseClone = async () => {
+        if (!courseToClone) return;
+
         try {
-            const response = await cloneCourse({ id }).unwrap();
+            const response = await cloneCourse({
+                id: courseToClone,
+                properties: selectedCloneProperties
+            }).unwrap();
+
             dispatch(
                 showToast({
                     message: response?.message || "Course Cloned Successfully",
                     severity: "success"
                 })
-            )
-        }
-        catch (e: any) {
+            );
+
+            setOpenCloneDialog(false);
+            setCourseToClone(null);
+            setSelectedCloneProperties([]);
+
+        } catch (e: any) {
             dispatch(
                 showToast({
                     message: e?.data?.message || "Unable to Clone Course",
                     severity: "error"
                 })
-            )
+            );
         }
-    }
+    };
+
+
 
     const handleCourseStatusChange = async (id: number) => {
         try {
@@ -281,13 +308,17 @@ export default function AllCourse() {
                     editUrl={PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}
                     viewUrl={PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(row.original.id)}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
-                    onClone={() => handleCourseClone(Number(row.original.id))}
+                    onClone={() => {
+                        setCourseToClone(Number(row.original.id));
+                        setOpenCloneDialog(true);
+                    }}
                     onStatus={() => handleCourseStatusChange(Number(row.original.id))}
                     courseStatus={row.original.status || "draft"}
                 />
             ),
         },
     ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp])
+
 
 
     return (
@@ -392,6 +423,68 @@ export default function AllCourse() {
                 onResetFilter={resetFilters}
                 courseTypes={courseTypes || []}
             />
+
+            <Dialog open={openCloneDialog}>
+                <DialogContent className="py-8!  relative rounded-2xl" sx={{
+                    boxShadow: "0 4px 20px 0 rgba(0, 8, 251, 0.20)",
+                    maxWidth: "409px",
+                }}>
+                    <IconButton onClick={() => setOpenCloneDialog(false)} className="absolute! right-4 top-4">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13.492 1.66675H6.50866C3.47533 1.66675 1.66699 3.47508 1.66699 6.50841V13.4834C1.66699 16.5251 3.47533 18.3334 6.50866 18.3334H13.4837C16.517 18.3334 18.3253 16.5251 18.3253 13.4917V6.50841C18.3337 3.47508 16.5253 1.66675 13.492 1.66675ZM12.8003 11.9167C13.042 12.1584 13.042 12.5584 12.8003 12.8001C12.6753 12.9251 12.517 12.9834 12.3587 12.9834C12.2003 12.9834 12.042 12.9251 11.917 12.8001L10.0003 10.8834L8.08366 12.8001C7.95866 12.9251 7.80033 12.9834 7.64199 12.9834C7.48366 12.9834 7.32533 12.9251 7.20033 12.8001C6.95866 12.5584 6.95866 12.1584 7.20033 11.9167L9.11699 10.0001L7.20033 8.08341C6.95866 7.84175 6.95866 7.44175 7.20033 7.20008C7.44199 6.95842 7.84199 6.95842 8.08366 7.20008L10.0003 9.11675L11.917 7.20008C12.1587 6.95842 12.5587 6.95842 12.8003 7.20008C13.042 7.44175 13.042 7.84175 12.8003 8.08341L10.8837 10.0001L12.8003 11.9167Z" fill="#E21D48" />
+                        </svg>
+                    </IconButton>
+                    <Box sx={{
+                        background: (theme) => theme.palette.primary.light
+                    }} className="w-12 h-12 aspect-square rounded-full flex justify-center items-center mb-4">
+                        <Copy />
+                    </Box>
+                    <Typography variant="h4" className="mb-1">Clone Course</Typography>
+                    <Typography color="text.middle">Course Overview will be automatically cloned. Choose Other Options</Typography>
+                    <Box className="mt-6 mb-4" sx={{
+                        border: (theme) => `1px solid ${theme.palette.separator.dark}`
+                    }} />
+                    <List>
+                        {cloneOptions.map((item) => (
+                            <ListItem key={item.value} className="flex-row! justify-between">
+                                {/* <ListItemText primary={item.label} /> */}
+                                <FormControlLabel
+                                    label={item.label}
+                                    control={<Checkbox
+                                        checked={selectedCloneProperties.includes(item.value as courseClonePropertyProps)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedCloneProperties((prev) => [...prev, item.value as courseClonePropertyProps]);
+                                            } else {
+                                                setSelectedCloneProperties((prev) =>
+                                                    prev.filter((val) => val !== item.value)
+                                                );
+                                            }
+                                        }}
+                                        color="primary"
+                                    />}
+                                />
+
+                            </ListItem>
+                        ))}
+                    </List>
+
+                    <DialogActions>
+                        <Button fullWidth variant="contained" sx={{
+                            background: (theme) => theme.palette.separator.dark,
+                            color: (theme) => theme.palette.text.middle
+                        }}
+                            onClick={() => {
+                                setOpenCloneDialog(false);
+                                setCourseToClone(null);
+                                setSelectedCloneProperties([])
+                            }
+                            }
+                        >Cancel</Button>
+                        <Button fullWidth variant="contained" color="primary" onClick={() => handleCourseClone()}>{isLoading ? "Saving" : "Yes"}</Button>
+                    </DialogActions>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }

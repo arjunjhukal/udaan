@@ -15,6 +15,7 @@ import { initialCourseState, type courseTabType } from "../../../../types/course
 import type { RegisterUserProps } from "../../../../types/user";
 import { createCourseFormData } from "../../../../utils/courseFormData";
 import TextEditor from "../../../atoms/TextEditor";
+import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FileDragDrop from "../../../molecules/FileDragDrop";
 import FooterAction from "../../../molecules/FooterAction";
 import TabController from "../../../molecules/TabController";
@@ -31,6 +32,8 @@ const validationSchema = (id?: string) => Yup.object().shape({
         .required("Course name is required")
         .min(3, "Course name must be at least 3 characters")
         .max(200, "Course name must not exceed 200 characters"),
+    can_take_free_trial: Yup.bool()
+        .required("Field is required"),
 
     duration: Yup.object().shape({
         hours: Yup.number()
@@ -134,9 +137,7 @@ export default function CourseManagementForm() {
 
     const [selectedTeachers, setSelectedTeachers] = React.useState<RegisterUserProps[]>([]);
 
-
     const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
-
 
     const [activeTab, setActiveTab] = React.useState<courseTabType>("overview");
     const [searchTeacher, setSearchTeacher] = React.useState("")
@@ -144,11 +145,9 @@ export default function CourseManagementForm() {
     const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
     const { data: teachers } = useGetAllUserQuery({ pageIndex: 1, pageSize: 20, search: searchTeacher, role: 4 });
 
-
     const { data } = useGetCourseByIdQuery({ id: id || "" }, { skip: !id });
     const [createCourse, { isLoading }] = useCreateCourseMutation();
     const [updateCourse, { isLoading: updating }] = useEditCourseMutation();
-
 
     React.useEffect(() => {
         if (data?.data?.teachers && teachers?.data?.data) {
@@ -187,7 +186,6 @@ export default function CourseManagementForm() {
         }
     };
 
-
     const handleTeacherSelection = (newValue: RegisterUserProps) => {
         const updatedTeachers = [...selectedTeachers, newValue];
         setSelectedTeachers(updatedTeachers);
@@ -211,7 +209,6 @@ export default function CourseManagementForm() {
         validationSchema: validationSchema(id),
         enableReinitialize: true,
         onSubmit: async (values) => {
-
             if (id) {
                 try {
                     const formattedData = createCourseFormData(values);
@@ -316,6 +313,7 @@ export default function CourseManagementForm() {
             <div className="course__content  h-full overflow-auto">
                 <div className="flex flex-col 2xl:grid 2xl:grid-cols-2 gap-4 lg:gap-6 mb-6">
                     <FileDragDrop
+                        required={true}
                         onFileChange={handleFileChange}
                         initialFile={formik.values.thumbnail}
                         initialPreview={formik.values.thumbnail_url}
@@ -440,6 +438,24 @@ export default function CourseManagementForm() {
                             </FormHelperText>
                         )}
                     </div>
+                </div>
+                <div className="input__field my-6">
+                    <div className="flex items-center gap-4">
+                        <Typography variant="subtitle1" color="textField.name">
+                            Allow User To Take Free Trial
+                        </Typography>
+                        <YesNoSwitch
+                            checked={formik.values.can_take_free_trial}
+                            onChange={(e) =>
+                                formik.setFieldValue("can_take_free_trial", e.target.checked)
+                            }
+                        />
+                    </div>
+                    {formik.touched.can_take_free_trial && formik.errors.can_take_free_trial && (
+                        <FormHelperText error={true} sx={{ mt: 0.5 }}>
+                            {formik.errors.can_take_free_trial}
+                        </FormHelperText>
+                    )}
                 </div>
                 <Divider sx={{ marginTop: "36px", marginBottom: "36px" }} />
                 <CourseType

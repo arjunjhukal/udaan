@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useGetTestByIdQuery, useGetTestOverviewQuery, useGetTestQuestionsQuery } from "../../../../../services/questionApi";
 import { renderHtml } from "../../../../../utils/renderHtml";
 import StudentResult from "./StudentResult";
+import TestSampleForm from "./TestSampleForm";
 
 export default function ViewTestRoot() {
     const theme = useTheme();
@@ -72,6 +73,10 @@ export default function ViewTestRoot() {
         {
             key: "questions",
             label: "Questions",
+        },
+        {
+            key: "sample",
+            label: "Sample",
         },
     ];
 
@@ -195,6 +200,7 @@ export default function ViewTestRoot() {
                 </div>
             )}
             {activeTab === "results" && <StudentResult id={id || ""} />}
+            {activeTab === "sample" && <TestSampleForm id={id || ""} />}
         </div>
     )
 }

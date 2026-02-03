@@ -18,6 +18,8 @@ export interface SelectionType {
 export type CourseTypeProps = "free" | "expiry" | "subscription"
 export type DiscountTypeProps = "percentage" | "amount"
 export type BillingCycle = "days" | "months" | "years"
+export type courseClonePropertyProps = "media" | "live_classes" | "curriculums" | "tests"
+
 export interface DurationProps {
     hours: number;
     minutes: number;
@@ -57,6 +59,7 @@ export interface CourseProps {
     marked_price?: string,
     sale_price?: string,
     enrolled_students?: string;
+    can_take_free_trial: boolean;
 }
 
 export const initialCourseState: CourseProps = {
@@ -88,7 +91,7 @@ export const initialCourseState: CourseProps = {
     },
     free_type_description: "",
     course_subscription: [],
-
+    can_take_free_trial: false
 };
 
 export interface CourseList extends GlobalResponse {

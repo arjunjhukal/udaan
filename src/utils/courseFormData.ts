@@ -9,14 +9,14 @@ export const createCourseFormData = (values: CourseProps): FormData => {
     formData.append("about_this_course", values.about_this_course);
     formData.append("course_type", values.course_type);
 
-    // Duration object
     formData.append("duration[hours]", values.duration.hours.toString());
     formData.append("duration[minutes]", values.duration.minutes.toString());
+    formData.append("can_take_free_trial", values.can_take_free_trial.toString());
 
     if (values.free_type_description) {
         formData.append("free_type_description", values.free_type_description.toString());
     }
-    // Thumbnail file (only if present)
+
     if (values.thumbnail) {
         formData.append("thumbnail", values.thumbnail);
     }

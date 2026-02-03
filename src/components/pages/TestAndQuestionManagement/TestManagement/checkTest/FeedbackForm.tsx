@@ -1,4 +1,4 @@
-import { Box, Button, Divider, OutlinedInput, Stack, Typography } from '@mui/material';
+import { Box, Button, Divider, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useGetTestFeedbackQuery, useSubmitTestFeedbackMutation } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
@@ -11,20 +11,18 @@ import { PercentageDonutChart } from '../../../../organism/Charts/PercentageDonu
 export default function FeedbackForm({ data, test, testId, resultId }: { data: StudentSubmitTestProps | null; test: TestProps | null; testId?: string; resultId?: string }) {
     const dispatch = useAppDispatch();
     const [feedback, setFeedback] = useState<string>("");
-    const [videoUrl, setVideoUrl] = useState<string>("");
     const { hours, minutes } = msToHMS(data?.timer || 0);
     const [submitTestFeedback, isLoading] = useSubmitTestFeedbackMutation();
     const { data: feeback } = useGetTestFeedbackQuery({ id: Number(testId), resultId: Number(resultId) }, { skip: !testId || !resultId });
 
     useEffect(() => {
         setFeedback(feeback?.data?.feedback || "");
-        setVideoUrl(feeback?.data?.video_url || "");
     }, [feeback])
 
     const handleSubmitFeedback = async () => {
         if (!data || !test) return;
         try {
-            const response = await submitTestFeedback({ id: Number(testId), resultId: data.id, body: { feedback, video_url: videoUrl } }).unwrap();
+            const response = await submitTestFeedback({ id: Number(testId), resultId: data.id, body: { feedback} }).unwrap();
             dispatch(
                 showToast({
                     message: response.message || "Feedback submitted successfully.",
@@ -79,19 +77,6 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
                         onBlur={() => { }} />
                 </Box>
             </Box>
-            <div className="mt-4">
-                <Typography variant='subtitle1' className='mb-2!'>Add Feedback Video</Typography>
-                <Box className="input__field rounded-md" sx={{
-                    background: (theme) => theme.palette.primary.contrastText
-                }}>
-                    <OutlinedInput
-                        placeholder='Feedback video URL'
-                        fullWidth
-                        value={videoUrl}
-                        onChange={(e) => setVideoUrl(e.target.value)}
-                    />
-                </Box>
-            </div>
             <Stack className="gap-2 mt-6">
                 <Button variant='contained' color='primary' fullWidth onClick={() => handleSubmitFeedback()}>{(data?.test_type === "mcq") ? "Submit & Next" : "Submit"}</Button>
             </Stack>
