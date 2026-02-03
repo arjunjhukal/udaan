@@ -22,7 +22,7 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
     const handleSubmitFeedback = async () => {
         if (!data || !test) return;
         try {
-            const response = await submitTestFeedback({ id: Number(testId), resultId: data.id, body: { feedback} }).unwrap();
+            const response = await submitTestFeedback({ id: Number(testId), resultId: data.id, body: { feedback } }).unwrap();
             dispatch(
                 showToast({
                     message: response.message || "Feedback submitted successfully.",
@@ -54,8 +54,8 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
                 background: (theme) => theme.palette.primary.contrastText
             }}>
                 <Box>
-                    <Typography variant='h4'>{data?.total_correct}/{data?.total_questions}</Typography>
-                    <Typography variant='subtitle2' color='text.middle'>Correct Answer</Typography>
+                    <Typography variant='h4'>{data?.test_type === "mcq" ? data?.total_correct : data?.total_attempted}/{data?.total_questions}</Typography>
+                    <Typography variant='subtitle2' color='text.middle'>{data?.test_type === "mcq" ? "Correct Answer" : "Attempted Questions"}</Typography>
                 </Box>
                 <Divider orientation='vertical' />
                 <Box>

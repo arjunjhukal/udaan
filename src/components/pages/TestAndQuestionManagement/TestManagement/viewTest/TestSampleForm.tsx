@@ -73,6 +73,7 @@ export default function TestSampleForm({ id }: { id: string }) {
           label="Sample Video"
           initialPreview={formik.values.sample_url || ""}
           initialFile={formik.values.sample || null}
+          maxSize={20}
         />
       </div>
       <div className="text-end">

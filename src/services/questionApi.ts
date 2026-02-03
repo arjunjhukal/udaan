@@ -156,6 +156,13 @@ export const questionApi = createApi({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
+        downloadResult: builder.mutation<Blob & GlobalResponse, { testId: number; resultId: number }>({
+            query: ({ testId, resultId }) => ({
+                url: `/admin/test/${testId}/result/${resultId}/download`,
+                method: "GET",
+                responseHandler: (response) => response.blob(),
+            }),
+        }),
         submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string } }>({
             query: ({ id, resultId, body }) => ({
                 url: `/admin/test/${id}/result/${resultId}/feedback`,
@@ -233,6 +240,7 @@ export const questionApi = createApi({
             }),
             invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
+
         getMarkedSubjectiveQuestion: builder.query<GlobalResponse & {
             data: {
                 grade: number,
@@ -288,5 +296,6 @@ export const {
     useGetMarkedSubjectiveQuestionQuery,
     usePublishTestResultsMutation,
     useSubmitTestSampleMutation,
-    useGetTestSampleQuery
+    useGetTestSampleQuery,
+    useDownloadResultMutation
 } = questionApi;

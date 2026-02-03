@@ -24,32 +24,50 @@ export default function FileDragDrop({
 }: FileDragDropProps) {
     const theme = useTheme();
     const [preview, setPreview] = useState<string | null>(initialPreview || null);
+    const [fileType, setFileType] = useState<"image" | "pdf" | null>(null);
 
-    // Update preview when initialPreview changes (for edit mode)
+    // useEffect(() => {
+    //     if (initialPreview) {
+    //         setPreview(initialPreview);
+    //     }
+    // }, [initialPreview]);
+
     useEffect(() => {
         if (initialPreview) {
             setPreview(initialPreview);
+
+            const extension = initialPreview.split('.').pop()?.toLowerCase();
+
+            if (extension === "pdf") {
+                setFileType("pdf");
+            } else {
+                setFileType("image");
+            }
+        } else {
+            setPreview(null);
+            setFileType(null);
         }
     }, [initialPreview]);
 
+
     const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
-        // Handle rejected files
         if (rejectedFiles && rejectedFiles.length > 0) {
             const rejection = rejectedFiles[0];
             if (rejection.errors[0]?.code === 'file-too-large') {
                 alert(`File size must be less than ${maxSize}MB`);
             } else if (rejection.errors[0]?.code === 'file-invalid-type') {
-                alert('Only image files (PNG, JPG, JPEG, GIF, WEBP) are allowed');
+                alert('Only image files (PNG, JPG, JPEG, GIF, WEBP) and PDF are allowed');
             }
             return;
         }
 
-        // Handle accepted files
         if (acceptedFiles && acceptedFiles.length > 0) {
             const file = acceptedFiles[0];
             const url = URL.createObjectURL(file);
             setPreview(url);
-            onFileChange(file); // Send file to parent
+            setFileType(file.type === "application/pdf" ? "pdf" : "image");
+
+            onFileChange(file);
         }
     }, [maxSize, onFileChange]);
 
@@ -62,9 +80,12 @@ export default function FileDragDrop({
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
-        accept: { "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"] },
+        accept: {
+            "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
+            "application/pdf": [".pdf"],
+        },
         multiple: false,
-        maxSize: maxSize * 1024 * 1024, // Convert MB to bytes
+        maxSize: maxSize * 1024 * 1024,
     });
 
     return (
@@ -84,7 +105,7 @@ export default function FileDragDrop({
 
                 {/* Image Wrapper */}
                 <Box sx={{ position: "relative", width: 80, height: 80, flexShrink: 0 }}>
-                    <img
+                    {/* <img
                         src={preview || "/no-image.svg"}
                         alt="uploaded preview"
                         style={{
@@ -94,7 +115,50 @@ export default function FileDragDrop({
                             borderRadius: "8px",
                             border: `1px solid ${theme.palette.textField.border}`,
                         }}
-                    />
+                    /> */}
+                    {preview ? (
+                        fileType === "pdf" ? (
+                            <Box
+                                sx={{
+                                    width: 80,
+                                    height: 80,
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    borderRadius: "8px",
+                                    border: `1px solid ${theme.palette.textField.border}`,
+                                    backgroundColor: theme.palette.grey[100],
+                                }}
+                            >
+                                <Typography variant="caption">PDF</Typography>
+                            </Box>
+                        ) : (
+                            <img
+                                src={preview}
+                                alt="uploaded preview"
+                                style={{
+                                    width: "80px",
+                                    height: "80px",
+                                    objectFit: "cover",
+                                    borderRadius: "8px",
+                                    border: `1px solid ${theme.palette.textField.border}`,
+                                }}
+                            />
+                        )
+                    ) : (
+                        <img
+                            src="/no-image.svg"
+                            alt="default"
+                            style={{
+                                width: "80px",
+                                height: "80px",
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                                border: `1px solid ${theme.palette.textField.border}`,
+                            }}
+                        />
+                    )}
+
                     {preview && (
                         <IconButton
                             size="small"

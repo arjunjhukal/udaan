@@ -90,7 +90,7 @@ export const courseApi = createApi({
             query: ({ id, properties }) => ({
                 url: `/admin/course/${id}/clone`,
                 method: "POST",
-                body: properties
+                body: { properties: properties }
             }),
             invalidatesTags: (_result, _error,) => [
                 { type: "Course", id: "LIST" }

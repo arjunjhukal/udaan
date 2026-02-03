@@ -114,6 +114,10 @@ export const CourseTabs: { label: string; value: courseTabType }[] = [
         value: "curriculum"
     },
     {
+        label: "Videos",
+        value: "videos"
+    },
+    {
         label: "Notes",
         value: "notes"
     },
@@ -125,10 +129,7 @@ export const CourseTabs: { label: string; value: courseTabType }[] = [
         label: "Audios",
         value: "audios"
     },
-    {
-        label: "Videos",
-        value: "videos"
-    }
+
 ]
 
 
