@@ -29,6 +29,34 @@ export const PATH = {
 			EDIT_COURSE: {
 				ROOT: (id?: number) =>
 					id ? `/courses/${id}` : "/courses/:id",
+				OVERVIEW: {
+					ROOT: (id?: number) =>
+						id ? `/courses/${id}/overview` : "/courses/:id/overview"
+				},
+				CURRICULUM: {
+					ROOT: (id?: number) =>
+						id ? `/courses/${id}/curriculum` : "/courses/:id/curriculum"
+				},
+
+				VIDEOS: {
+					ROOT: (id?: number) =>
+						id ? `/courses/${id}/videos` : "/courses/:id/videos"
+				},
+
+				NOTES: {
+					ROOT: (id?: number) =>
+						id ? `/courses/${id}/notes` : "/courses/:id/notes"
+				},
+
+				TEST: {
+					ROOT: (id?: number) =>
+						id ? `/courses/${id}/test` : "/courses/:id/test"
+				},
+
+				AUDIOS: {
+					ROOT: (id?: number) =>
+						id ? `/courses/${id}/audios` : "/courses/:id/audios"
+				}
 			},
 			ANALYTICS: {
 				ROOT: (id?: number) =>

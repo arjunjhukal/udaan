@@ -1,9 +1,10 @@
 import { List, ListItem, Typography, useTheme } from '@mui/material';
-import { CourseTabs } from '../../../types/course';
+import { useNavigate } from 'react-router-dom';
 
 interface TabOption<T> {
     label: string;
     value: T;
+    redirect_url?: string;
 }
 
 interface TabControllerProps<T> {
@@ -18,8 +19,8 @@ export default function TabController<T extends string>({
     options
 }: TabControllerProps<T>) {
     const theme = useTheme();
-
-    const tabOptions = options || (CourseTabs as TabOption<T>[]);
+    const navigate = useNavigate();
+    const tabOptions = options || [];
 
     return (
         <List
@@ -32,7 +33,7 @@ export default function TabController<T extends string>({
                 <ListItem
                     className={currentActive === tab.value ? 'active__tab__controller' : ""}
                     key={tab.value}
-                    onClick={() => setActiveTab(tab.value)}
+                    onClick={() => tab.redirect_url ? navigate(tab.redirect_url) : setActiveTab(tab.value)}
                 >
                     <Typography
                         variant='subtitle2'

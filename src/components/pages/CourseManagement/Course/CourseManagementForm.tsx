@@ -2,7 +2,7 @@ import { Box, Divider, FormHelperText, InputLabel, OutlinedInput, Typography } f
 import { useFormik } from "formik";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { PATH } from "../../../../routes/PATH";
 import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery, useGetAllSubCategoryRelatedToCategoryQuery } from "../../../../services/categoryApi";
@@ -21,10 +21,7 @@ import FooterAction from "../../../molecules/FooterAction";
 import TabController from "../../../molecules/TabController";
 import CategoryFilter from "../../../organism/CategoryFilter";
 import PageHeader from "../../../organism/PageHeader";
-import CourseMedia from "./createCourse/CourseMedia";
-import CourseCurriculumForm from "./createCourse/CourseSubFields/Curriculum";
 import CourseOverviewForm from "./createCourse/CourseSubFields/Overview";
-import CourseTest from "./createCourse/CourseSubFields/Test";
 import CourseType from "./createCourse/CourseType";
 
 const validationSchema = (id?: string) => Yup.object().shape({
@@ -130,7 +127,9 @@ const validationSchema = (id?: string) => Yup.object().shape({
 
 export default function CourseManagementForm() {
     const { t } = useTranslation();
-
+    const location = useLocation();
+    const pathname = location.pathname;
+    console.log(pathname)
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
@@ -139,8 +138,23 @@ export default function CourseManagementForm() {
 
     const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
 
-    const [activeTab, setActiveTab] = React.useState<courseTabType>("overview");
+    const getInitialTab = (): courseTabType => {
+        const pathSegments = pathname.split('/').filter(Boolean);
+        const lastSegment = pathSegments[pathSegments.length - 1];
+        if (lastSegment === id) {
+            return "overview";
+        }
+        const validTabs: courseTabType[] = ["overview", "curriculum", "videos", "notes", "test", "audios"];
+        return validTabs.includes(lastSegment as courseTabType) ? (lastSegment as courseTabType) : "overview";
+    };
+
+    const [activeTab, setActiveTab] = React.useState<courseTabType>(getInitialTab());
     const [searchTeacher, setSearchTeacher] = React.useState("")
+
+    // Update activeTab when pathname changes
+    React.useEffect(() => {
+        setActiveTab(getInitialTab());
+    }, [pathname]);
 
     const { data: positions } = useGetAllPositionQuery({ pageIndex: 1, pageSize: 20, search: "", });
     const { data: teachers } = useGetAllUserQuery({ pageIndex: 1, pageSize: 20, search: searchTeacher, role: 4 });
@@ -462,7 +476,42 @@ export default function CourseManagementForm() {
                     formik={formik}
                 />
                 <Divider sx={{ marginTop: "36px", marginBottom: "36px" }} />
-                <TabController setActiveTab={handleTabChange} currentActive={activeTab} />
+                <TabController
+                    setActiveTab={handleTabChange}
+                    currentActive={activeTab}
+                    options={[
+                        {
+                            label: "Overview",
+                            value: "overview",
+                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(Number(id))
+                        },
+                        {
+                            label: "Curriculum",
+                            value: "curriculum",
+                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.CURRICULUM.ROOT(Number(id))
+                        },
+                        {
+                            label: "Videos",
+                            value: "videos",
+                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.VIDEOS.ROOT(Number(id))
+                        },
+                        {
+                            label: "Notes",
+                            value: "notes",
+                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.NOTES.ROOT(Number(id))
+                        },
+                        {
+                            label: "Test",
+                            value: "test",
+                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.TEST.ROOT(Number(id))
+                        },
+                        {
+                            label: "Audios",
+                            value: "audios",
+                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.AUDIOS.ROOT(Number(id))
+                        },
+                    ]}
+                />
                 {activeTab === "overview" ? <CourseOverviewForm
                     teachers={teachers?.data?.data || []}
                     selectedTeachers={selectedTeachers}
@@ -472,11 +521,12 @@ export default function CourseManagementForm() {
                     handleTeacherRemoval={handleTeacherRemoval}
                     formik={formik}
                 /> : ""}
-                {activeTab === "curriculum" ? <CourseCurriculumForm /> : ""}
+                {/* {activeTab === "curriculum" ? <CourseCurriculumForm /> : ""}
                 {activeTab === "notes" ? <CourseMedia type="notes" id={id} /> : ""}
                 {activeTab === "audios" ? <CourseMedia type="audios" id={id} /> : ""}
                 {activeTab === "videos" ? <CourseMedia type="videos" id={id} /> : ""}
-                {activeTab === "test" ? <CourseTest id={id} /> : ""}
+                {activeTab === "test" ? <CourseTest id={id} /> : ""} */}
+                <Outlet />
             </div>
             <FooterAction
                 handleConfirmationChange={() => navigate(PATH.COURSE_MANAGEMENT.COURSES.ROOT)}

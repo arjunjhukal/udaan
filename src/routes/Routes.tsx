@@ -19,6 +19,9 @@ import CourseManagementRoot from "../components/pages/CourseManagement/Course";
 import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
 import CourseAnalyticsRootLayout from "../components/pages/CourseManagement/Course/analytics";
 import CreateCourseRoot from "../components/pages/CourseManagement/Course/createCourse";
+import CourseMedia from "../components/pages/CourseManagement/Course/createCourse/CourseMedia";
+import CourseCurriculumForm from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
+import CourseTest from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Test";
 import LiveClassRoot from "../components/pages/CourseManagement/LiveClass";
 import AllLiveClass from "../components/pages/CourseManagement/LiveClass/allLiveClass";
 import CreateLiveClassRoot from "../components/pages/CourseManagement/LiveClass/createLiveClass";
@@ -103,12 +106,21 @@ const router = createBrowserRouter([
 				children: [
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.ROOT, element: <AllCourse /> },
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.CREATE_COURSE.ROOT, element: <CreateCourseRoot /> },
-					{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(), element: <CreateCourseRoot /> },
+					{
+						path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(), element: <CreateCourseRoot />,
+						children: [
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.CURRICULUM.ROOT(), element: <CourseCurriculumForm /> },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.VIDEOS.ROOT(), element: <CourseMedia type="videos" /> },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.NOTES.ROOT(), element: <CourseMedia type="notes" /> },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.AUDIOS.ROOT(), element: <CourseMedia type="audios" /> },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.TEST.ROOT(), element: <CourseTest /> },
+						]
+					},
 					{ path: PATH.COURSE_MANAGEMENT.COURSES.ANALYTICS.ROOT(), element: <CourseAnalyticsRootLayout /> },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_courses", "edit_courses", "delete_courses", "view_courses"]} >
+				element: <Unauthorized permissions={["add_enrollments", "edit_enrollments", "delete_enrollments", "view_enrollments"]} >
 					<EnrollmentRoot />
 				</Unauthorized>,
 				children: [
@@ -120,7 +132,11 @@ const router = createBrowserRouter([
 				children: [
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT, element: <AllLiveClass /> },
 					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT, element: <CreateLiveClassRoot /> },
-					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(), element: <CreateLiveClassRoot /> },
+					{
+						path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(),
+						element: <CreateLiveClassRoot />,
+
+					},
 				],
 			},
 			{

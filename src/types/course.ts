@@ -104,33 +104,7 @@ export interface CourseList extends GlobalResponse {
 
 export type courseTabType = "overview" | "curriculum" | "notes" | "test" | "audios" | "videos"
 
-export const CourseTabs: { label: string; value: courseTabType }[] = [
-    {
-        label: "Overview",
-        value: "overview"
-    },
-    {
-        label: "Curriculum",
-        value: "curriculum"
-    },
-    {
-        label: "Videos",
-        value: "videos"
-    },
-    {
-        label: "Notes",
-        value: "notes"
-    },
-    {
-        label: "Test",
-        value: "test"
-    },
-    {
-        label: "Audios",
-        value: "audios"
-    },
 
-]
 
 
 export type CurriculumCommonProps = {

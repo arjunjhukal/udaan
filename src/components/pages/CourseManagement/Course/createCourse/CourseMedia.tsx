@@ -9,6 +9,7 @@ import MediaCard from "../../../../organism/Cards/MediaCard";
 import EmptyRoute from "../../../../organism/EmptyRoute";
 import PageHeader from "../../../../organism/PageHeader";
 import TableFilter from "../../../../organism/TableFilter";
+import { useParams } from "react-router-dom";
 
 type MediaType = "audios" | "notes" | "videos";
 
@@ -67,11 +68,11 @@ const mediaConfigs: Record<MediaType, MediaConfig> = {
 
 interface Props {
     type: MediaType;
-    id?: string;
     allowMultiple?: boolean;
 }
 
-export default function CourseMedia({ type, id, allowMultiple = true }: Props) {
+export default function CourseMedia({ type, allowMultiple = true }: Props) {
+    const { id } = useParams();
     const dispatch = useAppDispatch();
     const [qp, setQp] = useState({
         pageIndex: 1,
@@ -152,6 +153,7 @@ export default function CourseMedia({ type, id, allowMultiple = true }: Props) {
             return newSet;
         });
     };
+    
     return (
         <div className="media__root">
             <PageHeader
