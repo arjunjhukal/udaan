@@ -43,7 +43,7 @@ export default function GorkhapatraForm() {
                 formData.append("description", values.description)
                 formData.append("type", values.type)
                 formData.append("content", values.content)
-                formData.append("status", values.status)
+                formData.append("status","published")
 
                 if (values.thumbnail) {
                     formData.append("thumbnail", values.thumbnail)
