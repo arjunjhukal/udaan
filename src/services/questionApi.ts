@@ -199,7 +199,7 @@ export const questionApi = createApi({
             }
         }, { id?: number, resultId?: number }>({
             query: ({ id }) => ({
-                url: `/admin/test/${id}/sample`,
+                url: `/test/${id}/sample`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
