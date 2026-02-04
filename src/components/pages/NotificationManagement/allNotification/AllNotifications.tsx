@@ -158,7 +158,7 @@ export default function AllNotifications() {
             header: "Description",
             accessorKey: "description",
             cell: ({ row }) => (
-                <Typography variant="subtitle2" className="capitalize">
+                <Typography variant="subtitle2" className="capitalize line-clamp-1" >
                     {renderHtml(row.original.description) || "N/A"}
                 </Typography>
             ),
