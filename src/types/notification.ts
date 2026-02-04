@@ -60,8 +60,7 @@ export const NotificationValidationSchema = yup.object({
     description: yup
         .string()
         .required("Description is required")
-        .min(10, "Description must be at least 10 characters")
-        .max(1000, "Description must not exceed 1000 characters"),
+        .min(10, "Description must be at least 10 characters"),
 
     external_link: yup
         .string()
