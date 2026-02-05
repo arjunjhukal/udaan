@@ -73,6 +73,7 @@ export interface TestProps {
     total_questions: number | null;
     marks_per_question: number | null;
     created_at?: string;
+    has_published?: boolean;
 }
 
 
@@ -212,6 +213,7 @@ export interface StudentSubmitTestProps {
     total_attempted: number,
     total_questions: number,
     total_correct: number,
+    checked_answers: number,
     started_at: string,
     finished_at: string,
     timer: number,

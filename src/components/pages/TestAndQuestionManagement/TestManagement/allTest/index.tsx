@@ -9,6 +9,7 @@ import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import { useCourseFilter } from '../../../../../store/useCourseFilter';
 import type { TestProps } from '../../../../../types/question';
+import StatusPill from '../../../../atoms/StatusPill';
 import Actions from '../../../../molecules/Action';
 import UdaanTable from '../../../../molecules/Table';
 import TablePagination from '../../../../molecules/Table/Pagination';
@@ -160,6 +161,13 @@ export default function AllTestListing() {
                 <Typography fontWeight={500} className="capitalize">
                     {row.original.test_type || "N/A"}
                 </Typography>
+            ),
+        },
+        {
+            header: "Result Status",
+            accessorKey: "has_published",
+            cell: ({ row }) => (
+                <StatusPill variant={row.original.has_published ? 'success' : "error"} status={row.original.has_published ? "Published" : "Not Published"} />
             ),
         },
         {

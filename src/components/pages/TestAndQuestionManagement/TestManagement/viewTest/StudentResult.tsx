@@ -145,6 +145,21 @@ export default function StudentResult({ id }: { id: string }) {
 				),
 			},
 			{
+				header: "Checked",
+				accessorKey: "checked_answers",
+				cell: ({ row }) => (
+					<div className="flex justify-start items-center">
+						<Typography variant="subtitle1" color="text.dark">
+							{row.original?.checked_answers}
+						</Typography>
+
+						<Typography variant="subtitle1" color="text.middle">
+							/{row.original?.total_attempted}
+						</Typography>
+					</div>
+				),
+			},
+			{
 				header: "Started At",
 				accessorKey: "started_at",
 				cell: ({ row }) => (

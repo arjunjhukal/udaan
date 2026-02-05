@@ -268,7 +268,7 @@ export const questionApi = createApi({
                 url: `/admin/test/${id}/publish`,
                 method: "POST"
             }),
-            invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+            invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }, { type: "Test", id: "LIST" }]
         })
     })
 });
