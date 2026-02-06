@@ -60,7 +60,11 @@ export default function MakuraDatePicker({
     useEffect(() => {
         if (includeTime && !value) {
             const defaultDate = defaultTime
-                ? dayjs().hour(defaultTime.hour).minute(defaultTime.minute).second(0)
+                ? dayjs()
+                    .hour(defaultTime.hour)
+                    .minute(defaultTime.minute)
+                    .second(0)
+                    .millisecond(0)
                 : dayjs();
             onChange(defaultDate);
         }
@@ -131,6 +135,7 @@ export default function MakuraDatePicker({
             openPickerIcon: ArrowDownIcon,
             textField: CustomTextField,
         },
+        timeSteps: { minutes: 1 }
     };
 
     return (
