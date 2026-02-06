@@ -90,7 +90,7 @@ export default function TableFilter({
             }}
         >
             <div className={categoryLayout ? "col-span-5" : "col-span-6"}>
-                {!categoryLayout && search ? <OutlinedInput
+                {!categoryLayout && setSearch ? <OutlinedInput
                     placeholder="Search"
                     name="search"
                     id="search"
@@ -116,7 +116,7 @@ export default function TableFilter({
                         </svg>
                     </IconButton> : ""}
 
-                    {categoryLayout && search ? <OutlinedInput
+                    {categoryLayout && setSearch ? <OutlinedInput
                         placeholder="Search"
                         name="search"
                         id="search"
