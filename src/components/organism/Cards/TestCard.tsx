@@ -30,8 +30,7 @@ export default function TestCard({ test }: { test: TestProps }) {
                     </svg>
                 </Box>
                 <Box className="flex flex-col gap-2">
-                    <Typography variant='subtitle1' fontWeight={500} color='text.dar'>{test?.name}</Typography>
-
+                    <Typography variant='subtitle1' fontWeight={500} color='text.dark' className='capitalize'>{test?.name}</Typography>
                     <div className="flex items-center gap-2">
                         {test?.question_ids?.length ?
                             <>

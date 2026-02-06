@@ -259,8 +259,8 @@ export default function AllTestListing() {
 
             {!isLoading && !tests.length ?
                 <EmptyRoute
-                    title='Question Not Found'
-                    message='Oops your question is empty. Please add question to help student gain knowlegde.'
+                    title='Test Not Found'
+                    message='Oops your test is empty. Please add question to help student gain knowlegde.'
                     icon={(
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M22 4.84969V16.7397C22 17.7097 21.21 18.5997 20.24 18.7197L19.93 18.7597C18.29 18.9797 15.98 19.6597 14.12 20.4397C13.47 20.7097 12.75 20.2197 12.75 19.5097V5.59969C12.75 5.22969 12.96 4.88969 13.29 4.70969C15.12 3.71969 17.89 2.83969 19.77 2.67969H19.83C21.03 2.67969 22 3.64969 22 4.84969Z" fill="#1D82F5" />

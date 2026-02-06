@@ -11,10 +11,10 @@ export const activitiyApi = createApi({
     tagTypes: ["Activity"],
     endpoints: (builder) => ({
         getAllActivity: builder.query<ActivityList, QueryParams & {
-            type: ActivityType,
-            days: number | null,
-            device_type: DeviceType;
-            status: Status;
+            type?: ActivityType,
+            days?: number | null,
+            device_type?: DeviceType;
+            status?: Status;
         }>({
             query: ({ pageIndex, pageSize, search, startDate, endDate, sort_by, type, days, device_type, status }) => ({
                 url: `/admin/activity-log?${buildQueryParams({

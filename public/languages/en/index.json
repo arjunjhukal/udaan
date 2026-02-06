@@ -132,6 +132,11 @@
         "enrolled_users": "Enrolled Users",
         "gorkhapatra": "Gorkhapatra",
         "views": "Views",
+        "morning": "Good Morning",
+        "afternoon": "Good Afternoon",
+        "evening": "Good Evening",
+        "recent": "Recent",
+        "transactions": "Transactions",
         "empty_states": {
             "roles": {
                 "title": "Roles & Permissions Not Found",
@@ -228,6 +233,7 @@
         "generate_otp": "Generate OTP",
         "publish": "Publish",
         "unpublish": "Unpublish",
-        "draft": "Save as Draft"
+        "draft": "Save as Draft",
+        "view_all": "View All"
     }
 }

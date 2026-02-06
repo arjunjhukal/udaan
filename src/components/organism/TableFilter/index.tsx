@@ -1,6 +1,7 @@
 import { Download } from "@mui/icons-material";
 import { Box, Button, ClickAwayListener, Dialog, DialogContent, Grow, IconButton, List, ListItem, ListItemButton, ListItemText, OutlinedInput, Paper, Popper, Stack, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
+import { t } from "i18next";
 import { Add, Send } from "iconsax-reactjs";
 import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import FilterIcon from "../../../icons/FilterIcon";
@@ -9,8 +10,8 @@ import UdaanDatePicker from "../DatePicker";
 
 export type LayoutProps = "table" | "grid"
 interface TableFilterProps {
-    search: string;
-    setSearch: (newValue: string) => void;
+    search?: string;
+    setSearch?: (newValue: string) => void;
     selectedRows?: Set<string | number>;
     handleRoleDelete?: (selectedRoleIds: string[]) => void;
     onFilter?: () => void;
@@ -31,9 +32,10 @@ interface TableFilterProps {
     handleResetFilter?: () => void;
     onDownload?: () => void;
     donwloading?: boolean;
+    redirectUrl?: string;
 }
 export default function TableFilter({
-    search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter, onDownload, donwloading
+    search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter, onDownload, donwloading, redirectUrl
 }: TableFilterProps) {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
@@ -82,25 +84,25 @@ export default function TableFilter({
         setShowCustomRangeModal(false);
     };
     return (
-        <Box className={`flex flex-wrap gap-2  md:grid md:grid-cols-12 mb-2 2xl:mb-4 ${categoryLayout ? "pb-2 mb-6" : ""}`}
+        <Box className={`flex flex-wrap gap-2  2xl:grid 2xl:grid-cols-12 mb-2 2xl:mb-4 items-center ${categoryLayout ? "pb-2 mb-6" : ""}`}
             sx={{
                 borderBottom: categoryLayout ? `1px solid ${theme.palette.separator.dark}` : ""
             }}
         >
-            <div className="col-span-6">
-                {!categoryLayout ? <OutlinedInput
+            <div className={categoryLayout ? "col-span-5" : "col-span-6"}>
+                {!categoryLayout && search ? <OutlinedInput
                     placeholder="Search"
                     name="search"
                     id="search"
                     startAdornment={<SearchIcon />}
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => setSearch?.(e.target.value)}
                     sx={{
                         gap: "8px"
                     }}
-                /> : <Typography variant="h5" color="text.dark">{title}</Typography>}
+                /> : <Typography variant="h4" color="text.dark">{title}</Typography>}
             </div>
-            <div className="col-span-6">
+            <div className={categoryLayout ? "col-span-7" : "col-span-6"}>
                 <div className="flex md:justify-end items-center gap-3 filter__right">
                     {selectedRows && selectedRows.size > 0 ? <IconButton
                         sx={{
@@ -114,13 +116,13 @@ export default function TableFilter({
                         </svg>
                     </IconButton> : ""}
 
-                    {categoryLayout ? <OutlinedInput
+                    {categoryLayout && search ? <OutlinedInput
                         placeholder="Search"
                         name="search"
                         id="search"
                         startAdornment={<SearchIcon />}
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={(e) => setSearch?.(e.target.value)}
                         sx={{
                             gap: "8px",
                             padding: "8px 16px"
@@ -194,7 +196,7 @@ export default function TableFilter({
                                 className="py-2.5! px-3.5! rounded-md! text-center justify-center! gap-2! items-center!"
                                 onClick={() => handleToggle()}
                             >
-                                <Typography variant="subtitle2" color="text.dark" className="hidden! md:flex!">
+                                <Typography variant="subtitle2" color="text.dark" className="hidden! md:flex! text-nowrap">
                                     Filter By Date
                                 </Typography>
                             </Button>
@@ -301,6 +303,11 @@ export default function TableFilter({
                                 </DialogContent>
                             </Dialog>
                         </>) : ""}
+                    {
+                        redirectUrl ? <Button LinkComponent={"a"}
+                            href={redirectUrl}
+                            variant="contained" color="primary">{t("actions.view_all")}</Button> : ""
+                    }
                     {assignToCourse && (
                         <Button
                             color="primary"

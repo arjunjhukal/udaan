@@ -113,6 +113,10 @@
         "filter": "फिल्टर",
         "activity_log": "गतिविधि लग",
         "medias": "मिडिया",
+        "morning": "शुभ प्रभात",
+        "afternoon": "शुभ अपराह्न",
+        "evening": "शुभ साँझ",
+        "welcome": "स्वागत छ",
         "empty_states": {
             "roles": {
                 "title": "भूमिका र अनुमति फेला परेन",

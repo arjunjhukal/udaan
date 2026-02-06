@@ -18,7 +18,7 @@ export const notificationApi = createApi({
             }),
             invalidatesTags: [{ type: "Notifications", id: "LIST" }],
         }),
-        getAllNotification: builder.query<NotificationList, QueryParams & { days: number | null, status: CompletionStatus, delivey_method: DeliveryMethodsType, target_audience: TargetStudentType }>({
+        getAllNotification: builder.query<NotificationList, QueryParams & { days?: number | null, status?: CompletionStatus, delivey_method: DeliveryMethodsType, target_audience?: TargetStudentType }>({
             query: ({ pageIndex, pageSize, startDate, endDate, days, status, delivey_method, target_audience }) => {
                 const queryParams = buildQueryParams({
                     page: pageIndex,

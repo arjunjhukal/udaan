@@ -112,14 +112,11 @@ export default function ResponsiveDrawer(props: Props) {
 				component="main"
 				sx={{
 					flexGrow: 1,
-					width: { lg: `calc(100% - ${drawerWidth}px)`, padding: "32px 16px 16px" },
 					overflowX: "hidden"
 				}}>
-				<Toolbar sx={{ height: 70 }} />
-				<Box className="content p-4 lg:p-6 rounded-2xl overflow-y-auto flex flex-col" sx={{
-					background: theme.palette.primary.contrastText,
-					height: "calc(100vh - 125px)"
-
+				<Box className="content p-4 lg:p-6 rounded-2xl overflow-y-auto flex flex-col pt-24 lg:pt-28" sx={{
+					background: pathname !== "/dashboard" ? theme.palette.primary.contrastText : "",
+					height: "calc(100vh - 16px)"
 				}}>
 					{props.children}
 				</Box>

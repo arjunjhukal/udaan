@@ -21,6 +21,7 @@ import authReducer from "../slice/authSlice";
 import sessionReducer from "../slice/sessionSlice";
 import themeReducer from "../slice/themeSlice";
 import toastReducer from "../slice/toastSlice";
+import { dashboardApi } from "../services/dashboardApi";
 export const store = configureStore({
 	reducer: {
 		theme: themeReducer,
@@ -45,6 +46,7 @@ export const store = configureStore({
 		[settingApi.reducerPath]: settingApi.reducer,
 		[activitiyApi.reducerPath]: activitiyApi.reducer,
 		[gorkhapatraApi.reducerPath]: gorkhapatraApi.reducer,
+		[dashboardApi.reducerPath]: dashboardApi.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(authApi.middleware)
@@ -64,6 +66,7 @@ export const store = configureStore({
 			.concat(settingApi.middleware)
 			.concat(activitiyApi.middleware)
 			.concat(gorkhapatraApi.middleware)
+			.concat(dashboardApi.middleware)
 });
 
 export type RootState = ReturnType<typeof store.getState>;
