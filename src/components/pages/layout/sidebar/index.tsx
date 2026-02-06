@@ -115,12 +115,14 @@ export default function ResponsiveDrawer(props: Props) {
 					overflowX: "hidden"
 				}}>
 				<Box className="content p-4 lg:p-6 rounded-2xl overflow-y-auto flex flex-col pt-24 lg:pt-28" sx={{
-					background: pathname !== "/dashboard" ? theme.palette.primary.contrastText : "",
+					background: pathname === "/" || pathname === "/dashboard"
+						? "transparent"
+						: theme.palette.primary.contrastText,
 					height: "calc(100vh - 16px)"
 				}}>
 					{props.children}
 				</Box>
 			</Box>
-		</Box>
+		</Box >
 	);
 }
