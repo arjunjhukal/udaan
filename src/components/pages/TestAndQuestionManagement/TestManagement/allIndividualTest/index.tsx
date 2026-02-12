@@ -4,7 +4,7 @@ import { Add } from 'iconsax-reactjs';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PATH } from '../../../../../routes/PATH';
-import { useDeleteTestMutation, useGetAllTestQuery } from '../../../../../services/questionApi';
+import { useDeleteTestMutation, useGetAllIndividualTestQuery } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import { useCourseFilter } from '../../../../../store/useCourseFilter';
@@ -18,9 +18,9 @@ import EmptyRoute from '../../../../organism/EmptyRoute';
 import { CourseFilter } from '../../../../organism/Filter/CourseFilter';
 import PageHeader from '../../../../organism/PageHeader';
 import TableFilter, { type LayoutProps } from '../../../../organism/TableFilter';
-import TestGridLayout from './TestGridLayout';
+import TestGridLayout from '../allTest/TestGridLayout';
 
-export default function AllTestListing() {
+export default function AllIndividualTestListing() {
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
@@ -55,7 +55,7 @@ export default function AllTestListing() {
 
     const categoryFilter = getCategoryFilterParams();
 
-    const { data, isLoading } = useGetAllTestQuery({
+    const { data, isLoading } = useGetAllIndividualTestQuery({
         ...qp, search: search, ...customRange,
         days,
         categoryFilter: { ...categoryFilter },

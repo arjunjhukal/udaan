@@ -83,16 +83,16 @@ export const PATH = {
 					id ? `/quiz/${id}` : "/quiz/:id",
 			},
 		},
-		SET: {
-			ROOT: "/sets",
-			CREATE_SET: {
-				ROOT: "/set/create-set",
-			},
-			EDIT_SET: {
-				ROOT: (id?: string) =>
-					id ? `/set/${id}` : "/set/:id",
-			},
-		}
+	},
+	SET: {
+		ROOT: "/sets",
+		CREATE_SET: {
+			ROOT: "/set/create-set",
+		},
+		EDIT_SET: {
+			ROOT: (id?: string) =>
+				id ? `/set/${id}` : "/set/:id",
+		},
 	},
 	CATEGORY_LEVEL_MANAGEMENT: {
 		ROOT: "/category-level-management",
@@ -151,6 +151,9 @@ export const PATH = {
 					ROOT: (id?: number, resultId?: number, questionId?: number) =>
 						id && resultId ? `/test/${id}/check-paper/${resultId}/question/${questionId}` : "/test/:id/check-paper/:resultId/question/:questionId"
 				}
+			},
+			INDIVIDUAL_TEST: {
+				ROOT: "/test/individual"
 			}
 		}
 	},

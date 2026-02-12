@@ -52,7 +52,10 @@
                 "root": "Questions"
             },
             "test": {
-                "root": "Test"
+                "root": "Test",
+                "individual": {
+                    "root": "Individual Test"
+                }
             }
         },
         "teachers": {

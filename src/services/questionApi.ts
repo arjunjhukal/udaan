@@ -269,6 +269,16 @@ export const questionApi = createApi({
                 method: "POST"
             }),
             invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }, { type: "Test", id: "LIST" }]
+        }),
+        getAllIndividualTest: builder.query<TestList, QueryParams & { type?: TestTypeProps; days?: number | null; categoryFilter?: CategoryFilterParams; }>({
+            query: ({ pageIndex, pageSize, search }) => ({
+                url: `/test?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search
+                })}`
+            }),
+            providesTags: [{ type: "Test", id: "LIST" }]
         })
     })
 });
@@ -297,5 +307,6 @@ export const {
     usePublishTestResultsMutation,
     useSubmitTestSampleMutation,
     useGetTestSampleQuery,
-    useDownloadResultMutation
+    useDownloadResultMutation,
+    useGetAllIndividualTestQuery
 } = questionApi;

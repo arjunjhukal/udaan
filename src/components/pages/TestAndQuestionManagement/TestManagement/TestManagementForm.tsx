@@ -14,6 +14,7 @@ import { TestInitialState, testValidationSchema, type QuestionProps, type TestPr
 import { calcHasMore } from "../../../../utils/calculateHasMore";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
 import StyledToggleButtons from "../../../atoms/StyledToggleSwitch";
+import TextEditor from "../../../atoms/TextEditor";
 import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FooterAction from "../../../molecules/FooterAction";
 import InfiniteScrolling from "../../../molecules/InfiniteScrolling";
@@ -69,7 +70,10 @@ export default function TestManagementForm() {
                 is_scheduled: test.is_scheduled ?? false,
                 test_type: test.test_type || "mcq",
                 total_questions: test.total_questions || 0,
-                marks_per_question: test.marks_per_question || 0
+                marks_per_question: test.marks_per_question || 0,
+                is_individual_test: test.is_individual_test,
+                price: test.price,
+                rules: test.rules
             };
         }
         return TestInitialState;
@@ -143,9 +147,6 @@ export default function TestManagementForm() {
         });
     }, [questions, questionQp.pageIndex]);
 
-
-
-
     const handleCourseSearch = (searchTerm: string) => {
         setCourseQp(prev => ({
             ...prev,
@@ -161,7 +162,6 @@ export default function TestManagementForm() {
             pageIndex: 1
         }));
     };
-
 
     const coursePagination = courses?.data?.pagination;
     const questionPagination = questions?.data?.pagination;
@@ -356,6 +356,52 @@ export default function TestManagementForm() {
                     </div>
                 </div>
 
+                <div className="col-span-2 flex items-center gap-2">
+                    <Typography variant="subtitle1" color="text.middle">Do you want this test to be an individual test?</Typography>
+                    <YesNoSwitch
+                        checked={formik.values.is_individual_test}
+                        onChange={(event) => {
+                            formik.setFieldValue("is_individual_test", event.target.checked);
+                        }}
+                    />
+                </div>
+
+                {
+                    formik.values.is_individual_test ? <>
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel className="required">Price</InputLabel>
+                                <OutlinedInput
+                                    fullWidth
+                                    name="price"
+                                    value={formik.values.price}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    placeholder="Enter Test price"
+                                    error={formik.touched.price && Boolean(formik.errors.price)}
+                                />
+                                {formik.touched.price && formik.errors.price && (
+                                    <FormHelperText error>{formik.errors.price}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <TextEditor
+                                    label="Description / Rule and Regulations"
+                                    required
+                                    onChange={(newValue) => formik.setFieldValue("rules", newValue)}
+                                    onBlur={(newValue) => formik.setFieldValue("rules", newValue)}
+                                    value={formik.values.rules}
+                                />
+                                {formik.touched.rules && formik.errors.rules && (
+                                    <FormHelperText error>{formik.errors.rules}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+                    </> : ""
+                }
                 <div className="col-span-2 flex items-center gap-2">
                     <Typography variant="subtitle1" color="text.middle">Do you want to schedule this test?</Typography>
                     <YesNoSwitch

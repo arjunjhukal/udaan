@@ -117,8 +117,8 @@ export default function PrimaryMenu() {
                                 <CAN permissions={["add_sets", "edit_sets", "delete_sets", "view_sets"]}>
                                     <ListItem disablePadding className="menu__item">
                                         <ListItemButton
-                                            onClick={() => navigate(PATH.COURSE_MANAGEMENT.SET.ROOT)}
-                                            className={location.pathname.startsWith(PATH.COURSE_MANAGEMENT.SET.ROOT) ? "active-nested" : ""}>
+                                            onClick={() => navigate(PATH.SET.ROOT)}
+                                            className={location.pathname.startsWith(PATH.SET.ROOT) ? "active-nested" : ""}>
                                             <ListItemText
                                                 primary={t("menus.course_management.set.root")}
                                             />
@@ -187,15 +187,26 @@ export default function PrimaryMenu() {
                                     </ListItem>
                                 </CAN>
                                 <CAN permissions={["add_tests", "edit_tests", "delete_tests", "view_tests"]}>
-                                    <ListItem disablePadding className="menu__item">
-                                        <ListItemButton
-                                            onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT)}
-                                            className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT) ? "active-nested" : ""}>
-                                            <ListItemText
-                                                primary={t("menus.test_question_management.test.root")}
-                                            />
-                                        </ListItemButton>
-                                    </ListItem>
+                                    <>
+                                        <ListItem disablePadding className="menu__item">
+                                            <ListItemButton
+                                                onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT)}
+                                                className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT) ? "active-nested" : ""}>
+                                                <ListItemText
+                                                    primary={t("menus.test_question_management.test.root")}
+                                                />
+                                            </ListItemButton>
+                                        </ListItem>
+                                        <ListItem disablePadding className="menu__item">
+                                            <ListItemButton
+                                                onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.INDIVIDUAL_TEST.ROOT)}
+                                                className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.TEST.INDIVIDUAL_TEST.ROOT) ? "active-nested" : ""}>
+                                                <ListItemText
+                                                    primary={t("menus.test_question_management.test.individual.root")}
+                                                />
+                                            </ListItemButton>
+                                        </ListItem>
+                                    </>
                                 </CAN>
                             </List>
                         </Collapse>

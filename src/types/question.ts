@@ -74,6 +74,9 @@ export interface TestProps {
     marks_per_question: number | null;
     created_at?: string;
     has_published?: boolean;
+    price: string;
+    rules: string;
+    is_individual_test: boolean;
 }
 
 
@@ -94,6 +97,9 @@ export const TestInitialState: TestProps = {
     is_scheduled: true,
     total_questions: null,
     marks_per_question: 1,
+    is_individual_test: false,
+    price: "",
+    rules: ""
 };
 export interface TestList {
     data: {
@@ -182,6 +188,25 @@ export const testValidationSchema = Yup.object().shape({
                 return value.length === total_questions;
             }
         ),
+    is_individual_test: Yup.boolean().required("Mark as individual test"),
+    price: Yup.string().when("is_individual_test", {
+        is: true,
+        then: (schema) =>
+            schema
+                .trim()
+                .required("Price is required"),
+        otherwise: (schema) => schema.notRequired()
+    }),
+
+    rules: Yup.string().when("is_individual_test", {
+        is: true,
+        then: (schema) =>
+            schema
+                .trim()
+                .required("Rules are required"),
+        otherwise: (schema) => schema.notRequired()
+    }),
+
 });
 
 

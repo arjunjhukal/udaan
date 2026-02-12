@@ -52,6 +52,7 @@ import SubscriptionManagementRoot from "../components/pages/SubscriptionManageme
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
+import AllIndividualTestListing from "../components/pages/TestAndQuestionManagement/TestManagement/allIndividualTest";
 import SingleStudentSingleQuestion from "../components/pages/TestAndQuestionManagement/TestManagement/checkSinlgeQuestion";
 import QuestionAnswerLisitingLayout from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest/Layout";
 import SingleStudentAnswerLayout from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest/SingleStudentAnswerLayout";
@@ -142,9 +143,9 @@ const router = createBrowserRouter([
 			{
 				element: <Unauthorized permissions={["add_sets", "edit_sets", "delete_sets", "view_sets"]}><SetRoot /></Unauthorized>,
 				children: [
-					{ path: PATH.COURSE_MANAGEMENT.SET.ROOT, element: <AllSets /> },
-					{ path: PATH.COURSE_MANAGEMENT.SET.CREATE_SET.ROOT, element: <CreateSet /> },
-					{ path: PATH.COURSE_MANAGEMENT.SET.EDIT_SET.ROOT(), element: <CreateSet /> },
+					{ path: PATH.SET.ROOT, element: <AllSets /> },
+					{ path: PATH.SET.CREATE_SET.ROOT, element: <CreateSet /> },
+					{ path: PATH.SET.EDIT_SET.ROOT(), element: <CreateSet /> },
 				],
 			},
 			{
@@ -163,6 +164,10 @@ const router = createBrowserRouter([
 					{
 						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT,
 						element: <TestManagementRoot />,
+					},
+					{
+						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.INDIVIDUAL_TEST.ROOT,
+						element: <AllIndividualTestListing />,
 					},
 					{
 						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(),
