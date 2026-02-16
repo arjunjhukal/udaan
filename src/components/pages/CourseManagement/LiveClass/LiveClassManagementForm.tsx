@@ -110,7 +110,8 @@ export default function LiveClassManagementForm() {
             data: [
                 { name: "udaanshaikshikkendra@gmail.com", id: 1 },
                 { name: "sushantsanu123@gmail.com", id: 2 },
-                { name: "udaanshaikshikkendra805@gmail.com", id: 3 }
+                { name: "udaanshaikshikkendra805@gmail.com", id: 3 },
+                { name: "ssktirtha085@gmail.com", id: 4 },
             ]
         }
     }
