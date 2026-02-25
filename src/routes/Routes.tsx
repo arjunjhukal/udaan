@@ -69,6 +69,7 @@ import AllPositions from "../components/pages/positionManagement/allPositions";
 import UserManagementRoot from "../components/pages/userManagement";
 import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
+import ViewUserRoot from "../components/pages/userManagement/viewUser";
 import { PATH } from "./PATH";
 import Private from "./Private";
 import Unauthorized from "./Unauthorized";
@@ -214,6 +215,7 @@ const router = createBrowserRouter([
 					{ index: true, path: PATH.USER_MANAGEMENT.ROOT, element: <AllUsers /> },
 					{ path: PATH.USER_MANAGEMENT.CREATE_USER.ROOT, element: <CreateUser /> },
 					{ path: PATH.USER_MANAGEMENT.EDIT_USER.ROOT(), element: <CreateUser /> },
+					{ path: PATH.USER_MANAGEMENT.VIEW_USER.ROOT(), element: <ViewUserRoot /> },
 				],
 			},
 			{

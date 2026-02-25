@@ -18,6 +18,7 @@ export interface RegisterUserProps {
 	designation: string;
 	is_suspended?: boolean
 	address?: string;
+	enrolled_courses?: number;
 }
 
 export const RegisterUserInitialData = {

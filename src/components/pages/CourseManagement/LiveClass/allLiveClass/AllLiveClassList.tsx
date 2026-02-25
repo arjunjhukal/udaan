@@ -8,7 +8,7 @@ import { useDeleteLiveClassMutation, useGetAllLiveClassQuery } from "../../../..
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import { useCourseFilter } from "../../../../../store/useCourseFilter";
-import { LiveClassTabs, type LiveClassPayload, type liveClassTabType } from "../../../../../types/liveClass";
+import { type LiveClassPayload, type liveClassTabType } from "../../../../../types/liveClass";
 import { formatDate } from "../../../../../utils/dateFormat";
 import { useGetStatusStyle } from "../../../../../utils/getStyleBasedOnStatus";
 import Actions from "../../../../molecules/Action";
@@ -69,6 +69,9 @@ export default function AllLiveClassList() {
     days,
     categoryFilter: { ...categoryFilter },
   });
+  const { data: ongoingData } = useGetAllLiveClassQuery({ pageIndex: 1, pageSize: 1, search: "", status: "ongoing" });
+  const { data: upcomingData } = useGetAllLiveClassQuery({ pageIndex: 1, pageSize: 1, search: "", status: "upcoming" });
+  const { data: endedData } = useGetAllLiveClassQuery({ pageIndex: 1, pageSize: 1, search: "", status: "ended" });
   const [deleteLiveClass, { isLoading: deleting }] = useDeleteLiveClassMutation();
 
   const liveClasses = data?.data?.data || [];
@@ -163,6 +166,15 @@ export default function AllLiveClassList() {
       ),
     },
     {
+      header: activeTab !== "ended" ? "Enrolled Students" : "Attended By",
+      accessorKey: "enrolled_students",
+      cell: ({ row }) => (
+        <Typography fontWeight={500} className="capitalize">
+          {row.original.enrolled_students || 0} Students
+        </Typography>
+      ),
+    },
+    {
       header: "Status",
       accessorKey: "status",
       cell: ({ row }) => {
@@ -223,7 +235,8 @@ export default function AllLiveClassList() {
         />
       ),
     },
-  ], [selectedRows, isAllSelected, isSomeSelected, qp])
+  ], [selectedRows, isAllSelected, isSomeSelected, qp, activeTab])
+
 
   const handleResetFilter = () => {
     resetFilters();
@@ -232,6 +245,21 @@ export default function AllLiveClassList() {
     setDays(null);
     setQp((prev) => ({ ...prev, pageIndex: 1 }));
   };
+
+  const LiveClassTabs: { label: string; value: liveClassTabType }[] = [
+    {
+      label: `Live Class (${ongoingData?.data?.pagination?.total || 0})`,
+      value: `ongoing`
+    },
+    {
+      label: `Upcoming Classes (${upcomingData?.data?.pagination?.total || 0})`,
+      value: `upcoming`
+    },
+    {
+      label: `Past Class (${endedData?.data?.pagination?.total || 0})`,
+      value: `ended`
+    },
+  ]
   return (
     <div className="live__class__root h-full flex flex-col justify-between">
       <div className="page__top">
