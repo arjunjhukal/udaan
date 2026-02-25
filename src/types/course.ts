@@ -60,6 +60,10 @@ export interface CourseProps {
     sale_price?: string,
     enrolled_students?: string;
     can_take_free_trial: boolean;
+    progress?: number;
+    ends_at?: string;
+    started_from?: string;
+    course_completion_status?: "completed" | "ongoing" | "not_started";
 }
 
 export const initialCourseState: CourseProps = {

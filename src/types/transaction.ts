@@ -1,4 +1,5 @@
 import type { Pagination } from "./roleAndPermission";
+import type { GlobalResponse } from "./user";
 
 export type PaymentMethodProps = "esewa" | "khalti" | "cash" | "fonepay"
 export type PaymentStatusProps = "success" | "installment"
@@ -41,6 +42,24 @@ export interface TransactionResponse extends TransactionPayload {
 export interface TransactionList {
     data: {
         data: TransactionResponse[];
+        pagination: Pagination;
+    }
+}
+
+export interface TransactionProps {
+    id: number;
+    course_name: string;
+    payment_method: string;
+    purchased_date: string;
+    amount_paid: number;
+    invoice_id: string;
+    status: "success" | "failed" | "pending";
+}
+
+
+export interface UserTransactionResponse extends GlobalResponse {
+    data: {
+        data: TransactionProps[];
         pagination: Pagination;
     }
 }

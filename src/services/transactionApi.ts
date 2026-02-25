@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, DeviceType, QueryParams, Status } from "../types";
-import type { TransactionList, TransactionPayload } from "../types/transaction";
+import type { CourseList } from "../types/course";
+import type { TransactionList, TransactionPayload, UserTransactionResponse } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -77,6 +78,40 @@ export const transactionApi = createApi({
             }),
             invalidatesTags: [{ type: "Transaction", id: "LIST" }]
         }),
+        getUserPurchasedCourse: builder.query<CourseList, QueryParams & { id: number }>({
+            query: ({ pageIndex, pageSize, search, id }) => ({
+                url: `admin/user/${id}/enrolled-courses?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search,
+                })}`,
+                method: "GET",
+            }),
+            providesTags: (result, _error, _arg) =>
+                result?.data?.data
+                    ? [
+                        ...result.data.data.map(({ id }) => ({ type: 'Transaction' as const, id })),
+                        { type: 'Transaction', id: 'LIST' }
+                    ]
+                    : [{ type: 'Transaction', id: 'LIST' }]
+        }),
+        getAllUserTransacions: builder.query<UserTransactionResponse, QueryParams & { id: number }>({
+            query: ({ pageIndex, pageSize, search, id }) => ({
+                url: `admin/user/${id}/transaction?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search,
+                })}`,
+                method: "GET",
+            }),
+            providesTags: (result, _error, _arg) =>
+                result?.data?.data
+                    ? [
+                        ...result.data.data.map(({ id }) => ({ type: 'Transaction' as const, id })),
+                        { type: 'Transaction', id: 'LIST' }
+                    ]
+                    : [{ type: 'Transaction', id: 'LIST' }]
+        })
     })
 })
 
@@ -85,5 +120,7 @@ export const {
     useGetAllTransactionsQuery,
     useGetTransactionByIdQuery,
     useDeleteTransactionMutation,
-    useUpdateTransactionByIdMutation
+    useUpdateTransactionByIdMutation,
+    useGetUserPurchasedCourseQuery,
+    useGetAllUserTransacionsQuery
 } = transactionApi;
