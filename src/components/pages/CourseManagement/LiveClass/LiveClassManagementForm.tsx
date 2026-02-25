@@ -314,8 +314,7 @@ export default function LiveClassManagementForm() {
                                 <TextField
                                     {...params}
                                     placeholder="Select Zoom Account"
-                                // error={formik.touched.account_id && Boolean(formik.errors.account_id)}
-                                // helperText={formik.touched.account_id && formik.errors.account_id}
+                               
                                 />
                             )}
                             disabled={!!id}

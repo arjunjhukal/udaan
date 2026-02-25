@@ -80,6 +80,10 @@ export const PATH = {
 			ROOT: (id?: string) =>
 				id ? `/user-management/${id}` : "/user-management/:id",
 		},
+		VIEW_USER: {
+			ROOT: (id?: string) =>
+				id ? `/user-management/${id}/view` : "/user-management/:id/view",
+		},
 	},
 	TEST_QUESTION_MANAGEMENT: {
 		ROOT: "/test-question-management/",

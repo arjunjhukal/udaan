@@ -271,6 +271,13 @@ export default function AllUserTable() {
             ),
         },
         {
+            header: "Enrolled Courses",
+            accessorKey: "enrolled_courses",
+            cell: ({ row }) => (
+                <Typography fontWeight={500} className="capitalize">{row.original.enrolled_courses || 0}</Typography>
+            ),
+        },
+        {
             header: "Actions",
             accessorKey: "actions",
             cell: ({ row }) => (
@@ -278,7 +285,7 @@ export default function AllUserTable() {
                     <Actions
                         deleting={deleting}
                         editUrl={PATH.USER_MANAGEMENT.EDIT_USER.ROOT(row.original.id?.toString() || "")}
-                        viewUrl={PATH.USER_MANAGEMENT.EDIT_USER.ROOT(row.original.id?.toString() || "")}
+                        viewUrl={PATH.USER_MANAGEMENT.VIEW_USER.ROOT(row.original.id?.toString() || "")}
                         onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
                         onSuspend={() => openSuspendConfirmation([row.original.id?.toString() || ""])}
                         userStatus={row.original.is_suspended}

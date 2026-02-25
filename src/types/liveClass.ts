@@ -33,6 +33,7 @@ export interface LiveClassPayload {
     start_time?: string;
     end_time?: string;
     active_students?: number;
+    enrolled_students?: number;
 }
 
 
@@ -156,18 +157,3 @@ export interface LiveClassList {
 
 export type liveClassTabType = "ongoing" | "upcoming" | "ended"
 
-export const LiveClassTabs: { label: string; value: liveClassTabType }[] = [
-    {
-        label: "Live Class",
-        value: "ongoing"
-    },
-    {
-        label: "Upcoming Classes",
-        value: "upcoming"
-    },
-    {
-        label: "Past Class",
-        value: "ended"
-    },
-
-]
