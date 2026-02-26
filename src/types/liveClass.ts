@@ -34,6 +34,7 @@ export interface LiveClassPayload {
     end_time?: string;
     active_students?: number;
     enrolled_students?: number;
+    participants_count?: number;
 }
 
 
