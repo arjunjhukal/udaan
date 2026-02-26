@@ -170,7 +170,7 @@ export default function AllLiveClassList() {
       accessorKey: "enrolled_students",
       cell: ({ row }) => (
         <Typography fontWeight={500} className="capitalize">
-          {activeTab !== "ended" ? row.original.participants_count || 0 : row.original.active_students || 0} Students
+          {activeTab == "ended" ? row.original.participants_count || 0 : row.original.active_students || 0} Students
         </Typography>
       ),
     },
