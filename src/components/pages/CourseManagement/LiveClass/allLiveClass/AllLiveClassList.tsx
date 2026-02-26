@@ -170,7 +170,7 @@ export default function AllLiveClassList() {
       accessorKey: "enrolled_students",
       cell: ({ row }) => (
         <Typography fontWeight={500} className="capitalize">
-          {row.original.ac || 0} Students
+          {row.original.active_students || 0} Students
         </Typography>
       ),
     },

@@ -3,6 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Add } from "iconsax-reactjs";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
 import { useDownloadCsvMutation } from "../../../../services/activityApi";
 import { useDeleteUserMutation, useGenerateOTPMutation, useGetAllUserQuery, useSuspendUserMutation } from "../../../../services/userApi";
@@ -254,7 +255,9 @@ export default function AllUserTable() {
             header: "Name",
             accessorKey: "name",
             cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">{row.original.name}</Typography>
+                <Link to={PATH.USER_MANAGEMENT.VIEW_USER.ROOT(row.original.id?.toString() || "")}>
+                    <Typography fontWeight={500} className="capitalize">{row.original.name}</Typography>
+                </Link>
             ),
         },
         {
