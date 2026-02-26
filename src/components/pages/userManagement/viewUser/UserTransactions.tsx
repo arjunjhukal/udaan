@@ -92,7 +92,7 @@ export default function UserTransactions() {
 
 
     return (
-        <div className="user__transactions__root mt-6 lg:mt-8">
+        <div className="user__transactions__root">
             <Typography className="mb-4!" variant="h5" fontWeight={600}>{t("messages.transaction_information")}</Typography>
             {!isLoading && !courses.length ? <EmptyRoute
                 title="No Transactions"
