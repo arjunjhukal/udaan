@@ -45,7 +45,7 @@ export default function ResponsiveDrawer(props: Props) {
 	}, [pathname]);
 
 	const drawer = (
-		<div>
+		<div className="min-h-screen overflow-hidden">
 			<Toolbar
 				sx={{
 					padding: {
@@ -68,7 +68,9 @@ export default function ResponsiveDrawer(props: Props) {
 
 	return (
 		<Box sx={{ display: "flex" }}>
-			<CustomAppbar handleDrawerToggle={handleDrawerToggle} />
+			<div className="lg:hidden">
+				<CustomAppbar handleDrawerToggle={handleDrawerToggle} />
+			</div>
 			<Box
 				component="nav"
 				sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
@@ -84,6 +86,7 @@ export default function ResponsiveDrawer(props: Props) {
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
 							width: drawerWidth,
+							height: "100svh",
 							backgroundColor: (theme) => theme.palette.background.sidebar,
 						},
 					}}
@@ -114,11 +117,11 @@ export default function ResponsiveDrawer(props: Props) {
 					flexGrow: 1,
 					overflowX: "hidden"
 				}}>
-				<Box className="content p-4 lg:p-6 rounded-2xl overflow-y-auto flex flex-col pt-24 lg:pt-28" sx={{
+				<Box className="content p-4 lg:p-6  overflow-y-auto flex flex-col" sx={{
 					background: pathname === "/" || pathname === "/dashboard"
 						? "transparent"
 						: theme.palette.primary.contrastText,
-					height: "calc(100vh - 16px)"
+					height: "100vh",
 				}}>
 					{props.children}
 				</Box>

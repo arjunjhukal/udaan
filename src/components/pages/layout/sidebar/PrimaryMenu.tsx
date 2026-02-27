@@ -6,7 +6,7 @@ import {
     ListItem,
     ListItemButton,
     ListItemIcon,
-    ListItemText
+    ListItemText, Typography
 } from "@mui/material";
 import { AttachSquare, Brodcast, Pharagraphspacing } from "iconsax-reactjs";
 import React from "react";
@@ -14,14 +14,20 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import CAN from "../../../../routes/CAN";
 import { PATH } from "../../../../routes/PATH";
+import { setMode, ThemeMode } from "../../../../slice/themeSlice";
+import { useAppDispatch, useAppSelector } from "../../../../store/hook";
+import ProfileMenu from "../appbar/Profile";
 
 export default function PrimaryMenu() {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const [course, setCourse] = React.useState<boolean>(false);
     const [openCategory, setOpenCategory] = React.useState<boolean>(false);
-    const [openTest, setOpenTest] = React.useState(false);
+    const [openTest, setOpenTest] = React.useState<boolean>(false);
+    const [openSetting, setOpenSetting] = React.useState<boolean>(false);
+    const mode = useAppSelector((state) => state.theme.mode);
 
     const isActive = (path: string) => location.pathname === path;
 
@@ -29,6 +35,9 @@ export default function PrimaryMenu() {
         return location.pathname.startsWith(PATH.COURSE_MANAGEMENT.COURSES.ROOT) ||
             location.pathname.startsWith(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT) ||
             location.pathname.startsWith(PATH.COURSE_MANAGEMENT.QUIZ.ROOT);
+    };
+    const isSettingActive = () => {
+        return location.pathname.startsWith(PATH.SETTINGS.ROOT);
     };
 
     const isTestManagementActive = () => {
@@ -51,11 +60,27 @@ export default function PrimaryMenu() {
         if (isCategoryManagementActive()) {
             setOpenCategory(true);
         }
+        if (isSettingActive()) {
+            setOpenSetting(true);
+        }
     }, [location.pathname]);
 
+    const handleThemeSwitch = () => {
+        dispatch(setMode(mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK));
+    };
+
+    const handleLanguageSwitch = () => {
+        const newLang = i18n.language === "en" ? "np" : "en";
+        i18n.changeLanguage(newLang);
+    };
+
+
     return (
-        <Box className="primary__menu relative" sx={{ padding: "0 32px 32px", maxHeight: { xs: "calc(100svh - 150px)", "2xl": "calc(100svh - 180px)" }, overflow: "auto" }}>
-            <List>
+        <Box className="primary__menu relative h-full" sx={{ padding: "0 32px 32px", overflow: "hidden" }}>
+            <List sx={{
+                maxHeight: { xs: "calc(100svh - 150px)", "lg": "calc(100svh - 180px)" },
+                overflowY: "auto",
+            }}>
                 <ListItem disablePadding className="menu__item">
                     <ListItemButton
                         onClick={() => navigate(PATH.DASHBOARD.ROOT)}
@@ -140,6 +165,7 @@ export default function PrimaryMenu() {
                         </Collapse>
                     </ListItem>
                 </CAN>
+
                 <CAN permissions={["add_enrollments", "edit_enrollments", "delete_enrollments", "view_enrollments"]}>
                     <ListItem disablePadding className="menu__item">
 
@@ -364,6 +390,7 @@ export default function PrimaryMenu() {
                         </ListItemButton>
                     </ListItem>
                 </CAN>
+
                 <CAN permissions={["add_gorkhapatras", "edit_gorkhapatras", "delete_gorkhapatras", "view_gorkhapatras",]}>
                     <ListItem disablePadding className="menu__item">
                         <ListItemButton
@@ -378,6 +405,7 @@ export default function PrimaryMenu() {
                         </ListItemButton>
                     </ListItem>
                 </CAN>
+
                 <CAN permissions={["add_contents", "edit_contents", "delete_contents", "view_contents"]}>
                     <ListItem disablePadding className="menu__item">
                         <ListItemButton
@@ -395,20 +423,67 @@ export default function PrimaryMenu() {
                         </ListItemButton>
                     </ListItem>
                 </CAN>
+
                 <CAN permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
                     <ListItem disablePadding className="menu__item">
                         <ListItemButton
-                            onClick={() => navigate(PATH.SETTINGS.PROFILE.ROOT)}
-                            className={location.pathname.startsWith(PATH.SETTINGS.ROOT) ? "active" : ""}>
+                            onClick={() => setOpenSetting((prev) => !prev)}
+                            className={isCourseManagementActive() ? "active" : ""}>
                             <ListItemIcon>
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M20.1 9.21945C18.29 9.21945 17.55 7.93945 18.45 6.36945C18.97 5.45945 18.66 4.29945 17.75 3.77945L16.02 2.78945C15.23 2.31945 14.21 2.59945 13.74 3.38945L13.63 3.57945C12.73 5.14945 11.25 5.14945 10.34 3.57945L10.23 3.38945C9.78 2.59945 8.76 2.31945 7.97 2.78945L6.24 3.77945C5.33 4.29945 5.02 5.46945 5.54 6.37945C6.45 7.93945 5.71 9.21945 3.9 9.21945C2.86 9.21945 2 10.0694 2 11.1194V12.8794C2 13.9194 2.85 14.7794 3.9 14.7794C5.71 14.7794 6.45 16.0594 5.54 17.6294C5.02 18.5394 5.33 19.6994 6.24 20.2194L7.97 21.2094C8.76 21.6794 9.78 21.3995 10.25 20.6094L10.36 20.4194C11.26 18.8494 12.74 18.8494 13.65 20.4194L13.76 20.6094C14.23 21.3995 15.25 21.6794 16.04 21.2094L17.77 20.2194C18.68 19.6994 18.99 18.5294 18.47 17.6294C17.56 16.0594 18.3 14.7794 20.11 14.7794C21.15 14.7794 22.01 13.9294 22.01 12.8794V11.1194C22 10.0794 21.15 9.21945 20.1 9.21945ZM12 15.2494C10.21 15.2494 8.75 13.7894 8.75 11.9994C8.75 10.2094 10.21 8.74945 12 8.74945C13.79 8.74945 15.25 10.2094 15.25 11.9994C15.25 13.7894 13.79 15.2494 12 15.2494Z" fill="#9CA3B0" />
                                 </svg>
                             </ListItemIcon>
                             <ListItemText primary={t("messages.settings")} />
+                            {openSetting ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
+                        <Collapse in={openSetting} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding sx={{ pl: 3 }}>
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => navigate(PATH.SETTINGS.PROFILE.ROOT)}
+                                        className={location.pathname.startsWith(PATH.SETTINGS.ROOT) ? "active" : ""}>
+                                        <ListItemText primary={t("messages.settings")} />
+                                    </ListItemButton>
+                                </ListItem>
+                                {/* Theme Toggle */}
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => handleThemeSwitch()}
+                                    >
+                                        <ListItemText
+                                            primary={
+                                                <Typography variant="subtitle2">
+                                                    {mode === ThemeMode.DARK
+                                                        ? "Light Mode"
+                                                        : "Dark Mode"}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+
+                                {/* Language Switch */}
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => handleLanguageSwitch()}
+                                    >
+                                        <ListItemText
+                                            primary={
+                                                <Typography variant="subtitle2">
+                                                    {i18n.language === "en"
+                                                        ? "नेपाली (Nepali)"
+                                                        : "English"}
+                                                </Typography>
+                                            }
+                                        />
+                                    </ListItemButton>
+                                </ListItem>
+                            </List>
+                        </Collapse>
                     </ListItem>
                 </CAN>
+
                 <CAN permissions={["add_activity_logs", "edit_activity_logs", "delete_activity_logs", "view_activity_logs"]}>
                     <ListItem disablePadding className="menu__item">
                         <ListItemButton
@@ -421,7 +496,12 @@ export default function PrimaryMenu() {
                         </ListItemButton>
                     </ListItem>
                 </CAN>
+
             </List>
+
+            <div className="sticky bottom-0">
+                <ProfileMenu />
+            </div>
         </Box>
     );
 }

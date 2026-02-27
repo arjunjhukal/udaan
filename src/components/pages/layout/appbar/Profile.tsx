@@ -68,7 +68,6 @@ export default function ProfileMenu() {
             <Box
                 ref={anchorRef}
                 onClick={handleToggle}
-
             >
                 <Box className="md:flex gap-2 items-center p-2 justify-between rounded-md cursor-pointer hidden"
                     sx={{
@@ -76,35 +75,37 @@ export default function ProfileMenu() {
                         minWidth: "160px",
                         "&:hover": { backgroundColor: theme.palette.action.hover },
                     }}>
-                    {user?.profile_url ? (
-                        <img
-                            src={user.profile_url}
-                            alt={`${user?.name} Profile Picture`}
-                            className="user__profile w-7 h-7 rounded-full"
-                        />
-                    ) : (
-                        <Box
-                            className="flex items-center w-7 h-7 rounded-full justify-center"
-                            sx={{
-                                background: theme.palette.separator.dark,
-                            }}
-                        >
-                            <Typography variant="body1" color="text.dark">
-                                {user?.name ? user?.name.charAt(0).toUpperCase() : ""}
-                            </Typography>
-                        </Box>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {user?.profile_url ? (
+                            <img
+                                src={user.profile_url}
+                                alt={`${user?.name} Profile Picture`}
+                                className="user__profile w-7 h-7 rounded-full"
+                            />
+                        ) : (
+                            <Box
+                                className="flex items-center w-7 h-7 rounded-full justify-center"
+                                sx={{
+                                    background: theme.palette.separator.dark,
+                                }}
+                            >
+                                <Typography variant="body1" color="text.dark">
+                                    {user?.name ? user?.name.charAt(0).toUpperCase() : ""}
+                                </Typography>
+                            </Box>
+                        )}
 
-                    <Typography variant="subtitle2" color="text.dark">
-                        {user?.name}
-                    </Typography>
+                        <Typography variant="subtitle2" color="primary.contrastText">
+                            {user?.name}
+                        </Typography>
+                    </div>
                     <CustomCollapseIcon isOpen={open} />
                 </Box>
                 <IconButton className="md:hidden! aspect-square" sx={{
                     background: (theme) => theme.palette.separator.dark,
                     minWidth: "44px",
                 }}>
-                    <Typography variant="body1" color="text.dark">
+                    <Typography variant="body1" color="primary.contrastText">
                         {user?.name ? user?.name.charAt(0).toUpperCase() : ""}
                     </Typography>
                 </IconButton>
