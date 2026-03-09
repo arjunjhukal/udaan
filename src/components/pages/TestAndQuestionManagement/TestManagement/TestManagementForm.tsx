@@ -1,4 +1,4 @@
-import { Box, FormHelperText, InputLabel, OutlinedInput, Typography } from "@mui/material";
+import { Autocomplete, Box, FormHelperText, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ import { useEditOrCreateTestMutation, useGetAllQuestionQuery, useGetTestByIdQuer
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
-import type { CourseProps } from "../../../../types/course";
+import type { CourseProps, DiscountTypeProps } from "../../../../types/course";
 import { TestInitialState, testValidationSchema, type QuestionProps, type TestProps } from "../../../../types/question";
 import { calcHasMore } from "../../../../utils/calculateHasMore";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
@@ -73,7 +73,9 @@ export default function TestManagementForm() {
                 marks_per_question: test.marks_per_question || 0,
                 is_individual_test: test.is_individual_test,
                 price: test.price,
-                rules: test.rules
+                rules: test.rules,
+                discount: test.discount,
+                discount_type: test.discount_type
             };
         }
         return TestInitialState;
@@ -400,6 +402,56 @@ export default function TestManagementForm() {
                                 )}
                             </div>
                         </div>
+
+                        {/* Discount */}
+                        <div className="col-span-1">
+                            <div className="input_field">
+                                <InputLabel >Discount</InputLabel>
+                                <OutlinedInput
+                                    fullWidth
+                                    placeholder='Enter Discount'
+                                    name='discount'
+                                    type="number"
+                                    value={formik.values.discount}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                />
+                                {formik.touched?.discount && formik.errors?.discount && (
+                                    <FormHelperText error sx={{ mt: 0.5 }}>
+                                        {formik.errors.discount}
+                                    </FormHelperText>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Discount Type */}
+                        <div className="col-span-1">
+                            <div className="input_field">
+                                <InputLabel >Discount Type</InputLabel>
+                                <Autocomplete
+                                    options={[
+                                        { label: "Percentage", value: "percentage" },
+                                        { label: "Amount", value: "amount" },
+                                    ]}
+                                    value={formik.values.discount_type === 'percentage' ? { label: "Percentage", value: "percentage" } : { label: "Amount", value: "amount" }}
+                                    getOptionLabel={(option) => option.label}
+                                    onChange={(_e, value) => {
+                                        formik.setFieldValue('discount_type', value?.value as DiscountTypeProps || 'percentage');
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            placeholder="Select discount type"
+                                        />
+                                    )}
+                                />
+                                {formik.touched?.discount_type && formik.errors?.discount_type && (
+                                    <FormHelperText error sx={{ mt: 0.5 }}>
+                                        {formik.errors.discount_type}
+                                    </FormHelperText>
+                                )}
+                            </div>
+                        </div>
                     </> : ""
                 }
                 <div className="col-span-2 flex items-center gap-2">
@@ -454,6 +506,8 @@ export default function TestManagementForm() {
                                 )}
                             </div>
                         </div>
+
+
                     </>
                 )}
 

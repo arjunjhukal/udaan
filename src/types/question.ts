@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import * as Yup from "yup";
+import type { DiscountTypeProps } from "./course";
 import type { Pagination } from "./roleAndPermission";
 import type { GlobalResponse, User } from "./user";
 export type QuestionTypeProps = "mcq" | "subjective"
@@ -77,6 +78,8 @@ export interface TestProps {
     price: string;
     rules: string;
     is_individual_test: boolean;
+    discount: number | null;
+    discount_type: DiscountTypeProps
 }
 
 
@@ -99,7 +102,9 @@ export const TestInitialState: TestProps = {
     marks_per_question: 1,
     is_individual_test: false,
     price: "",
-    rules: ""
+    rules: "",
+    discount: null,
+    discount_type: "percentage"
 };
 export interface TestList {
     data: {

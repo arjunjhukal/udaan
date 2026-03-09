@@ -55,6 +55,9 @@
                 "root": "Test",
                 "individual": {
                     "root": "Individual Test"
+                },
+                "bundle_test": {
+                    "root": "Bundle Test"
                 }
             }
         },

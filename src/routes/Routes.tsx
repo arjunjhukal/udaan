@@ -142,7 +142,7 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_sets", "edit_sets", "delete_sets", "view_sets"]}><SetRoot /></Unauthorized>,
+				element: <Unauthorized permissions={["add_bundles", "edit_bundles", "delete_bundles", "view_bundles"]}><SetRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.SET.ROOT, element: <AllSets /> },
 					{ path: PATH.SET.CREATE_SET.ROOT, element: <CreateSet /> },
