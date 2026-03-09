@@ -90,7 +90,7 @@ export default function FileDragDrop({
 
     return (
         <Box className="h-full flex flex-col">
-            <InputLabel htmlFor="profile" className={required ? "required" : ""}>{label || "Profile Picture"}</InputLabel>
+            <InputLabel htmlFor="profile" className={`${required ? "required" : ""}`}>{label || "Profile Picture"}</InputLabel>
             <Box
                 {...getRootProps()}
                 className="flex justify-start items-center gap-4 p-4 rounded-md h-full cursor-pointer transition-all duration-200 relative"
@@ -105,17 +105,6 @@ export default function FileDragDrop({
 
                 {/* Image Wrapper */}
                 <Box sx={{ position: "relative", width: 80, height: 80, flexShrink: 0 }}>
-                    {/* <img
-                        src={preview || "/no-image.svg"}
-                        alt="uploaded preview"
-                        style={{
-                            width: "80px",
-                            height: "80px",
-                            objectFit: "cover",
-                            borderRadius: "8px",
-                            border: `1px solid ${theme.palette.textField.border}`,
-                        }}
-                    /> */}
                     {preview ? (
                         fileType === "pdf" ? (
                             <Box

@@ -1,5 +1,7 @@
+import SetManagementForm from "../SetManagementForm";
+
 export default function CreateSet() {
     return (
-        <div>CreateSet</div>
+        <SetManagementForm />
     )
 }

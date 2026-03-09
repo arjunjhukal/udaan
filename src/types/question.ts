@@ -69,6 +69,7 @@ export interface TestProps {
     category?: string[];
     questions?: number;
     status?: null;
+    test_published_status?: "published" | "draft"
     no_of_students?: number;
     is_scheduled: boolean;
     total_questions: number | null;
@@ -81,8 +82,6 @@ export interface TestProps {
     discount: number | null;
     discount_type: DiscountTypeProps
 }
-
-
 
 export const TestInitialState: TestProps = {
     test_type: "mcq",
@@ -106,6 +105,7 @@ export const TestInitialState: TestProps = {
     discount: null,
     discount_type: "percentage"
 };
+
 export interface TestList {
     data: {
         data: TestProps[]
@@ -221,8 +221,8 @@ export interface TestOverviewProps {
     total_student_passed: number;
     average_score: number;
     high_score: number;
-
 }
+
 export interface TestOverviewResponse extends GlobalResponse {
     data: {
         total_students_enrolled: number;
@@ -258,5 +258,39 @@ export interface StudentSubmitTestList {
     data: {
         data: StudentSubmitTestProps[];
         pagination: Pagination;
+    }
+}
+
+export interface SetProps {
+    id?: number;
+    name: string;
+    description: string;
+    price: string;
+    discount_type: DiscountTypeProps;
+    discount: string;
+    set_count: string;
+    test_ids: number[];
+    thumbnail: File | null;
+    thumbnail_url: string;
+    status: "published" | "draft";
+}
+
+export const setInitialValues: SetProps = {
+    name: "",
+    description: "",
+    discount: "",
+    discount_type: "percentage",
+    price: "",
+    set_count: "",
+    thumbnail: null,
+    test_ids: [],
+    status: "draft",
+    thumbnail_url: ""
+};
+
+export interface SetList extends GlobalResponse {
+    data: {
+        data: SetProps[];
+        pagination: Pagination
     }
 }

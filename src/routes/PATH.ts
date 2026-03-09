@@ -90,7 +90,11 @@ export const PATH = {
 			ROOT: "/set/create-set",
 		},
 		EDIT_SET: {
-			ROOT: (id?: string) =>
+			ROOT: (id?: number) =>
+				id ? `/set/${id}` : "/set/:id",
+		},
+		VIEW_SET: {
+			ROOT: (id?: number) =>
 				id ? `/set/${id}` : "/set/:id",
 		},
 	},

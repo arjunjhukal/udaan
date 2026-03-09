@@ -181,6 +181,11 @@
                 "description": "You haven’t created any test yet. Start building your first test.",
                 "action": "Create Test"
             },
+            "bundle": {
+                "title": "No Bundle Available",
+                "description": "You haven’t created any bundle yet. Start building your first bundle.",
+                "action": "Create Bundle"
+            },
             "question": {
                 "title": "No Question Available",
                 "description": "You haven’t created any question yet. Start building your first question.",

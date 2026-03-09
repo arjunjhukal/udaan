@@ -1,10 +1,10 @@
-import { Box, Checkbox, Stack, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Stack, Tooltip, Typography } from '@mui/material';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Add } from 'iconsax-reactjs';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PATH } from '../../../../../routes/PATH';
-import { useDeleteTestMutation, useGetAllTestQuery } from '../../../../../services/questionApi';
+import { useChangeTestStatusMutation, useDeleteTestMutation, useGetAllTestQuery } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import { useCourseFilter } from '../../../../../store/useCourseFilter';
@@ -26,10 +26,15 @@ export default function AllTestListing() {
 
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
     const [search, setSearch] = useState<string>("");
+    const [debouncedSearch, setDebouncedSearch] = useState<string>("");
     const [qp, setQp] = useState({
         pageIndex: 1,
         pageSize: 8,
     })
+    useEffect(() => {
+        const timer = setTimeout(() => setDebouncedSearch(search), 1000);
+        return () => clearTimeout(timer);
+    }, [search]);
     const [layout, setLayout] = useState<LayoutProps>('table');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [testsToDelete, setTestsToDelete] = useState<string[]>([]);
@@ -56,11 +61,12 @@ export default function AllTestListing() {
     const categoryFilter = getCategoryFilterParams();
 
     const { data, isLoading } = useGetAllTestQuery({
-        ...qp, search: search, ...customRange,
+        ...qp, search: debouncedSearch, ...customRange,
         days,
         categoryFilter: { ...categoryFilter },
     });
     const [deleteTest, { isLoading: deleting }] = useDeleteTestMutation();
+    const [changeStatus] = useChangeTestStatusMutation();
 
 
     const tests = data?.data?.data || [];
@@ -118,6 +124,26 @@ export default function AllTestListing() {
         }
     }
 
+    const handleCourseStatusChange = async (id: number) => {
+        try {
+            const response = await changeStatus({ body: [id] }).unwrap();
+            dispatch(
+                showToast({
+                    message: response?.message || "Course Published Successfully",
+                    severity: "success"
+                })
+            )
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    message: e?.data?.message || "Unable to Publish Course",
+                    severity: "error"
+                })
+            )
+        }
+    }
+
     const columns = useMemo<ColumnDef<TestProps>[]>(() => [
         {
             header: () => (
@@ -167,6 +193,20 @@ export default function AllTestListing() {
             accessorKey: "has_published",
             cell: ({ row }) => (
                 <StatusPill variant={row.original.has_published ? 'success' : "error"} status={row.original.has_published ? "Published" : "Not Published"} />
+            ),
+        },
+        {
+            header: "Status",
+            accessorKey: "status",
+            cell: ({ row }) => (
+                <Tooltip title={`Click to change status to ${row.original.test_published_status === "published" ? "Draft" : "Publish"}`}>
+                    <Button className="py-0.5! px-2! rounded-xl! capitalize!" sx={{
+                        color: (theme) => theme.palette.primary.contrastText,
+                        background: (theme) => row.original.test_published_status === "published" ? theme.palette.success.main : theme.palette.separator.darker
+                    }} onClick={() => handleCourseStatusChange(Number(row.original.id))}>
+                        <Typography variant="caption">{row.original.status || "Draft"}</Typography>
+                    </Button>
+                </Tooltip>
             ),
         },
         {
@@ -242,7 +282,7 @@ export default function AllTestListing() {
                 />
 
                 <TableFilter
-                    search={search}
+                search={search}
                     setSearch={setSearch}
                     selectedRows={selectedRows}
                     handleRoleDelete={openDeleteConfirmation}

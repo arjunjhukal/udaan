@@ -85,7 +85,7 @@ export const courseApi = createApi({
             invalidatesTags: (_result, _error,) => [
                 { type: "Course", id: "LIST" }
             ],
-        }),
+    }),
         cloneCourse: builder.mutation<GlobalResponse, { id: number, properties: courseClonePropertyProps[] }>({
             query: ({ id, properties }) => ({
                 url: `/admin/course/${id}/clone`,

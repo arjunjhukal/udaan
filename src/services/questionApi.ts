@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { QuestionList, QuestionProps, QuestionTypeProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
+import type { QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -8,7 +8,7 @@ import { baseQuery } from "./baseQuery";
 export const questionApi = createApi({
     reducerPath: "questionApi",
     baseQuery: baseQuery,
-    tagTypes: ["Questions", "Test", "Results"],
+    tagTypes: ["Questions", "Test", "Results", "Set"],
     endpoints: (builder) => ({
         uploadQuestionPaper: builder.mutation<GlobalResponse & {
             data: QuestionProps[]
@@ -82,8 +82,17 @@ export const questionApi = createApi({
             }),
             invalidatesTags: (_result, _error, { body }) => [
                 { type: "Test", id: "LIST" },
+                { type: "Set", id: "LIST" },
                 ...(body.id ? [{ type: "Test" as const, id: body.id }] : [])
             ]
+        }),
+        changeTestStatus: builder.mutation<GlobalResponse, { body: number[] }>({
+            query: ({ body }) => ({
+                url: `/admin/test/status`,
+                method: "POST",
+                body: { ids: body }
+            }),
+            invalidatesTags: [{ type: "Test", id: "LIST" }, { type: "Set", id: "LIST" }]
         }),
         getAllTest: builder.query<TestList, QueryParams & { type?: TestTypeProps; days?: number | null; categoryFilter?: CategoryFilterParams; }>({
             query: ({ pageIndex, pageSize, search, type, days, startDate, endDate, categoryFilter }) => {
@@ -279,7 +288,62 @@ export const questionApi = createApi({
                 })}`
             }),
             providesTags: [{ type: "Test", id: "LIST" }]
-        })
+        }),
+        createBundle: builder.mutation<SetList, { body: FormData }>({
+            query: ({ body }) => ({
+                url: `/admin/bundle`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: [{ type: "Set", id: "LIST" }]
+        }),
+        getAllBundle: builder.query<SetList, QueryParams & { type?: TestTypeProps; days?: number | null; categoryFilter?: CategoryFilterParams; }>({
+            query: ({ pageIndex, pageSize, search }) => ({
+                url: `/bundle?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search
+                })}`,
+                method: "GET",
+            }),
+            providesTags: [{ type: "Set", id: "LIST" }]
+        }),
+        getBundleById: builder.query<{ data: SetProps }, { id: number }>({
+            query: ({ id }) => ({
+                url: `/bundle/${id}`,
+                method: "GET"
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Set", id }]
+        }),
+        updateBundle: builder.mutation<GlobalResponse & { data: SetProps }, { id: number; body: FormData }>({
+            query: ({ id, body }) => ({
+                url: `/admin/bundle/${id}`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: "Set", id },
+                { type: "Set", id: "LIST" }
+            ]
+        }),
+        deleteBundle: builder.mutation<GlobalResponse, { body: string[] }>({
+            query: ({ body }) => ({
+                url: `/admin/bundle`,
+                method: "DELETE",
+                body: { bundle_ids: body }
+            }),
+            invalidatesTags: (_result, _error) => [
+                { type: "Set", id: "LIST" }
+            ]
+        }),
+        changeBundleStatus: builder.mutation<GlobalResponse, { body: number[] }>({
+            query: ({ body }) => ({
+                url: `/admin/bundle/status`,
+                method: "POST",
+                body: { bundle_ids: body }
+            }),
+            invalidatesTags: [{ type: "Set", id: "LIST" }]
+        }),
     })
 });
 
@@ -291,6 +355,7 @@ export const {
     useGetQuestionByIdQuery,
     useDeleteQuestionMutation,
     useEditOrCreateTestMutation,
+    useChangeTestStatusMutation,
     useGetAllTestQuery,
     useGetTestByIdQuery,
     useDeleteTestMutation,
@@ -308,5 +373,11 @@ export const {
     useSubmitTestSampleMutation,
     useGetTestSampleQuery,
     useDownloadResultMutation,
-    useGetAllIndividualTestQuery
+    useGetAllIndividualTestQuery,
+    useCreateBundleMutation,
+    useUpdateBundleMutation,
+    useGetBundleByIdQuery,
+    useGetAllBundleQuery,
+    useDeleteBundleMutation,
+    useChangeBundleStatusMutation
 } = questionApi;
