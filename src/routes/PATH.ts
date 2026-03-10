@@ -87,15 +87,15 @@ export const PATH = {
 	SET: {
 		ROOT: "/sets",
 		CREATE_SET: {
-			ROOT: "/set/create-set",
+			ROOT: "/sets/create-set",
 		},
 		EDIT_SET: {
 			ROOT: (id?: number) =>
-				id ? `/set/${id}` : "/set/:id",
+				id ? `/sets/${id}` : "/sets/:id",
 		},
 		VIEW_SET: {
 			ROOT: (id?: number) =>
-				id ? `/set/${id}` : "/set/:id",
+				id ? `/sets/${id}` : "/sets/:id",
 		},
 	},
 	CATEGORY_LEVEL_MANAGEMENT: {

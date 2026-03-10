@@ -344,6 +344,16 @@ export const questionApi = createApi({
             }),
             invalidatesTags: [{ type: "Set", id: "LIST" }]
         }),
+        getTestRelatedToBundle: builder.query<TestList, QueryParams & { id: number }>({
+            query: ({ id, pageIndex, pageSize }) => ({
+                url: `/bundle/${id}/selected-test?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize
+                })}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "Set", id }]
+        })
     })
 });
 
@@ -379,5 +389,6 @@ export const {
     useGetBundleByIdQuery,
     useGetAllBundleQuery,
     useDeleteBundleMutation,
-    useChangeBundleStatusMutation
+    useChangeBundleStatusMutation,
+    useGetTestRelatedToBundleQuery
 } = questionApi;

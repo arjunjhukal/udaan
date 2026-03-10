@@ -183,7 +183,7 @@ export default function AllSets() {
             accessorKey: "price",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize max-w-[450px]">
-                    {row.original.price || "N/A"}
+                    {t("messages.npr")} {row.original.sale_price || "N/A"} <del className="text-[10px]">{t("messages.npr")}{row.original.marked_price}</del>
                 </Typography>
             ),
         },

@@ -115,6 +115,7 @@
         }
     },
     "messages": {
+        "npr": "NPR.",
         "enrolled_courses": "Enrolled Courses",
         "transaction_information": "Transaction Information",
         "overview": "Overview",

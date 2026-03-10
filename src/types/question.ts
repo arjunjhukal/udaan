@@ -273,6 +273,8 @@ export interface SetProps {
     thumbnail: File | null;
     thumbnail_url: string;
     status: "published" | "draft";
+    marked_price?: string;
+    sale_price?: string;
 }
 
 export const setInitialValues: SetProps = {
