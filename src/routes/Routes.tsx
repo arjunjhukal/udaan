@@ -50,6 +50,8 @@ import LinkedDevices from "../components/pages/Setting/LinkedDevices";
 import ProfilePageRoot from "../components/pages/Setting/Profile";
 import SubscriptionManagementRoot from "../components/pages/SubscriptionManagement";
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
+import OmrSheetRoot from "../components/pages/TestAndQuestionManagement/OmrSheets";
+import AllOmrSheets from "../components/pages/TestAndQuestionManagement/OmrSheets/allOmr";
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
 import AllIndividualTestListing from "../components/pages/TestAndQuestionManagement/TestManagement/allIndividualTest";
@@ -142,7 +144,13 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_tests", "edit_tests", "delete_tests", "view_tests"]}><SetRoot /></Unauthorized>,
+				element: <Unauthorized permissions={["add_omr_sheets", "edit_omr_sheets", "delete_omr_sheets", "view_omr_sheets"]}><OmrSheetRoot /></Unauthorized>,
+				children: [
+					{ path: PATH.OMR.ROOT, element: <AllOmrSheets /> },
+				],
+			},
+			{
+				element: <Unauthorized permissions={["add_bundles", "edit_bundles", "delete_bundles", "view_bundles"]}><SetRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.SET.ROOT, element: <AllSets /> },
 					{ path: PATH.SET.CREATE_SET.ROOT, element: <CreateSet /> },

@@ -296,3 +296,19 @@ export interface SetList extends GlobalResponse {
         pagination: Pagination
     }
 }
+
+export interface OmrSheetProps {
+    id?: number;
+    sheet: File | null;
+    sheet_url: string;
+    name: string;
+    omr_format: string;
+    created_at?: string;
+}
+
+export interface OmrList extends GlobalResponse {
+    data: {
+        data: OmrSheetProps[],
+        pagination: Pagination
+    }
+}

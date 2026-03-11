@@ -247,6 +247,17 @@ export default function PrimaryMenu() {
                                                 />
                                             </ListItemButton>
                                         </ListItem>
+                                        <CAN permissions={["add_omr_sheets", "edit_omr_sheets", "delete_omr_sheets", "view_omr_sheets"]}>
+                                            <ListItem disablePadding className="menu__item">
+                                                <ListItemButton
+                                                    onClick={() => navigate(PATH.OMR.ROOT)}
+                                                    className={location.pathname.startsWith(PATH.OMR.ROOT) ? "active-nested" : ""}>
+                                                    <ListItemText
+                                                        primary={t("menus.test_question_management.test.omr.root")}
+                                                    />
+                                                </ListItemButton>
+                                            </ListItem>
+                                        </CAN>
                                     </>
                                 </CAN>
                             </List>

@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
+import type { OmrList, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -8,7 +8,7 @@ import { baseQuery } from "./baseQuery";
 export const questionApi = createApi({
     reducerPath: "questionApi",
     baseQuery: baseQuery,
-    tagTypes: ["Questions", "Test", "Results", "Set"],
+    tagTypes: ["Questions", "Test", "Results", "Set", "OMR"],
     endpoints: (builder) => ({
         uploadQuestionPaper: builder.mutation<GlobalResponse & {
             data: QuestionProps[]
@@ -26,7 +26,7 @@ export const questionApi = createApi({
                 method: "POST",
                 body
             }),
-            invalidatesTags: [{ type: "Questions", id: "LIST" }]
+            invalidatesTags: [{ type: "Questions", id: "LIST" }, { type: "Test", id: "LIST" }]
         }),
         EditOrCreateQuestion: builder.mutation<GlobalResponse, { body: QuestionProps }>({
             query: ({ body }) => ({
@@ -36,6 +36,7 @@ export const questionApi = createApi({
             }),
             invalidatesTags: (_result, _error, { body }) => [
                 { type: "Questions", id: "LIST" },
+                { type: "OMR", id: "LIST" },
                 ...(body.id ? [{ type: "Questions" as const, id: body.id }] : [])
             ]
         }),
@@ -249,7 +250,6 @@ export const questionApi = createApi({
             }),
             invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
-
         getMarkedSubjectiveQuestion: builder.query<GlobalResponse & {
             data: {
                 grade: number,
@@ -353,7 +353,55 @@ export const questionApi = createApi({
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Set", id }]
-        })
+        }),
+        createOmrSheet: builder.mutation<GlobalResponse, { body: FormData }>({
+            query: ({ body }) => ({
+                url: `/admin/omr-sheet`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: [{ type: "OMR", id: "LIST" }]
+        }),
+        getOmrById: builder.query<GlobalResponse, { id: number }>({
+            query: ({ id }) => ({
+                url: `/omr-sheet/${id}`,
+                method: "GET"
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "OMR", id }]
+        }),
+        getAllOmr: builder.query<OmrList, QueryParams & { days?: number | null; }>({
+            query: ({ pageIndex, pageSize, search, days }) => ({
+                url: `/omr-sheet?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    days: days,
+                    search: search
+                })}`,
+                method: "GET"
+            }),
+            providesTags: [{ type: "OMR", id: "LIST" }]
+
+        }),
+        updateOmrSheet: builder.mutation<GlobalResponse, { id: number; body: FormData }>({
+            query: ({ id, body }) => ({
+                url: `/admin/omr-sheet/${id}`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: "OMR", id },
+                { type: "OMR", id: "LIST" }
+            ]
+        }),
+        deleteOmrSheet: builder.mutation<GlobalResponse, { body: string[] }>({
+            query: ({ body }) => ({
+                url: `/admin/omr-sheet`,
+                method: "DELETE",
+                body: { omr_sheet_ids: body }
+            }),
+            invalidatesTags: [{ type: "OMR", id: "LIST" }]
+        }),
+
     })
 });
 
@@ -390,5 +438,10 @@ export const {
     useGetAllBundleQuery,
     useDeleteBundleMutation,
     useChangeBundleStatusMutation,
-    useGetTestRelatedToBundleQuery
+    useGetTestRelatedToBundleQuery,
+    useCreateOmrSheetMutation,
+    useGetAllOmrQuery,
+    useGetOmrByIdQuery,
+    useUpdateOmrSheetMutation,
+    useDeleteOmrSheetMutation,
 } = questionApi;

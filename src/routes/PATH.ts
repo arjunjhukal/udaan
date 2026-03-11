@@ -98,6 +98,12 @@ export const PATH = {
 				id ? `/sets/${id}` : "/sets/:id",
 		},
 	},
+	OMR: {
+		ROOT: "/omr",
+		CREATE_OMR: {
+			ROOT: "/omr/create-omr",
+		},
+	},
 	CATEGORY_LEVEL_MANAGEMENT: {
 		ROOT: "/category-level-management",
 		CATEGORY: {

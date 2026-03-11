@@ -58,6 +58,9 @@
                 },
                 "bundle_test": {
                     "root": "Bundle Test"
+                },
+                "omr": {
+                    "root": "Banner"
                 }
             }
         },
@@ -115,6 +118,7 @@
         }
     },
     "messages": {
+        "omr": "OMR",
         "npr": "NPR.",
         "enrolled_courses": "Enrolled Courses",
         "transaction_information": "Transaction Information",
@@ -186,6 +190,11 @@
                 "title": "No Bundle Available",
                 "description": "You haven’t created any bundle yet. Start building your first bundle.",
                 "action": "Create Bundle"
+            },
+            "omr": {
+                "title": "No OMR Available",
+                "description": "You haven’t created any OMR yet. Start building your first OMR.",
+                "action": "Create OMR Sheet"
             },
             "question": {
                 "title": "No Question Available",
