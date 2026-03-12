@@ -5,19 +5,20 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
 import { useGetAllCourseQuery } from "../../../../services/courseApi";
-import { useEditOrCreateTestMutation, useGetAllQuestionQuery, useGetTestByIdQuery } from "../../../../services/questionApi";
+import { useEditOrCreateTestMutation, useGetAllOmrQuery, useGetAllQuestionQuery, useGetTestByIdQuery } from "../../../../services/questionApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { CourseProps, DiscountTypeProps } from "../../../../types/course";
-import { TestInitialState, testValidationSchema, type QuestionProps, type TestProps } from "../../../../types/question";
+import { TestInitialState, testValidationSchema, type QuestionProps, type TestProps, type TestTypeProps } from "../../../../types/question";
 import { calcHasMore } from "../../../../utils/calculateHasMore";
+import { formatDateForDisplay } from "../../../../utils/dateFormat";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
-import StyledToggleButtons from "../../../atoms/StyledToggleSwitch";
 import TextEditor from "../../../atoms/TextEditor";
 import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FooterAction from "../../../molecules/FooterAction";
 import InfiniteScrolling from "../../../molecules/InfiniteScrolling";
+import TabController from "../../../molecules/TabController";
 import CategoryFilter from "../../../organism/CategoryFilter";
 
 
@@ -38,6 +39,12 @@ export default function TestManagementForm() {
         pageSize: 10,
         search: ""
     });
+
+    const [omrQp, _setOmrQp] = useState({
+        pageIndex: 1,
+        pageSize: 10,
+        search: ""
+    })
 
     const {
         megaCategories,
@@ -75,7 +82,8 @@ export default function TestManagementForm() {
                 price: test.price,
                 rules: test.rules,
                 discount: test.discount,
-                discount_type: test.discount_type
+                discount_type: test.discount_type,
+                omr_format: test.omr_format
             };
         }
         return TestInitialState;
@@ -108,13 +116,18 @@ export default function TestManagementForm() {
         }
     });
 
+    console.log(formik.errors)
+
     const categoryFilter = getSelectedCategoryFilterParams();
     const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });
-    const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp, type: formik.values.test_type });
+    const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp, type: formik.values.test_type === "omr" ? "mcq" : formik.values.test_type });
     const [createTest, { isLoading: creatingTest }] = useEditOrCreateTestMutation();
+    const { data } = useGetAllOmrQuery({
+        ...omrQp,
+    });
     const [courseList, setCourseList] = useState<CourseProps[]>([]);
     const [questionList, setQuestionList] = useState<QuestionProps[]>([]);
-
+    const [activeTab, setActiveTab] = useState<TestTypeProps>("mcq");
     useEffect(() => {
         if (!courses?.data?.data) return;
 
@@ -183,28 +196,32 @@ export default function TestManagementForm() {
         }
     };
 
+    const handleTabChange = (value: "mcq" | "subjective" | "omr") => {
+        setActiveTab(value);
+        formik.setFieldValue("test_type", value);
+
+        if (value === "subjective") {
+            formik.setFieldValue("marks_per_question", 0);
+        }
+
+        if (value === "mcq") {
+            formik.setFieldValue("full_mark", 0);
+        }
+    };
+
     return (
         <form onSubmit={formik.handleSubmit} className="flex flex-col h-full justify-between overflow-auto">
             <Box className="flex flex-col gap-6 md:grid md:grid-cols-2 overflow-auto" sx={{
             }}>
                 <div className="col-span-2">
-                    <StyledToggleButtons
-                        leftLabel="MCQ"
-                        rightLabel="Subjective"
-                        value={formik.values.test_type === "mcq" ? "left" : "right"}
-                        onChange={(_event, newValue) => {
-                            if (newValue !== null) {
-                                if (formik.values.test_type === "mcq") {
-                                    formik.setFieldValue("full_marks", 0);
-                                    formik.setFieldValue("test_type", "subjective");
-
-                                } else {
-                                    formik.setFieldValue("marks_per_question", 0);
-                                    formik.setFieldValue("test_type", "mcq");
-
-                                }
-                            }
-                        }}
+                    <TabController
+                        currentActive={activeTab}
+                        setActiveTab={handleTabChange}
+                        options={[
+                            { label: "MCQ", value: "mcq" },
+                            { label: "Subjective", value: "subjective" },
+                            { label: "OMR", value: "omr" }
+                        ]}
                     />
                 </div>
 
@@ -226,6 +243,56 @@ export default function TestManagementForm() {
                     </div>
                 </div>
 
+                {formik.values.test_type === "omr" ? (
+                    <div className="col-span-1">
+                        <InputLabel className="required">OMR Format</InputLabel>
+                        <Autocomplete
+                            disableClearable
+                            options={data?.data?.data || []}
+                            getOptionLabel={(option) => option.name}
+                            onChange={(_, value) => {
+                                formik.setFieldValue("omr_format", value?.id || null);
+                                formik.setFieldValue("total_questions", value.omr_format)
+                            }}
+                            sx={{
+                                "& .MuiAutocomplete-option": {
+                                    alignItems: "flex-start",
+                                }
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    placeholder="Select the OMR format you want for this test"
+                                />
+                            )}
+
+                            renderOption={(props, option) => (
+                                <Box
+                                    component="li"
+                                    {...props}
+                                    sx={{
+                                        p: 2,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "flex-start",
+                                        justifyContent: "flex-start",
+                                    }}
+                                >
+                                    <Typography fontWeight={500} className="text-left">
+                                        {option.name}
+                                    </Typography>
+
+                                    <Typography variant="caption" color="text.secondary">
+                                        Uploaded {formatDateForDisplay(option.created_at)}
+                                    </Typography>
+                                </Box>
+                            )}
+                        />
+                        {formik.touched.total_questions && formik.errors.total_questions && (
+                            <FormHelperText error>{formik.errors.total_questions}</FormHelperText>
+                        )}
+                    </div>
+                ) : ""}
                 <div className="col-span-1">
                     <div className="input__field">
                         <InputLabel className="required">Total No. of Questions</InputLabel>
@@ -266,7 +333,8 @@ export default function TestManagementForm() {
                             )}
                         </div>
                     </div>
-                ) : (
+                ) : ""}
+                {formik.values.test_type === "mcq" ? (
                     <div className="col-span-1">
                         <div className="input__field">
                             <InputLabel className="required">Marks Per Question</InputLabel>
@@ -286,8 +354,7 @@ export default function TestManagementForm() {
                             )}
                         </div>
                     </div>
-                )}
-
+                ) : ""}
                 <div className="col-span-1">
                     <div className="input__field">
                         <InputLabel className="required">Pass Marks</InputLabel>

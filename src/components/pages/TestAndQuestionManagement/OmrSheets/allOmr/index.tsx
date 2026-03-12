@@ -46,6 +46,7 @@ export default function AllOmrSheets() {
         ...qp, search: debouncedSearch, ...customRange,
         days,
     });
+   
     const [deleteOmr, { isLoading: deleting }] = useDeleteOmrSheetMutation();
 
     const Omrs = data?.data?.data || [];

@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import type { DiscountTypeProps } from "./course";
 import type { Pagination } from "./roleAndPermission";
 import type { GlobalResponse, User } from "./user";
-export type QuestionTypeProps = "mcq" | "subjective"
+export type QuestionTypeProps = "mcq" | "subjective" | "omr"
 export interface OptionProps {
     id: number | null,
     option: string,
@@ -50,7 +50,7 @@ export interface QuestionList extends GlobalResponse {
         }
     }
 }
-export type TestTypeProps = "subjective" | "mcq"
+export type TestTypeProps = "subjective" | "mcq" | "omr"
 
 export interface TestProps {
     test_type: TestTypeProps;
@@ -80,7 +80,8 @@ export interface TestProps {
     rules: string;
     is_individual_test: boolean;
     discount: number | null;
-    discount_type: DiscountTypeProps
+    discount_type: DiscountTypeProps;
+    omr_format?: number | null
 }
 
 export const TestInitialState: TestProps = {
@@ -103,7 +104,8 @@ export const TestInitialState: TestProps = {
     price: "",
     rules: "",
     discount: null,
-    discount_type: "percentage"
+    discount_type: "percentage",
+    omr_format: null
 };
 
 export interface TestList {
@@ -119,7 +121,7 @@ export const testValidationSchema = Yup.object().shape({
         .required("Name is required"),
 
     test_type: Yup.string()
-        .oneOf(["mcq", "subjective"], "Invalid test type")
+        .oneOf(["mcq", "subjective", "omr"], "Invalid test type")
         .required("Test type is required"),
 
     total_questions: Yup.number()
@@ -165,11 +167,16 @@ export const testValidationSchema = Yup.object().shape({
             .required("Marks per question is required"),
         otherwise: (schema) => schema.notRequired()
     }),
+    omr_format: Yup.number().when("test_type", {
+        is: "omr",
+        then: (schema) => schema
+            .required("OMR Format is Required"),
+        otherwise: (schema) => schema.notRequired()
+    }),
 
     pass_mark: Yup.number()
         .min(0, "Pass marks must be at least 0")
         .required("Pass marks is required"),
-
     is_scheduled: Yup.boolean().default(false).required(),
     start_datetime: Yup.string().when("is_scheduled", { is: true, then: (schema) => schema.required("Start date & time is required"), otherwise: (schema) => schema.notRequired() }),
     end_datetime: Yup.string().when("is_scheduled", {
@@ -179,7 +186,6 @@ export const testValidationSchema = Yup.object().shape({
             return dayjs(value).isAfter(dayjs(start_datetime));
         }), otherwise: (schema) => schema.notRequired()
     }),
-
     question_ids: Yup.array()
         .of(Yup.number())
         .min(1, "At least one question must be selected")
