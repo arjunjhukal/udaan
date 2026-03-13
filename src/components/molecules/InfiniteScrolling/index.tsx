@@ -1,4 +1,4 @@
-import { Box, Checkbox, CircularProgress, FormControlLabel, Typography, useTheme } from "@mui/material";
+import { Box, Checkbox, CircularProgress, Divider, FormControlLabel, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { v4 as uuidv4 } from "uuid";
@@ -32,6 +32,7 @@ export default function InfiniteScrolling({
     scrollableId = "scrollableDiv",
 }: InfiniteScrollingProps) {
 
+    const theme = useTheme();
 
     // --- Map stable UUIDs to each itemId so they don't regenerate every render ---
     const [uuidMap, setUuidMap] = useState<Record<number, string>>({});
@@ -49,18 +50,26 @@ export default function InfiniteScrolling({
         setUuidMap(newMap);
     }, [data]);
 
-
     const handleToggle = (id: number) => {
         if (selectedItems.includes(id)) {
             onSelectionChange(selectedItems.filter(i => i !== id));
         } else if (selectedItems.length < maxSelection) {
             onSelectionChange([...selectedItems, id]);
         }
-    }
+    };
 
     const isMaxReached = selectedItems.length >= maxSelection;
 
-    const theme = useTheme();
+    // --- Group items by created_at date ---
+    const groupedData = data.reduce((acc: Record<string, any[]>, item) => {
+        const date = new Date(item.created_at).toDateString();
+
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(item);
+
+        return acc;
+    }, {});
+
     return (
         <Box
             sx={{
@@ -103,40 +112,52 @@ export default function InfiniteScrolling({
                                 </Typography>
                             </Box>
                         ) : (
-                            data.map((item) => {
-                                const itemId = item[itemIdKey];
-                                const stableKey = uuidMap[itemId];
-                                const isSelected = selectedItems.includes(itemId);
-
-                                return (
-                                    <Box
-                                        key={stableKey}
-                                        className="item__wrapper flex flex-col "
-                                    // sx={{
-                                    //     borderBottom: "1px solid",
-                                    //     borderColor: "divider",
-                                    //     bgcolor: isSelected ? "action.selected" : "transparent",
-                                    //     "&:hover": { bgcolor: "action.hover" }
-                                    // }}
-                                    >
-                                        <FormControlLabel
-                                            sx={{ m: 0, p: .5, width: "100%" }}
-                                            control={
-                                                <Checkbox
-                                                    checked={isSelected}
-                                                    disabled={!isSelected && isMaxReached}
-                                                    onChange={() => handleToggle(itemId)}
-                                                />
-                                            }
-                                            label={
-                                                <Box>
-                                                    <Typography variant="subtitle1">{renderHtml(item[itemLabelKey])}</Typography>
-                                                </Box>
-                                            }
-                                        />
+                            Object.entries(groupedData).map(([date, items]) => (
+                                <Box key={date}>
+                                    {/* Group Label */}
+                                    <Box className="flex items-center gap-2 py-1 px-1">
+                                        <Typography variant="subtitle2" fontWeight={600} color="text.dark" className="text-nowrap">
+                                            {date}
+                                        </Typography>
+                                        <Divider sx={{
+                                            color: (theme) => theme.palette.separator.dark,
+                                            width: "100%",
+                                            my: "4px"
+                                        }} />
                                     </Box>
-                                );
-                            })
+
+                                    {items.map((item) => {
+                                        const itemId = item[itemIdKey];
+                                        const stableKey = uuidMap[itemId];
+                                        const isSelected = selectedItems.includes(itemId);
+
+                                        return (
+                                            <Box
+                                                key={stableKey}
+                                                className="item__wrapper flex flex-col "
+                                            >
+                                                <FormControlLabel
+                                                    sx={{ m: 0, p: .5, width: "100%" }}
+                                                    control={
+                                                        <Checkbox
+                                                            checked={isSelected}
+                                                            disabled={!isSelected && isMaxReached}
+                                                            onChange={() => handleToggle(itemId)}
+                                                        />
+                                                    }
+                                                    label={
+                                                        <Box>
+                                                            <Typography variant="subtitle1">
+                                                                {renderHtml(item[itemLabelKey])}
+                                                            </Typography>
+                                                        </Box>
+                                                    }
+                                                />
+                                            </Box>
+                                        );
+                                    })}
+                                </Box>
+                            ))
                         )}
                     </InfiniteScroll>
                 )}
