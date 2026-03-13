@@ -4,6 +4,7 @@ import { authApi } from "../services/authApi";
 import { categoryApi } from "../services/categoryApi";
 import { contentApi } from "../services/contentApi";
 import { courseApi } from "../services/courseApi";
+import { dashboardApi } from "../services/dashboardApi";
 import { gorkhapatraApi } from "../services/gorkhapatraApi";
 import { liveClassApi } from "../services/liveClass";
 import { mediaApi } from "../services/mediaApi";
@@ -18,10 +19,10 @@ import { transactionApi } from "../services/transactionApi";
 import { userApi } from "../services/userApi";
 import attachmentReducer from "../slice/attachmentSlice";
 import authReducer from "../slice/authSlice";
+import previewPdfReducer from "../slice/previewPdfSlice";
 import sessionReducer from "../slice/sessionSlice";
 import themeReducer from "../slice/themeSlice";
 import toastReducer from "../slice/toastSlice";
-import { dashboardApi } from "../services/dashboardApi";
 export const store = configureStore({
 	reducer: {
 		theme: themeReducer,
@@ -29,6 +30,7 @@ export const store = configureStore({
 		toast: toastReducer,
 		session: sessionReducer,
 		attachment: attachmentReducer,
+		previewPdf: previewPdfReducer,
 		[authApi.reducerPath]: authApi.reducer,
 		[roleAndPermissionApi.reducerPath]: roleAndPermissionApi.reducer,
 		[userApi.reducerPath]: userApi.reducer,

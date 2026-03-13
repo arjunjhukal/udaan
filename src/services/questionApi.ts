@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { OmrList, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
+import type { OmrList, OMRType, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -382,6 +382,12 @@ export const questionApi = createApi({
             providesTags: [{ type: "OMR", id: "LIST" }]
 
         }),
+        getAllOmrType: builder.query<GlobalResponse & { data: OMRType[] }, void>({
+            query: () => ({
+                url: `/admin/omr`,
+                method: "GET"
+            })
+        }),
         updateOmrSheet: builder.mutation<GlobalResponse, { id: number; body: FormData }>({
             query: ({ id, body }) => ({
                 url: `/admin/omr-sheet/${id}`,
@@ -442,6 +448,7 @@ export const {
     useCreateOmrSheetMutation,
     useGetAllOmrQuery,
     useGetOmrByIdQuery,
+    useGetAllOmrTypeQuery,
     useUpdateOmrSheetMutation,
     useDeleteOmrSheetMutation,
 } = questionApi;

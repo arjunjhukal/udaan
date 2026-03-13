@@ -1,8 +1,8 @@
-import { alpha, Dialog, Divider, FormHelperText, IconButton, InputLabel, OutlinedInput, Typography } from '@mui/material';
+import { alpha, Autocomplete, Dialog, Divider, FormHelperText, IconButton, InputLabel, OutlinedInput, TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import { CloseCircle } from 'iconsax-reactjs';
 import * as Yup from 'yup';
-import { useCreateOmrSheetMutation, useUpdateOmrSheetMutation } from '../../../../services/questionApi';
+import { useCreateOmrSheetMutation, useGetAllOmrTypeQuery, useUpdateOmrSheetMutation } from '../../../../services/questionApi';
 import { showToast } from '../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../store/hook';
 import type { OmrSheetProps } from '../../../../types/question';
@@ -29,6 +29,7 @@ export default function OmrForm({ data, open, handleClose }: Props) {
     const dispatch = useAppDispatch();
     const [createOmrFormat, { isLoading }] = useCreateOmrSheetMutation();
     const [updateOmrFormat, { isLoading: updating }] = useUpdateOmrSheetMutation();
+    const { data: omrType } = useGetAllOmrTypeQuery();
     const formik = useFormik({
         initialValues: {
             sheet: data?.sheet || null,
@@ -118,9 +119,28 @@ export default function OmrForm({ data, open, handleClose }: Props) {
                             </FormHelperText>
                         )}
                     </div>
-                    <div className="input__field ">
+                <div className="input__field ">
                         <InputLabel className="required">Number Of Sheet</InputLabel>
-                        <OutlinedInput
+                        <Autocomplete
+                            disableClearable
+                            options={omrType?.data || []}
+                            getOptionLabel={(option) => option.title}
+                            value={
+                                omrType?.data?.find(
+                                    (item) => String(item.value) === String(formik.values.omr_format)
+                                ) || undefined
+                            }
+                            onChange={(_, value) => {
+                                formik.setFieldValue("omr_format", value?.value || null);
+                            }}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    placeholder="Select the OMR format you want for this test"
+                                />
+                            )}
+                        />
+                        {/* <OutlinedInput
                             fullWidth
                             placeholder="Enter Number of Format"
                             name="omr_format"
@@ -128,7 +148,7 @@ export default function OmrForm({ data, open, handleClose }: Props) {
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             error={formik.touched.omr_format && Boolean(formik.errors.omr_format)}
-                        />
+                        /> */}
                         {formik.touched.omr_format && formik.errors.omr_format && (
                             <FormHelperText error={true} sx={{ mt: 0.5 }}>
                                 {formik.errors.omr_format}
@@ -152,11 +172,11 @@ export default function OmrForm({ data, open, handleClose }: Props) {
                     isEditMode={!!data}
                     replaceLabel={
                         data
-                            ? updating 
+                            ? updating
                                 ? "Updating Bundle..."
                                 : "Update Bundle"
 
-                            : isLoading ||data
+                            : isLoading || data
                                 ? "Creating Bundle..."
                                 : "Create Bundle"
                     }

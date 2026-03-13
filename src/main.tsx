@@ -6,6 +6,7 @@ import { createRoot } from "react-dom/client";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { Provider } from "react-redux";
 import "./App.css";
+import PreviewPDF from "./components/organism/Dialog/PreviewPDF.tsx";
 import Toast from "./components/organism/Toast/index.tsx";
 import GlobalRoutes from "./routes/Routes.tsx";
 import { store } from "./store/store.ts";
@@ -41,6 +42,7 @@ createRoot(document.getElementById("root")!).render(
 						{/* <ScreenProtection> */}
 						<GlobalRoutes />
 						<Toast />
+						<PreviewPDF />
 						{/* </ScreenProtection> */}
 					</UdaanThemeProvider>
 				</Suspense>

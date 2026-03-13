@@ -140,7 +140,7 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                     {!isLoading && !items.length &&
                         <EmptyRoute variant={getVariant()} title={`${type} Not Found`} message="" />
                     }
-                    <div className="flex flex-col gap-4 md:grid grid-cols-2 xl:grid-cols-3 2xl:gap-9">
+                    <div className="flex flex-col gap-4 md:grid grid-cols-2 xl:grid-cols-3 2xl:gap-4">
                         {isLoading ? (
                             [...Array(6)].map((_, idx) => (
                                 <div key={idx} className="col-span-1">
@@ -161,9 +161,9 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
                                             checked={selectedItems.has(item.id)}
                                             onChange={() => handleToggleItem(item.id)}
                                         />
-                                        <div onClick={() => handleToggleItem(item.id)} className="cursor-pointer flex-1">
-                                            <MediaCard media={item} />
-                                        </div>
+                                        {/* <div onClick={() => handleToggleItem(item.id)} className="cursor-pointer flex-1"> */}
+                                        <MediaCard media={item} />
+                                        {/* </div> */}
                                     </div>
                                 </div>
                             ))

@@ -63,12 +63,22 @@ export const mediaApi = createApi({
             }),
             invalidatesTags: [{ type: "Media", id: "LIST" }]
         }),
+        useChangeMediaStatus: builder.mutation<GlobalResponse, { media_ids: number[] }>({
+            query: (body) => ({
+                url: `/admin/media/change-status`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: [{ type: "Media", id: "LIST" }]
+        }),
     })
 })
 
 export const {
     useUploadMediaMutation,
     useGetallMediaQuery,
-    useUploadMediaImageMutation, useGetAllMediaIrrespectiveOfTypeQuery,
-    useDeleteMediaMutation
+    useUploadMediaImageMutation,
+    useGetAllMediaIrrespectiveOfTypeQuery,
+    useDeleteMediaMutation,
+    useUseChangeMediaStatusMutation
 } = mediaApi;

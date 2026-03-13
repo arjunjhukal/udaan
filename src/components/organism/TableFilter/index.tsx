@@ -2,7 +2,7 @@ import { Download } from "@mui/icons-material";
 import { Box, Button, ClickAwayListener, Dialog, DialogContent, Grow, IconButton, List, ListItem, ListItemButton, ListItemText, OutlinedInput, Paper, Popper, Stack, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { t } from "i18next";
-import { Add, Send } from "iconsax-reactjs";
+import { Add, Send, Status } from "iconsax-reactjs";
 import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import FilterIcon from "../../../icons/FilterIcon";
 import SearchIcon from "../../../icons/SearchIcon";
@@ -31,11 +31,14 @@ interface TableFilterProps {
     setDays?: React.Dispatch<React.SetStateAction<number | null>>;
     handleResetFilter?: () => void;
     onDownload?: () => void;
+    onStatusChange?: () => void;
     donwloading?: boolean;
     redirectUrl?: string;
+
 }
 export default function TableFilter({
-    search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter, onDownload, donwloading, redirectUrl
+    search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter, onDownload, donwloading, redirectUrl,
+    onStatusChange
 }: TableFilterProps) {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
@@ -313,7 +316,7 @@ export default function TableFilter({
                             color="primary"
                             variant="contained"
                             startIcon={<Add />}
-
+                            disabled={selectedRows!.size === 0}
                             className="py-2.5! px-3.5! rounded-md! text-center justify-center! gap-2! items-center!"
                             onClick={() => assignToCourse()}
                         >
@@ -328,6 +331,14 @@ export default function TableFilter({
                         border: `1px solid ${theme.palette.separator.dark}`
                     }} className="py-2.5! px-3.5! rounded-md!">
                         <Typography variant="subtitle1" color="text.dark">{donwloading ? "Downloading" : "Download"}</Typography>
+                    </Button> : ""}
+                    {onStatusChange ? <Button
+                        disabled={selectedRows!.size === 0}
+                        onClick={onStatusChange} startIcon={<Status />} sx={{
+                            border: `1px solid ${theme.palette.separator.dark}`
+                        }}
+                        className="py-2.5! px-3.5! rounded-md!">
+                        <Typography variant="subtitle1" color="text.dark">{"Mark Downloadable"}</Typography>
                     </Button> : ""}
                 </div>
             </div>

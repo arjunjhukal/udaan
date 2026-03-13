@@ -234,7 +234,7 @@ export default function CourseManagementForm() {
                             severity: "success"
                         })
                     );
-                    setActiveTab("curriculum");
+                    // setActiveTab("curriculum");
                 }
                 catch (e: any) {
                     dispatch(
@@ -300,13 +300,17 @@ export default function CourseManagementForm() {
     };
     const handleTabChange = (newValue: courseTabType) => {
         if (!id) {
-            formik.handleSubmit();
-            setActiveTab(newValue)
+            dispatch(
+                showToast({
+                    message: "Please create the course first",
+                    severity: "error"
+                })
+            );
+            return;
         }
-        else {
-            setActiveTab(newValue)
-        }
-    }
+
+        setActiveTab(newValue);
+    };
     return (
         <form onSubmit={formik.handleSubmit} className="course__management__form__root h-full flex flex-col">
             <PageHeader
@@ -483,32 +487,32 @@ export default function CourseManagementForm() {
                         {
                             label: "Overview",
                             value: "overview",
-                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(Number(id))
+                            redirect_url: id && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(Number(id))
                         },
                         {
                             label: "Curriculum",
                             value: "curriculum",
-                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.CURRICULUM.ROOT(Number(id))
+                            redirect_url: id && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.CURRICULUM.ROOT(Number(id))
                         },
                         {
                             label: "Videos",
                             value: "videos",
-                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.VIDEOS.ROOT(Number(id))
+                            redirect_url: id && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.VIDEOS.ROOT(Number(id))
                         },
                         {
                             label: "Notes",
                             value: "notes",
-                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.NOTES.ROOT(Number(id))
+                            redirect_url: id && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.NOTES.ROOT(Number(id))
                         },
                         {
                             label: "Test",
                             value: "test",
-                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.TEST.ROOT(Number(id))
+                            redirect_url: id && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.TEST.ROOT(Number(id))
                         },
                         {
                             label: "Audios",
                             value: "audios",
-                            redirect_url: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.AUDIOS.ROOT(Number(id))
+                            redirect_url: id && PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.AUDIOS.ROOT(Number(id))
                         },
                     ]}
                 />

@@ -1,16 +1,17 @@
-import type { Pagination } from "./roleAndPermission"
+import type { Pagination } from "./roleAndPermission";
 
 export interface MediaProps {
     id: number,
     file_name: string,
     url: string,
     size: number
-    alt?:string;
+    alt?: string;
+    is_downloadable?: boolean;
 }
 
-export interface MediaList{
-    data:{
-        data:MediaProps[],
-        pagination:Pagination
+export interface MediaList {
+    data: {
+        data: MediaProps[],
+        pagination: Pagination
     }
 }

@@ -303,6 +303,12 @@ export interface SetList extends GlobalResponse {
     }
 }
 
+export interface OMRType {
+    id: number;
+    title: string;
+    value: number
+}
+
 export interface OmrSheetProps {
     id?: number;
     sheet: File | null;

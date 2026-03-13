@@ -1,5 +1,6 @@
 import { Box, Checkbox, Skeleton } from "@mui/material";
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
 import { useAddCourseMediaByTypeMutation, useGetCourseMediaByTypeQuery, useRemoveCourseMediaByTypeMutation } from "../../../../../services/courseApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
@@ -9,7 +10,6 @@ import MediaCard from "../../../../organism/Cards/MediaCard";
 import EmptyRoute from "../../../../organism/EmptyRoute";
 import PageHeader from "../../../../organism/PageHeader";
 import TableFilter from "../../../../organism/TableFilter";
-import { useParams } from "react-router-dom";
 
 type MediaType = "audios" | "notes" | "videos";
 
@@ -153,7 +153,7 @@ export default function CourseMedia({ type, allowMultiple = true }: Props) {
             return newSet;
         });
     };
-    
+
     return (
         <div className="media__root">
             <PageHeader
@@ -205,9 +205,9 @@ export default function CourseMedia({ type, allowMultiple = true }: Props) {
                                 checked={selectedItems.has(media.id)}
                                 onChange={() => handleToggleItem(media.id)}
                             />
-                            <div onClick={() => handleToggleItem(media.id)} className="cursor-pointer flex-1">
-                                <MediaCard media={media} type={type} />
-                            </div>
+                            {/* <div onClick={() => handleToggleItem(media.id)} className="cursor-pointer flex-1"> */}
+                            <MediaCard media={media} type={type} />
+                            {/* </div> */}
                         </div>
                     )))}
             </div>

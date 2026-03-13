@@ -1,7 +1,7 @@
 import { Checkbox, Divider } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDeleteMediaMutation, useGetallMediaQuery } from '../../../../services/mediaApi';
+import { useDeleteMediaMutation, useGetallMediaQuery, useUseChangeMediaStatusMutation } from '../../../../services/mediaApi';
 import { showToast } from '../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../store/hook';
 import type { courseTabType } from '../../../../types/course';
@@ -32,6 +32,8 @@ export default function AllMediaRoot() {
 
 
     const [deleteMedia] = useDeleteMediaMutation();
+    const [changeStatus] = useUseChangeMediaStatusMutation();
+
     const handleToggleItem = (id: number) => {
         setSelectedItems(prev => {
             const newSet = new Set(prev);
@@ -54,12 +56,36 @@ export default function AllMediaRoot() {
                     severity: "success"
                 })
             )
+            setSelectedItems(new Set());
             setOpenConfirm(false);
         }
         catch (e: any) {
             dispatch(
                 showToast({
                     messsage: e?.data?.message || "Unable to delete Media",
+                    severity: "error"
+                })
+            )
+        }
+    }
+
+    const handleMediaStatusChange = async () => {
+        try {
+            const response = await changeStatus({
+                media_ids: Array.from(selectedItems)
+            }).unwrap();
+            setSelectedItems(new Set());
+            dispatch(
+                showToast({
+                    messsage: response?.message || "Media Availabe For Download Successfully",
+                    severity: "success"
+                })
+            )
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    messsage: e?.data?.message || "Unable to mark media for Download",
                     severity: "error"
                 })
             )
@@ -93,10 +119,11 @@ export default function AllMediaRoot() {
                         handleRoleDelete={() => setOpenConfirm(true)}
                         selectedRows={selectedItems}
                         assignToCourse={() => setOpen(true)}
+                        onStatusChange={() => handleMediaStatusChange()}
                     />
                     {data?.data?.data.length ?
                         <>
-                            <div className="gap-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  2xl:grid-cols-6  flex-10">
+                            <div className="gap-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  flex-10">
                                 {data?.data?.data?.map((item) => (
 
                                     <div className="flex gap-3 items-center">
@@ -105,9 +132,9 @@ export default function AllMediaRoot() {
                                             checked={selectedItems.has(item.id)}
                                             onChange={() => handleToggleItem(item.id)}
                                         />
-                                        <div onClick={() => handleToggleItem(item.id)} className="cursor-pointer flex-1">
-                                            <MediaCard media={item as MediaProps} type={currentActive} />
-                                        </div>
+                                        {/* <div onClick={() => handleToggleItem(item.id)} className="cursor-pointer flex-1"> */}
+                                        <MediaCard media={item as MediaProps} type={currentActive} />
+                                        {/* </div> */}
                                     </div>
                                 ))}
                             </div>

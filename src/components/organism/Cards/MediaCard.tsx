@@ -1,4 +1,9 @@
-import { Box, Divider, Typography, useTheme } from '@mui/material';
+import { Box, Divider, IconButton, Tooltip, Typography, useTheme } from '@mui/material';
+import { DocumentUpload, Eye, TickCircle } from 'iconsax-reactjs';
+import { useUseChangeMediaStatusMutation } from '../../../services/mediaApi';
+import { openPreviewPdf } from '../../../slice/previewPdfSlice';
+import { showToast } from '../../../slice/toastSlice';
+import { useAppDispatch } from '../../../store/hook';
 import type { courseTabType } from '../../../types/course';
 import type { MediaProps } from '../../../types/media';
 import { formatFileSize } from '../../../utils/convertToMb';
@@ -34,6 +39,10 @@ const mediaUiConfig: any = {
 }
 export default function MediaCard({ media, type }: { media: MediaProps; type?: courseTabType }) {
     const theme = useTheme();
+    const dispatch = useAppDispatch();
+
+    const [changeStatus] = useUseChangeMediaStatusMutation();
+
     const config = mediaUiConfig[type || "notes"];
 
     let bgColor = theme.palette.warning.light;
@@ -49,13 +58,35 @@ export default function MediaCard({ media, type }: { media: MediaProps; type?: c
             bgColor = theme.palette.warning.light;
             break;
         default:
-            bgColor = theme.palette.warning.light;
+            bgColor = theme.palette.info.light;
+    }
+
+
+    const handleMediaStatusChange = async () => {
+        try {
+            const response = await changeStatus({
+                media_ids: [Number(media.id)]
+            }).unwrap();
+
+            dispatch(
+                showToast({
+                    message: response.message || "Media Availabe For Download Successfully",
+                    severity: "success"
+                })
+            )
+        }
+        catch (e: any) {
+            dispatch(
+                showToast({
+                    messsage: e?.data?.message || "Unable to mark media for Download",
+                    severity: "error"
+                })
+            )
+        }
     }
 
     return (
-        <Box sx={{ border: `1px solid ${theme.palette.textField.border}` }} className="p-3 rounded-md flex items-center gap-3">
-
-            {/* ICON BOX WITH DYNAMIC COLOR */}
+        <Box sx={{ border: `1px solid ${theme.palette.textField.border}` }} className="p-3 rounded-md flex items-center gap-3 w-full">
             <Box
                 className="min-w-12.5 h-12.5 rounded-md flex items-center justify-center"
                 sx={{ background: bgColor }}
@@ -63,13 +94,31 @@ export default function MediaCard({ media, type }: { media: MediaProps; type?: c
                 {config.icon}
             </Box>
 
-            <div className="content">
-                <Typography variant='subtitle2' fontWeight={500} className='line-clamp-1 wrap-anywhere'>
-                    {media.file_name}
-                </Typography>
-
+            <div className="content w-full">
+                <div className="flex justify-between items-start gap-2">
+                    <Typography variant='subtitle2' fontWeight={500} className='line-clamp-2 wrap-anywhere'>
+                        {media.file_name}
+                    </Typography>
+                    {type === "notes" ? <div className="flex justify-end items-center gap-2">
+                        <IconButton className='p-0! max-w-fit!' onClick={() =>
+                            dispatch(
+                                openPreviewPdf({
+                                    mediaUrl: media.url,
+                                    mediaName: media.file_name,
+                                    mediaId: media.id
+                                })
+                            )
+                        } >
+                            <Eye size={16} />
+                        </IconButton>
+                        <IconButton className='p-0! max-w-fit!' color='success' onClick={() => { handleMediaStatusChange() }}>
+                            <Tooltip title="Change PDF Download Status">
+                                {media.is_downloadable ? <TickCircle size={16} variant='Bold' /> : <DocumentUpload size={16} variant='Bold' />}
+                            </Tooltip>
+                        </IconButton>
+                    </div> : ""}
+                </div>
                 <Divider className='my-1.5!' />
-
                 <Typography color='text.middle' className='text-[12px]!'>
                     {formatFileSize(media.size)}
                 </Typography>

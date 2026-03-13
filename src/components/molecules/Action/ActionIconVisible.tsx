@@ -1,3 +1,4 @@
+import { DownloadDone } from "@mui/icons-material";
 import { IconButton, useTheme } from "@mui/material";
 import { ArchiveBox, ArrowRotateRight } from "iconsax-reactjs";
 
@@ -6,6 +7,7 @@ export default function ActionIconVisible({
 	onEdit,
 	onView,
 	onTrash,
+	onDownload,
 	activeTab,
 	trashing,
 	deleting,
@@ -14,6 +16,7 @@ export default function ActionIconVisible({
 	onEdit?: () => void;
 	onView?: () => void;
 	onTrash?: () => void;
+	onDownload?: () => void;
 	activeTab?: "active" | "archived",
 	trashing?: boolean;
 	deleting?: boolean;
@@ -131,7 +134,7 @@ export default function ActionIconVisible({
 			) : (
 				""
 			)}
-			{onView ? (
+			{onDownload ? (
 				<IconButton
 					className="p-1.5 rounded-md!"
 					sx={{
@@ -139,7 +142,7 @@ export default function ActionIconVisible({
 					}}
 					onClick={(e) => {
 						e.stopPropagation();
-						onView();
+						onDownload();
 					}}>
 					<svg
 						width="24"
@@ -156,6 +159,21 @@ export default function ActionIconVisible({
 							fill="#848484"
 						/>
 					</svg>
+				</IconButton>
+			) : (
+				""
+			)}
+			{onView ? (
+				<IconButton
+					className="p-1.5 rounded-md!"
+					sx={{
+						background: theme.palette.primary.contrastText,
+					}}
+					onClick={(e) => {
+						e.stopPropagation();
+						onView();
+					}}>
+					<DownloadDone />
 				</IconButton>
 			) : (
 				""
