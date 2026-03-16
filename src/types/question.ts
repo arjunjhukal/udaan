@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import * as Yup from "yup";
-import type { DiscountTypeProps } from "./course";
+import type { DiscountTypeProps, SelectionType } from "./course";
 import type { Pagination } from "./roleAndPermission";
 import type { GlobalResponse, User } from "./user";
 export type QuestionTypeProps = "mcq" | "subjective" | "omr"
@@ -281,6 +281,7 @@ export interface SetProps {
     status: "published" | "draft";
     marked_price?: string;
     sale_price?: string;
+    selections: SelectionType;
 }
 
 export const setInitialValues: SetProps = {
@@ -293,7 +294,13 @@ export const setInitialValues: SetProps = {
     thumbnail: null,
     test_ids: [],
     status: "draft",
-    thumbnail_url: ""
+    thumbnail_url: "",
+    selections: {
+        mega_category: [],
+        category: {},
+        sub_category: {},
+        position_ids: [],
+    },
 };
 
 export interface SetList extends GlobalResponse {

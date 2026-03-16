@@ -246,18 +246,22 @@ export default function TestManagementForm() {
                 {formik.values.test_type === "omr" ? (
                     <div className="col-span-1">
                         <InputLabel className="required">OMR Format</InputLabel>
+
                         <Autocomplete
                             disableClearable
                             options={data?.data?.data || []}
                             getOptionLabel={(option) => option.name}
                             onChange={(_, value) => {
-                                formik.setFieldValue("omr_format", value?.id || null);
-                                formik.setFieldValue("total_questions", value.omr_format)
+                                formik.setFieldValue("omr_format", value?.omr_format || null);
+                                formik.setFieldValue("total_questions", value?.omr_format);
                             }}
                             sx={{
                                 "& .MuiAutocomplete-option": {
-                                    alignItems: "flex-start",
-                                }
+                                    display: "flex",
+                                    alignItems: "flex-start !important",
+                                    justifyContent: "flex-start !important",
+                                    textAlign: "left",
+                                },
                             }}
                             renderInput={(params) => (
                                 <TextField
@@ -271,23 +275,27 @@ export default function TestManagementForm() {
                                     component="li"
                                     {...props}
                                     sx={{
+                                        width: "100%",
                                         p: 2,
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "flex-start",
-                                        justifyContent: "flex-start",
+
                                     }}
                                 >
-                                    <Typography fontWeight={500} className="text-left">
-                                        {option.name}
-                                    </Typography>
+                                    <div className="">
+                                        <Typography variant="h5" fontWeight={500} >
+                                            {option.name}
+                                        </Typography>
 
-                                    <Typography variant="caption" color="text.secondary">
-                                        Uploaded {formatDateForDisplay(option.created_at)}
-                                    </Typography>
+                                        <Typography
+                                            variant="subtitle2"
+                                            color="text.middle"
+                                        >
+                                            Uploaded {formatDateForDisplay(option.created_at)}
+                                        </Typography>
+                                    </div>
                                 </Box>
                             )}
                         />
+
                         {formik.touched.total_questions && formik.errors.total_questions && (
                             <FormHelperText error>{formik.errors.total_questions}</FormHelperText>
                         )}

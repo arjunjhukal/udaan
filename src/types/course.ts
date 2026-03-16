@@ -81,7 +81,6 @@ export const initialCourseState: CourseProps = {
         category: {},
         sub_category: {},
         position_ids: [],
-
     },
     about_this_course: "",
     teachers: [],

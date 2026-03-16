@@ -26,12 +26,14 @@ import {
 } from "../../../../services/questionApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
+import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { DiscountTypeProps } from "../../../../types/course";
 import { setInitialValues, type TestProps } from "../../../../types/question";
 import TextEditor from "../../../atoms/TextEditor";
 import FileDragDrop from "../../../molecules/FileDragDrop";
 import FooterAction from "../../../molecules/FooterAction";
 import TestCard from "../../../organism/Cards/TestCard";
+import CategoryFilter from "../../../organism/CategoryFilter";
 import EmptyRoute from "../../../organism/EmptyRoute";
 import PageHeader from "../../../organism/PageHeader";
 import TableFilter from "../../../organism/TableFilter";
@@ -108,7 +110,6 @@ export default function SetManagementForm() {
   const [allVisibleTests, setAllVisibleTests] = useState<TestProps[]>([]);
   const [allVisibleSelectedTests, setAllVisibleSelectedTests] = useState<TestProps[]>([]);
 
-  // Fix #2: Track request identity to prevent race conditions
   const testsRequestIdRef = useRef(0);
   const selectedTestsRequestIdRef = useRef(0);
   const seedDoneRef = useRef(false);
@@ -131,12 +132,30 @@ export default function SetManagementForm() {
       { skip: !id }
     );
 
+
   const totalPages = tests?.data?.pagination?.total_pages || 0;
   const selectedTotalPages = selectedTests?.data?.pagination?.total_pages || 0;
   const hasMore = qp.pageIndex < totalPages;
   const hasMoreSelected = selectedQp.pageIndex < selectedTotalPages;
 
-  // ── Debounced search ──────────────────────────────────────────────────────
+
+  const {
+    selections,
+    megaCategories,
+    categories,
+    subCategories,
+    positions,
+    loadingMegaCategory,
+    handleCategoryChange,
+    // getCategoryFilterParams,
+  } = useCourseFilter();
+
+  // const categoryFilter = getCategoryFilterParams();
+
+  useEffect(() => {
+    formik.setFieldValue("selections", selections);
+  }, [selections]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -144,20 +163,18 @@ export default function SetManagementForm() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // ── Reset on filter change ────────────────────────────────────────────────
+
   useEffect(() => {
-    // Increment request ID to invalidate in-flight requests
     testsRequestIdRef.current += 1;
     setAllVisibleTests([]);
     setQp((prev) => ({ ...prev, pageIndex: 1 }));
   }, [debouncedSearch, customRange.startDate, customRange.endDate, days]);
 
-  // ── Fix #1 & #2: Handle tests data with proper deps and race condition guard
+
   useEffect(() => {
     const currentRequestId = testsRequestIdRef.current;
     const newTests = tests?.data?.data ?? [];
 
-    // Guard against stale responses
     if (currentRequestId !== testsRequestIdRef.current) return;
 
     if (newTests.length === 0 && qp.pageIndex === 1) {
@@ -170,7 +187,6 @@ export default function SetManagementForm() {
         return newTests;
       }
 
-      // Deduplicate using Set
       const existingIds = new Set(prev.map((v) => v.id));
       const uniqueNewTests = newTests.filter(
         (v: TestProps) => !existingIds.has(v.id)
@@ -180,16 +196,15 @@ export default function SetManagementForm() {
 
       return [...prev, ...uniqueNewTests];
     });
-  }, [tests?.data?.data, qp.pageIndex]); // Fix #1: Include qp.pageIndex
+  }, [tests?.data?.data, qp.pageIndex]);
 
-  // ── Handle selected tests data ────────────────────────────────────────────
+
   useEffect(() => {
     if (!id) return;
 
     const currentRequestId = selectedTestsRequestIdRef.current;
     const newSelectedTests = selectedTests?.data?.data ?? [];
 
-    // Guard against stale responses
     if (currentRequestId !== selectedTestsRequestIdRef.current) return;
 
     if (newSelectedTests.length === 0 && selectedQp.pageIndex === 1) {
@@ -213,7 +228,6 @@ export default function SetManagementForm() {
     });
   }, [selectedTests?.data?.data, selectedQp.pageIndex, id]);
 
-  // ── Seed test_ids from server on edit mode ────────────────────────────────
   useEffect(() => {
     if (!id || seedDoneRef.current) return;
 
@@ -245,6 +259,7 @@ export default function SetManagementForm() {
           thumbnail: data?.data?.thumbnail || null,
           thumbnail_url: data.data.thumbnail_url || "",
           status: data.data.status || "draft",
+          selections: data.data.selections ?? setInitialValues.selections,
         }
         : setInitialValues,
     validationSchema,
@@ -263,6 +278,26 @@ export default function SetManagementForm() {
       values.test_ids.forEach((testId) =>
         formData.append("test_ids[]", String(testId))
       );
+      (formik.values.selections.mega_category ?? []).forEach((id, index) => {
+        formData.append(`selections[mega_category][${index}]`, id.toString());
+      });
+
+      Object.entries(formik.values.selections.category ?? {}).forEach(([megaId, categoryIds]) => {
+        (categoryIds as number[]).forEach((catId, index) => {
+          formData.append(`selections[category][${megaId}][${index}]`, catId.toString());
+        });
+      });
+
+      Object.entries(formik.values.selections.sub_category ?? {}).forEach(([catId, subCatIds]) => {
+        (subCatIds as number[]).forEach((subId, index) => {
+          formData.append(`selections[sub_category][${catId}][${index}]`, subId.toString());
+        });
+      });
+
+      (formik.values.selections.position_ids ?? []).forEach((id, index) => {
+        formData.append(`selections[position_ids][${index}]`, id.toString());
+      });
+
 
       try {
         const response = id
@@ -287,7 +322,7 @@ export default function SetManagementForm() {
     },
   });
 
-  // ── Handlers ──────────────────────────────────────────────────────────────
+
   const handleFileChange = (file: File | null) => {
     formik.setFieldValue("thumbnail", file);
     if (!file) formik.setFieldValue("thumbnail_url", "");
@@ -337,16 +372,14 @@ export default function SetManagementForm() {
     }
   }, [loadingSelectedTest, hasMoreSelected]);
 
-  // ── Build selected test objects with memoization ──────────────────────────
+
   const selectedTestObjects = useMemo<TestProps[]>(() => {
     const selectedIds = new Set(formik.values.test_ids.map(Number));
 
-    // Build lookup map from both sources
     const lookup = new Map<number, TestProps>();
     allVisibleTests.forEach((t) => lookup.set(Number(t.id), t));
     allVisibleSelectedTests.forEach((t) => lookup.set(Number(t.id), t));
 
-    // Recent items first (that are still selected)
     const recentItems: TestProps[] = [];
     for (const rid of recentlySelectedRef.current) {
       if (selectedIds.has(rid) && lookup.has(rid)) {
@@ -354,7 +387,6 @@ export default function SetManagementForm() {
       }
     }
 
-    // Then previously selected items (not in recent)
     const recentSet = new Set(recentItems.map((t) => Number(t.id)));
     const previousItems = allVisibleSelectedTests.filter(
       (t) => selectedIds.has(Number(t.id)) && !recentSet.has(Number(t.id))
@@ -362,6 +394,8 @@ export default function SetManagementForm() {
 
     return [...recentItems, ...previousItems];
   }, [formik.values.test_ids, allVisibleTests, allVisibleSelectedTests]);
+
+
 
   return (
     <form
@@ -466,56 +500,88 @@ export default function SetManagementForm() {
             )}
           </div>
         </div>
-
         <div className="col-span-1">
-          <div className="input_field">
-            <InputLabel>Discount</InputLabel>
-            <OutlinedInput
-              fullWidth
-              placeholder="Enter Discount"
-              name="discount"
-              type="number"
-              value={formik.values.discount}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-            />
-            {formik.touched?.discount && formik.errors?.discount && (
-              <FormHelperText error sx={{ mt: 0.5 }}>
-                {formik.errors.discount}
-              </FormHelperText>
-            )}
-          </div>
+          <CategoryFilter
+            megaCategories={megaCategories || []}
+            categories={categories || []}
+            subCategories={subCategories || []}
+            positions={positions || []}
+            selections={formik.values.selections}
+            onChange={handleCategoryChange}
+            loadingMegaCategory={loadingMegaCategory}
+          />
+          {formik.touched.selections?.mega_category && formik.errors.selections?.mega_category && (
+            <FormHelperText error sx={{ mt: 0.5 }}>
+              {formik.errors.selections.mega_category}
+            </FormHelperText>
+          )}
+
+          {formik.touched.selections?.category && Object.keys(formik.errors.selections?.category || {}).length > 0 && (
+            <FormHelperText error sx={{ mt: 0.5 }}>
+              Please select at least one category
+            </FormHelperText>
+          )}
+
+          {formik.touched.selections?.sub_category && Object.keys(formik.errors.selections?.sub_category || {}).length > 0 && (
+            <FormHelperText error sx={{ mt: 0.5 }}>
+              Please select at least one sub-category
+            </FormHelperText>
+          )}
+
+          {formik.touched.selections?.position_ids && formik.errors.selections?.position_ids && (
+            <FormHelperText error sx={{ mt: 0.5 }}>
+              {formik.errors.selections.position_ids}
+            </FormHelperText>
+          )}
         </div>
-
         <div className="col-span-1">
-          <div className="input_field">
-            <InputLabel>Discount Type</InputLabel>
-            <Autocomplete
-              options={[
-                { label: "Percentage", value: "percentage" },
-                { label: "Amount", value: "amount" },
-              ]}
-              value={
-                formik.values.discount_type === "percentage"
-                  ? { label: "Percentage", value: "percentage" }
-                  : { label: "Amount", value: "amount" }
-              }
-              getOptionLabel={(option) => option.label}
-              onChange={(_e, value) => {
-                formik.setFieldValue(
-                  "discount_type",
-                  (value?.value as DiscountTypeProps) || "percentage"
-                );
-              }}
-              renderInput={(params) => (
-                <TextField {...params} placeholder="Select discount type" />
+          <div className="flex flex-col gap-4">
+            <div className="input_field">
+              <InputLabel>Discount</InputLabel>
+              <OutlinedInput
+                fullWidth
+                placeholder="Enter Discount"
+                name="discount"
+                type="number"
+                value={formik.values.discount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+              />
+              {formik.touched?.discount && formik.errors?.discount && (
+                <FormHelperText error sx={{ mt: 0.5 }}>
+                  {formik.errors.discount}
+                </FormHelperText>
               )}
-            />
-            {formik.touched?.discount_type && formik.errors?.discount_type && (
-              <FormHelperText error sx={{ mt: 0.5 }}>
-                {formik.errors.discount_type}
-              </FormHelperText>
-            )}
+            </div>
+            <div className="input_field">
+              <InputLabel>Discount Type</InputLabel>
+              <Autocomplete
+                options={[
+                  { label: "Percentage", value: "percentage" },
+                  { label: "Amount", value: "amount" },
+                ]}
+                value={
+                  formik.values.discount_type === "percentage"
+                    ? { label: "Percentage", value: "percentage" }
+                    : { label: "Amount", value: "amount" }
+                }
+                getOptionLabel={(option) => option.label}
+                onChange={(_e, value) => {
+                  formik.setFieldValue(
+                    "discount_type",
+                    (value?.value as DiscountTypeProps) || "percentage"
+                  );
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder="Select discount type" />
+                )}
+              />
+              {formik.touched?.discount_type && formik.errors?.discount_type && (
+                <FormHelperText error sx={{ mt: 0.5 }}>
+                  {formik.errors.discount_type}
+                </FormHelperText>
+              )}
+            </div>
           </div>
         </div>
 
@@ -537,7 +603,7 @@ export default function SetManagementForm() {
           )}
         </div>
 
-        {/* ── Add Sets Section ──────────────────────────────────────────────── */}
+
         <div className="col-span-2">
           <Typography variant="h5">Add Sets</Typography>
           <Divider className="mt-2! mb-6!" />
@@ -807,7 +873,7 @@ export default function SetManagementForm() {
             ? isLoading || editing
               ? "Updating Bundle..."
               : "Update Bundle"
-              
+
             : isLoading || editing
               ? "Creating Bundle..."
               : "Create Bundle"
