@@ -52,12 +52,12 @@ const validationSchema = Yup.object({
   test_ids: Yup.array()
     .of(Yup.number())
     .min(1, "At least one test must be selected"),
-  thumbnail: Yup.mixed()
-    .nullable()
-    .test("thumbnail-required", "Thumbnail is required", function (value) {
-      const { thumbnail_url } = this.parent;
-      return !!(thumbnail_url?.trim() || value);
-    }),
+  // thumbnail: Yup.mixed()
+  //   .nullable()
+  //   .test("thumbnail-required", "Thumbnail is required", function (value) {
+  //     const { thumbnail_url } = this.parent;
+  //     return !!(thumbnail_url?.trim() || value);
+  //   }),
   status: Yup.string()
     .oneOf(["published", "draft"])
     .required("Status is required"),
@@ -451,7 +451,6 @@ export default function SetManagementForm() {
 
         <div className="input__field col-span-1 flex flex-col gap-4">
           <FileDragDrop
-            required
             onFileChange={handleFileChange}
             initialFile={formik.values.thumbnail}
             initialPreview={formik.values.thumbnail_url}
