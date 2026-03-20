@@ -138,16 +138,52 @@ export default function RoleManagementForm() {
         [formik]
     );
 
+    const handleRowToggle = useCallback((rowIndex: number) => {
+        const updatedPermissions = [...formik.values.permissions];
+        const row = updatedPermissions[rowIndex];
+
+        if (!row) return;
+
+        const allSelected = row.add && row.view && row.edit && row.delete;
+
+        updatedPermissions[rowIndex] = {
+            ...row,
+            add: !allSelected,
+            view: !allSelected,
+            edit: !allSelected,
+            delete: !allSelected,
+        };
+
+        formik.setFieldValue("permissions", updatedPermissions);
+    }, [formik]);
+
     const columns = useMemo<ColumnDef<PermissionProps>[]>(
         () => [
             {
                 header: "Module",
                 accessorKey: "module",
-                cell: (info) => (
-                    <Typography fontWeight={500} className="capitalize">
-                        {info.getValue() as string}
-                    </Typography>
-                ),
+                cell: (info) => {
+                    const row = info.row.original;
+
+                    const allChecked =
+                        row.add && row.view && row.edit && row.delete;
+
+                    return (
+                        <Box className="flex items-center gap-2">
+                            <Checkbox
+                                checked={allChecked}
+                                indeterminate={
+                                    !allChecked &&
+                                    (row.add || row.view || row.edit || row.delete)
+                                }
+                                onChange={() => handleRowToggle(info.row.index)}
+                            />
+                            <Typography fontWeight={500} className="capitalize">
+                                {info.getValue() as string}
+                            </Typography>
+                        </Box>
+                    );
+                },
             },
             {
                 header: "Add",

@@ -1,4 +1,4 @@
-import { Autocomplete, Box, FormHelperText, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, FormHelperText, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
@@ -55,11 +55,10 @@ export default function TestManagementForm() {
         getSelectedCategoryFilterParams,
     } = useCourseFilter();
 
-    const { data: editData } = useGetTestByIdQuery(
+    const { data: editData, isLoading: loadingTest } = useGetTestByIdQuery(
         { id: testId as number },
         { skip: !testId }
     );
-
 
     function getInitialValues(): TestProps {
         if (id && editData?.data) {
@@ -162,6 +161,10 @@ export default function TestManagementForm() {
         });
     }, [questions, questionQp.pageIndex]);
 
+    useEffect(() => {
+        setActiveTab(editData?.data?.test_type || "mcq")
+    }, [editData]);
+
     const handleCourseSearch = (searchTerm: string) => {
         setCourseQp(prev => ({
             ...prev,
@@ -209,6 +212,9 @@ export default function TestManagementForm() {
         }
     };
 
+    if (loadingTest) {
+        return <CircularProgress />
+    }
     return (
         <form onSubmit={formik.handleSubmit} className="flex flex-col h-full justify-between overflow-auto">
             <Box className="flex flex-col gap-6 md:grid md:grid-cols-2 overflow-auto" sx={{
@@ -342,7 +348,7 @@ export default function TestManagementForm() {
                         </div>
                     </div>
                 ) : ""}
-                {formik.values.test_type === "mcq" || formik.values.test_type==="omr" ? (
+                {formik.values.test_type === "mcq" || formik.values.test_type === "omr" ? (
                     <div className="col-span-1">
                         <div className="input__field">
                             <InputLabel className="required">Marks Per Question</InputLabel>
