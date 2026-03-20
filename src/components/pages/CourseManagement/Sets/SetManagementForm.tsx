@@ -99,7 +99,7 @@ export default function SetManagementForm() {
 
   const [qp, setQp] = useState({
     pageIndex: 1,
-    pageSize: 12,
+    pageSize: 18,
   });
 
   const [selectedQp, setSelectedQp] = useState({

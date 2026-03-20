@@ -342,7 +342,7 @@ export default function TestManagementForm() {
                         </div>
                     </div>
                 ) : ""}
-                {formik.values.test_type === "mcq" ? (
+                {formik.values.test_type === "mcq" || formik.values.test_type==="omr" ? (
                     <div className="col-span-1">
                         <div className="input__field">
                             <InputLabel className="required">Marks Per Question</InputLabel>
