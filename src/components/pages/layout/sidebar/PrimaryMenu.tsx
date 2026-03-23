@@ -277,7 +277,7 @@ export default function PrimaryMenu() {
                                                         <ListItemButton
                                                             onClick={() => navigate(PATH.OMR.FORMAT.ROOT)}
                                                             className={location.pathname.startsWith(PATH.OMR.FORMAT.ROOT) ? "active-nested" : ""}>
-                                                            <ListItemText primary="Format" />
+                                                            <ListItemText primary="Instructions" />
                                                         </ListItemButton>
                                                     </ListItem>
                                                 </List>
