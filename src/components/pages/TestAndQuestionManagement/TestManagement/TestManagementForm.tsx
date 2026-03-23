@@ -82,7 +82,7 @@ export default function TestManagementForm() {
                 rules: test.rules,
                 discount: test.discount,
                 discount_type: test.discount_type,
-                omr_format: test.omr_format
+                omr_format: test.omr_format,
             };
         }
         return TestInitialState;
@@ -307,6 +307,7 @@ export default function TestManagementForm() {
                         )}
                     </div>
                 ) : ""}
+
                 <div className="col-span-1">
                     <div className="input__field">
                         <InputLabel className="required">Total No. of Questions</InputLabel>

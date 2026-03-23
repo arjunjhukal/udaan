@@ -269,6 +269,99 @@ const commonThemeOptions: ThemeOptions = {
     components: {
         MuiCssBaseline: {
             styleOverrides: (theme) => ({
+                ".general__content__box": {
+                    '& h1': {
+                        ...theme.typography.h2,
+                        fontWeight: 700,
+                        margin: '1.5rem 0 1rem 0',
+                    },
+                    '& h2': {
+                        ...theme.typography.h3,
+                        fontWeight: 700,
+                        margin: '1.5rem 0 1rem 0',
+                    },
+                    '& h3': {
+                        ...theme.typography.h4,
+                        fontWeight: 600,
+                        margin: '1.25rem 0 0.75rem 0',
+                    },
+                    '& h4': {
+                        ...theme.typography.h5,
+                        fontWeight: 600,
+                        margin: '1rem 0 0.5rem 0',
+                    },
+                    '& p': {
+                        ...theme.typography.subtitle1,
+                        margin: '0.75rem 0',
+                    },
+                    '& ul': {
+                        paddingLeft: '1.5rem',
+                        margin: '0.75rem 0',
+                        '& li': {
+                            ...theme.typography.subtitle1,
+                            margin: '0.25rem 0',
+                        },
+                    },
+                    '& ol': {
+                        paddingLeft: '1.5rem',
+                        margin: '0.75rem 0',
+                        '& li': {
+                            ...theme.typography.subtitle1,
+                            margin: '0.25rem 0',
+                        },
+                    },
+                    '& strong': {
+                        fontWeight: 700,
+                    },
+                    '& a': {
+                        color: theme.palette.primary.main,
+                        textDecoration: 'underline',
+                        '&:hover': {
+                            textDecoration: 'none',
+                        },
+                    },
+                    '& blockquote': {
+                        borderLeft: `4px solid ${theme.palette.primary.main}`,
+                        padding: '0.75rem',
+                        margin: '1rem 0',
+                        fontStyle: 'italic',
+                        backgroundColor: theme.palette.action.hover,
+                        borderRadius: "8px"
+                    },
+                    '& img': {
+                        maxWidth: {
+                            xs: '100%',
+                            md: "50%"
+                        },
+                        height: 'auto',
+                    },
+                    '& table': {
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        margin: '1rem 0',
+                        '& th, & td': {
+                            border: `1px solid ${theme.palette.divider}`,
+                            padding: '0.5rem',
+                            textAlign: 'left',
+                        },
+                    },
+                    '& hr': {
+                        border: 'none',
+                        borderTop: `1px solid ${theme.palette.divider}`,
+                        margin: '2rem 0',
+                    },
+                },
+                ".styled__list": {
+                    "ul": {
+                        ">li": {
+                            listStyleType: "disc"
+                        }
+                    }, "ol": {
+                        ">li": {
+                            listStyleType: "decimal"
+                        }
+                    }
+                },
                 ".subscription__description": {
                     "ul": {
                         display: "flex",

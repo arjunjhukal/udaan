@@ -27,6 +27,7 @@ export default function PrimaryMenu() {
     const [openCategory, setOpenCategory] = React.useState<boolean>(false);
     const [openTest, setOpenTest] = React.useState<boolean>(false);
     const [openSetting, setOpenSetting] = React.useState<boolean>(false);
+    const [openOmr, setOpenOmr] = React.useState<boolean>(false);
     const mode = useAppSelector((state) => state.theme.mode);
 
     const isActive = (path: string) => location.pathname === path;
@@ -50,6 +51,8 @@ export default function PrimaryMenu() {
             location.pathname.startsWith(PATH.CATEGORY_LEVEL_MANAGEMENT.LEVEL_POSITION.ROOT);
     };
 
+    const isOmrActive = () => location.pathname.startsWith(PATH.OMR.ROOT);
+
     React.useEffect(() => {
         if (isCourseManagementActive()) {
             setCourse(true);
@@ -62,6 +65,9 @@ export default function PrimaryMenu() {
         }
         if (isSettingActive()) {
             setOpenSetting(true);
+        }
+        if (isOmrActive()) {
+            setOpenOmr(true);
         }
     }, [location.pathname]);
 
@@ -250,13 +256,32 @@ export default function PrimaryMenu() {
                                         <CAN permissions={["add_omr_sheets", "edit_omr_sheets", "delete_omr_sheets", "view_omr_sheets"]}>
                                             <ListItem disablePadding className="menu__item">
                                                 <ListItemButton
-                                                    onClick={() => navigate(PATH.OMR.ROOT)}
-                                                    className={location.pathname.startsWith(PATH.OMR.ROOT) ? "active-nested" : ""}>
+                                                    onClick={() => setOpenOmr((prev) => !prev)}
+                                                    className={isOmrActive() ? "active-nested" : ""}>
                                                     <ListItemText
                                                         primary={t("menus.test_question_management.test.omr.root")}
                                                     />
+                                                    {openOmr ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
                                                 </ListItemButton>
                                             </ListItem>
+                                            <Collapse in={openOmr} timeout="auto" unmountOnExit>
+                                                <List component="div" disablePadding sx={{ pl: 2 }}>
+                                                    <ListItem disablePadding className="menu__item">
+                                                        <ListItemButton
+                                                            onClick={() => navigate(PATH.OMR.ROOT)}
+                                                            className={location.pathname === PATH.OMR.ROOT ? "active-nested" : ""}>
+                                                            <ListItemText primary="Sheet" />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                    <ListItem disablePadding className="menu__item">
+                                                        <ListItemButton
+                                                            onClick={() => navigate(PATH.OMR.FORMAT.ROOT)}
+                                                            className={location.pathname.startsWith(PATH.OMR.FORMAT.ROOT) ? "active-nested" : ""}>
+                                                            <ListItemText primary="Format" />
+                                                        </ListItemButton>
+                                                    </ListItem>
+                                                </List>
+                                            </Collapse>
                                         </CAN>
                                     </>
                                 </CAN>

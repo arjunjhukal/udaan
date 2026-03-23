@@ -82,7 +82,7 @@ export default function TextEditor({
             </InputLabel> : ""}
 
             <div
-                className="editor__wrapper"
+                className="editor__wrapper general__content__box styled__list"
                 style={{
                     border: "1px solid #E5E7EB",
                     height: "100%",

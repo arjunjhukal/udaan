@@ -103,6 +103,15 @@ export const PATH = {
 		CREATE_OMR: {
 			ROOT: "/omr/create-omr",
 		},
+		FORMAT: {
+			ROOT: "/omr/format",
+			CREATE: {
+				ROOT: "/omr/format/create",
+			},
+			EDIT: {
+				ROOT: (id?: number) => id ? `/omr/format/${id}` : "/omr/format/:id",
+			},
+		},
 	},
 	CATEGORY_LEVEL_MANAGEMENT: {
 		ROOT: "/category-level-management",

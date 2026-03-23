@@ -59,7 +59,7 @@ export default function PageHeader(props: Props) {
                         <div className="breadcrumb__item" key={item.title}>
                             <Link to={item.url || ""} className="flex items-center gap-2 mr-2">
                                 {item?.icon ? item?.icon : ""}
-                                {item?.title ? <Typography variant="h4">
+                                {item?.title ? <Typography variant="h4" fontWeight={600}>
                                     {item?.title}</Typography> : ""}
                             </Link>
 

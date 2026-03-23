@@ -105,7 +105,7 @@ export const TestInitialState: TestProps = {
     rules: "",
     discount: null,
     discount_type: "percentage",
-    omr_format: null
+    omr_format: null,
 };
 
 export interface TestList {
@@ -331,3 +331,40 @@ export interface OmrList extends GlobalResponse {
         pagination: Pagination
     }
 }
+
+export interface OmrFormatProps {
+    id?: number;
+    title: string;
+    test_instructions: string;
+    omr_sheet_instructions: string;
+    post_test_instructions: string;
+    omr_note: string;
+    qr_code: File | null;
+    qr_code_url: string;
+    wrong_method_image: File | null;
+    wrong_method_image_url: string;
+    correct_method_image: File | null;
+    correct_method_image_url: string;
+    created_at?: string;
+}
+
+export interface OmrFormatList extends GlobalResponse {
+    data: {
+        data: OmrFormatProps[];
+        pagination: Pagination;
+    }
+}
+
+export const OmrFormatInitialState: OmrFormatProps = {
+    title: "",
+    test_instructions: "",
+    omr_sheet_instructions: "",
+    post_test_instructions: "",
+    omr_note: "",
+    qr_code: null,
+    qr_code_url: "",
+    wrong_method_image: null,
+    wrong_method_image_url: "",
+    correct_method_image: null,
+    correct_method_image_url: "",
+};

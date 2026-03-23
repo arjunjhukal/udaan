@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { OmrList, OMRType, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
+import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -407,7 +407,47 @@ export const questionApi = createApi({
             }),
             invalidatesTags: [{ type: "OMR", id: "LIST" }]
         }),
-
+        createOmrFormat: builder.mutation<GlobalResponse, { body: FormData }>({
+            query: ({ body }) => ({
+                url: `/admin/omr/format`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: [{ type: "OMR", id: "FORMAT_LIST" }]
+        }),
+        updateOmrFormat: builder.mutation<GlobalResponse, { id: number; body: FormData }>({
+            query: ({ id, body }) => ({
+                url: `/admin/omr/format/${id}`,
+                method: "POST",
+                body
+            }),
+            invalidatesTags: (_result, _error, { id }) => [
+                { type: "OMR", id: `FORMAT_${id}` },
+                { type: "OMR", id: "FORMAT_LIST" }
+            ]
+        }),
+        getOmrFormatById: builder.query<GlobalResponse & { data: OmrFormatProps }, { id: number }>({
+            query: ({ id }) => ({
+                url: `/omr/format/${id}`,
+                method: "GET"
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "OMR", id: `FORMAT_${id}` }]
+        }),
+        getAllOmrFormat: builder.query<OmrFormatList, QueryParams>({
+            query: ({ pageIndex, pageSize, search }) => ({
+                url: `/omr/format?${buildQueryParams({ page: pageIndex, page_size: pageSize, search })}`,
+                method: "GET"
+            }),
+            providesTags: [{ type: "OMR", id: "FORMAT_LIST" }]
+        }),
+        deleteOmrFormat: builder.mutation<GlobalResponse, { body: number[] }>({
+            query: ({ body }) => ({
+                url: `/admin/omr/format`,
+                method: "DELETE",
+                body: { omr_test_instruction_ids: body }
+            }),
+            invalidatesTags: [{ type: "OMR", id: "FORMAT_LIST" }]
+        }),
     })
 });
 
@@ -451,4 +491,9 @@ export const {
     useGetAllOmrTypeQuery,
     useUpdateOmrSheetMutation,
     useDeleteOmrSheetMutation,
+    useCreateOmrFormatMutation,
+    useUpdateOmrFormatMutation,
+    useGetOmrFormatByIdQuery,
+    useGetAllOmrFormatQuery,
+    useDeleteOmrFormatMutation,
 } = questionApi;

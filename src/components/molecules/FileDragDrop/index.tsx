@@ -90,7 +90,7 @@ export default function FileDragDrop({
 
     return (
         <Box className="h-full flex flex-col">
-            <InputLabel htmlFor="profile" className={`${required ? "required" : ""}`}>{label || "Profile Picture"}</InputLabel>
+            <InputLabel htmlFor="profile" className={`pb-1.5! ${required ? "required" : ""}`}>{label || "Profile Picture"}</InputLabel>
             <Box
                 {...getRootProps()}
                 className="flex justify-start items-center gap-4 p-4 rounded-md h-full cursor-pointer transition-all duration-200 relative"

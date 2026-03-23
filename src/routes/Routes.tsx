@@ -52,6 +52,8 @@ import SubscriptionManagementRoot from "../components/pages/SubscriptionManageme
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import OmrSheetRoot from "../components/pages/TestAndQuestionManagement/OmrSheets";
 import AllOmrSheets from "../components/pages/TestAndQuestionManagement/OmrSheets/allOmr";
+import AllOmrFormats from "../components/pages/TestAndQuestionManagement/OmrSheets/allOmrFormat";
+import OmrFormatForm from "../components/pages/TestAndQuestionManagement/OmrSheets/OmrFormatForm";
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
 import AllIndividualTestListing from "../components/pages/TestAndQuestionManagement/TestManagement/allIndividualTest";
@@ -147,6 +149,9 @@ const router = createBrowserRouter([
 				element: <Unauthorized permissions={["add_omr_sheets", "edit_omr_sheets", "delete_omr_sheets", "view_omr_sheets"]}><OmrSheetRoot /></Unauthorized>,
 				children: [
 					{ path: PATH.OMR.ROOT, element: <AllOmrSheets /> },
+					{ path: PATH.OMR.FORMAT.ROOT, element: <AllOmrFormats /> },
+					{ path: PATH.OMR.FORMAT.CREATE.ROOT, element: <OmrFormatForm /> },
+					{ path: PATH.OMR.FORMAT.EDIT.ROOT(), element: <OmrFormatForm /> },
 				],
 			},
 			{
