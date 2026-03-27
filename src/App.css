@@ -89,9 +89,8 @@ body {
 	box-shadow: none !important;
 }
 
-.ck.ck-editor__main>.ck-editor__editable,
-.ck.ck-toolbar {
-	background-color: transparent !important;
+.ck.ck-sticky-panel .ck-sticky-panel__content_sticky{
+	box-shadow: none !important;
 }
 
 .ck-sticky-panel__content {

@@ -6,63 +6,68 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import * as Yup from "yup";
 import SearchIcon from "../../../icons/SearchIcon";
 import { useGetAllCourseQuery } from "../../../services/courseApi";
+import { useGetAllBundleQuery, useGetAllIndividualTestQuery } from "../../../services/questionApi";
 import { useAddTransactionMutation, useGetTransactionByIdQuery, useUpdateTransactionByIdMutation } from "../../../services/transactionApi";
 import { useGetAllUserQuery } from "../../../services/userApi";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
 import { useCourseFilter } from "../../../store/useCourseFilter";
+import { paymentOptions } from "../../../types";
 import type { CourseProps } from "../../../types/course";
+import type { SetProps, TestProps } from "../../../types/question";
+import type { EnrollmentType } from "../../../types/transaction";
 import { TransactionInitialState } from "../../../types/transaction";
 import type { RegisterUserProps } from "../../../types/user";
 import { calcHasMore } from "../../../utils/calculateHasMore";
 import FileDragDrop from "../../molecules/FileDragDrop";
+import TabController from "../../molecules/TabController";
 import UdaanTable from "../../molecules/Table";
 import CategoryFilter from "../../organism/CategoryFilter";
-import { paymentOptions } from "../../../types";
 
 interface Props {
     open: boolean;
     setOpen: (newValue: boolean) => void;
     transactionId?: number | null;
-
 }
 
-const validationSchema = Yup.object({
-    student_id: Yup.number()
-        .min(1, "Please select a student")
-        .required("Please select a student"),
-    course_id: Yup.number()
-        .min(1, "Please select a course")
-        .required("Please select a course"),
-    invoice_id: Yup.string()
-        .required("Invoice ID is required"),
-    transaction_id: Yup.string()
-        .required("Transaction/Bill No. is required"),
-    payment_method: Yup.string()
-        .oneOf(["esewa", "khalti", "cash", "fonepay"])
-        .required("Payment method is required"),
-    status: Yup.string()
-        .oneOf(["success", "installment"])
-        .required("Payment status is required"),
-    image: Yup.mixed().nullable(),
-    image_url: Yup.string().nullable()
-});
+const enrollmentConfig = {
+    course: {
+        label: "Select Course",
+        caption: "(Select the course you want to enroll)",
+        placeholder: "Search Course",
+    },
+    test: {
+        label: "Select Test",
+        caption: "(Select an individual purchasable test)",
+        placeholder: "Search Test",
+    },
+    bundle: {
+        label: "Select Bundle",
+        caption: "(Select a test bundle)",
+        placeholder: "Search Bundle",
+    },
+};
 
 export default function TransactionManagementForm({ open, setOpen, transactionId }: Props) {
     const dispatch = useAppDispatch();
     const theme = useTheme();
+
+    const [enrollmentType, setEnrollmentType] = useState<EnrollmentType>("course");
+
     const [search, setSearch] = useState("");
     const [debounceSearch, setDebounceSearch] = useState("");
     const [searchCourse, setSearchCourse] = useState("");
-    const [qp, _setQp] = useState({
-        pageIndex: 1,
-        pageSize: 3,
-    });
-    const [courseQp, setCourseQp] = useState({
-        pageIndex: 1,
-        pageSize: 10,
-    });
+    const [searchTest, setSearchTest] = useState("");
+    const [searchBundle, setSearchBundle] = useState("");
+
+    const [qp, _setQp] = useState({ pageIndex: 1, pageSize: 3 });
+    const [courseQp, setCourseQp] = useState({ pageIndex: 1, pageSize: 10 });
+    const [testQp, setTestQp] = useState({ pageIndex: 1, pageSize: 10 });
+    const [bundleQp, setBundleQp] = useState({ pageIndex: 1, pageSize: 10 });
+
     const [courseList, setCourseList] = useState<CourseProps[]>([]);
+    const [testList, setTestList] = useState<TestProps[]>([]);
+    const [bundleList, setBundleList] = useState<SetProps[]>([]);
 
     const { data: transactionData, isLoading: loadingTransaction } = useGetTransactionByIdQuery(
         transactionId as number,
@@ -72,20 +77,18 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     const transaction = transactionData?.data;
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebounceSearch(search);
-        }, 1000);
+        if (!transaction) return;
+        if (transaction.test_id && transaction.test_id > 0) setEnrollmentType("test");
+        else if (transaction.bundle_id && transaction.bundle_id > 0) setEnrollmentType("bundle");
+        else setEnrollmentType("course");
+    }, [transaction]);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setDebounceSearch(search), 1000);
         return () => clearTimeout(timer);
     }, [search]);
 
     const { data, isLoading } = useGetAllUserQuery({ ...qp, search: debounceSearch });
-
-    const handleClose = () => {
-        formik.resetForm();
-        setOpen(false);
-    };
-
-   
 
     const paymentStatus = [
         { label: "Success", value: "success" },
@@ -101,14 +104,40 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         const timestamp = Date.now();
-
         return `UDAAN-INVOICE-${year}${month}${day}-${timestamp}${studentId ? `-${studentId}` : ''}`;
     };
+
+    const validationSchema = useMemo(() => Yup.object({
+        student_id: Yup.number()
+            .min(1, "Please select a student")
+            .required("Please select a student"),
+        course_id: enrollmentType === "course"
+            ? Yup.number().min(1, "Please select a course").required("Please select a course")
+            : Yup.number(),
+        test_id: enrollmentType === "test"
+            ? Yup.number().min(1, "Please select a test").required("Please select a test")
+            : Yup.number(),
+        bundle_id: enrollmentType === "bundle"
+            ? Yup.number().min(1, "Please select a bundle").required("Please select a bundle")
+            : Yup.number(),
+        invoice_id: Yup.string().required("Invoice ID is required"),
+        transaction_id: Yup.string().required("Transaction/Bill No. is required"),
+        payment_method: Yup.string()
+            .oneOf(["esewa", "khalti", "cash", "fonepay"])
+            .required("Payment method is required"),
+        status: Yup.string()
+            .oneOf(["success", "installment"])
+            .required("Payment status is required"),
+        image: Yup.mixed().nullable(),
+        image_url: Yup.string().nullable()
+    }), [enrollmentType]);
 
     const formik = useFormik({
         initialValues: transaction ? {
             student_id: transaction.student_id || 0,
             course_id: transaction.course_id || 0,
+            test_id: transaction.test_id || 0,
+            bundle_id: transaction.bundle_id || 0,
             invoice_id: transaction.invoice_id || ``,
             transaction_id: transaction.transaction_id || "",
             payment_method: transaction.payment_method || "",
@@ -119,15 +148,21 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
-
             const formData = new FormData();
 
             formData.append("student_id", String(values.student_id));
-            formData.append("course_id", String(values.course_id));
             formData.append("invoice_id", values.invoice_id);
             formData.append("transaction_id", values.transaction_id);
             formData.append("payment_method", values.payment_method);
             formData.append("status", values.status);
+
+            if (enrollmentType === "course") {
+                formData.append("course_id", String(values.course_id));
+            } else if (enrollmentType === "test") {
+                formData.append("test_id", String(values.test_id));
+            } else if (enrollmentType === "bundle") {
+                formData.append("bundle_id", String(values.bundle_id));
+            }
 
             if (values.image) {
                 formData.append("image", values.image);
@@ -139,50 +174,51 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
 
             if (transactionId) {
                 try {
-
-                    const response = await updateTransaction({
-                        id: transactionId,
-                        body: formData
-                    }).unwrap();
-                    dispatch(showToast({
-                        message: response?.message || "Unable to Create Transaction",
-                        severity: "success"
-                    }))
+                    const response = await updateTransaction({ id: transactionId, body: formData }).unwrap();
+                    dispatch(showToast({ message: response?.message || "Unable to Update Transaction", severity: "success" }));
                     formik.resetForm();
                     handleClose();
-                    resetFilters()
+                    resetFilters();
+                } catch (e: any) {
+                    dispatch(showToast({ message: e?.data?.message || "Unable to Update Transaction", severity: "error" }));
                 }
-                catch (e: any) {
-                    dispatch(showToast({
-                        message: e?.data?.message || "Unable to Create Transaction",
-                        severity: "error"
-                    }))
-                }
-            }
-            else {
+            } else {
                 try {
-                    const response = await addTransaction({
-                        body: formData
-                    }).unwrap();
-                    dispatch(showToast({
-                        message: response?.message || "Unable to Create Transaction",
-                        severity: "success"
-                    }))
+                    const response = await addTransaction({ body: formData }).unwrap();
+                    dispatch(showToast({ message: response?.message || "Unable to Create Transaction", severity: "success" }));
                     formik.resetForm();
                     handleClose();
-                    resetFilters()
-                }
-                catch (e: any) {
-                    dispatch(showToast({
-                        message: e?.data?.message || "Unable to Create Transaction",
-                        severity: "error"
-                    }))
+                    resetFilters();
+                } catch (e: any) {
+                    dispatch(showToast({ message: e?.data?.message || "Unable to Create Transaction", severity: "error" }));
                 }
             }
-
-
         }
     });
+
+    const handleClose = () => {
+        formik.resetForm();
+        setEnrollmentType("course");
+        setTestList([]);
+        setBundleList([]);
+        setSearchTest("");
+        setSearchBundle("");
+        setTestQp({ pageIndex: 1, pageSize: 10 });
+        setBundleQp({ pageIndex: 1, pageSize: 10 });
+        setOpen(false);
+    };
+
+    const handleTabChange = (newType: EnrollmentType) => {
+        setEnrollmentType(newType);
+        formik.setFieldValue("course_id", 0);
+        formik.setFieldValue("test_id", 0);
+        formik.setFieldValue("bundle_id", 0);
+        // Don't clear lists — existing data stays visible while fresh data loads.
+        // pageIndex resets only if user had scrolled, triggering a fresh query with new params.
+        setCourseQp(prev => prev.pageIndex !== 1 ? { pageIndex: 1, pageSize: 10 } : prev);
+        setTestQp(prev => prev.pageIndex !== 1 ? { pageIndex: 1, pageSize: 10 } : prev);
+        setBundleQp(prev => prev.pageIndex !== 1 ? { pageIndex: 1, pageSize: 10 } : prev);
+    };
 
     useEffect(() => {
         if (!transactionId && formik.values.student_id > 0 && !formik.values.invoice_id) {
@@ -191,10 +227,8 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         }
     }, [formik.values.student_id, transactionId]);
 
-
     const handleSelectRow = (id: number) => {
         formik.setFieldValue("student_id", Number(id));
-
         if (!transactionId) {
             const newInvoiceId = generateInvoiceId(Number(id));
             formik.setFieldValue("invoice_id", newInvoiceId);
@@ -203,9 +237,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
 
     const columns = useMemo<ColumnDef<RegisterUserProps>[]>(() => [
         {
-            header: () => (
-                <Typography fontWeight={500}>Select</Typography>
-            ),
+            header: () => <Typography fontWeight={500}>Select</Typography>,
             accessorKey: "select",
             cell: ({ row }) => (
                 <Checkbox
@@ -226,16 +258,12 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         {
             header: "Email",
             accessorKey: "email",
-            cell: ({ row }) => (
-                <Typography fontWeight={500}>{row.original.email}</Typography>
-            ),
+            cell: ({ row }) => <Typography fontWeight={500}>{row.original.email}</Typography>,
         },
         {
             header: "Phone",
             accessorKey: "phone",
-            cell: ({ row }) => (
-                <Typography fontWeight={500}>{row.original.phone}</Typography>
-            ),
+            cell: ({ row }) => <Typography fontWeight={500}>{row.original.phone}</Typography>,
         },
     ], [formik.values.student_id]);
 
@@ -250,53 +278,81 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     } = useCourseFilter();
 
     const categoryFilter = getSelectedCategoryFilterParams();
-    console.log(categoryFilter, "from transaction addition")
-    const { data: courses } = useGetAllCourseQuery({ ...courseQp, search: searchCourse, categoryFilter: { ...categoryFilter } });
+
+    const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery(
+        { ...courseQp, search: searchCourse, categoryFilter: { ...categoryFilter } }
+    );
+    const { data: tests, isLoading: loadingTests } = useGetAllIndividualTestQuery(
+        { ...testQp, search: searchTest }
+    );
+    const { data: bundles, isLoading: loadingBundles } = useGetAllBundleQuery(
+        { ...bundleQp, search: searchBundle }
+    );
 
     useEffect(() => {
         if (!courses?.data?.data) return;
-
         setCourseList(prev => {
-            if (courseQp.pageIndex === 1) {
-                return courses.data.data;
-            }
-
-            const existingIds = new Set(prev.map(course => course.id));
-            const newCourses = courses.data.data.filter(
-                course => !existingIds.has(course.id)
-            );
-
-            return [...prev, ...newCourses];
+            if (courseQp.pageIndex === 1) return courses.data.data;
+            const existingIds = new Set(prev.map(c => c.id));
+            return [...prev, ...courses.data.data.filter(c => !existingIds.has(c.id))];
         });
     }, [courses, courseQp.pageIndex]);
 
-    const coursePagination = courses?.data?.pagination;
-    const hasMoreCourses = calcHasMore(coursePagination);
+    useEffect(() => {
+        if (!tests?.data?.data) return;
+        setTestList(prev => {
+            if (testQp.pageIndex === 1) return tests.data.data;
+            const existingIds = new Set(prev.map(t => t.id));
+            return [...prev, ...tests.data.data.filter(t => !existingIds.has(t.id))];
+        });
+    }, [tests, testQp.pageIndex]);
 
-    const fetchMoreCourses = () => {
-        if (hasMoreCourses) {
-            setCourseQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
-        }
+    useEffect(() => {
+        if (!bundles?.data?.data) return;
+        setBundleList(prev => {
+            if (bundleQp.pageIndex === 1) return bundles.data.data;
+            const existingIds = new Set(prev.map(b => b.id));
+            return [...prev, ...bundles.data.data.filter(b => !existingIds.has(b.id))];
+        });
+    }, [bundles, bundleQp.pageIndex]);
+
+    const hasMoreCourses = calcHasMore(courses?.data?.pagination);
+    const hasMoreTests = calcHasMore(tests?.data?.pagination);
+    const hasMoreBundles = calcHasMore(bundles?.data?.pagination);
+
+    const fetchMoreCourses = () => { if (hasMoreCourses) setCourseQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 })); };
+    const fetchMoreTests = () => { if (hasMoreTests) setTestQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 })); };
+    const fetchMoreBundles = () => { if (hasMoreBundles) setBundleQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 })); };
+
+    const currentConfig = enrollmentConfig[enrollmentType];
+    const currentSearch = enrollmentType === "course" ? searchCourse : enrollmentType === "test" ? searchTest : searchBundle;
+    const handleSearchChange = (value: string) => {
+        if (enrollmentType === "course") setSearchCourse(value);
+        else if (enrollmentType === "test") setSearchTest(value);
+        else setSearchBundle(value);
     };
+
+    const itemListLoading = enrollmentType === "course" ? loadingCourses : enrollmentType === "test" ? loadingTests : loadingBundles;
+
+    const activeFieldError = enrollmentType === "course"
+        ? (formik.touched.course_id && formik.errors.course_id)
+        : enrollmentType === "test"
+            ? (formik.touched.test_id && formik.errors.test_id)
+            : (formik.touched.bundle_id && formik.errors.bundle_id);
+
     return (
         <Dialog open={open} onClose={handleClose}
             sx={{
                 "& .MuiPaper-root": {
-                    minWidth: {
-                        md: "664px",
-                        xl: "1041px"
-                    }
+                    minWidth: { md: "664px", xl: "1041px" }
                 }
             }}>
-            <DialogContent className="flex flex-col gap-6 pb-0!" sx={{
-                background: theme.palette.primary.contrastText,
-            }}>
+            <DialogContent className="flex flex-col gap-6 pb-0!" sx={{ background: theme.palette.primary.contrastText }}>
                 {loadingTransaction ? (
                     <Box className="flex justify-center items-center p-8">
                         <Typography>Loading transaction data...</Typography>
                     </Box>
                 ) : (
-
                     <>
                         <form onSubmit={formik.handleSubmit} className="flex flex-col gap-6">
 
@@ -338,7 +394,17 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                             />
                             <Divider />
 
-                            {/* Transaction Form Fields */}
+                            <TabController
+                                currentActive={enrollmentType}
+                                setActiveTab={handleTabChange}
+                                options={[
+                                    { label: "Course", value: "course" },
+                                    { label: "Test", value: "test" },
+                                    { label: "Bundle", value: "bundle" },
+                                ]}
+                            />
+
+                            {/* Item Selection */}
                             <div className="flex flex-col gap-6 lg:grid grid-cols-12">
                                 <div className="col-span-7">
                                     <CategoryFilter
@@ -347,68 +413,141 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                         subCategories={subCategories}
                                         onChange={handleCategoryChange}
                                         selections={selections}
-
                                     />
                                 </div>
                                 <div className="col-span-5">
-                                    <InputLabel>Select Course <Typography variant="caption" color="text.middle">(Select the course you want to add test)</Typography></InputLabel>
+                                    <InputLabel>
+                                        {currentConfig.label}{" "}
+                                        <Typography variant="caption" color="text.middle">{currentConfig.caption}</Typography>
+                                    </InputLabel>
                                     <OutlinedInput
                                         fullWidth
-                                        value={searchCourse}
-                                        onChange={(e) => setSearchCourse(e.target.value)}
-                                        placeholder="Search Course"
-                                        sx={{
-                                            py: "4px",
-                                        }}
+                                        value={currentSearch}
+                                        onChange={(e) => handleSearchChange(e.target.value)}
+                                        placeholder={currentConfig.placeholder}
+                                        sx={{ py: "4px" }}
                                     />
 
-                                    <Box id="course__listing" className="h-[187px] overflow-y-auto p-2.5 rounded-md flex flex-col mt-4" sx={{
-                                        border: `1px solid ${theme.palette.separator.dark}`
-                                    }}>
-                                        {isLoading ? (
+                                    <Box id="items__listing" className="h-[187px] overflow-y-auto p-2.5 rounded-md flex flex-col mt-4" sx={{ border: `1px solid ${theme.palette.separator.dark}` }}>
+                                        {itemListLoading ? (
                                             <Box sx={{ display: "flex", justifyContent: "center", p: 3 }}>
                                                 <CircularProgress size={24} />
                                             </Box>
-                                        ) :
-                                            <InfiniteScroll
-                                                dataLength={courseList.length}
-                                                next={fetchMoreCourses}
-                                                hasMore={hasMoreCourses}
-                                                scrollableTarget={"course__listing"}
-                                                loader={
-                                                    <Box sx={{ textAlign: "center", p: 2 }}>
-                                                        <CircularProgress size={22} />
-                                                    </Box>
-                                                }
-                                                endMessage={
-                                                    courseList.length > 0 && (
-                                                        <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>
-                                                            No more items
-                                                        </Typography>
-                                                    )
-                                                }
-                                            >
-                                                {courseList.length === 0 ? (<Box sx={{ p: 3, textAlign: "center" }}>
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        {"No items available"}
-                                                    </Typography>
-                                                </Box>) : (courseList?.map((course) => (
-                                                    <FormControlLabel
-                                                        key={course.id}
-                                                        label={course.name}
-                                                        control={
-                                                            <Checkbox
-                                                                checked={formik.values.course_id === Number(course.id)}
-                                                                onChange={() => formik.setFieldValue("course_id", course.id)}
-                                                                color="primary"
-                                                            />
-                                                        }
-                                                    />
-                                                )))}
-                                            </InfiniteScroll>}
+                                        ) : (
+                                            <>
+                                                {/* Course list */}
+                                                {enrollmentType === "course" && (
+                                                    <InfiniteScroll
+                                                        dataLength={courseList.length}
+                                                        next={fetchMoreCourses}
+                                                        hasMore={hasMoreCourses}
+                                                        scrollableTarget="items__listing"
+                                                        loader={<Box sx={{ textAlign: "center", p: 2 }}><CircularProgress size={22} /></Box>}
+                                                        endMessage={courseList.length > 0 && (
+                                                            <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>No more items</Typography>
+                                                        )}
+                                                    >
+                                                        <div className="flex flex-col gap-0.5">
+                                                            {courseList.length === 0 ? (
+                                                                <Box sx={{ p: 3, textAlign: "center" }}>
+                                                                    <Typography variant="body2" color="text.secondary">No items available</Typography>
+                                                                </Box>
+                                                            ) : courseList.map((course) => (
+                                                                <FormControlLabel
+                                                                    key={course.id}
+                                                                    label={course.name}
+                                                                    control={
+                                                                        <Checkbox
+                                                                            checked={formik.values.course_id === Number(course.id)}
+                                                                            onChange={() => formik.setFieldValue("course_id", course.id)}
+                                                                            color="primary"
+                                                                        />
+                                                                    }
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </InfiniteScroll>
+                                                )}
+
+                                                {/* Test list */}
+                                                {enrollmentType === "test" && (
+                                                    <InfiniteScroll
+                                                        dataLength={testList.length}
+                                                        next={fetchMoreTests}
+                                                        hasMore={hasMoreTests}
+                                                        scrollableTarget="items__listing"
+                                                        loader={<Box sx={{ textAlign: "center", p: 2 }}><CircularProgress size={22} /></Box>}
+                                                        endMessage={testList.length > 0 && (
+                                                            <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>No more items</Typography>
+                                                        )}
+                                                    >
+                                                        <div className="flex flex-col gap-0.5">
+                                                            {testList.length === 0 ? (
+                                                                <Box sx={{ p: 3, textAlign: "center" }}>
+                                                                    <Typography variant="body2" color="text.secondary">No items available</Typography>
+                                                                </Box>
+                                                            ) : testList.map((test) => (
+                                                                <FormControlLabel
+                                                                    key={test.id ?? test.name}
+                                                                    label={test.name}
+                                                                    control={
+                                                                        <Checkbox
+                                                                            checked={formik.values.test_id === Number(test.id ?? 0)}
+                                                                            onChange={() => formik.setFieldValue("test_id", test.id)}
+                                                                            color="primary"
+                                                                        />
+                                                                    }
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </InfiniteScroll>
+                                                )}
+
+                                                {/* Bundle list */}
+                                                {enrollmentType === "bundle" && (
+                                                    <InfiniteScroll
+                                                        dataLength={bundleList.length}
+                                                        next={fetchMoreBundles}
+                                                        hasMore={hasMoreBundles}
+                                                        scrollableTarget="items__listing"
+                                                        loader={<Box sx={{ textAlign: "center", p: 2 }}><CircularProgress size={22} /></Box>}
+                                                        endMessage={bundleList.length > 0 && (
+                                                            <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>No more items</Typography>
+                                                        )}
+                                                    >
+                                                        <div className="flex flex-col gap-0.5">
+                                                            {bundleList.length === 0 ? (
+                                                                <Box sx={{ p: 3, textAlign: "center" }}>
+                                                                    <Typography variant="body2" color="text.secondary">No items available</Typography>
+                                                                </Box>
+                                                            ) : bundleList.map((bundle) => (
+                                                                <FormControlLabel
+                                                                    key={bundle.id ?? bundle.name}
+                                                                    label={bundle.name}
+                                                                    control={
+                                                                        <Checkbox
+                                                                            checked={formik.values.bundle_id === Number(bundle.id ?? 0)}
+                                                                            onChange={() => formik.setFieldValue("bundle_id", bundle.id)}
+                                                                            color="primary"
+                                                                        />
+                                                                    }
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </InfiniteScroll>
+                                                )}
+                                            </>
+                                        )}
                                     </Box>
+
+                                    {activeFieldError && (
+                                        <Typography color="error" variant="caption" className="mt-1">
+                                            {activeFieldError}
+                                        </Typography>
+                                    )}
                                 </div>
                             </div>
+
                             <div className="md:grid grid-cols-2 flex flex-col gap-6 mt-6">
                                 <div className="col-span-1">
                                     <div className="input_field">
@@ -423,9 +562,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                             error={formik.touched.invoice_id && Boolean(formik.errors.invoice_id)}
                                         />
                                         {formik.touched.invoice_id && formik.errors.invoice_id && (
-                                            <Typography color="error" variant="caption">
-                                                {formik.errors.invoice_id}
-                                            </Typography>
+                                            <Typography color="error" variant="caption">{formik.errors.invoice_id}</Typography>
                                         )}
                                     </div>
                                 </div>
@@ -439,9 +576,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                             options={paymentOptions}
                                             getOptionLabel={(option) => option.label}
                                             value={paymentOptions.find(opt => opt.value === formik.values.payment_method) || undefined}
-                                            onChange={(_e, newValue) => {
-                                                formik.setFieldValue("payment_method", newValue?.value ?? "");
-                                            }}
+                                            onChange={(_e, newValue) => formik.setFieldValue("payment_method", newValue?.value ?? "")}
                                             onBlur={() => formik.setFieldTouched("payment_method", true)}
                                             renderInput={(params) => (
                                                 <TextField
@@ -464,9 +599,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                             options={paymentStatus}
                                             getOptionLabel={(option) => option.label}
                                             value={paymentStatus.find(opt => opt.value === formik.values.status) || undefined}
-                                            onChange={(_e, newValue) => {
-                                                formik.setFieldValue("status", newValue?.value || "");
-                                            }}
+                                            onChange={(_e, newValue) => formik.setFieldValue("status", newValue?.value || "")}
                                             onBlur={() => formik.setFieldTouched("status", true)}
                                             renderInput={(params) => (
                                                 <TextField
@@ -493,9 +626,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                             error={formik.touched.transaction_id && Boolean(formik.errors.transaction_id)}
                                         />
                                         {formik.touched.transaction_id && formik.errors.transaction_id && (
-                                            <Typography color="error" variant="caption">
-                                                {formik.errors.transaction_id}
-                                            </Typography>
+                                            <Typography color="error" variant="caption">{formik.errors.transaction_id}</Typography>
                                         )}
                                     </div>
                                 </div>
@@ -507,9 +638,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                             initialFile={formik.values.image}
                                             initialPreview={formik.values.image_url || ""}
                                             error={formik.touched.image && Boolean(formik.errors.image)}
-                                            onFileChange={(file) => {
-                                                formik.setFieldValue("image", file);
-                                            }}
+                                            onFileChange={(file) => formik.setFieldValue("image", file)}
                                         />
                                     </div>
                                 </div>
@@ -517,10 +646,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
 
                             {/* Action Buttons */}
                             <Box className="flex justify-end gap-4 py-6 sticky bottom-0 left-0 right-0" bgcolor={theme.palette.primary.contrastText}>
-                                <Button variant="outlined" onClick={handleClose}>
-                                    Cancel
-                                </Button>
-
+                                <Button variant="outlined" onClick={handleClose}>Cancel</Button>
                                 <Button variant="contained" type="submit" disabled={creatingTransaction || updatingTransaction}>
                                     {creatingTransaction || updatingTransaction
                                         ? (transactionId ? "Updating" : "Creating")
@@ -532,5 +658,5 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                 )}
             </DialogContent>
         </Dialog>
-    )
+    );
 }

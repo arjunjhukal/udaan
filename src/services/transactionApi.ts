@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, DeviceType, QueryParams, Status } from "../types";
 import type { CourseList } from "../types/course";
-import type { TransactionList, TransactionPayload, UserTransactionResponse } from "../types/transaction";
+import type { EnrollmentType, TransactionList, TransactionPayload, UserTransactionResponse } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -19,8 +19,8 @@ export const transactionApi = createApi({
             }),
             invalidatesTags: [{ type: "Transaction", id: "LIST" }]
         }),
-        getAllTransactions: builder.query<TransactionList, QueryParams & { categoryFilter?: CategoryFilterParams; status?: Status, payment_method?: string, days?: number | null; device_type?: DeviceType; }>({
-            query: ({ pageIndex, pageSize, search, startDate, endDate, days, status, categoryFilter, device_type, payment_method }) => {
+        getAllTransactions: builder.query<TransactionList, QueryParams & { categoryFilter?: CategoryFilterParams; status?: Status, payment_method?: string, days?: number | null; device_type?: DeviceType; module_type?: EnrollmentType; }>({
+            query: ({ pageIndex, pageSize, search, startDate, endDate, days, status, categoryFilter, device_type, payment_method, module_type }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -31,6 +31,7 @@ export const transactionApi = createApi({
                     device_type: device_type,
                     status: status,
                     payment_method: payment_method,
+                    module_type: module_type,
                     mega_categories: categoryFilter?.mega_category,
                     categories: categoryFilter?.category,
                     sub_categories: categoryFilter?.sub_category,

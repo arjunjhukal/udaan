@@ -1,6 +1,5 @@
-import { DownloadDone } from "@mui/icons-material";
 import { IconButton, useTheme } from "@mui/material";
-import { ArchiveBox, ArrowRotateRight } from "iconsax-reactjs";
+import { ArchiveBox, ArrowRotateRight, Eye } from "iconsax-reactjs";
 
 export default function ActionIconVisible({
 	onDelete,
@@ -173,7 +172,7 @@ export default function ActionIconVisible({
 						e.stopPropagation();
 						onView();
 					}}>
-					<DownloadDone />
+					<Eye />
 				</IconButton>
 			) : (
 				""

@@ -9,9 +9,10 @@ import { showToast } from '../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../store/hook';
 import { useCourseFilter } from '../../../../store/useCourseFilter';
 import { DeviceFilter, paymentOptions, StatusFilter, type DeviceType, type Status } from '../../../../types';
-import type { TransactionResponse } from '../../../../types/transaction';
+import type { EnrollmentType, TransactionResponse } from '../../../../types/transaction';
 import { formatDate } from '../../../../utils/dateFormat';
 import Actions from '../../../molecules/Action';
+import TabController from '../../../molecules/TabController';
 import UdaanTable from '../../../molecules/Table';
 import TablePagination from '../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../organism/ConfirmationDialog';
@@ -42,6 +43,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
     });
     const [days, setDays] = useState<number | null>(null);
 
+    const [enrollmentType, setEnrollmentType] = useState<EnrollmentType>("course");
     const [selectedTransaction, setSelectedTransaction] = useState<TransactionResponse | null>(null);
     const [openConfirm, setOpenConfirm] = useState(false);
     const [transactionToDelete, setTransactionToDelete] = useState<string[]>([]);
@@ -74,6 +76,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
         status: status.join(",") as Status,
         days,
         payment_method: paymentMethod.join(","),
+        module_type: enrollmentType,
         ...customRange
     });
 
@@ -185,7 +188,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: "Course Name",
+            header: enrollmentType === "course" ? "Course Name" : enrollmentType === "test" ? "Test Name" : "Bundle Name",
             accessorKey: "course_name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.course_name} arrow>
@@ -251,11 +254,11 @@ export default function AllTransaction({ open, setOpen }: Props) {
                     onEdit={() => handleEdit(row.original)}
                     onView={() => handleEdit(row.original)}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
-                    file={row.original?.image_url}
+                    file={row.original?.image_url || undefined}
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp]);
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp, enrollmentType]);
 
 
     const handleResetFilter = () => {
@@ -307,6 +310,19 @@ export default function AllTransaction({ open, setOpen }: Props) {
                         label: t("messages.empty_states.transaction_management.action"),
                     }}
                     handleOpenPopup={() => setOpen(true)}
+                />
+                <TabController
+                    currentActive={enrollmentType}
+                    setActiveTab={(val) => {
+                        setEnrollmentType(val);
+                        setQp({ pageIndex: 1, pageSize: 8 });
+                        setSearch("");
+                    }}
+                    options={[
+                        { label: "Course", value: "course" },
+                        { label: "Test", value: "test" },
+                        { label: "Bundle", value: "bundle" },
+                    ]}
                 />
                 <TableFilter
                     search={search}
