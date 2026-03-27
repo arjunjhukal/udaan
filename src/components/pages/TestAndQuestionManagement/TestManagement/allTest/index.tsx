@@ -204,7 +204,7 @@ export default function AllTestListing() {
                         color: (theme) => theme.palette.primary.contrastText,
                         background: (theme) => row.original.test_published_status === "published" ? theme.palette.success.main : theme.palette.separator.darker
                     }} onClick={() => handleCourseStatusChange(Number(row.original.id))}>
-                        <Typography variant="caption">{row.original.status || "Draft"}</Typography>
+                        <Typography variant="caption">{row.original.test_published_status || "Draft"}</Typography>
                     </Button>
                 </Tooltip>
             ),
@@ -282,7 +282,7 @@ export default function AllTestListing() {
                 />
 
                 <TableFilter
-                search={search}
+                    search={search}
                     setSearch={setSearch}
                     selectedRows={selectedRows}
                     handleRoleDelete={openDeleteConfirmation}
