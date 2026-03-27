@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, QueryParams } from "../types";
 import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
+import type { TransactionList } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseQuery } from "./baseQuery";
@@ -8,7 +9,7 @@ import { baseQuery } from "./baseQuery";
 export const questionApi = createApi({
     reducerPath: "questionApi",
     baseQuery: baseQuery,
-    tagTypes: ["Questions", "Test", "Results", "Set", "OMR"],
+    tagTypes: ["Questions", "Test", "Results", "Set", "OMR", "TestEnrollment", "BundleEnrollment"],
     endpoints: (builder) => ({
         uploadQuestionPaper: builder.mutation<GlobalResponse & {
             data: QuestionProps[]
@@ -91,7 +92,7 @@ export const questionApi = createApi({
             query: ({ body }) => ({
                 url: `/admin/test/status`,
                 method: "POST",
-                body: { ids: body }
+                body: { tests: body }
             }),
             invalidatesTags: [{ type: "Test", id: "LIST" }, { type: "Set", id: "LIST" }]
         }),
@@ -122,7 +123,7 @@ export const questionApi = createApi({
                 url: `/admin/test/${id}`,
                 method: "GET",
             }),
-            providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
+            providesTags: (_result, _error, { id }) => [{ type: "Test", id }, { type: "Test", id: "LIST" }]
         }),
         deleteTest: builder.mutation<GlobalResponse, { body: string[] }>({
             query: ({ body }) => ({
@@ -448,6 +449,54 @@ export const questionApi = createApi({
             }),
             invalidatesTags: [{ type: "OMR", id: "FORMAT_LIST" }]
         }),
+
+        // ── Test Enrollment ──────────────────────────────────────────────────
+        getEnrolledStudentsByTest: builder.query<TransactionList, QueryParams & { id: number; status?: "active" | "archived" }>({
+            query: ({ id, pageIndex, pageSize, search, status }) => ({
+                url: `/admin/test/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, status })}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "TestEnrollment", id }, { type: "TestEnrollment", id: "LIST" }]
+        }),
+        enrollStudentToTest: builder.mutation<GlobalResponse, { id: number; user_id: number }>({
+            query: ({ id, user_id }) => ({
+                url: `/admin/test/${id}/user`,
+                method: "POST",
+                body: { user_id }
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: "TestEnrollment", id }, { type: "TestEnrollment", id: "LIST" }]
+        }),
+        archiveStudentFromTest: builder.mutation<GlobalResponse, { id: number; transactionId: number }>({
+            query: ({ id, transactionId }) => ({
+                url: `/admin/test/${id}/user/archive/${transactionId}`,
+                method: "POST",
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: "TestEnrollment", id }, { type: "TestEnrollment", id: "LIST" }]
+        }),
+
+        // ── Bundle Enrollment ────────────────────────────────────────────────
+        getEnrolledStudentsByBundle: builder.query<TransactionList, QueryParams & { id: number; status?: "active" | "archived" }>({
+            query: ({ id, pageIndex, pageSize, search, status }) => ({
+                url: `/admin/bundle/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, status })}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { id }) => [{ type: "BundleEnrollment", id }, { type: "BundleEnrollment", id: "LIST" }]
+        }),
+        enrollStudentToBundle: builder.mutation<GlobalResponse, { id: number; user_id: number }>({
+            query: ({ id, user_id }) => ({
+                url: `/admin/bundle/${id}/user`,
+                method: "POST",
+                body: { user_id }
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: "BundleEnrollment", id }, { type: "BundleEnrollment", id: "LIST" }]
+        }),
+        archiveStudentFromBundle: builder.mutation<GlobalResponse, { id: number; transactionId: number }>({
+            query: ({ id, transactionId }) => ({
+                url: `/admin/bundle/${id}/user/archive/${transactionId}`,
+                method: "POST",
+            }),
+            invalidatesTags: (_result, _error, { id }) => [{ type: "BundleEnrollment", id }, { type: "BundleEnrollment", id: "LIST" }]
+        }),
     })
 });
 
@@ -496,4 +545,10 @@ export const {
     useGetOmrFormatByIdQuery,
     useGetAllOmrFormatQuery,
     useDeleteOmrFormatMutation,
+    useGetEnrolledStudentsByTestQuery,
+    useEnrollStudentToTestMutation,
+    useArchiveStudentFromTestMutation,
+    useGetEnrolledStudentsByBundleQuery,
+    useEnrollStudentToBundleMutation,
+    useArchiveStudentFromBundleMutation,
 } = questionApi;

@@ -32,6 +32,8 @@ import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
 import EnrollmentRoot from "../components/pages/Enrollments";
 import AllEntrollments from "../components/pages/Enrollments/AllEnrollments";
+import BundleEnrollmentPage from "../components/pages/Enrollments/BundleEnrollment";
+import TestEnrollmentPage from "../components/pages/Enrollments/TestEnrollment";
 import GorkhapatraRoot from "../components/pages/Gorkhapatra";
 import AllGorkhapatraRoot from "../components/pages/Gorkhapatra/allGorkhapatra";
 import CreateGorkhapatraRoot from "../components/pages/Gorkhapatra/createGorkhapatra";
@@ -130,7 +132,9 @@ const router = createBrowserRouter([
 					<EnrollmentRoot />
 				</Unauthorized>,
 				children: [
-					{ path: "/enrollment", element: <AllEntrollments /> }
+					{ path: "/enrollment", element: <AllEntrollments /> },
+					{ path: PATH.ENROLLMENT.TEST_ANALYTICS.ROOT(), element: <TestEnrollmentPage /> },
+					{ path: PATH.ENROLLMENT.BUNDLE_ANALYTICS.ROOT(), element: <BundleEnrollmentPage /> },
 				]
 			},
 			{

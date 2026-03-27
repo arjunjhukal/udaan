@@ -118,6 +118,8 @@
         }
     },
     "messages": {
+        "test": "Test",
+        "bundle": "Bundle",
         "omr": "OMR",
         "npr": "NPR.",
         "enrolled_courses": "Enrolled Courses",

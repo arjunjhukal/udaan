@@ -124,6 +124,14 @@ export const PATH = {
 	},
 	ENROLLMENT: {
 		ROOT: "/enrollment",
+		TEST_ANALYTICS: {
+			ROOT: (id?: number) =>
+				id ? `/enrollment/test/${id}/analytics` : "/enrollment/test/:id/analytics",
+		},
+		BUNDLE_ANALYTICS: {
+			ROOT: (id?: number) =>
+				id ? `/enrollment/bundle/${id}/analytics` : "/enrollment/bundle/:id/analytics",
+		},
 	},
 	ROLES: {
 		ROOT: "/role-management",
