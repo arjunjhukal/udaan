@@ -23,11 +23,40 @@ export interface LinkedDeviceList {
     }
 }
 
+export interface PhoneItem {
+    label: string;
+    value: string;
+    icon_url?: string;
+}
+
+export interface EmailItem {
+    label: string;
+    value: string;
+    icon_url?: string;
+}
+
+export interface SocialItem {
+    label: string;
+    value: string;
+    link: string;
+    icon_url?: string;
+}
+
 export interface AppSettingProps {
-    contact_no: string;
-    support_contact_no: string;
-    email: string;
-    support_email: string;
-    address: string;
+    phones: PhoneItem[];
+    emails: EmailItem[];
+    socials: SocialItem[];
     map: string;
+}
+
+export interface PhoneFormItem extends PhoneItem {
+    icon: File | null;
+}
+
+export interface EmailFormItem extends EmailItem {
+    icon: File | null;
+}
+
+export interface SocialFormItem extends SocialItem {
+    icon: File | null;
 }

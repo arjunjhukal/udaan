@@ -39,7 +39,7 @@ export const settingApi = createApi({
             }),
             invalidatesTags: ["LinkedDevice"],
         }),
-        updateAppSetting: builder.mutation<GlobalResponse, AppSettingProps>({
+        updateAppSetting: builder.mutation<GlobalResponse, FormData>({
             query: (body) => ({
                 url: `/admin/settings/app-settings`,
                 method: "POST",
