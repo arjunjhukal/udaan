@@ -206,15 +206,25 @@ export const testValidationSchema = Yup.object().shape({
     }),
     question_ids: Yup.array()
         .of(Yup.number())
-        .min(1, "At least one question must be selected")
         .required("Question selection is required")
+        .test(
+            "question-min",
+            "At least one question must be selected",
+            function (value) {
+                const { set_question_count } = this.parent;
+                if (set_question_count && set_question_count > 0) return true;
+                return value != null && value.length > 0;
+            }
+        )
         .test(
             "question-count",
             "Number of selected questions must equal total questions",
             function (value) {
-                const { total_questions } = this.parent;
-                if (!value || !total_questions) return true;
-                return value.length === total_questions;
+                const { total_questions, set_question_count } = this.parent;
+                if (!total_questions) return true;
+                const setCount = set_question_count || 0;
+                const questionCount = value?.length || 0;
+                return questionCount + setCount === total_questions;
             }
         ),
     is_individual_test: Yup.boolean().required("Mark as individual test"),

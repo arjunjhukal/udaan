@@ -715,7 +715,7 @@ export default function TestManagementForm() {
                             fetchMore={fetchMoreQuestions}
                             onSearch={handleQuestionSearch}
                             loading={loadingQuestions}
-                            maxSelection={formik.values.total_questions || undefined}
+                            maxSelection={Math.max(0, (formik.values.total_questions || 0) - (formik.values.set_question_count || 0)) || undefined}
                             itemLabelKey="question"
                             itemIdKey="id"
                             placeholder="Search questions..."
