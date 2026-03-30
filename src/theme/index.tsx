@@ -443,9 +443,9 @@ const commonThemeOptions: ThemeOptions = {
         MuiInputLabel: {
             styleOverrides: {
                 root: ({ theme }) => ({
-                    fontSize: "16px",
+                    ...theme.typography.subtitle2,
                     color: theme.palette.textField.name,
-                    marginBottom: "8px",
+                    marginBottom: "4px",
                     fontWeight: 400,
                     lineHeight: "1.5",
 

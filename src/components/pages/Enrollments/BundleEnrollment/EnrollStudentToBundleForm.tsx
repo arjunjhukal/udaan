@@ -34,7 +34,7 @@ export default function EnrollStudentToBundleForm({ open, setOpen, id }: Props) 
         return () => clearTimeout(timer);
     }, [search]);
 
-    const { data, isLoading } = useGetAllUserQuery({ ...qp, search: debounceSearch });
+    const { data, isLoading } = useGetAllUserQuery({ ...qp, search: debounceSearch, });
 
     const handleClose = () => {
         formik.resetForm();

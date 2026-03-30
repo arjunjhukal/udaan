@@ -451,9 +451,9 @@ export const questionApi = createApi({
         }),
 
         // ── Test Enrollment ──────────────────────────────────────────────────
-        getEnrolledStudentsByTest: builder.query<TransactionList, QueryParams & { id: number; status?: "active" | "archived" }>({
-            query: ({ id, pageIndex, pageSize, search, status }) => ({
-                url: `/admin/test/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, status })}`,
+        getEnrolledStudentsByTest: builder.query<TransactionList, QueryParams & { id: number; type?: "active" | "archived" }>({
+            query: ({ id, pageIndex, pageSize, search, type }) => ({
+                url: `/admin/test/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, type })}`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "TestEnrollment", id }, { type: "TestEnrollment", id: "LIST" }]
@@ -475,9 +475,9 @@ export const questionApi = createApi({
         }),
 
         // ── Bundle Enrollment ────────────────────────────────────────────────
-        getEnrolledStudentsByBundle: builder.query<TransactionList, QueryParams & { id: number; status?: "active" | "archived" }>({
-            query: ({ id, pageIndex, pageSize, search, status }) => ({
-                url: `/admin/bundle/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, status })}`,
+        getEnrolledStudentsByBundle: builder.query<TransactionList, QueryParams & { id: number; type?: "active" | "archived" }>({
+            query: ({ id, pageIndex, pageSize, search, type }) => ({
+                url: `/admin/bundle/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, type })}`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "BundleEnrollment", id }, { type: "BundleEnrollment", id: "LIST" }]

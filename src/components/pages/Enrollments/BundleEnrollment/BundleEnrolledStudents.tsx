@@ -37,7 +37,7 @@ export default function BundleEnrolledStudents({ id }: { id: number }) {
 
     const { data, isLoading } = useGetEnrolledStudentsByBundleQuery({
         ...qp,
-        status: activeTab,
+        type: activeTab,
         search: debouncedSearch,
         id: Number(id),
     });

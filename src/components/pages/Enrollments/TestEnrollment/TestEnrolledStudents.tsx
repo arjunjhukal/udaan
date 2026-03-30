@@ -37,7 +37,7 @@ export default function TestEnrolledStudents({ id }: { id: number }) {
 
     const { data, isLoading } = useGetEnrolledStudentsByTestQuery({
         ...qp,
-        status: activeTab,
+        type: activeTab,
         search: debouncedSearch,
         id: Number(id),
     });
