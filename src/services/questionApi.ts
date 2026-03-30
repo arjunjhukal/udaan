@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
+import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionLabelList, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
 import type { TransactionList } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
@@ -21,7 +21,7 @@ export const questionApi = createApi({
             }),
             invalidatesTags: [{ type: "Questions", id: "LIST" }]
         }),
-        saveUploadedQuestions: builder.mutation<GlobalResponse, { question: any[] }>({
+        saveUploadedQuestions: builder.mutation<GlobalResponse, { title: string; question: any[] }>({
             query: (body) => ({
                 url: `admin/questions/import`,
                 method: "POST",
@@ -41,8 +41,8 @@ export const questionApi = createApi({
                 ...(body.id ? [{ type: "Questions" as const, id: body.id }] : [])
             ]
         }),
-        getAllQuestion: builder.query<QuestionList, QueryParams & { type?: QuestionTypeProps; days?: number | null; }>({
-            query: ({ type, pageIndex, pageSize, search, days, startDate, endDate }) => {
+        getAllQuestion: builder.query<QuestionList, QueryParams & { type?: QuestionTypeProps; days?: number | null; set_ids?: number[]; }>({
+            query: ({ type, pageIndex, pageSize, search, days, startDate, endDate, set_ids }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -51,6 +51,7 @@ export const questionApi = createApi({
                     start_date: startDate,
                     end_date: endDate,
                     days: days,
+                    set_ids: set_ids?.length ? set_ids : undefined,
                 });
                 return {
                     url: `admin/questions?${queryString}`,
@@ -497,6 +498,17 @@ export const questionApi = createApi({
             }),
             invalidatesTags: (_result, _error, { id }) => [{ type: "BundleEnrollment", id }, { type: "BundleEnrollment", id: "LIST" }]
         }),
+        getAllQuestionSets: builder.query<QuestionLabelList, QueryParams>({
+            query: ({ pageIndex, pageSize, search }) => ({
+                url: `/admin/question-labels?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search,
+                })}`,
+                method: "GET",
+            }),
+            providesTags: [{ type: "Questions", id: "LIST" }],
+        }),
     })
 });
 
@@ -551,4 +563,5 @@ export const {
     useGetEnrolledStudentsByBundleQuery,
     useEnrollStudentToBundleMutation,
     useArchiveStudentFromBundleMutation,
+    useGetAllQuestionSetsQuery,
 } = questionApi;

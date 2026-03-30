@@ -1,16 +1,16 @@
-import { Autocomplete, Box, CircularProgress, FormHelperText, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, FormHelperText, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
 import { useGetAllCourseQuery } from "../../../../services/courseApi";
-import { useEditOrCreateTestMutation, useGetAllOmrQuery, useGetAllQuestionQuery, useGetTestByIdQuery } from "../../../../services/questionApi";
+import { useEditOrCreateTestMutation, useGetAllOmrQuery, useGetAllQuestionQuery, useGetAllQuestionSetsQuery, useGetTestByIdQuery } from "../../../../services/questionApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { CourseProps, DiscountTypeProps } from "../../../../types/course";
-import { TestInitialState, testValidationSchema, type QuestionProps, type TestProps, type TestTypeProps } from "../../../../types/question";
+import { TestInitialState, testValidationSchema, type QuestionLabelProps, type QuestionProps, type TestProps, type TestTypeProps } from "../../../../types/question";
 import { calcHasMore } from "../../../../utils/calculateHasMore";
 import { formatDateForDisplay } from "../../../../utils/dateFormat";
 import MakuraDatePicker from "../../../atoms/MakuraDatePicker";
@@ -36,13 +36,19 @@ export default function TestManagementForm() {
 
     const [questionQp, setQuestionQp] = useState({
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
         search: ""
     });
 
     const [omrQp, _setOmrQp] = useState({
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 20,
+        search: ""
+    })
+
+    const [setQp, setSetQp] = useState({
+        pageIndex: 1,
+        pageSize: 20,
         search: ""
     })
 
@@ -55,10 +61,11 @@ export default function TestManagementForm() {
         getSelectedCategoryFilterParams,
     } = useCourseFilter();
 
-    const { data: editData, isLoading: loadingTest } = useGetTestByIdQuery(
+    const { data: editData } = useGetTestByIdQuery(
         { id: testId as number },
         { skip: !testId }
     );
+
 
     function getInitialValues(): TestProps {
         if (id && editData?.data) {
@@ -73,6 +80,7 @@ export default function TestManagementForm() {
                 end_datetime: test.end_datetime || "",
                 course_ids: test.course_ids || [],
                 question_ids: test.question_ids || [],
+                set_ids: test.set_ids || [],
                 is_scheduled: test.is_scheduled ?? false,
                 test_type: test.test_type || "mcq",
                 total_questions: test.total_questions || 0,
@@ -82,7 +90,7 @@ export default function TestManagementForm() {
                 rules: test.rules,
                 discount: test.discount,
                 discount_type: test.discount_type,
-                omr_format: test.omr_format,
+                omr_format: test.omr_format
             };
         }
         return TestInitialState;
@@ -95,7 +103,8 @@ export default function TestManagementForm() {
         enableReinitialize: true,
         onSubmit: async (values) => {
             try {
-                const response = await createTest({ body: values }).unwrap();
+                const { set_question_count: _sqc, ...submitValues } = values;
+                const response = await createTest({ body: submitValues }).unwrap();
                 dispatch(
                     showToast({
                         message: response?.message || "Test Created Successfully.",
@@ -119,13 +128,19 @@ export default function TestManagementForm() {
 
     const categoryFilter = getSelectedCategoryFilterParams();
     const { data: courses, isLoading: loadingCourses } = useGetAllCourseQuery({ ...courseQp, categoryFilter: { ...categoryFilter } });
-    const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({ ...questionQp, type: formik.values.test_type === "omr" ? "mcq" : formik.values.test_type });
+    const { data: questions, isLoading: loadingQuestions } = useGetAllQuestionQuery({
+        ...questionQp,
+        type: formik.values.test_type === "omr" ? "mcq" : formik.values.test_type,
+        set_ids: formik.values.set_ids.length ? formik.values.set_ids : undefined,
+    });
+    const { data: questionSets, isLoading: loadingSets } = useGetAllQuestionSetsQuery({ ...setQp });
     const [createTest, { isLoading: creatingTest }] = useEditOrCreateTestMutation();
     const { data } = useGetAllOmrQuery({
         ...omrQp,
     });
     const [courseList, setCourseList] = useState<CourseProps[]>([]);
     const [questionList, setQuestionList] = useState<QuestionProps[]>([]);
+    const [setList, setSetList] = useState<QuestionLabelProps[]>([]);
     const [activeTab, setActiveTab] = useState<TestTypeProps>("mcq");
     useEffect(() => {
         if (!courses?.data?.data) return;
@@ -162,8 +177,19 @@ export default function TestManagementForm() {
     }, [questions, questionQp.pageIndex]);
 
     useEffect(() => {
-        setActiveTab(editData?.data?.test_type || "mcq")
-    }, [editData]);
+        if (!questionSets?.data?.data) return;
+
+        setSetList(prev => {
+            if (setQp.pageIndex === 1) {
+                return questionSets.data.data;
+            }
+
+            const existingIds = new Set(prev.map(s => s.id));
+            const newSets = questionSets.data.data.filter(s => !existingIds.has(s.id));
+
+            return [...prev, ...newSets];
+        });
+    }, [questionSets, setQp.pageIndex]);
 
     const handleCourseSearch = (searchTerm: string) => {
         setCourseQp(prev => ({
@@ -199,6 +225,37 @@ export default function TestManagementForm() {
         }
     };
 
+    const setPagination = questionSets?.data?.pagination;
+    const hasMoreSets = calcHasMore(setPagination);
+
+    const handleSetSearch = (searchTerm: string) => {
+        setSetQp(prev => ({ ...prev, search: searchTerm, pageIndex: 1 }));
+    };
+
+    const fetchMoreSets = () => {
+        if (hasMoreSets) {
+            setSetQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 }));
+        }
+    };
+
+    const handleSetSelectionChange = (selectedIds: number[]) => {
+        formik.setFieldValue("set_ids", selectedIds);
+        formik.setFieldTouched("set_ids", true);
+        const count = setList
+            .filter(s => selectedIds.includes(s.id))
+            .reduce((sum, s) => sum + (s.number_of_questions || 0), 0);
+        formik.setFieldValue("set_question_count", count);
+        // Reset individual question selection since the available pool changes
+        formik.setFieldValue("question_ids", []);
+        setQuestionList([]);
+        setQuestionQp(prev => ({ ...prev, pageIndex: 1 }));
+    };
+
+    const setListForDisplay = setList.map(s => ({
+        ...s,
+        display_name: `${s.name} (${s.number_of_questions})`,
+    }));
+
     const handleTabChange = (value: "mcq" | "subjective" | "omr") => {
         setActiveTab(value);
         formik.setFieldValue("test_type", value);
@@ -212,9 +269,6 @@ export default function TestManagementForm() {
         }
     };
 
-    if (loadingTest) {
-        return <CircularProgress />
-    }
     return (
         <form onSubmit={formik.handleSubmit} className="flex flex-col h-full justify-between overflow-auto">
             <Box className="flex flex-col gap-6 md:grid md:grid-cols-2 overflow-auto" sx={{
@@ -307,7 +361,6 @@ export default function TestManagementForm() {
                         )}
                     </div>
                 ) : ""}
-
                 <div className="col-span-1">
                     <div className="input__field">
                         <InputLabel className="required">Total No. of Questions</InputLabel>
@@ -666,10 +719,43 @@ export default function TestManagementForm() {
                             itemLabelKey="question"
                             itemIdKey="id"
                             placeholder="Search questions..."
+                            groupLabelKey="label.name"
                         />
                         {formik.touched.question_ids && formik.errors.question_ids && (
                             <FormHelperText error>{formik.errors.question_ids}</FormHelperText>
                         )}
+                    </div>
+                </div>
+
+                <div className="col-span-2">
+                    <div className="input__field">
+                        <InputLabel>
+                            Select Set ({formik.values.set_ids.length})
+                            {formik.values.set_question_count ? (
+                                <Typography variant="caption" color="text.middle" sx={{ ml: 1 }}>
+                                    — {formik.values.set_question_count} questions from sets
+                                </Typography>
+                            ) : null}
+                        </InputLabel>
+                        <OutlinedInput
+                            placeholder="Search Sets"
+                            value={setQp.search}
+                            onChange={(e) => handleSetSearch(e.target.value)}
+                        />
+                        <InfiniteScrolling
+                            key="set-list"
+                            scrollableId="set-scrollable"
+                            data={setListForDisplay}
+                            hasMore={hasMoreSets}
+                            selectedItems={formik.values.set_ids}
+                            onSelectionChange={handleSetSelectionChange}
+                            fetchMore={fetchMoreSets}
+                            onSearch={handleSetSearch}
+                            loading={loadingSets}
+                            itemLabelKey="display_name"
+                            itemIdKey="id"
+                            placeholder="Search sets..."
+                        />
                     </div>
                 </div>
             </Box>

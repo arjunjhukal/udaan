@@ -1,7 +1,8 @@
-import { Box, FormControlLabel, LinearProgress, Radio, Typography, useTheme } from "@mui/material";
+import { Box, FormControlLabel, FormHelperText, InputLabel, LinearProgress, OutlinedInput, Radio, Typography, useTheme } from "@mui/material";
 import { useFormik } from "formik";
 import { useCallback, useState } from "react";
 import { useDropzone, type Accept } from "react-dropzone";
+import * as Yup from "yup";
 import { useSaveUploadedQuestionsMutation, useUploadQuestionPaperMutation } from "../../../services/questionApi";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
@@ -82,6 +83,7 @@ export default function ImportQuestion({
     const formik = useFormik({
         enableReinitialize: true,
         initialValues: {
+            title: "",
             questions: questions.map(q => ({
                 id: q.id,
                 question: q.question,
@@ -93,14 +95,22 @@ export default function ImportQuestion({
                 })),
             })),
         },
+        validationSchema: Yup.object().shape({
+            title: Yup.string()
+                .trim()
+                .required("Group title is required")
+                .min(3, "Title must be at least 3 characters")
+                .max(200, "Title must not exceed 200 characters"),
+        }),
         onSubmit: async (values) => {
             try {
-                const response = await saveQuestions({ question: values.questions }).unwrap();
+                const response = await saveQuestions({ title: values.title, question: values.questions }).unwrap();
 
                 dispatch(showToast({
                     message: response?.message || "Questions saved successfully",
                     severity: "success"
                 }));
+                
                 onClose();
             }
             catch (e: any) {
@@ -201,6 +211,24 @@ export default function ImportQuestion({
                     height: "calc(100% - 150px)"
                 }}
             >
+                <div className="input__field w-full mb-2">
+                    <InputLabel className="required">Group Title</InputLabel>
+                    <OutlinedInput
+                        fullWidth
+                        name="title"
+                        value={formik.values.title}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        placeholder="Enter a title to group these questions (e.g. Chapter 1 – Algebra)"
+                        error={formik.touched.title && Boolean(formik.errors.title)}
+                    />
+                    {formik.touched.title && formik.errors.title && (
+                        <FormHelperText error sx={{ mt: 0.5 }}>
+                            {formik.errors.title}
+                        </FormHelperText>
+                    )}
+                </div>
+
                 {formik.values.questions.length ? formik.values.questions.map((question, questionIndex) => (
                     <Box className="question__box w-full pb-4 mb-4 lg:pb-8 lg:mb-8 border-b last:border-b-0 last:mb-0 last:pb-0" key={question.id} sx={{ borderColor: (theme) => theme.palette.separator.dark }}>
                         <div className="flex justify-between items-center">

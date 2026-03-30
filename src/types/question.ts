@@ -10,6 +10,21 @@ export interface OptionProps {
     is_correct: boolean
 }
 
+export interface QuestionLabelProps {
+    id: number;
+    name: string;
+    created_by: string;
+    number_of_questions: number;
+    created_at: string;
+}
+
+export interface QuestionLabelList extends GlobalResponse {
+    data: {
+        data: QuestionLabelProps[];
+        pagination: Pagination;
+    }
+}
+
 export interface QuestionProps {
     id: number | null;
     points: number;
@@ -66,6 +81,8 @@ export interface TestProps {
     end_datetime: string | null;
     course_ids: number[];
     question_ids: number[];
+    set_ids: number[];
+    set_question_count?: number;
     category?: string[];
     questions?: number;
     status?: null;
@@ -97,6 +114,7 @@ export const TestInitialState: TestProps = {
     end_datetime: null,
     course_ids: [],
     question_ids: [],
+    set_ids: [],
     is_scheduled: true,
     total_questions: null,
     marks_per_question: 1,
