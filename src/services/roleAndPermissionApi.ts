@@ -1,15 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { PermissionList, PermissionProps, RoleList, RoleProps } from "../types/roleAndPermission";
 import type { GlobalResponse } from "../types/user";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const roleAndPermissionApi = createApi({
-    reducerPath: "roleAndPermissionApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Role", "Permission"],
+export const roleAndPermissionApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        // Fetch all permissions
         getAllPermissions: builder.query<PermissionList, void>({
             query: () => ({
                 url: "/admin/permissions",
@@ -23,7 +18,6 @@ export const roleAndPermissionApi = createApi({
                     ]
                     : [{ type: "Permission", id: "LIST" }],
         }),
-        // Fetch all roles
         getAllRoles: builder.query<RoleList, QueryParams>({
             query: ({ pageIndex, pageSize, search }) => {
                 const params = new URLSearchParams();
@@ -51,7 +45,6 @@ export const roleAndPermissionApi = createApi({
                     ]
                     : [{ type: "Role", id: "LIST" }],
         }),
-        // Create a new role
         createNewRole: builder.mutation<RoleProps & { message: string }, RoleProps>({
             query: (body) => ({
                 url: "/admin/roles",
@@ -60,7 +53,6 @@ export const roleAndPermissionApi = createApi({
             }),
             invalidatesTags: [{ type: "Role", id: "LIST" }],
         }),
-        // Edit a role
         editRole: builder.mutation<{ data: RoleProps, message: string }, { body: RoleProps; id: string }>({
             query: ({ body, id }) => ({
                 url: `/admin/roles/${id}`,
@@ -72,7 +64,6 @@ export const roleAndPermissionApi = createApi({
                 { type: "Role", id: "LIST" }
             ],
         }),
-        // Delete a role
         deleteRole: builder.mutation<GlobalResponse, { body: string[] }>({
             query: ({ body }) => ({
                 url: `/admin/roles/`,
@@ -83,7 +74,6 @@ export const roleAndPermissionApi = createApi({
                 { type: "Role", id: "LIST" }
             ],
         }),
-        // Fetch a role by id
         getRoleById: builder.query<{ data: RoleProps }, { id: string }>({
             query: ({ id }) => ({
                 url: `/admin/roles/${id}`,

@@ -1,4 +1,3 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CurriculumType } from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
 import type { CategoryFilterParams, QueryParams } from "../types";
 import type { AnalyticsProps, courseClonePropertyProps, CourseList, CourseProps, courseTabType, CurriculumList, CurriculumProps } from "../types/course";
@@ -7,12 +6,9 @@ import type { TestList } from "../types/question";
 import type { TransactionList } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const courseApi = createApi({
-    reducerPath: "courseApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Course", "Curriculum", "Media", "Test", "Archive"],
+export const courseApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createCourse: builder.mutation<{ data: CourseProps, message: string }, { body: FormData }>({
             query: ({ body }) => ({
@@ -32,7 +28,6 @@ export const courseApi = createApi({
         }),
         getAllCourse: builder.query<CourseList, QueryParams & { categoryFilter?: CategoryFilterParams; status?: "all" | "published" | "draft" }>({
             query: ({ pageIndex, pageSize, search, categoryFilter, status }) => {
-                // const params = new URLSearchParams();
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -85,7 +80,7 @@ export const courseApi = createApi({
             invalidatesTags: (_result, _error,) => [
                 { type: "Course", id: "LIST" }
             ],
-    }),
+        }),
         cloneCourse: builder.mutation<GlobalResponse, { id: number, properties: courseClonePropertyProps[] }>({
             query: ({ id, properties }) => ({
                 url: `/admin/course/${id}/clone`,
@@ -337,5 +332,4 @@ export const {
     useGetEnrolledStudentsQuery,
     useEnrolledStudentsMutation,
     useArchiveEnrolledStudentMutation,
-
 } = courseApi;

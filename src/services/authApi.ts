@@ -1,15 +1,12 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type {
 	GlobalResponse,
 	LoginUserProps,
 	RegisterUserProps,
 	UserResponse,
 } from "../types/user";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const authApi = createApi({
-	reducerPath: "authApi",
-	baseQuery: baseQuery,
+export const authApi = baseApi.injectEndpoints({
 	endpoints: (builder) => ({
 		register: builder.mutation<UserResponse, RegisterUserProps>({
 			query: (body) => ({

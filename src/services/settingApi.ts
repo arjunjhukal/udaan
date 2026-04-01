@@ -1,14 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { AppSettingProps, ChangePasswordProps, LinkedDeviceList } from "../types/setting";
 import type { GlobalResponse, User } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const settingApi = createApi({
-    reducerPath: "settingApi",
-    baseQuery: baseQuery,
-    tagTypes: ["LinkedDevice", "Profile"],
+export const settingApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         changePassword: builder.mutation<GlobalResponse, ChangePasswordProps>({
             query: (body) => ({

@@ -1,14 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { GorkhapatraList, GorkhapatraProps, GorkhapatraTypes } from "../types/gorkhapatra";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const gorkhapatraApi = createApi({
-    reducerPath: "gorkhapatraApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Gorkhapatra"],
+export const gorkhapatraApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createGorkhapatra: builder.mutation<GlobalResponse, FormData>({
             query: (body) => ({

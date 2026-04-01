@@ -1,13 +1,9 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { CategoryProps, CategoryTypeResponse, CategroyList } from "../types/category";
 import type { GlobalResponse } from "../types/user";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const categoryApi = createApi({
-    reducerPath: "categoryApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Category"],
+export const categoryApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createCategory: builder.mutation({
             query: (body) => ({

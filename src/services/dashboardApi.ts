@@ -1,11 +1,7 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { AnalyticsList } from "../types/dashboard";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const dashboardApi = createApi({
-    reducerPath: "dashboardApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Analytics"],
+export const dashboardApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAnalytics: builder.query<AnalyticsList, void>({
             query: () => ({

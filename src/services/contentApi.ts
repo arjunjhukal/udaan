@@ -1,12 +1,8 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { BannerList, FeaturedCourseList, FeaturedCourseProps, OnBoardingProps, SplashProps, WelcomePopupProps } from "../types/content";
 import type { GlobalResponse } from "../types/user";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const contentApi = createApi({
-    reducerPath: "contentApi",
-    baseQuery: baseQuery,
-    tagTypes: ['Banner', 'Page', 'Welcome', 'Splash', "Course", "Onboarding"],
+export const contentApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         addOrUpdateBanner: builder.mutation<GlobalResponse, FormData>({
             query: (body) => ({

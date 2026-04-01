@@ -1,15 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { SubscriptionList, SubscriptionPlanProps } from "../types/subscriptionPlan";
 import type { GlobalResponse } from "../types/user";
-import { baseQuery } from "./baseQuery";
-
 import type { QueryParams } from "../types";
+import { baseApi } from "./baseApi";
 
 
-export const subscriptionPlanApi = createApi({
-    reducerPath: "subscriptionPlanApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Subscription"],
+export const subscriptionPlanApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createSubscription: builder.mutation<GlobalResponse, { body: SubscriptionPlanProps }>({
             query: ({ body }) => ({

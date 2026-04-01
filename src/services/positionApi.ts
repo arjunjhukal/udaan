@@ -1,15 +1,11 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { positionList, positionProps } from "../types/position";
 import type { GlobalResponse } from "../types/user";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
 
 
-export const positionApi = createApi({
-    reducerPath: "positionApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Position"],
+export const positionApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllPosition: builder.query<positionList, QueryParams>({
             query: ({ pageIndex, pageSize, search }) => {

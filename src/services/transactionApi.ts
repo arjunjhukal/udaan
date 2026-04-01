@@ -1,15 +1,11 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, DeviceType, QueryParams, Status } from "../types";
 import type { CourseList } from "../types/course";
 import type { EnrollmentType, TransactionList, TransactionPayload, UserTransactionResponse } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const transactionApi = createApi({
-    reducerPath: "transactionApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Transaction"],
+export const transactionApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         addTransaction: builder.mutation<GlobalResponse, { body: FormData }>({
             query: ({ body }) => ({
@@ -65,7 +61,6 @@ export const transactionApi = createApi({
                 body: body
             }),
             invalidatesTags: (_result, _error, _arg) => [
-                // { type: "Transaction", id: arg.id },
                 { type: "Transaction", id: "LIST" }
             ]
         }),

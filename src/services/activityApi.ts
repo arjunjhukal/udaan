@@ -1,14 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { DeviceType, QueryParams, Status } from "../types";
 import type { ActivityList, ActivityType } from "../types/activity";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const activitiyApi = createApi({
-    reducerPath: "activityApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Activity"],
+export const activitiyApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllActivity: builder.query<ActivityList, QueryParams & {
             type?: ActivityType,

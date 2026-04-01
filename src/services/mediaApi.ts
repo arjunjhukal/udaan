@@ -1,14 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { MediaList, MediaProps } from "../types/media";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const mediaApi = createApi({
-    reducerPath: "mediaApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Media", "Notes", "Audio", "Video", "Images"],
+export const mediaApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         uploadMedia: builder.mutation<GlobalResponse & { data: MediaProps[] }, { type: string, body: FormData }>({
             query: ({ type, body }) => ({

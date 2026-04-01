@@ -1,14 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { GeneralPageListing, GeneralPageProps } from "../types/page";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const pageApi = createApi({
-    reducerPath: "pageApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Pages"],
+export const pageApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createPage: builder.mutation<GlobalResponse, GeneralPageProps>({
             query: (body) => ({

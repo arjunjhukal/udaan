@@ -1,15 +1,11 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, QueryParams } from "../types";
 import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionLabelList, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
 import type { TransactionList } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const questionApi = createApi({
-    reducerPath: "questionApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Questions", "Test", "Results", "Set", "OMR", "TestEnrollment", "BundleEnrollment"],
+export const questionApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         uploadQuestionPaper: builder.mutation<GlobalResponse & {
             data: QuestionProps[]

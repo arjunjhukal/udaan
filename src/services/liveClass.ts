@@ -1,14 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CategoryFilterParams, QueryParams } from "../types";
 import type { LiveClassList, LiveClassPayload, liveClassTabType } from "../types/liveClass";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const liveClassApi = createApi({
-    reducerPath: "liveClassApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Live_Class"],
+export const liveClassApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createLiveClass: builder.mutation<LiveClassList, { body: LiveClassPayload }>({
             query: ({ body }) => ({
@@ -57,7 +53,6 @@ export const liveClassApi = createApi({
                 { type: "Live_Class", id: "LIST" }
             ],
         }),
-        // Fetch a role by id
         getLiveClassById: builder.query<{ data: LiveClassPayload }, { id: number }>({
             query: ({ id }) => ({
                 url: `/admin/course/live/${id}`,

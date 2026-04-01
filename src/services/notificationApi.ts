@@ -1,14 +1,10 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { QueryParams } from "../types";
 import type { CompletionStatus, DeliveryMethodsType, NotificationList, NotificationPayload, TargetStudentType } from "../types/notification";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
+import { baseApi } from "./baseApi";
 
-export const notificationApi = createApi({
-    reducerPath: "notificationApi",
-    baseQuery: baseQuery,
-    tagTypes: ["Notifications"],
+export const notificationApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         createNotification: builder.mutation<GlobalResponse, { body: FormData }>({
             query: ({ body }) => ({
