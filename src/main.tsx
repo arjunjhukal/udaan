@@ -11,7 +11,6 @@ import Toast from "./components/organism/Toast/index.tsx";
 import GlobalRoutes from "./routes/Routes.tsx";
 import { store } from "./store/store.ts";
 import UdaanThemeProvider from "./ThemeProvider.tsx";
-import ScreenProtection from "./ScreenProtection.tsx";
 i18n
 	.use(HttpApi)
 	.use(LanguageDetector)
