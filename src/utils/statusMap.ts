@@ -1,4 +1,4 @@
-export type StatusVariant = "success" | "info" | "warning" | "error";
+export type StatusVariant = "success" | "info" | "warning" | "error" | "primary";
 
 export type PublishedStatus = "draft" | "published"
 
@@ -9,6 +9,7 @@ export function statusMap<T extends string>(map: Record<T, StatusVariant>) {
 }
 
 import type { GorkhapatraTypes } from "../types/gorkhapatra";
+import type { TicketPriority, TicketStatus } from "../types/ticket";
 import type { TransactionCourseStatus } from "../types/transaction";
 
 export const getTransactionStatusVariant = statusMap<TransactionCourseStatus>({
@@ -38,3 +39,20 @@ export const getCourseStatus = (progress?: number): StatusVariant => {
     if (progress === 100) return "success";
     return "warning";
 };
+
+export const getDiscussionStatus = statusMap<"visible" | "hidden">({
+    visible: "success",
+    hidden: "warning",
+});
+export const getTicketStatusVariant = statusMap<TicketStatus>({
+    open: "success",
+    resolved: "error",
+    assigned: "warning",
+    waiting_for_reply: "info",
+});
+export const getTicketPriorityVariant = statusMap<TicketPriority>({
+    low: "primary",
+    urgent: "error",
+    medium: "warning",
+    high: "info",
+});

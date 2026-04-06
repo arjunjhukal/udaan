@@ -40,6 +40,32 @@ export const userApi = baseApi.injectEndpoints({
                     ]
                     : [{ type: "User", id: "LIST" }],
         }),
+        getAllUserExcludeStudents: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days?: number | null; }>({
+            query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate }) => {
+                const params = buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                    search: search,
+                    role: role,
+                    status: status,
+                    start_date: startDate,
+                    end_date: endDate,
+                    days: days,
+                });
+
+                return {
+                    url: `/admin/user/exclude-students?${params}`,
+                    method: "GET",
+                };
+            },
+            providesTags: (result) =>
+                result?.data?.data
+                    ? [
+                        ...result.data.data.map((user) => ({ type: "User" as const, id: user.id })),
+                        { type: "User", id: "LIST" },
+                    ]
+                    : [{ type: "User", id: "LIST" }],
+        }),
         editUser: builder.mutation<{ data: RegisterUserProps; message: string }, { body: FormData; id: string }>({
             query: ({ body, id }) => ({
                 url: `/admin/user/${id}`,
@@ -90,6 +116,7 @@ export const userApi = baseApi.injectEndpoints({
 export const {
     useCreateUserMutation,
     useGetAllUserQuery,
+    useGetAllUserExcludeStudentsQuery,
     useEditUserMutation,
     useDeleteUserMutation,
     useGetUserByIdQuery,
