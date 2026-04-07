@@ -28,6 +28,8 @@ export default function PrimaryMenu() {
     const [openTest, setOpenTest] = React.useState<boolean>(false);
     const [openSetting, setOpenSetting] = React.useState<boolean>(false);
     const [openOmr, setOpenOmr] = React.useState<boolean>(false);
+    const [openDiscussion, setOpenDiscussion] = React.useState<boolean>(false);
+    const [openTicket, setOpenTicket] = React.useState<boolean>(false);
     const mode = useAppSelector((state) => state.theme.mode);
 
     const isActive = (path: string) => location.pathname === path;
@@ -37,6 +39,15 @@ export default function PrimaryMenu() {
             location.pathname.startsWith(PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT) ||
             location.pathname.startsWith(PATH.COURSE_MANAGEMENT.QUIZ.ROOT);
     };
+    const isDiscussionGroupActive = () => {
+        return location.pathname.startsWith(PATH.DISCUSSION.ROOT) ||
+            location.pathname.startsWith(PATH.MODERATION.ROOT);
+    };
+
+    const isTicketGroupActive = () => {
+        return location.pathname.startsWith(PATH.TICKET.ROOT);
+    };
+
     const isSettingActive = () => {
         return location.pathname.startsWith(PATH.SETTINGS.ROOT);
     };
@@ -454,6 +465,87 @@ export default function PrimaryMenu() {
                             </ListItemIcon>
                             <ListItemText primary={t("menus.gorkhapatra.root")} />
                         </ListItemButton>
+                    </ListItem>
+                </CAN>
+
+                {/* Discussion & Moderation */}
+                <ListItem disablePadding className="menu__item">
+                    <ListItemButton
+                        onClick={() => setOpenDiscussion((prev) => !prev)}
+                        className={isDiscussionGroupActive() ? "active" : ""}>
+                        <ListItemIcon>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M8 10h8M8 13h5M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12c0 1.6.376 3.112 1.043 4.453L2 22l5.547-1.043A9.955 9.955 0 0012 22z" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </ListItemIcon>
+                        <ListItemText primary="Discussion" />
+                        {openDiscussion ? <ExpandLess /> : <ExpandMore />}
+                    </ListItemButton>
+                    <Collapse in={openDiscussion} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding sx={{ pl: 3 }}>
+                            <CAN permissions={["view_discussions", "add_discussions", "edit_discussions", "delete_discussions"]}>
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => navigate(PATH.DISCUSSION.ROOT)}
+                                        className={location.pathname.startsWith(PATH.DISCUSSION.ROOT) ? "active-nested" : ""}>
+                                        <ListItemText primary={t("menus.discussion.root")} />
+                                    </ListItemButton>
+                                </ListItem>
+                            </CAN>
+                            <CAN permissions={["view_moderations", "add_moderations", "edit_moderations", "delete_moderations"]}>
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => navigate(PATH.MODERATION.ROOT)}
+                                        className={location.pathname.startsWith(PATH.MODERATION.ROOT) ? "active-nested" : ""}>
+                                        <ListItemText primary="Moderation" />
+                                    </ListItemButton>
+                                </ListItem>
+                            </CAN>
+                        </List>
+                    </Collapse>
+                </ListItem>
+
+                {/* Support Tickets */}
+                <CAN permissions={["add_tickets", "edit_tickets", "delete_tickets", "view_tickets"]}>
+                    <ListItem disablePadding className="menu__item">
+                        <ListItemButton
+                            onClick={() => setOpenTicket((prev) => !prev)}
+                            className={isTicketGroupActive() ? "active" : ""}>
+                            <ListItemIcon>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2 9C2 7.89543 2.89543 7 4 7H20C21.1046 7 22 7.89543 22 9V20C22 21.1046 21.1046 22 20 22H4C2.89543 22 2 21.1046 2 20V9Z" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M12 12V17M9.5 14.5H14.5" stroke="#9CA3B0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </ListItemIcon>
+                            <ListItemText primary={t("menus.ticket.root")} />
+                            {openTicket ? <ExpandLess /> : <ExpandMore />}
+                        </ListItemButton>
+                        <Collapse in={openTicket} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding sx={{ pl: 3 }}>
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => navigate(PATH.TICKET.ALL_TICKETS.ROOT)}
+                                        className={location.pathname.startsWith(PATH.TICKET.ALL_TICKETS.ROOT) ? "active-nested" : ""}>
+                                        <ListItemText primary={t("menus.ticket.all_tickets")} />
+                                    </ListItemButton>
+                                </ListItem>
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => navigate(PATH.TICKET.CHATS.ROOT)}
+                                        className={location.pathname.startsWith(PATH.TICKET.CHATS.ROOT) ? "active-nested" : ""}>
+                                        <ListItemText primary={t("menus.ticket.chats")} />
+                                    </ListItemButton>
+                                </ListItem>
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => navigate(PATH.TICKET.TICKET_TYPES.ROOT)}
+                                        className={location.pathname.startsWith(PATH.TICKET.TICKET_TYPES.ROOT) ? "active-nested" : ""}>
+                                        <ListItemText primary={t("menus.ticket.ticket_types")} />
+                                    </ListItemButton>
+                                </ListItem>
+                            </List>
+                        </Collapse>
                     </ListItem>
                 </CAN>
 
