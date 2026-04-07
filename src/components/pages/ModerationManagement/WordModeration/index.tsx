@@ -26,7 +26,6 @@ export default function WordModeration() {
     const [debouncedSearch, setDebouncedSearch] = useState("");
     const [page, setPage] = useState(1);
     const [allWords, setAllWords] = useState<ModerationProps[]>([]);
-    const [hasMore, setHasMore] = useState(true);
 
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editingName, setEditingName] = useState("");
@@ -39,7 +38,6 @@ export default function WordModeration() {
     useEffect(() => {
         setPage(1);
         setAllWords([]);
-        setHasMore(true);
     }, [debouncedSearch]);
 
     const { data, isFetching, isLoading } = useGetModerationWordsQuery({
@@ -47,6 +45,10 @@ export default function WordModeration() {
         pageSize: PAGE_SIZE,
         search: debouncedSearch,
     });
+
+    const hasMore = data
+        ? data.data.pagination.current_page < data.data.pagination.total_pages
+        : true;
 
     useEffect(() => {
         if (!data?.data?.data) return;
@@ -62,7 +64,6 @@ export default function WordModeration() {
                 return [...prev, ...fresh];
             });
         }
-        setHasMore(pagination.current_page < pagination.total_pages);
     }, [data]);
 
     // Infinite scroll sentinel
