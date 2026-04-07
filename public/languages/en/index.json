@@ -115,6 +115,15 @@
         },
         "gorkhapatra": {
             "root": "Gorkhapatra Creations"
+        },
+        "discussion": {
+            "root": "Discussions"
+        },
+        "ticket": {
+            "root": "Support Tickets",
+            "all_tickets": "All Tickets",
+            "chats": "Chats",
+            "ticket_types": "Ticket Types"
         }
     },
     "messages": {
