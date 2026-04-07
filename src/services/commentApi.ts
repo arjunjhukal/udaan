@@ -1,8 +1,6 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
 import type { CommentList } from "../types/comment";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
-import { baseQuery } from "./baseQuery";
 import { baseApi } from "./baseApi";
 
 export const commentApi = baseApi.injectEndpoints({

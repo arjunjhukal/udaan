@@ -39,7 +39,7 @@ export default function ReplyItem({ reply, discussionId }: Props) {
 
 	const [updateReply, { isLoading: updating }] = useUpdateReplyMutation();
 	const [deleteReply] = useDeleteReplyMutation();
-	const [suspendReply] = useSuspendReplyMutation();k
+	const [suspendReply] = useSuspendReplyMutation();
 
 	const handleUpdate = async (body: string) => {
 		if (!reply.id) return;
