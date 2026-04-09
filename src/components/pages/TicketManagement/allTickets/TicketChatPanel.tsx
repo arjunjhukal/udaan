@@ -660,7 +660,6 @@
 // 	);
 // }
 
-import AttachFileIcon from "@mui/icons-material/AttachFile";
 import LockIcon from "@mui/icons-material/Lock";
 import SendIcon from "@mui/icons-material/Send";
 import {
@@ -671,16 +670,19 @@ import {
 	Divider,
 	IconButton,
 	InputAdornment,
-	MenuItem,
+	List,
+	ListItemAvatar,
+	ListItemButton,
+	ListItemText,
 	OutlinedInput,
-	Select,
+	Popover,
 	Stack,
 	Tooltip,
 	Typography,
-	useTheme,
+	useTheme
 } from "@mui/material";
 import { format } from "date-fns";
-import { ArrowDown2, Clock, InfoCircle, People, TickCircle } from "iconsax-reactjs";
+import { DocumentUpload, People, UserAdd } from "iconsax-reactjs";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useTicketSocket } from "../../../../hooks/useTicketSocket";
@@ -692,11 +694,12 @@ import {
 	useMarkRepliesAsReadMutation,
 	useUpdateTicketMutation,
 } from "../../../../services/ticketApi";
+import { useGetAllUserExcludeStudentsQuery } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch, useAppSelector } from "../../../../store/hook";
-import type { TicketPriority, TicketProps, TicketReplyProps, TicketStatus } from "../../../../types/ticket";
-import { TICKET_PRIORITY_OPTIONS, TICKET_STATUS_OPTIONS } from "../../../../types/ticket";
-import AssignedUsers from "../../../organism/ListWithPlusMore";
+import type { TicketProps, TicketReplyProps, TicketStatus } from "../../../../types/ticket";
+import type { User } from "../../../../types/user";
+import TicketSelectControls from "./TicketSelectControls";
 
 interface Props {
 	ticket?: TicketProps;
@@ -704,27 +707,6 @@ interface Props {
 	readOnly?: boolean;
 	setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const statusColor: Record<TicketStatus, string> = {
-	open: "#3B82F6",
-	assigned: "#8B5CF6",
-	waiting_for_reply: "#F59E0B",
-	resolved: "#10B981",
-};
-
-const statusIcon: Record<TicketStatus, React.ElementType> = {
-	open: InfoCircle,
-	assigned: TickCircle,
-	waiting_for_reply: Clock,
-	resolved: TickCircle,
-};
-
-const priorityDot: Record<TicketPriority, { dot: string; text: string }> = {
-	low: { dot: "#6B7280", text: "#6B7280" },
-	medium: { dot: "#F59E0B", text: "#92400E" },
-	high: { dot: "#F97316", text: "#7C2D12" },
-	urgent: { dot: "#EF4444", text: "#7F1D1D" },
-};
 
 function ReplyBubble({ reply, currentUserId }: { reply: TicketReplyProps; currentUserId?: number }) {
 	const theme = useTheme();
@@ -802,7 +784,7 @@ function ReplyBubble({ reply, currentUserId }: { reply: TicketReplyProps; curren
 	);
 }
 
-export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: propOnTicketUpdated, readOnly = false, setOpen }: Props) {
+export default function TicketChatPanel({ ticket, onTicketUpdated: propOnTicketUpdated, setOpen }: Props) {
 	const { t } = useTranslation();
 	const dispatch = useAppDispatch();
 	const theme = useTheme();
@@ -815,38 +797,46 @@ export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: p
 	const [attachment, setAttachment] = useState<File | null>(null);
 	const [page, setPage] = useState(1);
 	const [allReplies, setAllReplies] = useState<TicketReplyProps[]>([]);
-	const [selectedTicket, setSelectedTicket] = useState<TicketProps | null>(propTicket ?? null);
+	const [selectedTicket, setSelectedTicket] = useState<TicketProps | null>(ticket ?? null);
+
+	// 	// Assign popover state
+	const [assignAnchor, setAssignAnchor] = useState<HTMLElement | null>(null);
+	const [assignSearch, setAssignSearch] = useState("");
+	const [assignedUsers, setAssignedUsers] = useState<Array<{ id: number; name: string }>>([]);
 
 	const { data: ticketsData, refetch: refetchTickets } = useGetAllTicketsQuery(
 		{ pageIndex: 1, pageSize: 20 },
-		{ skip: !!propTicket }
+		{ skip: !!ticket }
 	);
 
-	const ticket = propTicket ?? selectedTicket;
 
 	useEffect(() => {
-		if (!propTicket && !selectedTicket && ticketsData?.data?.data?.length) {
+		if (!ticket && !selectedTicket && ticketsData?.data?.data?.length) {
 			setSelectedTicket(ticketsData.data.data[0]);
 		}
-	}, [ticketsData, propTicket, selectedTicket]);
+	}, [ticketsData, ticket, selectedTicket]);
 
 	// Default onTicketUpdated handler
 	const onTicketUpdated = useCallback(() => {
 		propOnTicketUpdated?.();
-		if (!propTicket) {
+		if (!ticket) {
 			refetchTickets();
 			// Auto-select first ticket after update
 			setTimeout(() => {
 				refetchTickets();
 			}, 300);
 		}
-	}, [propOnTicketUpdated, propTicket, refetchTickets]);
+	}, [propOnTicketUpdated, ticket, refetchTickets]);
 
 	const isClosed = ticket?.status === "resolved";
 
 	const { data: repliesData, isFetching } = useGetTicketRepliesQuery(
 		{ ticket_id: Number(ticket?.id), pageIndex: page, pageSize: 20 },
 		{ skip: !ticket?.id }
+	);
+	const { data: usersData, isFetching: loadingUsers } = useGetAllUserExcludeStudentsQuery(
+		{ pageIndex: 1, pageSize: 30, search: assignSearch },
+		{ skip: !assignAnchor }
 	);
 
 	const [createReply, { isLoading: sending }] = useCreateTicketReplyMutation();
@@ -872,7 +862,6 @@ export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: p
 		}
 	}, [ticket?.id, ticket?.unread_count, markAsRead]);
 
-	// Scroll to bottom once the initial (newest) messages are rendered
 	useEffect(() => {
 		if (allReplies.length > 0 && !hasScrolledInitially.current) {
 			hasScrolledInitially.current = true;
@@ -888,6 +877,76 @@ export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: p
 		setReplyText("");
 		setAttachment(null);
 	}, [ticket?.id]);
+
+	const handleAssignToggle = async (user: { id: number; name: string }) => {
+		if (!ticket?.id) return;
+
+		const found = assignedUsers.find((u) => u.id === user.id);
+		const nextUsers = found
+			? assignedUsers.filter((u) => u.id !== user.id)
+			: [...assignedUsers, user];
+
+		await updateTicket({
+			id: ticket.id,
+			body: {
+				assigned_to_id: nextUsers.length ? nextUsers.map((u) => u.id) : null,
+				status: nextUsers.length ? "assigned" : "open",
+			},
+		}).unwrap();
+
+		setAssignedUsers(nextUsers);
+		onTicketUpdated();
+	};
+
+	const handleRemoveAssignee = async (userId: number) => {
+		if (!ticket?.id) return;
+
+		const nextUsers = assignedUsers.filter((u) => u.id !== userId);
+		await updateTicket({
+			id: ticket.id,
+			body: {
+				assigned_to_id: nextUsers.length ? nextUsers.map((u) => u.id) : null,
+				status: nextUsers.length ? "assigned" : "open",
+			},
+		}).unwrap();
+
+		setAssignedUsers(nextUsers);
+		onTicketUpdated();
+	};
+
+	const handleToggleAttachment = async () => {
+		if (!ticket?.id) return;
+		await updateTicket({ id: ticket?.id, body: { allow_attachment: !ticket.allow_attachment } }).unwrap();
+		onTicketUpdated();
+	};
+
+	useEffect(() => {
+		const assignedNames: User[] = [];
+		if (Array.isArray(ticket?.assigned_to)) {
+			assignedNames.push(...ticket.assigned_to);
+		}
+
+		const assignedIds: number[] = [];
+		if (Array.isArray(ticket?.assigned_to_id)) {
+			assignedIds.push(...ticket.assigned_to_id);
+		} else if (typeof ticket?.assigned_to_id === "number") {
+			assignedIds.push(ticket.assigned_to_id);
+		}
+
+		// const people = assignedNames.map((name, idx) => ({
+		// 	id: assignedIds[idx] ?? 0,
+		// 	name,
+		// }));
+
+		if (assignedNames.length > 0) {
+			setAssignedUsers(assignedNames.map((name, idx) => ({
+				id: assignedIds[idx] ?? 0,
+				name: name.name,
+			})));
+		} else {
+			setAssignedUsers([]);
+		}
+	}, [ticket?.assigned_to, ticket?.assigned_to_id]);
 
 	useEffect(() => {
 		const incoming = repliesData?.data?.data;
@@ -996,6 +1055,7 @@ export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: p
 			height="100%"
 			width="100%"
 		>
+			{/* Header */}
 			<Box
 				sx={{
 					px: 2.5,
@@ -1006,7 +1066,7 @@ export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: p
 			>
 				<Stack direction="row" justifyContent="space-between" alignItems="flex-start" flexWrap="wrap" gap={1}>
 					<Box>
-						<Stack direction="row" alignItems="center" spacing={1}>
+						<Stack direction="row" alignItems="center" gap={1} flexWrap={"wrap"}>
 							<Typography variant="h6" fontWeight={600}>
 								{ticket.subject}
 							</Typography>
@@ -1016,127 +1076,125 @@ export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: p
 								</Typography>
 							)}
 						</Stack>
-						<Stack direction="row" spacing={1} mt={0.5} flexWrap="wrap">
-							{ticket.type_name && (
-								<Chip label={ticket.type_name} size="small" variant="outlined" />
-							)}
-							{ticket.assigned_to && (
-								<AssignedUsers
-									users={ticket.assigned_to || []}
-									maxVisible={3}
-								/>
-							)}
+						<Stack direction="row" gap={1} mt={0.5} flexWrap="wrap">
+							<Stack direction="row" gap={1} mt={0.5} flexWrap="wrap">
+								{ticket.type_name && (
+									<Chip label={ticket.type_name} size="small" variant="outlined" />
+								)}
+								<Tooltip title="Assign to user">
+									<Chip
+										icon={<UserAdd size={14} />}
+										label="Assign"
+										size="small"
+										variant="outlined"
+										onClick={(e) => setAssignAnchor(e.currentTarget)}
+										sx={{ fontSize: 12, cursor: "pointer" }}
+									/>
+								</Tooltip>
+							</Stack>
+							<Stack direction="row" gap={1} alignItems="center" flexWrap="wrap" >
+								<CAN permissions={["edit_tickets"]}>
+									<TicketSelectControls
+										status={(ticket.status ?? "open") as TicketStatus}
+										priority={(ticket.priority ?? "medium") as import("../../../../types/ticket").TicketPriority}
+										onStatusChange={handleStatusChange}
+										onPriorityChange={handlePriorityChange}
+										iconSize={16}
+										fontSize={13}
+										fontWeight={600}
+									/>
+
+									{/* Assign user control */}
+									{assignedUsers.length ? (
+										<Stack direction="row" gap={0.5} flexWrap="wrap">
+											{assignedUsers.map((user) => (
+												<Chip
+													key={user.id}
+													avatar={
+														<Avatar sx={{ width: 20, height: 20, fontSize: 9, bgcolor: "#8B5CF6" }}>
+															{user.name[0]?.toUpperCase()}
+														</Avatar>
+													}
+													label={user.name}
+													size="small"
+													variant="outlined"
+													onDelete={() => handleRemoveAssignee(user.id)}
+													onClick={(e) => setAssignAnchor(e.currentTarget)}
+													sx={{ fontSize: 12, cursor: "pointer" }}
+												/>
+											))}
+										</Stack>
+									) : ""}
+
+
+									<Popover
+										open={Boolean(assignAnchor)}
+										anchorEl={assignAnchor}
+										onClose={() => { setAssignAnchor(null); setAssignSearch(""); }}
+										anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+										transformOrigin={{ vertical: "top", horizontal: "right" }}
+										PaperProps={{ sx: { mt: 0.5 } }}
+									>
+										<Box sx={{ p: 1.5, width: 300 }}>
+											<OutlinedInput
+												size="small"
+												fullWidth
+												placeholder="Search users..."
+												value={assignSearch}
+												onChange={(e) => setAssignSearch(e.target.value)}
+												autoFocus
+												sx={{
+													padding: "4px 8px"
+												}}
+											/>
+											<Box sx={{ mt: 1, maxHeight: 200, overflow: "auto" }}>
+												{loadingUsers ? (
+													<Box textAlign="center" py={2}>
+														<CircularProgress size={20} />
+													</Box>
+												) : (
+													<List disablePadding>
+														{usersData?.data?.data?.map((user) => (
+															<ListItemButton
+																key={user.id}
+																selected={assignedUsers.some((u) => u.id === Number(user.id))}
+																onClick={() => handleAssignToggle({ id: Number(user.id), name: user.name })}
+																sx={{
+																	padding: "6px 8px",
+																	borderRadius: 1,
+																	gap: 1,
+																	borderBottom: 0
+																}}
+															>
+																<ListItemAvatar sx={{ minWidth: "unset" }}>
+																	<Avatar sx={{ width: 28, height: 28, fontSize: 11 }}>
+																		{user?.name[0]?.toUpperCase()}
+																	</Avatar>
+																</ListItemAvatar>
+																<ListItemText
+																	primary={user.name}
+																	secondary={user.email}
+																/>
+															</ListItemButton>
+														))}
+														{usersData?.data?.data?.length === 0 && (
+															<Typography variant="caption" color="text.secondary" sx={{ px: 1, py: 1, display: "block" }}>
+																No users found
+															</Typography>
+														)}
+													</List>
+												)}
+											</Box>
+										</Box>
+									</Popover>
+								</CAN>
+							</Stack>
 						</Stack>
 					</Box>
 
-					<Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-						{/* Static status badge — always visible */}
-						{(() => {
-							const st = (ticket.status ?? "open") as TicketStatus;
-							const SIcon = statusIcon[st];
-							return (
-								<Stack direction="row" alignItems="center" spacing={0.75}
-									sx={{
-										px: 1.25,
-										py: 0.4,
-										borderRadius: 2,
-										border: `1px solid ${statusColor[st]}22`,
-										bgcolor: `${statusColor[st]}14`,
-									}}
-								>
-									<SIcon size={14} color={statusColor[st]} variant="Bold" />
-									<Typography sx={{ fontSize: 12, color: statusColor[st], fontWeight: 600 }}>
-										{TICKET_STATUS_OPTIONS.find((o) => o.value === st)?.label ?? st}
-									</Typography>
-								</Stack>
-							);
-						})()}
-
-						{/* Editable controls — admin only, hidden in readOnly mode */}
-						{!readOnly && (
-							<CAN permissions={["edit_tickets"]}>
-								{(() => {
-									const st = (ticket.status ?? "open") as TicketStatus;
-									const SIcon = statusIcon[st];
-									return (
-										<Select
-											variant="standard"
-											disableUnderline
-											value={st}
-											onChange={(e) => handleStatusChange(e.target.value as TicketStatus)}
-											IconComponent={({ className }) => (
-												<Box component="span" className={className} sx={{ display: "flex", alignItems: "center", right: 0 }}>
-													<ArrowDown2 size={16} color={statusColor[st]} />
-												</Box>
-											)}
-											renderValue={() => (
-												<Stack direction="row" alignItems="center" spacing={0.75}>
-													<SIcon size={16} color={statusColor[st]} variant="Bold" />
-													<Typography sx={{ fontSize: 13, color: statusColor[st], fontWeight: 600 }}>
-														{TICKET_STATUS_OPTIONS.find((o) => o.value === st)?.label ?? st}
-													</Typography>
-												</Stack>
-											)}
-											sx={{
-												"& .MuiSelect-select": { py: 0, pl: 0, pr: "28px !important" },
-												"&:before, &:after": { display: "none" },
-											}}
-										>
-											{TICKET_STATUS_OPTIONS.map((opt) => (
-												<MenuItem key={opt.value} value={opt.value} sx={{ fontSize: 13 }}>
-													<Stack direction="row" alignItems="center" spacing={1}>
-														<Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: statusColor[opt.value] }} />
-														{opt.label}
-													</Stack>
-												</MenuItem>
-											))}
-										</Select>
-									);
-								})()}
-
-								{(() => {
-									const pr = (ticket.priority ?? "medium") as TicketPriority;
-									const pCfg = priorityDot[pr] ?? priorityDot.medium;
-									return (
-										<Select
-											variant="standard"
-											disableUnderline
-											value={pr}
-											onChange={(e) => handlePriorityChange(e.target.value)}
-											IconComponent={({ className }) => (
-												<Box component="span" className={className} sx={{ display: "flex", alignItems: "center", right: 0 }}>
-													<ArrowDown2 size={16} color={pCfg.dot} />
-												</Box>
-											)}
-											renderValue={() => (
-												<Stack direction="row" alignItems="center" spacing={0.75}>
-													<Box sx={{ width: 12, height: 12, borderRadius: "2px", bgcolor: pCfg.dot, flexShrink: 0 }} />
-													<Typography sx={{ fontSize: 13, color: pCfg.text, fontWeight: 600, textTransform: "capitalize" }}>
-														{pr}
-													</Typography>
-												</Stack>
-											)}
-											sx={{
-												"& .MuiSelect-select": { py: 0, pl: 0, pr: "28px !important" },
-												"&:before, &:after": { display: "none" },
-											}}
-										>
-											{TICKET_PRIORITY_OPTIONS.map((opt) => (
-												<MenuItem key={opt.value} value={opt.value} sx={{ fontSize: 13 }}>
-													<Stack direction="row" alignItems="center" spacing={1}>
-														<Box sx={{ width: 10, height: 10, borderRadius: "2px", bgcolor: priorityDot[opt.value as TicketPriority]?.dot ?? "#6B7280" }} />
-														{opt.label}
-													</Stack>
-												</MenuItem>
-											))}
-										</Select>
-									);
-								})()}
-							</CAN>
-						)}
-					</Stack>
 				</Stack>
 			</Box>
+
 
 			<Box
 				flex={1}
@@ -1255,32 +1313,46 @@ export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: p
 								sx={{ borderRadius: 3, pr: 1 }}
 								endAdornment={
 									<InputAdornment position="end">
-										<Stack direction="row" spacing={0.5}>
-											{ticket.allow_attachment && (
-												<>
-													<input
-														ref={fileInputRef}
-														type="file"
-														hidden
-														accept="image/*,.pdf,.doc,.docx"
-														onChange={(e) => {
-															const f = e.target.files?.[0];
-															if (f && f.size <= 2 * 1024 * 1024) {
-																setAttachment(f);
-															}
-															e.target.value = "";
-														}}
-													/>
-													<Tooltip title="Attach file (max 2MB)">
-														<IconButton
-															size="small"
-															onClick={() => fileInputRef.current?.click()}
-														>
-															<AttachFileIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												</>
-											)}
+										<Stack direction="row" gap={0.5} alignItems="center">
+											{/* Allow attachment toggle — admin only */}
+											<CAN permissions={["edit_tickets"]}>
+												<Tooltip title={ticket.allow_attachment ? "Disable user attachments" : "Allow user to attach files"}>
+													<IconButton
+														size="small"
+														onClick={handleToggleAttachment}
+														sx={{ color: ticket.allow_attachment ? "primary.main" : "text.disabled" }}
+													>
+														<DocumentUpload size={18} />
+													</IconButton>
+												</Tooltip>
+											</CAN>
+
+											{/* Attach image */}
+											<input
+												ref={fileInputRef}
+												type="file"
+												hidden
+												accept="image/*"
+												onChange={(e) => {
+													const f = e.target.files?.[0];
+													if (f && f.size <= 2 * 1024 * 1024) {
+														setAttachment(f);
+													}
+													e.target.value = "";
+												}}
+											/>
+											<Tooltip title="Attach image (max 2MB)">
+												<IconButton
+													size="small"
+													onClick={() => fileInputRef.current?.click()}
+												>
+													<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+														<path d="M21.44 11.05L12.25 20.24C11.1242 21.3658 9.5972 21.9983 8.005 21.9983C6.41283 21.9983 4.88584 21.3658 3.76 20.24C2.63416 19.1142 2.00166 17.5872 2.00166 15.995C2.00166 14.4028 2.63416 12.8758 3.76 11.75L12.95 2.56C13.7006 1.80943 14.7186 1.38777 15.78 1.38777C16.8414 1.38777 17.8595 1.80943 18.61 2.56C19.3606 3.31056 19.7822 4.32862 19.7822 5.39C19.7822 6.45138 19.3606 7.46944 18.61 8.22L9.41 17.41C9.03472 17.7853 8.52573 17.9961 7.995 17.9961C7.46427 17.9961 6.95529 17.7853 6.58 17.41C6.20472 17.0347 5.99389 16.5257 5.99389 15.995C5.99389 15.4643 6.20472 14.9553 6.58 14.58L15.07 6.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+													</svg>
+												</IconButton>
+											</Tooltip>
+
+											{/* Send */}
 											<IconButton
 												size="small"
 												disabled={!replyText.trim() || sending}
@@ -1289,7 +1361,7 @@ export default function TicketChatPanel({ ticket: propTicket, onTicketUpdated: p
 													width: 32,
 													height: 32,
 													backgroundColor: (theme) => theme.palette.primary.main,
-													color: (theme) => theme.palette.primary.contrastText
+													color: (theme) => theme.palette.primary.contrastText,
 												}}
 											>
 												{sending ? (
