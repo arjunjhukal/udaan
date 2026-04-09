@@ -339,7 +339,6 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
         MuiInputLabel: {
             styleOverrides: {
                 root: ({ theme }) => ({
@@ -370,7 +369,6 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
         MuiOutlinedInput: {
             styleOverrides: {
                 root: ({ theme }) => ({
@@ -535,7 +533,6 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
         MuiListItemButton: {
             styleOverrides: {
                 root: () => ({
@@ -629,7 +626,6 @@ const commonThemeOptions: ThemeOptions = {
                 },
             },
         },
-
         MuiFormControlLabel: {
             styleOverrides: {
                 root: ({ theme }) => ({
@@ -700,7 +696,6 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
     },
 
 };

@@ -1388,7 +1388,7 @@ export default function TicketChatPanel({ ticket, onTicketUpdated: propOnTicketU
 					</IconButton>
 				</div>
 			</div>
-			{isClosed ? <Typography variant="caption" color="text.secondary" mt={0.5} display="block">
+			{!isClosed ? <Typography variant="caption" color="text.secondary" mt={0.5} display="block">
 				Press Enter to send · Shift+Enter for new line
 			</Typography> : ""}
 		</Box>
