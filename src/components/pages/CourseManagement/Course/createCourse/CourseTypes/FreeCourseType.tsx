@@ -12,6 +12,7 @@ export default function FreeCourseType({ value, error, onChange, onBlur }: Props
             <Typography variant='h5' className='pb-2! '>Free</Typography>
             <Divider className='mb-8!' />
             <TextEditor
+                required
                 error={error}
                 value={value}
                 onChange={onChange}

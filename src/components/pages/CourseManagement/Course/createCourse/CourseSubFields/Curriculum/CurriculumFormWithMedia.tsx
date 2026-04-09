@@ -172,6 +172,7 @@ export default function CurriculumFormWithMedia({
                             </div>
                             <div className="input__field">
                                 <TextEditor
+                                    required
                                     value={formik.values.description}
                                     onChange={(value) => formik.setFieldValue("description", value)}
                                     onBlur={(value) => formik.setFieldValue("description", value)}

@@ -138,6 +138,7 @@ export default function SubscriptionManagementForm({ open, setOpen, selectedPlan
                         <div className="col-span-3">
                             <div className="input__field">
                                 <TextEditor
+                                    required={true}
                                     value={formik.values.description}
                                     onChange={(value) => formik.setFieldValue("description", value)}
                                     onBlur={(value) => formik.setFieldValue("description", value)}

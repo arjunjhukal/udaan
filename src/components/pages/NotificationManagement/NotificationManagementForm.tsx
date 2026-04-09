@@ -240,6 +240,7 @@ export default function NotificationManagementForm() {
                 {/* DESCRIPTION START HERE */}
                 <div className="col-span-1 mt-6">
                     <TextEditor
+                    
                         label="Notice Description"
                         required={true}
                         value={formik.values.description}

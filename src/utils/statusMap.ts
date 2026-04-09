@@ -45,10 +45,10 @@ export const getDiscussionStatus = statusMap<"visible" | "hidden">({
     hidden: "warning",
 });
 export const getTicketStatusVariant = statusMap<TicketStatus>({
-    open: "success",
-    resolved: "error",
-    assigned: "warning",
-    waiting_for_reply: "info",
+    open: "info",
+    assigned: "primary",
+    waiting_for_reply: "warning",
+    resolved: "success",
 });
 export const getTicketPriorityVariant = statusMap<TicketPriority>({
     low: "primary",

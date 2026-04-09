@@ -65,10 +65,10 @@ export default function TicketChats() {
 			/>
 
 			<div className="flex gap-4 mt-5 h-full overflow-auto">
-				<Box className={`fixed lg:static z-[99999] lg:z-0 right-0 top-0 bottom-0 p-4 lg:p-0 w-full lg:w-auto overflow-hidden ${open ? 'transition-all duration-300 ease-in-out' : 'opacity-0 invisible translate-x-[100%] lg:opacity-100 lg:visible lg:translate-x-0'}`} sx={{
+				<Box className={`fixed lg:static z-[99999] lg:z-0 right-0 top-0 bottom-0 p-4 lg:p-0 w-full lg:w-auto overflow-hidden min-w-[350px] ${open ? 'transition-all duration-300 ease-in-out' : 'opacity-0 invisible translate-x-[100%] lg:opacity-100 lg:visible lg:translate-x-0'}`} sx={{
 					backgroundColor: theme => theme.palette.mode === "light" ? theme.palette.primary.contrastText : theme.palette.background.sidebar,
 				}}>
-					<div className="all__message__wrapper lg:max-w-[350px] 2xl:max-w-[450px] ml-auto lg:ml-0 h-full overflow-hidden flex flex-col">
+					<div className="all__message__wrapper lg:min-w-[350px]  2xl:max-w-[450px] ml-auto lg:ml-0 h-full overflow-hidden flex flex-col">
 						<OutlinedInput
 							fullWidth
 							placeholder="Search"
@@ -88,7 +88,7 @@ export default function TicketChats() {
 							options={STATUS_TABS}
 							size="sm"
 						/>
-						<div className="message__list h-full overflow-auto pr-1">
+						<div className="message__list h-full overflow-auto pr-1 mt-3">
 							{data?.data?.data.map((ticket) => (
 								<MessageCard
 									key={ticket.id}
