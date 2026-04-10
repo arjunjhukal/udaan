@@ -1,12 +1,11 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
-import { PATH } from "../../../../routes/PATH";
+import { useOutletContext, useParams } from "react-router-dom";
 import { useGetTicketByIdQuery } from "../../../../services/ticketApi";
 import TicketChatPanel from "../allTickets/TicketChatPanel";
 
 export default function TicketChatPage() {
 	const { ticketId } = useParams<{ ticketId: string }>();
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 	const { setOpen } = useOutletContext<{ setOpen: React.Dispatch<React.SetStateAction<boolean>> }>();
 
 	const { data, isLoading, isError, refetch } = useGetTicketByIdQuery(
@@ -37,10 +36,7 @@ export default function TicketChatPage() {
 	return (
 		<TicketChatPanel
 			ticket={ticket}
-			onTicketUpdated={() => {
-				refetch();
-				navigate(PATH.TICKET.CHATS.ROOT);
-			}}
+			onTicketUpdated={refetch}
 			setOpen={setOpen}
 		/>
 	);

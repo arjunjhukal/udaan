@@ -547,7 +547,7 @@ export default function TicketChatPanel({ ticket, onTicketUpdated, setOpen }: Pr
 				<Box
 					className="w-full"
 					sx={{
-						// px: 2.5,
+						px: 1.5,
 						py: 1.5,
 						borderTop: `1px solid ${theme.palette.divider}`,
 					}}
@@ -658,7 +658,7 @@ export default function TicketChatPanel({ ticket, onTicketUpdated, setOpen }: Pr
 					</IconButton>
 				</div>
 			</div>
-			{!isClosed ? <Typography variant="caption" color="text.secondary" display="block">
+			{!isClosed ? <Typography variant="caption" color="text.secondary" px={1.5} display="block">
 				Press Enter to send · Shift+Enter for new line
 			</Typography> : ""}
 		</Box>

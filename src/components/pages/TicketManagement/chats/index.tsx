@@ -46,6 +46,13 @@ export default function TicketChats() {
 
 	const activeTicketId = ticketId ? Number(ticketId) : null;
 
+	// Auto-select first ticket when none is active
+	useEffect(() => {
+		if (!ticketId && data?.data?.data?.length) {
+			navigate(PATH.TICKET.CHAT_DETAIL.ROOT(data.data.data[0].id), { replace: true });
+		}
+	}, [data, ticketId, navigate]);
+
 	return (
 		<Box display="flex" flexDirection="column" height="100%" overflow="hidden">
 			<PageHeader
