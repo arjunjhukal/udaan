@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
 	Box,
 	Button,
@@ -7,16 +8,14 @@ import {
 	DialogContent,
 	DialogTitle,
 	Divider,
-	Grid,
 	IconButton,
 	Stack,
 	Typography,
 } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
 import { format } from "date-fns";
 import { useState } from "react";
-import type { DeviceResetSingleRequest } from "../../../../types/deviceReset";
 import { useReviewResetRequestMutation } from "../../../../services/deviceResetApi";
+import type { DeviceResetSingleRequest } from "../../../../types/deviceReset";
 
 interface Props {
 	open: boolean;
@@ -73,66 +72,49 @@ export default function RequestDetailDialog({ open, onClose, request, user, user
 			</DialogTitle>
 
 			<DialogContent sx={{ pt: 0 }}>
-				<Grid container spacing={2.5} mb={2}>
-					<Grid item xs={6} sm={4}>
-						<DetailField label="Full Name" value={user.name} />
-					</Grid>
-					<Grid item xs={6} sm={4}>
-						<DetailField label="User - ID" value={`UID${user.id}`} />
-					</Grid>
-					<Grid item xs={6} sm={4}>
-						<DetailField
-							label="Submitted"
-							value={format(new Date(request.created_at), "do MMM, yyyy")}
-						/>
-					</Grid>
-
-					<Grid item xs={6} sm={4}>
-						<DetailField label="Old Token" value={request.old_token ?? "—"} />
-					</Grid>
-					<Grid item xs={6} sm={4}>
-						<DetailField label="New Token" value={request.new_token ?? "—"} />
-					</Grid>
-					<Grid item xs={6} sm={4}>
-						<Box>
-							<Typography variant="caption" color="text.secondary" fontWeight={500}>
-								Status
-							</Typography>
-							<Box mt={0.5}>
-								<Chip
-									label={request.status}
-									size="small"
-									sx={{
-										bgcolor: `${dotColor}20`,
-										color: dotColor,
-										fontWeight: 600,
-										fontSize: 11,
-										textTransform: "capitalize",
-									}}
-								/>
-							</Box>
+				<Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2.5, mb: 2 }}>
+					<DetailField label="Full Name" value={user.name} />
+					<DetailField label="User - ID" value={`UID${user.id}`} />
+					<DetailField
+						label="Submitted"
+						value={format(new Date(request.created_at), "do MMM, yyyy")}
+					/>
+					<DetailField label="Old Token" value={request.old_token ?? "—"} />
+					<DetailField label="New Token" value={request.new_token ?? "—"} />
+					<Box>
+						<Typography variant="caption" color="text.secondary" fontWeight={500}>
+							Status
+						</Typography>
+						<Box mt={0.5}>
+							<Chip
+								label={request.status}
+								size="small"
+								sx={{
+									bgcolor: `${dotColor}20`,
+									color: dotColor,
+									fontWeight: 600,
+									fontSize: 11,
+									textTransform: "capitalize",
+								}}
+							/>
 						</Box>
-					</Grid>
-
-					<Grid item xs={12}>
+					</Box>
+					<Box sx={{ gridColumn: "1 / -1" }}>
 						<DetailField label="Reason" value={request.reason} />
-					</Grid>
-
-					<Grid item xs={12}>
-						<Box>
-							<Typography variant="caption" color="text.secondary" fontWeight={500}>
-								Situations
-							</Typography>
-							<Typography
-								variant="body2"
-								mt={0.25}
-								sx={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}
-							>
-								{request.situation}
-							</Typography>
-						</Box>
-					</Grid>
-				</Grid>
+					</Box>
+					<Box sx={{ gridColumn: "1 / -1" }}>
+						<Typography variant="caption" color="text.secondary" fontWeight={500}>
+							Situations
+						</Typography>
+						<Typography
+							variant="body2"
+							mt={0.25}
+							sx={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}
+						>
+							{request.situation}
+						</Typography>
+					</Box>
+				</Box>
 
 				{request.reviewed_by && (
 					<Typography variant="caption" color="text.secondary" display="block" mb={2}>
