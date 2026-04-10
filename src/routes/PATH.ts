@@ -288,6 +288,9 @@ export const PATH = {
 		CHATS: {
 			ROOT: "/tickets/chats",
 		},
+		CHAT_DETAIL: {
+			ROOT: (id?: number) => id ? `/tickets/chats/${id}` : "/tickets/chats/:ticketId",
+		},
 		TICKET_TYPES: {
 			ROOT: "/tickets/ticket-types",
 		},

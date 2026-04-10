@@ -75,6 +75,7 @@ import TicketManagementRoot from "../components/pages/TicketManagement";
 import TicketTypes from "../components/pages/TicketManagement/TicketTypes";
 import AllTickets from "../components/pages/TicketManagement/allTickets";
 import TicketChats from "../components/pages/TicketManagement/chats";
+import TicketChatPage from "../components/pages/TicketManagement/chats/TicketChatPage";
 import TransactionManagementRoot from "../components/pages/TransactionManagement";
 import AllTransactionRoot from "../components/pages/TransactionManagement/allTransation";
 import AuthRoot from "../components/pages/auth";
@@ -357,7 +358,13 @@ const router = createBrowserRouter([
 				),
 				children: [
 					{ path: PATH.TICKET.ALL_TICKETS.ROOT, element: <AllTickets /> },
-					{ path: PATH.TICKET.CHATS.ROOT, element: <TicketChats /> },
+					{
+						path: PATH.TICKET.CHATS.ROOT,
+						element: <TicketChats />,
+						children: [
+							{ path: PATH.TICKET.CHAT_DETAIL.ROOT(), element: <TicketChatPage /> },
+						],
+					},
 					{ path: PATH.TICKET.TICKET_TYPES.ROOT, element: <TicketTypes /> },
 				],
 			},
