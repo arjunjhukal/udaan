@@ -280,6 +280,12 @@ export const PATH = {
 	MODERATION: {
 		ROOT: "/moderation",
 	},
+	DEVICE_RESET: {
+		ROOT: "/device-reset",
+		DETAIL: {
+			ROOT: (id?: number) => id ? `/device-reset/${id}` : "/device-reset/:userId",
+		},
+	},
 	TICKET: {
 		ROOT: "/tickets",
 		ALL_TICKETS: {

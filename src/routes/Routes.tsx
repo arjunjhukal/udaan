@@ -71,6 +71,8 @@ import SingleStudentAnswerLayout from "../components/pages/TestAndQuestionManage
 import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
 import ResultRoot from "../components/pages/TestAndQuestionManagement/TestManagement/result";
 import ViewTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/viewTest";
+import DeviceResetManagementRoot from "../components/pages/DeviceResetManagement";
+import DeviceResetDetailPage from "../components/pages/DeviceResetManagement/DeviceResetDetailPage";
 import TicketManagementRoot from "../components/pages/TicketManagement";
 import TicketTypes from "../components/pages/TicketManagement/TicketTypes";
 import AllTickets from "../components/pages/TicketManagement/allTickets";
@@ -348,6 +350,13 @@ const router = createBrowserRouter([
 				element: <ModerationManagementRoot />,
 				children: [
 					{ path: PATH.MODERATION.ROOT, element: <WordModeration /> },
+				],
+			},
+			{
+				element: <DeviceResetManagementRoot />,
+				children: [
+					{ path: PATH.DEVICE_RESET.ROOT, element: <DeviceResetDetailPage /> },
+					{ path: PATH.DEVICE_RESET.DETAIL.ROOT(), element: <DeviceResetDetailPage /> },
 				],
 			},
 			{

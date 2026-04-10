@@ -8,7 +8,7 @@ import {
     ListItemIcon,
     ListItemText, Typography
 } from "@mui/material";
-import { AttachSquare, Brodcast, Pharagraphspacing } from "iconsax-reactjs";
+import { AttachSquare, Brodcast, Mobile, Pharagraphspacing } from "iconsax-reactjs";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -548,6 +548,18 @@ export default function PrimaryMenu() {
                         </Collapse>
                     </ListItem>
                 </CAN>
+
+                {/* Device Reset Requests */}
+                <ListItem disablePadding className="menu__item">
+                    <ListItemButton
+                        onClick={() => navigate(PATH.DEVICE_RESET.ROOT)}
+                        className={location.pathname.startsWith(PATH.DEVICE_RESET.ROOT) ? "active" : ""}>
+                        <ListItemIcon>
+                            <Mobile size={20} />
+                        </ListItemIcon>
+                        <ListItemText primary="Device Reset" />
+                    </ListItemButton>
+                </ListItem>
 
                 <CAN permissions={["add_contents", "edit_contents", "delete_contents", "view_contents"]}>
                     <ListItem disablePadding className="menu__item">
