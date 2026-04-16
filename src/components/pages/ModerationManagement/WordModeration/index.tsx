@@ -10,11 +10,11 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { useCreateModerationWordMutation, useDeleteModerationWordMutation, useGetModerationWordsQuery, useUpdateModerationWordMutation } from "../../../../services/moderationApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
-import PageHeader from "../../../organism/PageHeader";
-import { useCreateModerationWordMutation, useDeleteModerationWordMutation, useGetModerationWordsQuery, useUpdateModerationWordMutation } from "../../../../services/moderationApi";
 import type { ModerationProps } from "../../../../types/moderation";
+import PageHeader from "../../../organism/PageHeader";
 
 const PAGE_SIZE = 20;
 
@@ -47,7 +47,7 @@ export default function WordModeration() {
     });
 
     const hasMore = data
-        ? data.data.pagination.current_page < data.data.pagination.total_pages
+        ? data?.data?.pagination?.current_page < data?.data?.pagination?.total_pages
         : true;
 
     useEffect(() => {
