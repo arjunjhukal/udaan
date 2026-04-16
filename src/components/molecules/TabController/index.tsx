@@ -41,6 +41,7 @@ export default function TabController<T extends string>({
                         variant='subtitle2'
                         color='text.middle'
                         className={`rounded-sm text-nowrap ${size === "sm" ? "px-2.5 py-1" : "px-3 py-2"}`}
+                        fontWeight={400}
                     >
                         {tab.label}
                     </Typography>

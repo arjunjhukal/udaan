@@ -71,6 +71,7 @@ import SingleStudentAnswerLayout from "../components/pages/TestAndQuestionManage
 import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
 import ResultRoot from "../components/pages/TestAndQuestionManagement/TestManagement/result";
 import ViewTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/viewTest";
+import ControlsRoot from "../components/pages/Controls";
 import DeviceResetManagementRoot from "../components/pages/DeviceResetManagement";
 import DeviceResetDetailPage from "../components/pages/DeviceResetManagement/DeviceResetDetailPage";
 import TicketManagementRoot from "../components/pages/TicketManagement";
@@ -358,6 +359,14 @@ const router = createBrowserRouter([
 					{ path: PATH.DEVICE_RESET.ROOT, element: <DeviceResetDetailPage /> },
 					{ path: PATH.DEVICE_RESET.DETAIL.ROOT(), element: <DeviceResetDetailPage /> },
 				],
+			},
+			{
+				path: PATH.CONTROLS.ROOT,
+				element: (
+					<Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
+						<ControlsRoot />
+					</Unauthorized>
+				),
 			},
 			{
 				element: (

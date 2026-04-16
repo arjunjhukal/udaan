@@ -1,44 +1,56 @@
-import { Box, Chip, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Chip, IconButton, Stack, Typography, useTheme } from "@mui/material";
 import { format } from "date-fns";
+import { Clock, CloseCircle, TickCircle } from "iconsax-reactjs";
 import { useState } from "react";
 import type { DeviceResetSingleRequest } from "../../../../types/deviceReset";
+import type { StatusVariant } from "../../../../utils/statusMap";
+import { RequestStatusColor } from "../../../../utils/statusMap";
 import RequestDetailDialog from "./RequestDetailDialog";
+import ReviewActions from "./ReviewActions";
 
 interface Props {
 	request: DeviceResetSingleRequest;
 	user: { id: number; name: string };
 	userId: number;
 	isLast: boolean;
+	onReviewSuccess?: () => void;
 }
 
-const statusColor: Record<string, string> = {
-	pending: "#F59E0B",
-	approved: "#10B981",
-	rejected: "#EF4444",
+const STATUS_ICON: Record<StatusVariant, React.ReactNode> = {
+	success: <TickCircle />,
+	error: <CloseCircle />,
+	warning: <Clock />,
+	info: <Clock />,
+	primary: <Clock />,
 };
 
-export default function RequestTimelineItem({ request, user, userId, isLast }: Props) {
+export default function RequestTimelineItem({ request, user, userId, isLast, onReviewSuccess }: Props) {
 	const theme = useTheme();
 	const [dialogOpen, setDialogOpen] = useState(false);
-	const dotColor = statusColor[request.status] ?? "#9CA3AF";
+	const variant = RequestStatusColor(request.status);
+
+	const paletteColor = {
+		success: theme.palette.success,
+		error: theme.palette.error,
+		warning: theme.palette.warning,
+		info: theme.palette.info,
+		primary: theme.palette.primary,
+	}[variant];
 
 	return (
 		<>
 			<Stack direction="row" gap={2}>
-				{/* Timeline line + dot */}
 				<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", pt: 0.5 }}>
-					<Box
+					<IconButton
 						sx={{
-							width: 12,
-							height: 12,
-							borderRadius: "50%",
-							bgcolor: dotColor,
-							flexShrink: 0,
-							border: "2px solid",
-							borderColor: "background.paper",
-							boxShadow: `0 0 0 2px ${dotColor}40`,
+							width: 40,
+							height: 40,
+							bgcolor: paletteColor.light,
+							color: paletteColor.main,
 						}}
-					/>
+					>
+						{STATUS_ICON[variant]}
+					</IconButton>
 					{!isLast && (
 						<Box
 							sx={{
@@ -53,24 +65,10 @@ export default function RequestTimelineItem({ request, user, userId, isLast }: P
 				</Box>
 
 				{/* Content card */}
-				<Box
-					onClick={() => setDialogOpen(true)}
-					sx={{
-						flex: 1,
-						mb: isLast ? 0 : 2,
-						p: 2,
-						borderRadius: 2,
-						border: "1px solid",
-						borderColor: "divider",
-						bgcolor: "background.paper",
-						cursor: "pointer",
-						transition: "box-shadow 0.18s ease",
-						"&:hover": { boxShadow: "0 4px 16px rgba(0,0,0,0.08)" },
-					}}
-				>
+				<Box sx={{ flex: 1, mb: isLast ? 0 : 2 }}>
 					<Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={1}>
-						<Stack direction="row" gap={1} alignItems="center" flexWrap="wrap">
-							<Typography variant="subtitle2" fontWeight={700} color="primary">
+						<Box>
+							<Typography variant="subtitle2" fontWeight={500} color="primary">
 								{request.code}
 							</Typography>
 							{request.device_name && (
@@ -78,37 +76,54 @@ export default function RequestTimelineItem({ request, user, userId, isLast }: P
 									{request.device_name}
 								</Typography>
 							)}
-						</Stack>
+						</Box>
 						<Stack direction="row" gap={1} alignItems="center">
+							<Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
+								{format(new Date(request.created_at), "MMM d, yyyy")}
+							</Typography>
 							<Chip
 								label={request.status}
 								size="small"
 								sx={{
-									bgcolor: `${dotColor}20`,
-									color: dotColor,
-									fontWeight: 600,
+									bgcolor: paletteColor.light,
+									border: `1px solid ${paletteColor.main}`,
+									color: paletteColor.main,
 									fontSize: 11,
 									height: 22,
 									textTransform: "capitalize",
 								}}
 							/>
-							<Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-								{format(new Date(request.created_at), "MMM d, yyyy")}
-							</Typography>
 						</Stack>
 					</Stack>
 
-					<Typography variant="body2" fontWeight={600} mb={0.5}>
-						{request.reason}
-					</Typography>
-					<Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "pre-wrap" }}>
-						{request.situation}
-					</Typography>
-
-					{request.reviewed_by && (
-						<Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
-							Reviewed by: {request.reviewed_by}
+					<Box
+						onClick={() => setDialogOpen(true)}
+						sx={{
+							padding: "16px 24px",
+							borderRadius: "16px",
+							bgcolor: paletteColor.light,
+							borderLeft: `4px solid ${paletteColor.main}`,
+							cursor: "pointer",
+							mb: 1.5,
+							transition: "box-shadow 0.18s ease",
+							"&:hover": { boxShadow: "0 4px 16px rgba(0,0,0,0.08)" },
+						}}
+					>
+						<Typography variant="body2" fontWeight={600} mb={0.5}>
+							{request.reason}
 						</Typography>
+						<Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "pre-wrap" }}>
+							{request.situation}
+						</Typography>
+						{request.reviewed_by && (
+							<Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+								Reviewed by: {request.reviewed_by}
+							</Typography>
+						)}
+					</Box>
+
+					{request.status === "pending" && (
+						<ReviewActions requestId={request.id} userId={userId} onSuccess={onReviewSuccess} />
 					)}
 				</Box>
 			</Stack>
@@ -119,6 +134,7 @@ export default function RequestTimelineItem({ request, user, userId, isLast }: P
 				request={request}
 				user={user}
 				userId={userId}
+				onReviewSuccess={onReviewSuccess}
 			/>
 		</>
 	);

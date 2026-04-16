@@ -48,6 +48,7 @@ export const baseApi = createApi({
         "Moderation",
         "Comment",
         "ResetRequest",
+        "Controls",
     ],
     endpoints: () => ({}),
 });

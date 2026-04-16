@@ -1,8 +1,14 @@
-import { Avatar, Box, CircularProgress, OutlinedInput, Stack, Typography } from "@mui/material";
-import { useState } from "react";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
+import { Avatar, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams } from "react-router-dom";
 import { useGetResetRequestTimelineQuery, useGetResetRequestUserInfoQuery } from "../../../services/deviceResetApi";
+import type { DeviceResetSingleRequest } from "../../../types/deviceReset";
 import TabController from "../../molecules/TabController";
+import DashboardAnalyticsCard from "../../organism/Cards/DashboardAnalyticsCard";
 import RequestTimelineItem from "./components/RequestTimelineItem";
 
 const STATUS_TABS = [
@@ -12,10 +18,13 @@ const STATUS_TABS = [
 	{ label: "Pending", value: "pending" },
 ];
 
+const PAGE_SIZE = 15;
+
 export default function DeviceResetDetailPage() {
 	const { userId } = useParams<{ userId: string }>();
 	const [statusTab, setStatusTab] = useState("");
-	const [search, setSearch] = useState("");
+	const [page, setPage] = useState(1);
+	const [allTimeline, setAllTimeline] = useState<DeviceResetSingleRequest[]>([]);
 
 	const uid = Number(userId);
 
@@ -25,9 +34,36 @@ export default function DeviceResetDetailPage() {
 	);
 
 	const { data: timelineData, isLoading: timelineLoading } = useGetResetRequestTimelineQuery(
-		{ userId: uid, status: statusTab, search, pageSize: 50 },
+		{ userId: uid, status: statusTab, pageSize: PAGE_SIZE, pageIndex: page },
 		{ skip: !userId }
 	);
+
+	// Reset to page 1 when user or status filter changes
+	useEffect(() => {
+		setPage(1);
+		setAllTimeline([]);
+	}, [uid, statusTab]);
+
+	// Accumulate timeline pages
+	useEffect(() => {
+		if (!timelineData?.data?.data) return;
+		if (page === 1) {
+			setAllTimeline(timelineData.data.data);
+		} else {
+			setAllTimeline((prev) => [...prev, ...timelineData.data.data]);
+		}
+	}, [timelineData, page]);
+
+	const timelinePagination = timelineData?.data?.pagination;
+	const hasMore = timelinePagination
+		? timelinePagination.current_page < timelinePagination.total_pages
+		: false;
+
+	// Called after approve/reject to reset the accumulated list
+	const handleReviewSuccess = () => {
+		setPage(1);
+		setAllTimeline([]);
+	};
 
 	if (!userId) {
 		return (
@@ -66,11 +102,17 @@ export default function DeviceResetDetailPage() {
 		.join("")
 		.toUpperCase();
 
-	const timeline = timelineData?.data?.data ?? [];
-
 	return (
-		<Box display="flex" flexDirection="column" height="100%" overflow="hidden">
-			<Box sx={{ px: 3, pt: 2.5, pb: 2, borderBottom: "1px solid", borderColor: "divider", flexShrink: 0 }}>
+		<Box
+			display="flex"
+			flexDirection="column"
+			height="100%"
+
+			className="p-4 lg:p-6 2xl:p-8 overflow-auto lg:overflow-hidden "
+			sx={{ boxShadow: "0 4px 20px 0 rgba(0, 0, 0, 0.10)" }}
+		>
+			{/* User header */}
+			<Box sx={{ flexShrink: 0 }}>
 				<Stack direction="row" alignItems="center" justifyContent="space-between" gap={2}>
 					<Stack direction="row" alignItems="center" gap={2}>
 						<Avatar
@@ -80,7 +122,7 @@ export default function DeviceResetDetailPage() {
 							{initials}
 						</Avatar>
 						<Box>
-							<Typography variant="h6" fontWeight={700}>
+							<Typography variant="h6" fontWeight={500}>
 								{info.name}
 							</Typography>
 							<Typography variant="caption" color="text.secondary">
@@ -89,7 +131,7 @@ export default function DeviceResetDetailPage() {
 						</Box>
 					</Stack>
 					<Box textAlign="right">
-						<Typography variant="h4" fontWeight={700} color="primary">
+						<Typography variant="h4" fontWeight={500} color="primary">
 							{info.stats.total}
 						</Typography>
 						<Typography variant="caption" color="text.secondary">
@@ -97,71 +139,96 @@ export default function DeviceResetDetailPage() {
 						</Typography>
 					</Box>
 				</Stack>
-
-				{/* Mini stats */}
-				<Stack direction="row" gap={2} mt={2} flexWrap="wrap">
-					<Stack direction="row" alignItems="center" gap={0.75}>
-						<Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "success.main" }} />
-						<Typography variant="body2" color="success.main" fontWeight={600}>{info.stats.approved}</Typography>
-						<Typography variant="caption" color="text.secondary">Approved</Typography>
-					</Stack>
-					<Stack direction="row" alignItems="center" gap={0.75}>
-						<Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "error.main" }} />
-						<Typography variant="body2" color="error.main" fontWeight={600}>{info.stats.rejected}</Typography>
-						<Typography variant="caption" color="text.secondary">Rejected</Typography>
-					</Stack>
-					<Stack direction="row" alignItems="center" gap={0.75}>
-						<Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "warning.main" }} />
-						<Typography variant="body2" color="warning.main" fontWeight={600}>{info.stats.pending}</Typography>
-						<Typography variant="caption" color="text.secondary">Pending</Typography>
-					</Stack>
-				</Stack>
 			</Box>
 
-			{/* Timeline filters */}
-			<Box sx={{ px: 3, pt: 2, flexShrink: 0 }}>
-				<Typography variant="subtitle1" fontWeight={600} mb={1.5}>
+			<Divider className="mt-4! mb-6!" />
+
+			<Box
+				sx={{
+					flexShrink: 0,
+					display: "grid",
+					gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+					gap: 2,
+					mb: 2,
+				}}
+			>
+				<DashboardAnalyticsCard
+					data={{
+						title: "Approved",
+						value: info.stats.approved.toString(),
+						description: "Accepted requests",
+						type: "success",
+						icon: <CheckCircleOutlineIcon />,
+					}}
+				/>
+				<DashboardAnalyticsCard
+					data={{
+						title: "Rejected",
+						value: info.stats.rejected.toString(),
+						description: "Declined requests",
+						type: "error",
+						icon: <ErrorOutlineIcon />,
+					}}
+				/>
+				<DashboardAnalyticsCard
+					data={{
+						title: "Pending",
+						value: info.stats.pending.toString(),
+						description: "Awaiting action",
+						type: "warning",
+						icon: <PendingActionsIcon />,
+					}}
+				/>
+			</Box>
+
+			<Box sx={{ flexShrink: 0 }}>
+				<Typography variant="h6" fontWeight={500} mb={1.5}>
 					Request Timeline
 				</Typography>
-				<Stack direction="row" gap={2} alignItems="center" flexWrap="wrap" mb={1.5}>
-					<TabController
-						currentActive={statusTab}
-						setActiveTab={setStatusTab}
-						options={STATUS_TABS}
-						size="sm"
-					/>
-					<OutlinedInput
-						size="small"
-						placeholder="Search requests..."
-						value={search}
-						onChange={(e) => setSearch(e.target.value)}
-						sx={{ ml: "auto", minWidth: 200 }}
-					/>
-				</Stack>
+				<TabController
+					currentActive={statusTab}
+					setActiveTab={setStatusTab}
+					options={STATUS_TABS}
+					size="md"
+				/>
 			</Box>
+			<Divider className="mb-4!" />
 
 			{/* Timeline list */}
-			<Box flex={1} overflow="auto" sx={{ px: 3, pb: 3 }}>
-				{timelineLoading ? (
+			<Box id="timeline-scroll" flex={1} className="lg:overflow-auto" sx={{ px: 0.5 }}>
+				{timelineLoading && allTimeline.length === 0 ? (
 					<Box display="flex" justifyContent="center" py={4}>
 						<CircularProgress size={24} />
 					</Box>
-				) : timeline.length === 0 ? (
+				) : allTimeline.length === 0 ? (
 					<Box textAlign="center" py={6}>
 						<Typography variant="body2" color="text.secondary">
 							No requests found
 						</Typography>
 					</Box>
 				) : (
-					timeline.map((req, idx) => (
-						<RequestTimelineItem
-							key={req.id}
-							request={req}
-							user={{ id: info.user_id, name: info.name }}
-							userId={info.user_id}
-							isLast={idx === timeline.length - 1}
-						/>
-					))
+					<InfiniteScroll
+						dataLength={allTimeline.length}
+						next={() => setPage((p) => p + 1)}
+						hasMore={hasMore}
+						scrollableTarget="timeline-scroll"
+						loader={
+							<Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+								<CircularProgress size={20} />
+							</Box>
+						}
+					>
+						{allTimeline.map((req, idx) => (
+							<RequestTimelineItem
+								key={req.id}
+								request={req}
+								user={{ id: info.user_id, name: info.name }}
+								userId={info.user_id}
+								isLast={idx === allTimeline.length - 1}
+								onReviewSuccess={handleReviewSuccess}
+							/>
+						))}
+					</InfiniteScroll>
 				)}
 			</Box>
 		</Box>

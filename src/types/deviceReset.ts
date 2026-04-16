@@ -1,6 +1,6 @@
-import type { Status } from ".";
 import type { Pagination } from "./roleAndPermission";
 
+export type DeviceRequestStatus = "pending" | "approved" | "rejected";
 export interface DeviceResetRequestProps {
     user_id: number;
     name: string;
@@ -24,7 +24,7 @@ export interface DeviceResetSingleRequest {
     device_type: string;
     reason: string;
     situation: string;
-    status: Status;
+    status: DeviceRequestStatus;
     created_at: string;
     reviewed_by: string | null;
     old_token: string | null;

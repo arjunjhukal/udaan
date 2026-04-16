@@ -29,10 +29,10 @@ export const deviceResetApi = baseApi.injectEndpoints({
 
 		getResetRequestTimeline: builder.query<
 			DeviceResetTimeline,
-			{ userId: number; status?: string; search?: string; pageSize?: number; sort_by?: string }
+			{ userId: number; status?: string; search?: string; pageSize?: number; pageIndex?: number; sort_by?: string }
 		>({
-			query: ({ userId, status, search, pageSize, sort_by }) => {
-				const params = buildQueryParams({ status, search, page_size: pageSize, sort_by });
+			query: ({ userId, status, search, pageSize, pageIndex, sort_by }) => {
+				const params = buildQueryParams({ status, search, page_size: pageSize, page: pageIndex, sort_by });
 				return { url: `/admin/reset-request/${userId}/timelines?${params}`, method: "GET" };
 			},
 			providesTags: (_result, _error, { userId }) => [{ type: "ResetRequest", id: `TIMELINE_${userId}` }],

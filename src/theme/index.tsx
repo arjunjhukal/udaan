@@ -1,5 +1,5 @@
 import type { ThemeOptions } from "@mui/material/styles";
-import { createTheme, responsiveFontSizes } from "@mui/material/styles";
+import { createTheme } from "@mui/material/styles";
 import { darkPalette } from "./palette/darkPalette";
 import { lightPalette } from "./palette/lightPalette";
 
@@ -117,47 +117,116 @@ declare module "@mui/material/styles" {
 // Common theme options
 const commonThemeOptions: ThemeOptions = {
     typography: {
-        fontFamily: '"Helvetica Neue", "Noto Sans", sans-serif',
+        fontFamily: '"Helvetica Neue", sans-serif',
 
         h1: {
             fontSize: "48px",
-            lineHeight: 1.4
+            lineHeight: 1.4,
+            "@media (max-width:1600px)": { fontSize: "42px" },
+            "@media (max-width:1440px)": { fontSize: "38px" },
+            "@media (max-width:1280px)": { fontSize: "34px" },
+            "@media (max-width:1200px)": { fontSize: "30px" },
+            "@media (max-width:900px)": { fontSize: "26px" },
+            "@media (max-width:600px)": { fontSize: "22px" },
         },
         h2: {
-            fontSize: "36px", lineHeight: 1.38
+            fontSize: "36px",
+            lineHeight: 1.38,
+            "@media (max-width:1600px)": { fontSize: "32px" },
+            "@media (max-width:1440px)": { fontSize: "28px" },
+            "@media (max-width:1280px)": { fontSize: "26px" },
+            "@media (max-width:1200px)": { fontSize: "24px" },
+            "@media (max-width:900px)": { fontSize: "22px" },
+            "@media (max-width:600px)": { fontSize: "20px" },
         },
-
         h3: {
-            fontSize: "28px", lineHeight: 1.4
+            fontSize: "28px",
+            lineHeight: 1.4,
+            "@media (max-width:1600px)": { fontSize: "26px" },
+            "@media (max-width:1440px)": { fontSize: "24px" },
+            "@media (max-width:1280px)": { fontSize: "22px" },
+            "@media (max-width:1200px)": { fontSize: "20px" },
+            "@media (max-width:900px)": { fontSize: "18px" },
+            "@media (max-width:600px)": { fontSize: "16px" },
         },
         h4: {
-            fontSize: "24px", lineHeight: 1.42
+            fontSize: "24px",
+            lineHeight: 1.42,
+            "@media (max-width:1600px)": { fontSize: "22px" },
+            "@media (max-width:1440px)": { fontSize: "20px" },
+            "@media (max-width:1280px)": { fontSize: "18px" },
+            "@media (max-width:1200px)": { fontSize: "17px" },
+            "@media (max-width:900px)": { fontSize: "16px" },
+            "@media (max-width:600px)": { fontSize: "15px" },
         },
         h5: {
-            fontSize: "20px", lineHeight: 1.5
+            fontSize: "20px",
+            lineHeight: 1.5,
+            "@media (max-width:1600px)": { fontSize: "18px" },
+            "@media (max-width:1440px)": { fontSize: "17px" },
+            "@media (max-width:1280px)": { fontSize: "16px" },
+            "@media (max-width:1200px)": { fontSize: "15px" },
+            "@media (max-width:900px)": { fontSize: "14px" },
+            "@media (max-width:600px)": { fontSize: "14px" },
         },
         h6: {
-            fontSize: "16px", lineHeight: 1.5
+            fontSize: "16px",
+            lineHeight: 1.5,
+            "@media (max-width:1600px)": { fontSize: "15px" },
+            "@media (max-width:1440px)": { fontSize: "14px" },
+            "@media (max-width:1280px)": { fontSize: "14px" },
+            "@media (max-width:1200px)": { fontSize: "13px" },
+            "@media (max-width:900px)": { fontSize: "13px" },
+            "@media (max-width:600px)": { fontSize: "12px" },
         },
         body1: {
-            fontSize: "16px", lineHeight: 1.5
+            fontSize: "16px",
+            lineHeight: 1.5,
+            "@media (max-width:1600px)": { fontSize: "15px" },
+            "@media (max-width:1440px)": { fontSize: "14px" },
+            "@media (max-width:1280px)": { fontSize: "14px" },
+            "@media (max-width:1200px)": { fontSize: "13px" },
+            "@media (max-width:900px)": { fontSize: "13px" },
+            "@media (max-width:600px)": { fontSize: "12px" },
         },
-
         body2: {
-            fontSize: "14px", lineHeight: 1.5
+            fontSize: "14px",
+            lineHeight: 1.5,
+            "@media (max-width:1440px)": { fontSize: "13px" },
+            "@media (max-width:1200px)": { fontSize: "12px" },
+            "@media (max-width:900px)": { fontSize: "12px" },
+            "@media (max-width:600px)": { fontSize: "11px" },
         },
         subtitle1: {
-            fontSize: "14px", lineHeight: 1.5
+            fontSize: "14px",
+            lineHeight: 1.5,
+            "@media (max-width:1440px)": { fontSize: "13px" },
+            "@media (max-width:1200px)": { fontSize: "12px" },
+            "@media (max-width:900px)": { fontSize: "12px" },
+            "@media (max-width:600px)": { fontSize: "11px" },
         },
         subtitle2: {
-            fontSize: "13px", lineHeight: 1.4
+            fontSize: "13px",
+            lineHeight: 1.4,
+            "@media (max-width:1440px)": { fontSize: "12px" },
+            "@media (max-width:1200px)": { fontSize: "12px" },
+            "@media (max-width:900px)": { fontSize: "11px" },
+            "@media (max-width:600px)": { fontSize: "11px" },
         },
         caption: {
-            fontSize: "12px", lineHeight: 1.4
+            fontSize: "12px",
+            lineHeight: 1.4,
+            "@media (max-width:1440px)": { fontSize: "11px" },
+            "@media (max-width:1200px)": { fontSize: "11px" },
+            "@media (max-width:900px)": { fontSize: "10px" },
+            "@media (max-width:600px)": { fontSize: "10px" },
         },
-
         overline: {
-            fontSize: "10px", lineHeight: 1.4
+            fontSize: "10px",
+            lineHeight: 1.4,
+            "@media (max-width:1200px)": { fontSize: "10px" },
+            "@media (max-width:900px)": { fontSize: "9px" },
+            "@media (max-width:600px)": { fontSize: "9px" },
         },
     },
 
@@ -700,16 +769,13 @@ const commonThemeOptions: ThemeOptions = {
 
 };
 
-// Create theme function
 export const createAppTheme = (mode: "light" | "dark") => {
-    const theme = createTheme({
+    return createTheme({
         ...commonThemeOptions,
         palette: {
             mode,
             ...(mode === "light" ? lightPalette : darkPalette),
         },
     });
-
-    return responsiveFontSizes(theme);
 };
 

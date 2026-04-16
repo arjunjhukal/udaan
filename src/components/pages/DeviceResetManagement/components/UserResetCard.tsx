@@ -25,17 +25,16 @@ export default function UserResetCard({ request, onClick, active = false }: Prop
 				gap: 1.5,
 				px: 2,
 				py: 1.75,
-				bgcolor: active ? "primary.light" : "background.paper",
-				borderRadius: "14px",
-				border: "1px solid",
-				borderColor: "divider",
+				color: active ? "primary.contrastText" : "",
+				bgcolor: active ? "primary.main" : "transparent",
+				borderRadius: "16px",
 				cursor: "pointer",
-				transition: "box-shadow 0.18s ease, transform 0.18s ease",
+				transition: "all 0.18s ease",
 				"&:hover": {
-					boxShadow: "0 4px 16px rgba(29,130,245,0.10)",
-					transform: "translateY(-1px)",
+					bgcolor: "primary.main",
+					color: "primary.contrastText",
 				},
-				mb: 1,
+				mb: "2px"
 			}}
 		>
 			<Avatar
@@ -55,34 +54,26 @@ export default function UserResetCard({ request, onClick, active = false }: Prop
 
 			<Box flex={1} minWidth={0}>
 				<Stack direction="row" alignItems="center" justifyContent="space-between" mb={0.25}>
-					<Typography variant="subtitle2" fontWeight={600} noWrap>
-						{request.name}
-					</Typography>
-					<Typography variant="caption" color="text.secondary">
-						UD-{request.user_id}
-					</Typography>
-					<Box
-						sx={{
-							bgcolor: "primary.main",
-							color: "#fff",
-							fontSize: 11,
-							fontWeight: 700,
-							minWidth: 22,
-							height: 22,
-							borderRadius: "11px",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							px: 0.75,
-							flexShrink: 0,
-						}}
-					>
-						{request.request_count}
-					</Box>
+					<div className="requesting__user">
+
+						<Typography variant="h5" fontWeight={500} noWrap>
+							{request.name}
+						</Typography>
+						<Typography variant="subtitle2" fontWeight={400}>
+							UD-{request.user_id}
+						</Typography>
+						<Typography variant="caption" fontWeight={300} className="mt-1!">
+							Last: {format(new Date(request.updated_at), "MMM d, yyyy")}
+						</Typography>
+					</div>
+
+					<div className="request__wrapper">
+						<Typography variant="h3" fontWeight={500}>{request.request_count}</Typography>
+						<Typography variant="subtitle1" fontWeight={400}>Requests</Typography>
+					</div>
+
 				</Stack>
-				<Typography variant="caption" color="text.secondary">
-					Last: {format(new Date(request.updated_at), "MMM d, yyyy")}
-				</Typography>
+
 			</Box>
 		</Box>
 	);

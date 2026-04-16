@@ -8,6 +8,7 @@ export function statusMap<T extends string>(map: Record<T, StatusVariant>) {
     };
 }
 
+import type { DeviceRequestStatus } from "../types/deviceReset";
 import type { GorkhapatraTypes } from "../types/gorkhapatra";
 import type { TicketPriority, TicketStatus } from "../types/ticket";
 import type { TransactionCourseStatus } from "../types/transaction";
@@ -56,3 +57,9 @@ export const getTicketPriorityVariant = statusMap<TicketPriority>({
     medium: "warning",
     high: "info",
 });
+
+export const RequestStatusColor = statusMap<DeviceRequestStatus>({
+    pending: "warning",
+    approved: "success",
+    rejected: "error",
+})

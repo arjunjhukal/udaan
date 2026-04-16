@@ -1,21 +1,19 @@
 import CloseIcon from "@mui/icons-material/Close";
 import {
 	Box,
-	Button,
 	Chip,
-	CircularProgress,
 	Dialog,
 	DialogContent,
 	DialogTitle,
 	Divider,
 	IconButton,
-	Stack,
 	Typography,
+	useTheme,
 } from "@mui/material";
 import { format } from "date-fns";
-import { useState } from "react";
-import { useReviewResetRequestMutation } from "../../../../services/deviceResetApi";
 import type { DeviceResetSingleRequest } from "../../../../types/deviceReset";
+import { RequestStatusColor } from "../../../../utils/statusMap";
+import ReviewActions from "./ReviewActions";
 
 interface Props {
 	open: boolean;
@@ -23,13 +21,8 @@ interface Props {
 	request: DeviceResetSingleRequest;
 	user: { id: number; name: string };
 	userId: number;
+	onReviewSuccess?: () => void;
 }
-
-const statusColor: Record<string, string> = {
-	pending: "#F59E0B",
-	approved: "#10B981",
-	rejected: "#EF4444",
-};
 
 function DetailField({ label, value }: { label: string; value: React.ReactNode }) {
 	return (
@@ -37,28 +30,24 @@ function DetailField({ label, value }: { label: string; value: React.ReactNode }
 			<Typography variant="caption" color="text.secondary" fontWeight={500}>
 				{label}
 			</Typography>
-			<Typography variant="body2" fontWeight={600} mt={0.25}>
+			<Typography variant="body2" fontWeight={400} mt={0.25}>
 				{value}
 			</Typography>
 		</Box>
 	);
 }
 
-export default function RequestDetailDialog({ open, onClose, request, user, userId }: Props) {
-	const [reviewRequest, { isLoading }] = useReviewResetRequestMutation();
-	const [pendingAction, setPendingAction] = useState<"approved" | "rejected" | null>(null);
+export default function RequestDetailDialog({ open, onClose, request, user, userId, onReviewSuccess }: Props) {
+	const theme = useTheme();
+	const variant = RequestStatusColor(request.status);
 
-	const dotColor = statusColor[request.status] ?? "#9CA3AF";
-
-	const handleReview = async (status: "approved" | "rejected") => {
-		setPendingAction(status);
-		try {
-			await reviewRequest({ requestId: request.id, userId, status }).unwrap();
-			onClose();
-		} finally {
-			setPendingAction(null);
-		}
-	};
+	const paletteColor = {
+		success: theme.palette.success,
+		error: theme.palette.error,
+		warning: theme.palette.warning,
+		info: theme.palette.info,
+		primary: theme.palette.primary,
+	}[variant];
 
 	return (
 		<Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -90,10 +79,11 @@ export default function RequestDetailDialog({ open, onClose, request, user, user
 								label={request.status}
 								size="small"
 								sx={{
-									bgcolor: `${dotColor}20`,
-									color: dotColor,
-									fontWeight: 600,
+									bgcolor: paletteColor.light,
+									border: `1px solid ${paletteColor.main}`,
+									color: paletteColor.main,
 									fontSize: 11,
+									height: 22,
 									textTransform: "capitalize",
 								}}
 							/>
@@ -106,11 +96,7 @@ export default function RequestDetailDialog({ open, onClose, request, user, user
 						<Typography variant="caption" color="text.secondary" fontWeight={500}>
 							Situations
 						</Typography>
-						<Typography
-							variant="body2"
-							mt={0.25}
-							sx={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}
-						>
+						<Typography variant="body2" mt={0.25} sx={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
 							{request.situation}
 						</Typography>
 					</Box>
@@ -125,28 +111,7 @@ export default function RequestDetailDialog({ open, onClose, request, user, user
 				{request.status === "pending" && (
 					<>
 						<Divider sx={{ mb: 2 }} />
-						<Stack direction="row" gap={1.5} justifyContent="flex-end">
-							<Button
-								variant="contained"
-								color="error"
-								disabled={isLoading}
-								onClick={() => handleReview("rejected")}
-								startIcon={pendingAction === "rejected" && isLoading ? <CircularProgress size={14} color="inherit" /> : undefined}
-								sx={{ minWidth: 100, fontWeight: 600 }}
-							>
-								Reject
-							</Button>
-							<Button
-								variant="contained"
-								color="success"
-								disabled={isLoading}
-								onClick={() => handleReview("approved")}
-								startIcon={pendingAction === "approved" && isLoading ? <CircularProgress size={14} color="inherit" /> : undefined}
-								sx={{ minWidth: 200, fontWeight: 600 }}
-							>
-								Approve and Sign out Old device
-							</Button>
-						</Stack>
+						<ReviewActions requestId={request.id} userId={userId} onSuccess={() => { onClose(); onReviewSuccess?.(); }} />
 					</>
 				)}
 			</DialogContent>

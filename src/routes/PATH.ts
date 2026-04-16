@@ -286,6 +286,9 @@ export const PATH = {
 			ROOT: (id?: number) => id ? `/device-reset/${id}` : "/device-reset/:userId",
 		},
 	},
+	CONTROLS: {
+		ROOT: "/controls",
+	},
 	TICKET: {
 		ROOT: "/tickets",
 		ALL_TICKETS: {

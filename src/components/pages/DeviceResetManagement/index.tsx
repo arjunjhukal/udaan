@@ -1,13 +1,17 @@
-import { Box, OutlinedInput, Typography } from "@mui/material";
+import { Box, CircularProgress, Divider, IconButton, OutlinedInput, Stack, Typography } from "@mui/material";
+import { CloseCircle, HamburgerMenu } from "iconsax-reactjs";
 import { useEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import SearchIcon from "../../../icons/SearchIcon";
 import { PATH } from "../../../routes/PATH";
 import { useGetResetRequestAnalyticsQuery, useGetResetRequestsQuery } from "../../../services/deviceResetApi";
+import type { DeviceResetRequestProps } from "../../../types/deviceReset";
 import PageHeader from "../../organism/PageHeader";
-import TableFilter from "../../organism/TableFilter";
 import DeviceResetAnalyticsBar from "./components/DeviceResetAnalyticsBar";
 import UserResetCard from "./components/UserResetCard";
+
+const PAGE_SIZE = 20;
 
 export default function DeviceResetManagementRoot() {
 	const navigate = useNavigate();
@@ -15,44 +19,54 @@ export default function DeviceResetManagementRoot() {
 
 	const [search, setSearch] = useState("");
 	const [debouncedSearch, setDebouncedSearch] = useState("");
-	const [days, setDays] = useState<number | null>(null);
-	const [customRange, setCustomRange] = useState({ startDate: "", endDate: "" });
-
+	const [page, setPage] = useState(1);
+	const [allRequests, setAllRequests] = useState<DeviceResetRequestProps[]>([]);
+	const [openDrawer, setOpenDrawer] = useState(false);
 	const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+	// Debounce search
 	useEffect(() => {
 		if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
 		searchTimerRef.current = setTimeout(() => setDebouncedSearch(search), 400);
 		return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
 	}, [search]);
 
-	const queryFilters = {
-		days: days ?? undefined,
-		start_date: customRange.startDate || undefined,
-		end_date: customRange.endDate || undefined,
-	};
+	// Reset to page 1 when search changes
+	useEffect(() => {
+		setPage(1);
+		setAllRequests([]);
+	}, [debouncedSearch]);
 
 	const { data, isFetching } = useGetResetRequestsQuery({
-		pageIndex: 1,
-		pageSize: 50,
+		pageIndex: page,
+		pageSize: PAGE_SIZE,
 		search: debouncedSearch,
-		...queryFilters,
 	});
 
-	const { data: analyticsData, isLoading: analyticsLoading } = useGetResetRequestAnalyticsQuery(queryFilters);
+	const { data: analyticsData, isLoading: analyticsLoading } = useGetResetRequestAnalyticsQuery({});
 
-	const requests = data?.data?.data ?? [];
+	// Accumulate pages
+	useEffect(() => {
+		if (!data?.data?.data) return;
+		if (page === 1) {
+			setAllRequests(data.data.data);
+		} else {
+			setAllRequests((prev) => [...prev, ...data.data.data]);
+		}
+	}, [data]);
+
+	const pagination = data?.data?.pagination;
+	const hasMore = pagination ? pagination.current_page < pagination.total_pages : false;
 	const activeUserId = userId ? Number(userId) : null;
 
-	// Auto-select first user when none active
 	useEffect(() => {
-		if (!userId && requests.length > 0) {
-			navigate(PATH.DEVICE_RESET.DETAIL.ROOT(requests[0].user_id), { replace: true });
+		if (!userId && allRequests.length > 0) {
+			navigate(PATH.DEVICE_RESET.DETAIL.ROOT(allRequests[0].user_id), { replace: true });
 		}
-	}, [requests, userId, navigate]);
+	}, [allRequests, userId, navigate]);
 
 	return (
-		<Box display="flex" flexDirection="column" height="100%" overflow="hidden">
+		<Box display="flex" flexDirection="column" height="100%" className="overflow-auto lg:overflow-hidden">
 			<div className="top__header">
 				<PageHeader
 					breadcrumb={[
@@ -61,7 +75,6 @@ export default function DeviceResetManagementRoot() {
 								<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 									<path d="M16.24 2H7.76C5 2 4 3 4 5.81V18.19C4 21 5 22 7.76 22H16.23C19 22 20 21 20 18.19V5.81C20 3 19 2 16.24 2ZM12 19.3C11.04 19.3 10.25 18.51 10.25 17.55C10.25 16.59 11.04 15.8 12 15.8C12.96 15.8 13.75 16.59 13.75 17.55C13.75 18.51 12.96 19.3 12 19.3ZM14 6.25H10C9.59 6.25 9.25 5.91 9.25 5.5C9.25 5.09 9.59 4.75 10 4.75H14C14.41 4.75 14.75 5.09 14.75 5.5C14.75 5.91 14.41 6.25 14 6.25Z" fill="#1D82F5" />
 								</svg>
-
 							),
 							title: "Device Reset Requests",
 						},
@@ -69,7 +82,7 @@ export default function DeviceResetManagementRoot() {
 				/>
 			</div>
 
-			<Box flex={1} display="flex" flexDirection="column" overflow="hidden" gap={2} mt={1}>
+			<Box flex={1} display="flex" flexDirection="column" gap={2} mt={1} height="100%" overflow="auto">
 				<div className="px-1">
 					<DeviceResetAnalyticsBar
 						analytics={analyticsData?.data}
@@ -77,56 +90,90 @@ export default function DeviceResetManagementRoot() {
 					/>
 				</div>
 
-				<TableFilter
-					search={search}
-					setSearch={setSearch}
-					setDays={setDays}
-					customRange={customRange}
-					setCustomRange={setCustomRange}
-					handleResetFilter={() => {
-						setDays(null);
-						setCustomRange({ startDate: "", endDate: "" });
-					}}
-				/>
+				<Stack alignItems={"center"} className="lg:hidden!">
+					<IconButton onClick={() => setOpenDrawer(true)}>
+						<HamburgerMenu />
+					</IconButton>
+					<Typography variant="h4" fontWeight={500}>
+						Request Timeline
+					</Typography>
+				</Stack>
+				<Box flex={1} display="flex" className="h-full" gap={2}>
+					{/* Backdrop — mobile only, closes drawer on outside click */}
+					{openDrawer && (
+						<Box
+							onClick={() => setOpenDrawer(false)}
+							sx={{
+								display: { lg: "none" },
+								position: "fixed",
+								inset: 0,
+								bgcolor: "rgba(0,0,0,0.45)",
+								zIndex: 9998,
+							}}
+						/>
+					)}
 
-				<Box flex={1} display="flex" gap={2} overflow="hidden">
 					<Box
 						sx={{
-							width: { xs: "100%", lg: 360 },
+							width: { xs: "100%", lg: 400, xl: 549 },
 							flexShrink: 0,
-							overflow: "hidden",
 							display: "flex",
 							flexDirection: "column",
-							p: 1,
+							p: "24px",
 							borderRadius: 2,
-							border: "1px solid",
-							borderColor: "divider",
+							bgcolor: "gray.gray1",
 						}}
+						className={`request__list fixed left-0 top-0 bottom-0 max-w-[350px] lg:max-w-[unset] lg:static z-9999 lg:visible lg:opacity-100 lg:translate-x-0 transition-[transform,opacity,visibility] duration-300 ease-in-out ${openDrawer ? "opacity-100 visible translate-x-0" : "opacity-0 invisible -translate-x-full"}`}
 					>
+						<Stack direction="row" alignItems="center" justifyContent="space-between" className="lg:hidden!">
+							<Typography variant="h6" fontWeight={500}>
+								Request Timeline
+							</Typography>
+							<IconButton color="error" onClick={() => setOpenDrawer(false)}>
+								<CloseCircle variant="Bold" />
+							</IconButton>
+						</Stack>
+						<Divider className="my-4!" />
 						<OutlinedInput
 							fullWidth
 							placeholder="Search users..."
 							startAdornment={<SearchIcon />}
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
-							sx={{ gap: "8px", mb: 1.5 }}
+							sx={{ gap: "8px", mb: 1.5, p: "8px 12px", bgcolor: "primary.contrastText" }}
 						/>
-						<Box flex={1} overflow="auto" pr={0.5}>
-							{requests.map((req) => (
-								<UserResetCard
-									key={req.user_id}
-									request={req}
-									active={activeUserId === req.user_id}
-									onClick={() => navigate(PATH.DEVICE_RESET.DETAIL.ROOT(req.user_id))}
-								/>
-							))}
-							{!isFetching && requests.length === 0 && (
-								<Box textAlign="center" py={4}>
-									<Typography variant="body2" color="text.secondary">
-										No requests found
-									</Typography>
-								</Box>
-							)}
+
+						<Box id="user-list-scroll" flex={1} height="100%" overflow="auto" pr={0.5}>
+							<InfiniteScroll
+								dataLength={allRequests.length}
+								next={() => setPage((p) => p + 1)}
+								hasMore={hasMore}
+								scrollableTarget="user-list-scroll"
+								loader={
+									<Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+										<CircularProgress size={20} />
+									</Box>
+								}
+							>
+								{allRequests.map((req) => (
+									<UserResetCard
+										key={req.user_id}
+										request={req}
+										active={activeUserId === req.user_id}
+										onClick={() => {
+											navigate(PATH.DEVICE_RESET.DETAIL.ROOT(req.user_id));
+											setOpenDrawer(false);
+										}}
+									/>
+								))}
+								{!isFetching && allRequests.length === 0 && (
+									<Box textAlign="center" py={4}>
+										<Typography variant="body2" color="text.secondary">
+											No requests found
+										</Typography>
+									</Box>
+								)}
+							</InfiniteScroll>
 						</Box>
 					</Box>
 
