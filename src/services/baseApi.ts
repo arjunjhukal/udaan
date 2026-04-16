@@ -1,3 +1,4 @@
+
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "./baseQuery";
 
@@ -40,6 +41,14 @@ export const baseApi = createApi({
         "Pages",
         "Gorkhapatra",
         "Analytics",
+        "Ticket",
+        "TicketReply",
+        "TicketType",
+        "Discussion",
+        "Moderation",
+        "Comment",
+        "ResetRequest",
+        "Controls",
     ],
     endpoints: () => ({}),
 });

@@ -77,9 +77,9 @@ export default function TextEditor({
         <Box className="input__field" sx={{
             height: "calc(100%)"
         }}>
-            {label ? <InputLabel className={required ? "required" : ""}>
-                {label}
-            </InputLabel> : ""}
+            <InputLabel className={required ? "required" : ""}>
+                {label || "Description"}
+            </InputLabel>
 
             <div
                 className="editor__wrapper general__content__box styled__list"

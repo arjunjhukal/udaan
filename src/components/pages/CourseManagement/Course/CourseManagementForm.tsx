@@ -135,6 +135,7 @@ export default function CourseManagementForm() {
     const { id } = useParams();
 
     const [selectedTeachers, setSelectedTeachers] = React.useState<RegisterUserProps[]>([]);
+    const teachersInitialized = React.useRef(false);
 
     const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
 
@@ -164,14 +165,21 @@ export default function CourseManagementForm() {
     const [updateCourse, { isLoading: updating }] = useEditCourseMutation();
 
     React.useEffect(() => {
-        if (data?.data?.teachers && teachers?.data?.data) {
+        teachersInitialized.current = false;
+        setSelectedTeachers([]);
+    }, [id]);
+
+    React.useEffect(() => {
+        if (!teachersInitialized.current && data?.data && data?.data?.teachers?.length > 0 && teachers?.data?.data) {
             const selected = data.data.teachers
-                .map((id: number) =>
-                    teachers.data.data.find((t: RegisterUserProps) => Number(t.id) === Number(id))
+                .map((teacherId: number) =>
+                    teachers.data.data.find((t: RegisterUserProps) => Number(t.id) === Number(teacherId))
                 )
                 .filter((t): t is RegisterUserProps => !!t);
-            setSelectedTeachers(selected);
-
+            if (selected.length > 0) {
+                setSelectedTeachers(selected);
+                teachersInitialized.current = true;
+            }
         }
     }, [data?.data?.teachers, teachers?.data?.data]);
 
@@ -408,6 +416,7 @@ export default function CourseManagementForm() {
                     <div className="col-span-1">
                         <div className="input__field">
                             <TextEditor
+                                required
                                 value={formik.values.description}
                                 onChange={(value) => formik.setFieldValue("description", value)}
                                 onBlur={() => formik.setFieldTouched("description")}

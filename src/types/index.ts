@@ -22,7 +22,7 @@ export interface CategoryFilterParams {
     device?: DeviceType[];
 }
 
-export type Status = "success" | "failed" | "pending" | "completed" | "not_completed";
+export type Status = "success" | "failed" | "pending" | "completed" | "not_completed" | "approved" | "rejected";
 
 export const StatusFilter: { label: string; value: Status }[] = [
     { label: "Success", value: "success" },

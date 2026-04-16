@@ -120,146 +120,113 @@ const commonThemeOptions: ThemeOptions = {
         fontFamily: '"Helvetica Neue", sans-serif',
 
         h1: {
-            fontWeight: 700,
-            fontSize: "32px",
-            lineHeight: "44px",
-            "@media (min-width:900px)": {
-                fontSize: "48px",
-                lineHeight: "67px",
-            },
-            "@media (min-width:1200px)": {
-                fontSize: "64px",
-                lineHeight: "90px",
-            },
+            fontSize: "48px",
+            lineHeight: 1.4,
+            "@media (max-width:1600px)": { fontSize: "42px" },
+            "@media (max-width:1440px)": { fontSize: "38px" },
+            "@media (max-width:1280px)": { fontSize: "34px" },
+            "@media (max-width:1200px)": { fontSize: "30px" },
+            "@media (max-width:900px)": { fontSize: "26px" },
+            "@media (max-width:600px)": { fontSize: "22px" },
         },
-
         h2: {
-            fontWeight: 500,
-            fontSize: "28px",
-            lineHeight: "39px",
-            "@media (min-width:900px)": {
-                fontSize: "36px",
-                lineHeight: "50px",
-            },
-            "@media (min-width:1200px)": {
-                fontSize: "48px",
-                lineHeight: "67px",
-            },
+            fontSize: "36px",
+            lineHeight: 1.38,
+            "@media (max-width:1600px)": { fontSize: "32px" },
+            "@media (max-width:1440px)": { fontSize: "28px" },
+            "@media (max-width:1280px)": { fontSize: "26px" },
+            "@media (max-width:1200px)": { fontSize: "24px" },
+            "@media (max-width:900px)": { fontSize: "22px" },
+            "@media (max-width:600px)": { fontSize: "20px" },
         },
-
         h3: {
-            fontWeight: 500,
-            fontSize: "22px",
-            lineHeight: "31px",
-            "@media (min-width:900px)": {
-                fontSize: "28px",
-                lineHeight: "39px",
-            },
-            "@media (min-width:1200px)": {
-                fontSize: "32px",
-                lineHeight: "45px",
-            },
+            fontSize: "28px",
+            lineHeight: 1.4,
+            "@media (max-width:1600px)": { fontSize: "26px" },
+            "@media (max-width:1440px)": { fontSize: "24px" },
+            "@media (max-width:1280px)": { fontSize: "22px" },
+            "@media (max-width:1200px)": { fontSize: "20px" },
+            "@media (max-width:900px)": { fontSize: "18px" },
+            "@media (max-width:600px)": { fontSize: "16px" },
         },
-
         h4: {
-            fontWeight: 500,
-            fontSize: "20px",
-            lineHeight: "28px",
-            "@media (min-width:900px)": {
-                fontSize: "22px",
-                lineHeight: "31px",
-            },
-            "@media (min-width:1200px)": {
-                fontSize: "24px",
-                lineHeight: "34px",
-            },
+            fontSize: "24px",
+            lineHeight: 1.42,
+            "@media (max-width:1600px)": { fontSize: "22px" },
+            "@media (max-width:1440px)": { fontSize: "20px" },
+            "@media (max-width:1280px)": { fontSize: "18px" },
+            "@media (max-width:1200px)": { fontSize: "17px" },
+            "@media (max-width:900px)": { fontSize: "16px" },
+            "@media (max-width:600px)": { fontSize: "15px" },
         },
-
         h5: {
-            fontWeight: 500,
-            fontSize: "18px",
-            lineHeight: "25px",
-            "@media (min-width:1200px)": {
-                fontSize: "20px",
-                lineHeight: "28px",
-            },
+            fontSize: "20px",
+            lineHeight: 1.5,
+            "@media (max-width:1600px)": { fontSize: "18px" },
+            "@media (max-width:1440px)": { fontSize: "17px" },
+            "@media (max-width:1280px)": { fontSize: "16px" },
+            "@media (max-width:1200px)": { fontSize: "15px" },
+            "@media (max-width:900px)": { fontSize: "14px" },
+            "@media (max-width:600px)": { fontSize: "14px" },
         },
-
         h6: {
-            fontWeight: 500,
             fontSize: "16px",
-            lineHeight: "22px",
-            "@media (min-width:1200px)": {
-                fontSize: "18px",
-                lineHeight: "25px",
-            },
+            lineHeight: 1.5,
+            "@media (max-width:1600px)": { fontSize: "15px" },
+            "@media (max-width:1440px)": { fontSize: "14px" },
+            "@media (max-width:1280px)": { fontSize: "14px" },
+            "@media (max-width:1200px)": { fontSize: "13px" },
+            "@media (max-width:900px)": { fontSize: "13px" },
+            "@media (max-width:600px)": { fontSize: "12px" },
         },
-
         body1: {
-            fontWeight: 500,
             fontSize: "16px",
-            lineHeight: "24px",
-            "@media (min-width:1200px)": {
-                fontSize: "20px",
-                lineHeight: "28px",
-            },
+            lineHeight: 1.5,
+            "@media (max-width:1600px)": { fontSize: "15px" },
+            "@media (max-width:1440px)": { fontSize: "14px" },
+            "@media (max-width:1280px)": { fontSize: "14px" },
+            "@media (max-width:1200px)": { fontSize: "13px" },
+            "@media (max-width:900px)": { fontSize: "13px" },
+            "@media (max-width:600px)": { fontSize: "12px" },
         },
-
         body2: {
-            fontWeight: 500,
             fontSize: "14px",
-            lineHeight: "21px",
-            "@media (min-width:1200px)": {
-                fontSize: "18px",
-                lineHeight: "26px",
-            },
+            lineHeight: 1.5,
+            "@media (max-width:1440px)": { fontSize: "13px" },
+            "@media (max-width:1200px)": { fontSize: "12px" },
+            "@media (max-width:900px)": { fontSize: "12px" },
+            "@media (max-width:600px)": { fontSize: "11px" },
         },
-
         subtitle1: {
-            fontWeight: 400,
             fontSize: "14px",
-            lineHeight: "20px",
-            "@media (min-width:1200px)": {
-                fontSize: "16px",
-                lineHeight: "22px",
-            },
+            lineHeight: 1.5,
+            "@media (max-width:1440px)": { fontSize: "13px" },
+            "@media (max-width:1200px)": { fontSize: "12px" },
+            "@media (max-width:900px)": { fontSize: "12px" },
+            "@media (max-width:600px)": { fontSize: "11px" },
         },
-
         subtitle2: {
-            fontWeight: 400,
             fontSize: "13px",
-            lineHeight: "18px",
-            "@media (min-width:1200px)": {
-                fontSize: "14px",
-                lineHeight: "20px",
-            },
+            lineHeight: 1.4,
+            "@media (max-width:1440px)": { fontSize: "12px" },
+            "@media (max-width:1200px)": { fontSize: "12px" },
+            "@media (max-width:900px)": { fontSize: "11px" },
+            "@media (max-width:600px)": { fontSize: "11px" },
         },
-
         caption: {
-            fontWeight: 400,
-            fontSize: "11px",
-            lineHeight: "15px",
-            "@media (min-width:1200px)": {
-                fontSize: "12px",
-                lineHeight: "17px",
-            },
-        },
-
-        overline: {
-            fontWeight: 400,
-            fontSize: "8px",
-            lineHeight: "11px",
-            textTransform: "unset",
-            letterSpacing: "0px",
-        },
-
-        button: {
-            fontWeight: 400,
-            textTransform: "none",
             fontSize: "12px",
-            "@media (min-width:1200px)": {
-                fontSize: "16px",
-            },
+            lineHeight: 1.4,
+            "@media (max-width:1440px)": { fontSize: "11px" },
+            "@media (max-width:1200px)": { fontSize: "11px" },
+            "@media (max-width:900px)": { fontSize: "10px" },
+            "@media (max-width:600px)": { fontSize: "10px" },
+        },
+        overline: {
+            fontSize: "10px",
+            lineHeight: 1.4,
+            "@media (max-width:1200px)": { fontSize: "10px" },
+            "@media (max-width:900px)": { fontSize: "9px" },
+            "@media (max-width:600px)": { fontSize: "9px" },
         },
     },
 
@@ -414,6 +381,8 @@ const commonThemeOptions: ThemeOptions = {
                     borderRadius: 8,
                     padding: "10px 16px",
                     boxShadow: "none",
+                    textTransform: "none",
+                    fontWeight: 400,
                     "&.black__btn": {
                         backgroundColor: theme.palette.primary.black,
                         color: theme.palette.primary.white,
@@ -439,7 +408,6 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
         MuiInputLabel: {
             styleOverrides: {
                 root: ({ theme }) => ({
@@ -470,7 +438,6 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
         MuiOutlinedInput: {
             styleOverrides: {
                 root: ({ theme }) => ({
@@ -635,7 +602,6 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
         MuiListItemButton: {
             styleOverrides: {
                 root: () => ({
@@ -729,7 +695,6 @@ const commonThemeOptions: ThemeOptions = {
                 },
             },
         },
-
         MuiFormControlLabel: {
             styleOverrides: {
                 root: ({ theme }) => ({
@@ -800,12 +765,10 @@ const commonThemeOptions: ThemeOptions = {
                 }),
             },
         },
-
     },
 
 };
 
-// Create theme function
 export const createAppTheme = (mode: "light" | "dark") => {
     return createTheme({
         ...commonThemeOptions,

@@ -41,6 +41,7 @@ export default function CourseOverviewForm({
             <div className="grid grid-cols-2 gap-6">
                 <div className="col-span-2 lg:col-span-1">
                     <TextEditor
+                        required
                         value={formik.values.about_this_course}
                         onChange={(value) => formik.setFieldValue("about_this_course", value)}
                         onBlur={() => formik.setFieldTouched("about_this_course")}

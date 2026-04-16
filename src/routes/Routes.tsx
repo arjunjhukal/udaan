@@ -30,6 +30,10 @@ import AllSets from "../components/pages/CourseManagement/Sets/AllSets";
 import CreateSet from "../components/pages/CourseManagement/Sets/CreateSet";
 import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
+import DiscussionManagementRoot from "../components/pages/DiscussionManagement";
+import DiscussionDetail from "../components/pages/DiscussionManagement/DiscussionDetail";
+import DiscussionForm from "../components/pages/DiscussionManagement/DiscussionForm";
+import AllDiscussions from "../components/pages/DiscussionManagement/allDiscussions";
 import EnrollmentRoot from "../components/pages/Enrollments";
 import AllEntrollments from "../components/pages/Enrollments/AllEnrollments";
 import BundleEnrollmentPage from "../components/pages/Enrollments/BundleEnrollment";
@@ -39,6 +43,8 @@ import AllGorkhapatraRoot from "../components/pages/Gorkhapatra/allGorkhapatra";
 import CreateGorkhapatraRoot from "../components/pages/Gorkhapatra/createGorkhapatra";
 import MediaManagementRoot from "../components/pages/MediaManagement";
 import AllMediaRoot from "../components/pages/MediaManagement/allMedia";
+import ModerationManagementRoot from "../components/pages/ModerationManagement";
+import WordModeration from "../components/pages/ModerationManagement/WordModeration";
 import NotificationRoot from "../components/pages/NotificationManagement";
 import AllNotificationsRoot from "../components/pages/NotificationManagement/allNotification";
 import CreateNotificationRoot from "../components/pages/NotificationManagement/createNotification";
@@ -53,9 +59,9 @@ import ProfilePageRoot from "../components/pages/Setting/Profile";
 import SubscriptionManagementRoot from "../components/pages/SubscriptionManagement";
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import OmrSheetRoot from "../components/pages/TestAndQuestionManagement/OmrSheets";
+import OmrFormatForm from "../components/pages/TestAndQuestionManagement/OmrSheets/OmrFormatForm";
 import AllOmrSheets from "../components/pages/TestAndQuestionManagement/OmrSheets/allOmr";
 import AllOmrFormats from "../components/pages/TestAndQuestionManagement/OmrSheets/allOmrFormat";
-import OmrFormatForm from "../components/pages/TestAndQuestionManagement/OmrSheets/OmrFormatForm";
 import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
 import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
 import AllIndividualTestListing from "../components/pages/TestAndQuestionManagement/TestManagement/allIndividualTest";
@@ -65,6 +71,14 @@ import SingleStudentAnswerLayout from "../components/pages/TestAndQuestionManage
 import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
 import ResultRoot from "../components/pages/TestAndQuestionManagement/TestManagement/result";
 import ViewTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/viewTest";
+import ControlsRoot from "../components/pages/Controls";
+import DeviceResetManagementRoot from "../components/pages/DeviceResetManagement";
+import DeviceResetDetailPage from "../components/pages/DeviceResetManagement/DeviceResetDetailPage";
+import TicketManagementRoot from "../components/pages/TicketManagement";
+import TicketTypes from "../components/pages/TicketManagement/TicketTypes";
+import AllTickets from "../components/pages/TicketManagement/allTickets";
+import TicketChats from "../components/pages/TicketManagement/chats";
+import TicketChatPage from "../components/pages/TicketManagement/chats/TicketChatPage";
 import TransactionManagementRoot from "../components/pages/TransactionManagement";
 import AllTransactionRoot from "../components/pages/TransactionManagement/allTransation";
 import AuthRoot from "../components/pages/auth";
@@ -321,7 +335,57 @@ const router = createBrowserRouter([
 				children: [
 					{ path: PATH.MEDIA_MANAGEMENT.ROOT, element: <AllMediaRoot /> },
 				]
-			}
+			},
+			{
+				element: <Unauthorized permissions={["view_discussions", "add_discussions", "edit_discussions", "delete_discussions", "hide_discussions"]}>
+					<DiscussionManagementRoot />
+				</Unauthorized>,
+				children: [
+					{ path: PATH.DISCUSSION.ROOT, element: <AllDiscussions /> },
+					{ path: PATH.DISCUSSION.CREATE.ROOT, element: <DiscussionForm /> },
+					{ path: PATH.DISCUSSION.DETAIL.ROOT(), element: <DiscussionDetail /> },
+					{ path: PATH.DISCUSSION.EDIT.ROOT(), element: <DiscussionForm /> },
+				],
+			},
+			{
+				element: <ModerationManagementRoot />,
+				children: [
+					{ path: PATH.MODERATION.ROOT, element: <WordModeration /> },
+				],
+			},
+			{
+				element: <DeviceResetManagementRoot />,
+				children: [
+					{ path: PATH.DEVICE_RESET.ROOT, element: <DeviceResetDetailPage /> },
+					{ path: PATH.DEVICE_RESET.DETAIL.ROOT(), element: <DeviceResetDetailPage /> },
+				],
+			},
+			{
+				path: PATH.CONTROLS.ROOT,
+				element: (
+					<Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
+						<ControlsRoot />
+					</Unauthorized>
+				),
+			},
+			{
+				element: (
+					<Unauthorized permissions={["add_tickets", "edit_tickets", "delete_tickets", "view_tickets"]}>
+						<TicketManagementRoot />
+					</Unauthorized>
+				),
+				children: [
+					{ path: PATH.TICKET.ALL_TICKETS.ROOT, element: <AllTickets /> },
+					{
+						path: PATH.TICKET.CHATS.ROOT,
+						element: <TicketChats />,
+						children: [
+							{ path: PATH.TICKET.CHAT_DETAIL.ROOT(), element: <TicketChatPage /> },
+						],
+					},
+					{ path: PATH.TICKET.TICKET_TYPES.ROOT, element: <TicketTypes /> },
+				],
+			},
 		],
 	},
 

@@ -11,12 +11,14 @@ interface TabControllerProps<T> {
     options?: TabOption<T>[];
     setActiveTab: (value: T) => void;
     currentActive: T;
+    size?: "sm" | "md";
 }
 
 export default function TabController<T extends string>({
     setActiveTab,
     currentActive,
-    options
+    options,
+    size = "md"
 }: TabControllerProps<T>) {
     const theme = useTheme();
     const navigate = useNavigate();
@@ -27,18 +29,19 @@ export default function TabController<T extends string>({
             sx={{
                 background: theme.palette.tab.background
             }}
-            className='p-1! rounded-md max-w-fit flex items-center mb-6!'
+            className={`p-1! rounded-md max-w-fit flex items-center ${size === "sm" ? "mb-3!" : "mb-6!"}`}
         >
             {tabOptions.map((tab) => (
                 <ListItem
-                    className={currentActive === tab.value ? 'active__tab__controller' : ""}
+                    className={` cursor-pointer ${currentActive === tab.value ? 'active__tab__controller' : ""}`}
                     key={tab.value}
                     onClick={() => tab.redirect_url ? navigate(tab.redirect_url) : setActiveTab(tab.value)}
                 >
                     <Typography
                         variant='subtitle2'
                         color='text.middle'
-                        className='px-6 py-2.5 rounded-md cursor-pointer text-nowrap'
+                        className={`rounded-sm text-nowrap ${size === "sm" ? "px-2.5 py-1" : "px-3 py-2"}`}
+                        fontWeight={400}
                     >
                         {tab.label}
                     </Typography>
