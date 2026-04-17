@@ -4,7 +4,7 @@ import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery
 import { useGetAllPositionQuery } from '../services/positionApi';
 import { useGetAllRolesQuery } from '../services/roleAndPermissionApi';
 import { useGetAllUserQuery } from '../services/userApi';
-import type { CategoryFilterParams } from '../types';
+import type { CategoryFilterParams, UserStatus } from '../types';
 import type { SelectionType } from '../types/course';
 
 const STORAGE_KEY = 'course_filter_selections';
@@ -62,6 +62,9 @@ export const useCourseFilter = () => {
     const [appliedAudience, setAppliedAudience] = useState<string[]>([]);
 
     const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+
+    // User management tab filter
+    const [activeTab, setActiveTab] = useState<UserStatus>("all");
 
     const { data: megaCategories, isLoading: loadingMegaCategory } = useGetAllMegaCategoryQuery();
     const { data: roles } = useGetAllRolesQuery({ pageIndex: 1, pageSize: 10, });
@@ -364,6 +367,10 @@ export const useCourseFilter = () => {
         teachers: teachers?.data?.data || [],
         roles: roles?.data?.data || [],
         loadingMegaCategory,
+
+        // User management tab
+        activeTab,
+        setActiveTab,
 
         // Methods
         handleCategoryChange,
