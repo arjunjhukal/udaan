@@ -1,5 +1,5 @@
 import type { QueryParams } from "../types";
-import type { AppSettingProps, ChangePasswordProps, LinkedDeviceList } from "../types/setting";
+import type { AppSettingProps, ChangePasswordProps, LinkedDeviceList, ThemeSettingProps } from "../types/setting";
 import type { GlobalResponse, User } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseApi } from "./baseApi";
@@ -60,7 +60,22 @@ export const settingApi = baseApi.injectEndpoints({
                 url: `/admin/settings/profile`,
                 method: "GET",
             })
-        })
+        }),
+        getThemeSettings: builder.query<GlobalResponse & { data: ThemeSettingProps }, void>({
+            query: () => ({
+                url: `/settings/theme`,
+                method: "GET",
+            }),
+            providesTags: ["Theme"],
+        }),
+        updateThemeSetting: builder.mutation<GlobalResponse, FormData>({
+            query: (body) => ({
+                url: `/admin/settings/theme`,
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: ["Theme"],
+        }),
     }),
 });
 
@@ -71,5 +86,7 @@ export const {
     useUpdateAppSettingMutation,
     useGetAppSettingsQuery,
     useUpdatedProfileMutation,
-    useGetProfileQuery
+    useGetProfileQuery,
+    useGetThemeSettingsQuery,
+    useUpdateThemeSettingMutation,
 } = settingApi;

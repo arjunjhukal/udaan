@@ -7,6 +7,7 @@ import Toolbar from "@mui/material/Toolbar";
 import { Link, useLocation } from "react-router-dom";
 import CustomAppbar from "../appbar";
 import PrimaryMenu from "./PrimaryMenu";
+import { useGetThemeSettingsQuery } from "../../../../services/settingApi";
 
 const drawerWidth = 356;
 
@@ -22,6 +23,11 @@ export default function ResponsiveDrawer(props: Props) {
 	const location = useLocation();
 	const pathname = location.pathname;
 	const theme = useTheme();
+	const { data: themeSettings } = useGetThemeSettingsQuery();
+	const isDark = theme.palette.mode === "dark";
+	const logoSrc = isDark
+		? (themeSettings?.data?.logo_dark_url || themeSettings?.data?.logo_url || "/logo.svg")
+		: (themeSettings?.data?.logo_url || "/logo.svg");
 
 	const handleDrawerClose = () => {
 		setIsClosing(true);
@@ -55,7 +61,7 @@ export default function ResponsiveDrawer(props: Props) {
 					justifyContent: "center",
 				}}>
 				<Link to={"/"}>
-					<img src="/logo.svg" alt="" width={137} height={73} className="max-w-120 mx-auto" />
+					<img src={logoSrc} alt={themeSettings?.data?.company_name || ""} width={137} height={73} className="max-w-120 mx-auto" />
 				</Link>
 			</Toolbar>
 			<PrimaryMenu />

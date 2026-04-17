@@ -257,6 +257,9 @@ export const PATH = {
 		},
 		APP_SETTINGS: {
 			ROOT: "/settings/app-settings"
+		},
+		THEME: {
+			ROOT: "/settings/theme"
 		}
 	},
 	ACTIVITY_LOG: {
