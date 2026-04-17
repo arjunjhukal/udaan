@@ -10,32 +10,17 @@ import { useTranslation } from 'react-i18next';
 // Comprehensive BS calendar data (2000 BS to 2100 BS)
 // Each array contains the number of days in each month for that year
 const BS_CALENDAR_DATA: { [key: number]: number[] } = {
-    2082: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 29],
+    // mo  B   Je  As  Sh  Bh  Aw  K   M   P   Mg  F   C
+    2082: [31, 31, 32, 31, 31, 31, 30, 30, 29, 30, 29, 30],
     2083: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
-    2084: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
-    2085: [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
-    2086: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
-    2087: [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
-    2088: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
-    2089: [30, 32, 31, 32, 31, 30, 30, 30, 29, 30, 29, 31],
-    2090: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
-    2091: [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
-    2092: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
-    2093: [31, 31, 31, 31, 31, 31, 29, 30, 30, 29, 29, 31],
-    2094: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
-    2095: [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
-    2096: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31],
-    2097: [31, 31, 31, 32, 31, 31, 29, 30, 30, 29, 30, 30],
-    2098: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
-    2099: [31, 31, 32, 32, 31, 30, 30, 29, 30, 29, 30, 30],
-    2100: [31, 32, 31, 32, 31, 30, 30, 30, 29, 29, 30, 31]
 };
 
+// Anchor: 2083 Baisakh 1 = April 14, 2026 (Tuesday) — avoids traversing all of 2082
 const BS_AD_REFERENCE = {
-    bsYear: 2082,
+    bsYear: 2083,
     bsMonth: 1,
     bsDay: 1,
-    adDate: new Date(2025, 3, 14),
+    adDate: new Date(2026, 3, 14),
 };
 
 const NEPALI_MONTHS = [
@@ -48,8 +33,7 @@ const ENGLISH_MONTHS = [
     'Kartik', 'Mangsir', 'Poush', 'Magh', 'Falgun', 'Chaitra'
 ];
 
-// const NEPALI_WEEKDAYS = ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'];
-// const ENGLISH_WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
 const SHORT_WEEKDAYS_NEPALI = ['आइत', 'सोम', 'मंगल', 'बुध', 'बिहि', 'शुक्र', 'शनि'];
 const SHORT_WEEKDAYS_ENGLISH = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -192,8 +176,7 @@ interface DashboardCalendarProps {
     onDateSelect?: (adDate: Date) => void;
 }
 export default function DashboardCalendar({ onDateSelect }: DashboardCalendarProps) {
-    const today = new Date();
-    const todayBS = useMemo(() => adToBs(today), [today]);
+    const todayBS = useMemo(() => adToBs(new Date()), []);
 
     const [currentYear, setCurrentYear] = useState(todayBS.year);
     const [currentMonth, setCurrentMonth] = useState(todayBS.month);
