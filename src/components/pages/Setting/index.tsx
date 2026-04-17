@@ -26,6 +26,10 @@ export default function SettingRoot() {
             label: t("messages.app_settings"),
             url: PATH.SETTINGS.APP_SETTINGS.ROOT
         },
+        {
+            label: "Theme",
+            url: PATH.SETTINGS.THEME.ROOT
+        },
     ]
     return (
         <>

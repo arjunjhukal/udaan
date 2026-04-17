@@ -23,6 +23,21 @@ export interface LinkedDeviceList {
     }
 }
 
+export interface ThemeSettingProps {
+    company_name: string;
+    tagline: string;
+    meta_description: string;
+    logo_url?: string;
+    logo_dark_url?: string;
+    favicon_url?: string;
+}
+
+export interface ThemeSettingFormProps extends ThemeSettingProps {
+    logo: File | null;
+    logo_dark: File | null;
+    favicon: File | null;
+}
+
 export interface PhoneItem {
     label: string;
     value: string;

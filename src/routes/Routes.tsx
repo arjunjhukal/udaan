@@ -15,6 +15,7 @@ import OnBoardingScreenRoot from "../components/pages/ContentManagement/OnBoardi
 import PagesRoot from "../components/pages/ContentManagement/Pages";
 import PageCreationForm from "../components/pages/ContentManagement/Pages/PageCreationForm";
 import SplashScreenRoot from "../components/pages/ContentManagement/SplashScreen";
+import ControlsRoot from "../components/pages/Controls";
 import CourseManagementRoot from "../components/pages/CourseManagement/Course";
 import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
 import CourseAnalyticsRootLayout from "../components/pages/CourseManagement/Course/analytics";
@@ -30,6 +31,8 @@ import AllSets from "../components/pages/CourseManagement/Sets/AllSets";
 import CreateSet from "../components/pages/CourseManagement/Sets/CreateSet";
 import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
 import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
+import DeviceResetManagementRoot from "../components/pages/DeviceResetManagement";
+import DeviceResetDetailPage from "../components/pages/DeviceResetManagement/DeviceResetDetailPage";
 import DiscussionManagementRoot from "../components/pages/DiscussionManagement";
 import DiscussionDetail from "../components/pages/DiscussionManagement/DiscussionDetail";
 import DiscussionForm from "../components/pages/DiscussionManagement/DiscussionForm";
@@ -56,6 +59,7 @@ import AppSettingRoot from "../components/pages/Setting/AppSetting";
 import ChangePassword from "../components/pages/Setting/ChangePassword";
 import LinkedDevices from "../components/pages/Setting/LinkedDevices";
 import ProfilePageRoot from "../components/pages/Setting/Profile";
+import ThemeSettingRoot from "../components/pages/Setting/ThemeSetting";
 import SubscriptionManagementRoot from "../components/pages/SubscriptionManagement";
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import OmrSheetRoot from "../components/pages/TestAndQuestionManagement/OmrSheets";
@@ -71,9 +75,6 @@ import SingleStudentAnswerLayout from "../components/pages/TestAndQuestionManage
 import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
 import ResultRoot from "../components/pages/TestAndQuestionManagement/TestManagement/result";
 import ViewTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/viewTest";
-import ControlsRoot from "../components/pages/Controls";
-import DeviceResetManagementRoot from "../components/pages/DeviceResetManagement";
-import DeviceResetDetailPage from "../components/pages/DeviceResetManagement/DeviceResetDetailPage";
 import TicketManagementRoot from "../components/pages/TicketManagement";
 import TicketTypes from "../components/pages/TicketManagement/TicketTypes";
 import AllTickets from "../components/pages/TicketManagement/allTickets";
@@ -324,6 +325,7 @@ const router = createBrowserRouter([
 					{ path: PATH.SETTINGS.CHANGE_PASSWORD.ROOT, element: <ChangePassword /> },
 					{ path: PATH.SETTINGS.LINKED_DEVICE.ROOT, element: <LinkedDevices /> },
 					{ path: PATH.SETTINGS.APP_SETTINGS.ROOT, element: <AppSettingRoot /> },
+					{ path: PATH.SETTINGS.THEME.ROOT, element: <ThemeSettingRoot /> },
 				]
 			},
 			{
