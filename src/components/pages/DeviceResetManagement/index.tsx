@@ -123,15 +123,17 @@ export default function DeviceResetManagementRoot() {
 							borderRadius: 2,
 							bgcolor: "gray.gray1",
 						}}
-						className={`request__list fixed left-0 top-0 bottom-0 max-w-[350px] lg:max-w-[unset] lg:static z-9999 lg:visible lg:opacity-100 lg:translate-x-0 transition-[transform,opacity,visibility] duration-300 ease-in-out ${openDrawer ? "opacity-100 visible translate-x-0" : "opacity-0 invisible -translate-x-full"}`}
+						className={`request__list fixed left-0 top-0 bottom-0 max-w-[350px] lg:max-w-[unset] lg:static z-9999 lg:z-0 lg:visible lg:opacity-100 lg:translate-x-0 transition-[transform,opacity,visibility] duration-300 ease-in-out ${openDrawer ? "opacity-100 visible translate-x-0" : "opacity-0 invisible -translate-x-full"}`}
 					>
 						<Stack direction="row" alignItems="center" justifyContent="space-between" >
 							<Typography variant="h6" fontWeight={500}>
 								Request Timeline
 							</Typography>
-							<IconButton color="error" onClick={() => setOpenDrawer(false)} >
-								<CloseCircle variant="Bold" />
-							</IconButton>
+							<div className="lg:hidden!">
+								<IconButton color="error" onClick={() => setOpenDrawer(false)} >
+									<CloseCircle variant="Bold" />
+								</IconButton>
+							</div>
 						</Stack>
 						<Divider className="my-4!" />
 						<OutlinedInput
