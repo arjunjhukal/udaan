@@ -1,4 +1,4 @@
-import { Box, Checkbox, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Avatar, Box, Checkbox, Chip, IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Add } from "iconsax-reactjs";
 import React, { useEffect, useMemo, useState } from "react";
@@ -13,7 +13,6 @@ import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { UserStatus } from "../../../../types";
 import type { RegisterUserProps } from "../../../../types/user";
 import Actions from "../../../molecules/Action";
-import TabController from "../../../molecules/TabController";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
@@ -22,12 +21,15 @@ import EmptyRoute from "../../../organism/EmptyRoute";
 import { CourseFilter } from "../../../organism/Filter/CourseFilter";
 import PageHeader from "../../../organism/PageHeader";
 import TableFilter from "../../../organism/TableFilter";
+import UserAnalytics from "../analytics";
+import NewSignUpsChart from "../analytics/NewSignUpsChart";
+import RoleDistributionChart from "../analytics/RoleDistributionChart";
 
 type ActionType = "delete" | "suspend" | "activate";
 
 export default function AllUserTable() {
     const { t } = useTranslation();
-
+    const theme = useTheme();
     const dispatch = useAppDispatch();
     const [selectedRows, setSelectedRows] = useState<Set<number | string>>(new Set());
     const [search, setSearch] = React.useState<string>("");
@@ -50,6 +52,7 @@ export default function AllUserTable() {
         filterDialogOpen,
         setFilterDialogOpen,
         roles,
+        activeTab,
     } = useCourseFilter();
 
     const [otp, setOtp] = useState<string>("");
@@ -58,13 +61,20 @@ export default function AllUserTable() {
         endDate: ""
     });
     const [days, setDays] = useState<number | null>(null);
-    const [activeTab, setActiveTab] = useState<UserStatus>("all");
+    const [adminFilter, setAdminFilter] = useState<string | null>(null);
+    const [userStatusFilter, setUserStatusFilter] = useState<UserStatus | undefined>(undefined);
+
+    const USER_STATUS_OPTIONS: { label: string; value: UserStatus }[] = [
+        { label: "Active", value: "active" },
+        { label: "Suspended", value: "suspended" },
+    ];
 
     const categoryFilter = getCategoryFilterParams();
 
     const { data, isLoading, isFetching } = useGetAllUserQuery({
-        pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(","), status: activeTab, ...customRange,
+        pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(","), status: userStatusFilter ?? activeTab, ...customRange,
         days,
+        admin_filter: adminFilter,
     });
     const [deleteUser, { isLoading: deleting }] = useDeleteUserMutation();
     const [suspendUser] = useSuspendUserMutation();
@@ -256,9 +266,37 @@ export default function AllUserTable() {
             accessorKey: "name",
             cell: ({ row }) => (
                 <Link to={PATH.USER_MANAGEMENT.VIEW_USER.ROOT(row.original.id?.toString() || "")}>
-                    <Typography fontWeight={500} className="capitalize">{row.original.name}</Typography>
+                    <Stack direction="row" alignItems="center" gap={1}>
+                        <Avatar
+                            src={row.original.profile_url}
+                            alt={row.original.name}
+                            sx={{ width: 32, height: 32, fontSize: 13, bgcolor: theme.palette.primary.light, color: theme.palette.primary.main }}
+                        >
+                            {row.original.name?.charAt(0)?.toUpperCase()}
+                        </Avatar>
+                        <Typography fontWeight={500} className="capitalize line-clamp-1" >{row.original.name}</Typography>
+                    </Stack>
                 </Link>
             ),
+        },
+        {
+            header: "Status",
+            accessorKey: "is_suspended",
+            cell: ({ row }) => {
+                const isSuspended = row.original.is_suspended;
+                const variant = isSuspended ? theme.palette.error : theme.palette.success;
+                return (
+                    <Chip
+                        label={isSuspended ? "Suspended" : "Active"}
+                        size="small"
+                        sx={{
+                            backgroundColor: variant.light,
+                            color: variant.main,
+                            border: `1px solid ${variant.main}`,
+                        }}
+                    />
+                );
+            },
         },
         {
             header: "Designation",
@@ -278,7 +316,7 @@ export default function AllUserTable() {
             header: "Email",
             accessorKey: "email",
             cell: ({ row }) => (
-                <Typography fontWeight={500}>{row.original.email}</Typography>
+                <Typography fontWeight={500} className="line-clamp-1" >{row.original.email}</Typography>
             ),
         },
         {
@@ -334,6 +372,7 @@ export default function AllUserTable() {
         setCustomRange({ startDate: "", endDate: "" });
         setSearch("");
         setDays(null);
+        setUserStatusFilter(undefined);
         setQp((prev) => ({ ...prev, pageIndex: 1 }));
     };
 
@@ -362,7 +401,7 @@ export default function AllUserTable() {
         }
     }
     return (
-        <div className="user__root h-full flex flex-col justify-between">
+        <div className="user__root flex flex-col h-full overflow-hidden">
             <div className="page__top">
                 <PageHeader
                     breadcrumb={[
@@ -384,57 +423,59 @@ export default function AllUserTable() {
                         }
                     }
                 />
-                <TabController
-                    options={[
-                        { label: "All", value: "all" },
-                        { label: "Suspended", value: "suspended" },
-                    ]}
-                    setActiveTab={(newValue: string) => setActiveTab(newValue as UserStatus)}
-                    currentActive={activeTab}
-                />
-                <TableFilter
-                    search={search}
-                    setSearch={setSearch}
-                    selectedRows={selectedRows}
-                    handleRoleDelete={openDeleteConfirmation}
-                    onFilter={() => setFilterDialogOpen(true)}
-                    customRange={customRange}
-                    setCustomRange={setCustomRange}
-                    setDays={setDays}
-                    handleResetFilter={handleResetFilter}
-                    onDownload={handleDownload}
-                    donwloading={downloading}
-                />
+            </div>
+            <div className="page__bottom h-full  overflow-auto">
+                <UserAnalytics adminFilter={adminFilter} onFilterChange={setAdminFilter} />
 
+                <div className="xl:grid xl:grid-cols-12 xl:gap-4">
+                    <div className="xl:col-span-9 h-full">
+                        <TableFilter
+                            search={search}
+                            setSearch={setSearch}
+                            selectedRows={selectedRows}
+                            handleRoleDelete={openDeleteConfirmation}
+                            onFilter={() => setFilterDialogOpen(true)}
+                            customRange={customRange}
+                            setCustomRange={setCustomRange}
+                            setDays={setDays}
+                            handleResetFilter={handleResetFilter}
+                            onDownload={handleDownload}
+                            donwloading={downloading}
+                        />
+                        {!user.length && !isLoading ? (
+                            <EmptyRoute
+                                icon={(<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2.6665C8.50663 2.6665 5.66663 5.5065 5.66663 8.99984C5.66663 12.4265 8.34663 15.1998 11.84 15.3198C11.9466 15.3065 12.0533 15.3065 12.1333 15.3198C12.16 15.3198 12.1733 15.3198 12.2 15.3198C12.2133 15.3198 12.2133 15.3198 12.2266 15.3198C15.64 15.1998 18.32 12.4265 18.3333 8.99984C18.3333 5.5065 15.4933 2.6665 12 2.6665Z" fill="#1D82F5" />
+                                    <path d="M18.7733 18.8668C15.0533 16.3868 8.98661 16.3868 5.23995 18.8668C3.54661 20.0002 2.61328 21.5335 2.61328 23.1735C2.61328 24.8135 3.54661 26.3335 5.22661 27.4535C7.09328 28.7068 9.54661 29.3335 11.9999 29.3335C14.4533 29.3335 16.9066 28.7068 18.7733 27.4535C20.4533 26.3202 21.3866 24.8002 21.3866 23.1468C21.3733 21.5068 20.4533 19.9868 18.7733 18.8668Z" fill="#1D82F5" />
+                                    <path d="M26.6534 9.78664C26.8667 12.3733 25.0267 14.64 22.48 14.9466C22.4667 14.9466 22.4667 14.9466 22.4534 14.9466H22.4134C22.3334 14.9466 22.2534 14.9466 22.1867 14.9733C20.8934 15.04 19.7067 14.6266 18.8134 13.8666C20.1867 12.64 20.9734 10.8 20.8134 8.79997C20.72 7.71997 20.3467 6.7333 19.7867 5.8933C20.2934 5.63997 20.88 5.47997 21.48 5.42664C24.0934 5.19997 26.4267 7.14664 26.6534 9.78664Z" fill="#1D82F5" />
+                                    <path d="M29.32 22.1199C29.2133 23.4132 28.3867 24.5332 27 25.2932C25.6667 26.0265 23.9867 26.3732 22.32 26.3332C23.28 25.4665 23.84 24.3865 23.9467 23.2399C24.08 21.5865 23.2933 19.9999 21.72 18.7332C20.8267 18.0265 19.7867 17.4665 18.6533 17.0532C21.6 16.1999 25.3067 16.7732 27.5867 18.6132C28.8133 19.5999 29.44 20.8399 29.32 22.1199Z" fill="#1D82F5" />
+                                </svg>)}
+                                title="No Users Found"
+                                message="Start adding users to manage access and roles within the system. Use the button below to add your first user."
+                                cta={{ label: "Create User", url: PATH.USER_MANAGEMENT.CREATE_USER.ROOT }}
+                            />
+                        ) : (
+                            <Box className=" table__wrapper">
+                                <UdaanTable
+                                    loading={isLoading || isFetching}
+                                    data={user}
+                                    columns={columns}
+                                />
+                                <TablePagination
+                                    qp={qp}
+                                    setQp={setQp}
+                                    totalPages={data?.data?.pagination?.total_pages || 0}
+                                />
+                            </Box>
+                        )}
+                    </div>
+                    <div className="xl:col-span-3 flex flex-col gap-4 h-full">
+                        <NewSignUpsChart />
+                        <RoleDistributionChart />
+                    </div>
+                </div>
             </div>
 
-            {!user.length && !isLoading ? (
-                <EmptyRoute
-                    icon={(<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2.6665C8.50663 2.6665 5.66663 5.5065 5.66663 8.99984C5.66663 12.4265 8.34663 15.1998 11.84 15.3198C11.9466 15.3065 12.0533 15.3065 12.1333 15.3198C12.16 15.3198 12.1733 15.3198 12.2 15.3198C12.2133 15.3198 12.2133 15.3198 12.2266 15.3198C15.64 15.1998 18.32 12.4265 18.3333 8.99984C18.3333 5.5065 15.4933 2.6665 12 2.6665Z" fill="#1D82F5" />
-                        <path d="M18.7733 18.8668C15.0533 16.3868 8.98661 16.3868 5.23995 18.8668C3.54661 20.0002 2.61328 21.5335 2.61328 23.1735C2.61328 24.8135 3.54661 26.3335 5.22661 27.4535C7.09328 28.7068 9.54661 29.3335 11.9999 29.3335C14.4533 29.3335 16.9066 28.7068 18.7733 27.4535C20.4533 26.3202 21.3866 24.8002 21.3866 23.1468C21.3733 21.5068 20.4533 19.9868 18.7733 18.8668Z" fill="#1D82F5" />
-                        <path d="M26.6534 9.78664C26.8667 12.3733 25.0267 14.64 22.48 14.9466C22.4667 14.9466 22.4667 14.9466 22.4534 14.9466H22.4134C22.3334 14.9466 22.2534 14.9466 22.1867 14.9733C20.8934 15.04 19.7067 14.6266 18.8134 13.8666C20.1867 12.64 20.9734 10.8 20.8134 8.79997C20.72 7.71997 20.3467 6.7333 19.7867 5.8933C20.2934 5.63997 20.88 5.47997 21.48 5.42664C24.0934 5.19997 26.4267 7.14664 26.6534 9.78664Z" fill="#1D82F5" />
-                        <path d="M29.32 22.1199C29.2133 23.4132 28.3867 24.5332 27 25.2932C25.6667 26.0265 23.9867 26.3732 22.32 26.3332C23.28 25.4665 23.84 24.3865 23.9467 23.2399C24.08 21.5865 23.2933 19.9999 21.72 18.7332C20.8267 18.0265 19.7867 17.4665 18.6533 17.0532C21.6 16.1999 25.3067 16.7732 27.5867 18.6132C28.8133 19.5999 29.44 20.8399 29.32 22.1199Z" fill="#1D82F5" />
-                    </svg>)}
-                    title="No Users Found"
-                    message="Start adding users to manage access and roles within the system. Use the button below to add your first user."
-                    cta={{ label: "Create User", url: PATH.USER_MANAGEMENT.CREATE_USER.ROOT }}
-                />
-            ) : (
-                <Box className="h-full overflow-auto table__wrapper">
-                    <UdaanTable
-                        loading={isLoading || isFetching}
-                        data={user}
-                        columns={columns}
-                    />
-                </Box>
-            )}
-
-            <TablePagination
-                qp={qp}
-                setQp={setQp}
-                totalPages={data?.data?.pagination?.total_pages || 0}
-            />
             <ConfirmationDialog
                 open={openConfirm}
                 setOpen={setOpenConfirm}
@@ -452,8 +493,16 @@ export default function AllUserTable() {
                 selections={selections}
                 roles={roles || []}
                 onChange={handleCategoryChange}
-                onApplyFilter={handleApplyFilter}
-                onResetFilter={resetFilters}
+                onApplyFilter={(courseTypes, status, device, payment, audience, userStatuses) => {
+                    handleApplyFilter(courseTypes, status, device, payment, audience);
+                    const picked = userStatuses?.[0] as UserStatus | undefined;
+                    setUserStatusFilter(picked);
+                }}
+                onResetFilter={() => {
+                    resetFilters();
+                    setUserStatusFilter(undefined);
+                }}
+                userStatus={USER_STATUS_OPTIONS}
             />
             <OtpDialog
                 open={openOtpPopup}

@@ -155,6 +155,34 @@ export const PATH = {
 		VIEW_USER: {
 			ROOT: (id?: string) =>
 				id ? `/user-management/${id}/view` : "/user-management/:id/view",
+			PROFILE: {
+				ROOT: (id?: string) =>
+					id ? `/user-management/${id}/view/profile` : "/user-management/:id/view/profile",
+			},
+			COURSES: {
+				ROOT: (id?: string) =>
+					id ? `/user-management/${id}/view/courses` : "/user-management/:id/view/courses",
+			},
+			TRANSACTIONS: {
+				ROOT: (id?: string) =>
+					id ? `/user-management/${id}/view/transactions` : "/user-management/:id/view/transactions",
+			},
+			DEVICE_REQUESTS: {
+				ROOT: (id?: string) =>
+					id ? `/user-management/${id}/view/device-requests` : "/user-management/:id/view/device-requests",
+			},
+			PERFORMANCE: {
+				ROOT: (id?: string) =>
+					id ? `/user-management/${id}/view/performance` : "/user-management/:id/view/performance",
+			},
+			LOGIN_HISTORY: {
+				ROOT: (id?: string) =>
+					id ? `/user-management/${id}/view/login-history` : "/user-management/:id/view/login-history",
+			},
+			ACTIVITY_HISTORY: {
+				ROOT: (id?: string) =>
+					id ? `/user-management/${id}/view/activity-history` : "/user-management/:id/view/activity-history",
+			},
 		},
 	},
 	TEST_QUESTION_MANAGEMENT: {

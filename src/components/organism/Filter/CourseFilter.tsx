@@ -1,7 +1,7 @@
 import { Button, Checkbox, Dialog, DialogContent, Divider, FormControlLabel, OutlinedInput, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 import SearchIcon from "../../../icons/SearchIcon";
-import type { DeviceType, Status } from "../../../types";
+import type { DeviceType, Status, UserStatus } from "../../../types";
 import type { CategoryProps } from "../../../types/category";
 import type { SelectionType } from "../../../types/course";
 import type { positionProps } from "../../../types/position";
@@ -25,9 +25,9 @@ interface Props {
   roles?: RoleProps[];
   searchTeacher?: string;
   setSearchTeacher?: (newValue: string) => void;
-  onApplyFilter: (courseTypes: string[], status?: string[], device?: string[], payment_method?: string[], target_audience?: string[]) => void;
-
+  onApplyFilter: (courseTypes: string[], status?: string[], device?: string[], payment_method?: string[], target_audience?: string[], userStatus?: string[]) => void;
   onResetFilter: () => void;
+  userStatus?: { label: string; value: UserStatus }[];
   open: boolean;
   onClose: () => void;
   courseTypes?: { value: string; label: string }[];
@@ -57,7 +57,8 @@ export const CourseFilter = ({
   status,
   deviceType,
   paymentMethod,
-  targetAudience
+  targetAudience,
+  userStatus,
 }: Props) => {
   const theme = useTheme();
   const [selectedCourseTypes, setSelectedCourseTypes] = useState<string[]>([]);
@@ -65,6 +66,7 @@ export const CourseFilter = ({
   const [selectedDevice, setSelectedDeviceType] = useState<string[]>([]);
   const [selectedPaymentMode, setSelectedPaymentMode] = useState<string[]>([]);
   const [selectedAudience, setSelectedAudience] = useState<string[]>([]);
+  const [selectedUserStatus, setSelectedUserStatus] = useState<string[]>([]);
 
   const handleCourseTypeChange = (type: string, checked: boolean) => {
     setSelectedCourseTypes(prev => {
@@ -112,8 +114,14 @@ export const CourseFilter = ({
     });
   };
 
+  const handleUserStatusChange = (type: string, checked: boolean) => {
+    setSelectedUserStatus(prev =>
+      checked ? [...prev, type] : prev.filter(t => t !== type)
+    );
+  };
+
   const handleApplyFilter = () => {
-    onApplyFilter(selectedCourseTypes, selectedStatus, selectedDevice, selectedPaymentMode, selectedAudience);
+    onApplyFilter(selectedCourseTypes, selectedStatus, selectedDevice, selectedPaymentMode, selectedAudience, selectedUserStatus);
     onClose();
   };
 
@@ -123,6 +131,7 @@ export const CourseFilter = ({
     setSelectedDeviceType([]);
     setSelectedPaymentMode([]);
     setSelectedAudience([]);
+    setSelectedUserStatus([]);
     onResetFilter();
     onClose();
   };
@@ -348,6 +357,29 @@ export const CourseFilter = ({
                       <Checkbox
                         checked={selectedAudience.includes(method.value)}
                         onChange={(e) => handleSelectedAudienceChange(method.value, e.target.checked)}
+                      />
+                    }
+                  />
+                </div>
+              ))}
+            </div>
+          </div> : ""}
+          {/* User Status Filter */}
+          {userStatus && userStatus.length ? <div className="role__filter">
+            <div className="flex items-center justify-between">
+              <Typography variant="h5">User Status</Typography>
+            </div>
+            <Divider className="mb-3.5! mt-2!" />
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-9">
+              {userStatus.map((item) => (
+                <div className="col-span-1" key={item.value}>
+                  <FormControlLabel
+                    className="items-center!"
+                    label={item.label}
+                    control={
+                      <Checkbox
+                        checked={selectedUserStatus.includes(item.value)}
+                        onChange={(e) => handleUserStatusChange(item.value, e.target.checked)}
                       />
                     }
                   />

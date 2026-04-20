@@ -91,6 +91,13 @@ import UserManagementRoot from "../components/pages/userManagement";
 import AllUsers from "../components/pages/userManagement/allUsers";
 import CreateUser from "../components/pages/userManagement/createUser";
 import ViewUserRoot from "../components/pages/userManagement/viewUser";
+import ProfileTab from "../components/pages/userManagement/viewUser/tabs/ProfileTab";
+import CoursesTab from "../components/pages/userManagement/viewUser/tabs/CoursesTab";
+import TransactionsTab from "../components/pages/userManagement/viewUser/tabs/TransactionsTab";
+import DeviceRequestsTab from "../components/pages/userManagement/viewUser/tabs/DeviceRequestsTab";
+import PerformanceTab from "../components/pages/userManagement/viewUser/tabs/PerformanceTab";
+import UserLoginHistory from "../components/pages/userManagement/viewUser/UserLoginHistory";
+import UserActivityHistory from "../components/pages/userManagement/viewUser/UserActivityHistory";
 import { PATH } from "./PATH";
 import Private from "./Private";
 import Unauthorized from "./Unauthorized";
@@ -247,7 +254,20 @@ const router = createBrowserRouter([
 					{ index: true, path: PATH.USER_MANAGEMENT.ROOT, element: <AllUsers /> },
 					{ path: PATH.USER_MANAGEMENT.CREATE_USER.ROOT, element: <CreateUser /> },
 					{ path: PATH.USER_MANAGEMENT.EDIT_USER.ROOT(), element: <CreateUser /> },
-					{ path: PATH.USER_MANAGEMENT.VIEW_USER.ROOT(), element: <ViewUserRoot /> },
+					{
+						path: PATH.USER_MANAGEMENT.VIEW_USER.ROOT(),
+						element: <ViewUserRoot />,
+						children: [
+							{ index: true, element: <ProfileTab /> },
+							{ path: "profile", element: <ProfileTab /> },
+							{ path: "courses", element: <CoursesTab /> },
+							{ path: "transactions", element: <TransactionsTab /> },
+							{ path: "device-requests", element: <DeviceRequestsTab /> },
+							{ path: "performance", element: <PerformanceTab /> },
+							{ path: "login-history", element: <UserLoginHistory /> },
+							{ path: "activity-history", element: <UserActivityHistory /> },
+						],
+					},
 				],
 			},
 			{

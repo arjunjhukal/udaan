@@ -1,15 +1,18 @@
-import { Tooltip, Typography } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useGetAllUserTransacionsQuery } from "../../../../services/transactionApi";
+import { useGetUserTransactionAnalyticsQuery } from "../../../../services/userApi";
 import type { TransactionProps } from "../../../../types/transaction";
 import { formatDateForDisplay } from "../../../../utils/dateFormat";
 import { getTransactionStatus } from "../../../../utils/statusMap";
 import StatusPill from "../../../atoms/StatusPill";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
+import DashboardAnalyticsCard from "../../../organism/Cards/DashboardAnalyticsCard";
+import DashboardAnalyticsLoading from "../../../organism/Cards/DashboardAnalyticsCard/Loading";
 import EmptyRoute from "../../../organism/EmptyRoute";
 
 export default function UserTransactions() {
@@ -17,9 +20,10 @@ export default function UserTransactions() {
     const { id } = useParams();
     const [qp, setQp] = useState({
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 5,
     });
     const { data, isLoading } = useGetAllUserTransacionsQuery({ ...qp, id: Number(id) });
+    const { data: analyticsData, isLoading: analyticsLoading } = useGetUserTransactionAnalyticsQuery({ id: Number(id) }, { skip: !id });
 
     const courses = data?.data?.data || [];
 
@@ -35,11 +39,11 @@ export default function UserTransactions() {
         },
         {
             header: "Course Name",
-            accessorKey: "course_name",
+            accessorKey: "name",
             cell: ({ row }) => (
-                <Tooltip title={row.original.course_name} arrow>
+                <Tooltip title={row.original.name} arrow>
                     <Typography fontWeight={500} variant="subtitle1" className="line-clamp-1">
-                        {row.original.course_name || "N/A"}
+                        {row.original.name || "N/A"}
                     </Typography>
                 </Tooltip>
             ),
@@ -93,7 +97,15 @@ export default function UserTransactions() {
 
     return (
         <div className="user__transactions__root">
-            <Typography className="mb-4!" variant="h5" fontWeight={600}>{t("messages.transaction_information")}</Typography>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)" }, gap: 2, mb: 3, p: 1 }}>
+                {analyticsLoading
+                    ? Array.from({ length: 3 }).map((_, i) => <DashboardAnalyticsLoading key={i} />)
+                    : analyticsData?.data?.map((item) => (
+                        <DashboardAnalyticsCard key={item.title} data={{ title: item.title, value: item.value.toLocaleString(), description: "", type: item.type }} />
+                    ))
+                }
+                <Typography className="mb-1!" variant="h5" fontWeight={600}>{t("messages.transaction_information")}</Typography>
+            </Box>
             {!isLoading && !courses.length ? <EmptyRoute
                 title="No Transactions"
                 message="This user has not made any transactions yet."

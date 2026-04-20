@@ -28,7 +28,9 @@ import AllCourseGrid from "./AllCourseGrid";
 export default function AllCourse() {
     const cloneOptions = [
         { label: "Curriculums", value: "curriculums" },
-        { label: "Media", value: "media" },
+        { label: "Audio", value: "audios" },
+        { label: "Video", value: "videos" },
+        { label: "Notes", value: "notes" },
         { label: "Live Classes", value: "live_classes" },
         { label: "Tests", value: "tests" },
     ];
