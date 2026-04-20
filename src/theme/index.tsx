@@ -564,9 +564,10 @@ const commonThemeOptions: ThemeOptions = {
                     },
 
                     "&.active__tab__controller": {
+                        borderBottom: `2px solid ${theme.palette.primary.main}`,
                         ".MuiTypography-root": {
-                            background: theme.palette.primary.black,
-                            color: theme.palette.primary.contrastText
+                            color: theme.palette.primary.main,
+                            // fontWeight: 600,
                         }
                     },
 

@@ -53,7 +53,7 @@ export interface TransactionList {
 
 export interface TransactionProps {
     id: number;
-    course_name: string;
+    name: string;
     payment_method: string;
     purchased_date: string;
     amount_paid: number;
@@ -67,4 +67,22 @@ export interface UserTransactionResponse extends GlobalResponse {
         data: TransactionProps[];
         pagination: Pagination;
     }
+}
+
+export interface PaymentMethodItem {
+    name: string;
+    amount: number;
+    count: number;
+    percentage: number;
+}
+
+export interface PaymentMethodsAnalytics {
+    methods: PaymentMethodItem[];
+    total_transactions: number;
+    total_amount: number;
+    last_payment: string | null;
+}
+
+export interface PaymentMethodsResponse extends GlobalResponse {
+    data: PaymentMethodsAnalytics;
 }

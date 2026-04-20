@@ -70,11 +70,11 @@ export default function DashboardTransaction() {
         },
         {
             header: "Course Name",
-            accessorKey: "course_name",
+            accessorKey: "name",
             cell: ({ row }) => (
-                <Tooltip title={row.original.course_name} arrow>
+                <Tooltip title={row.original.name} arrow>
                     <Typography variant='subtitle2' className="capitalize line-clamp-1">
-                        {row.original.course_name || "N/A"}
+                        {row.original.name || "N/A"}
                     </Typography>
                 </Tooltip>
             ),

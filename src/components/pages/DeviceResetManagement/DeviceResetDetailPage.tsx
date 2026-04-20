@@ -20,8 +20,13 @@ const STATUS_TABS = [
 
 const PAGE_SIZE = 15;
 
-export default function DeviceResetDetailPage() {
-	const { userId } = useParams<{ userId: string }>();
+interface Props {
+	userIdOverride?: number | string;
+}
+
+export default function DeviceResetDetailPage({ userIdOverride }: Props = {}) {
+	const { userId: paramUserId } = useParams<{ userId: string }>();
+	const userId = userIdOverride !== undefined ? String(userIdOverride) : paramUserId;
 	const [statusTab, setStatusTab] = useState("");
 	const [page, setPage] = useState(1);
 	const [allTimeline, setAllTimeline] = useState<DeviceResetSingleRequest[]>([]);

@@ -27,21 +27,23 @@ export default function TabController<T extends string>({
     return (
         <List
             sx={{
-                background: theme.palette.tab.background
+                borderBottom: `1px solid ${theme.palette.divider}`,
+                overflowX: "auto",
             }}
-            className={`p-1! rounded-md max-w-fit flex items-center ${size === "sm" ? "mb-3!" : "mb-6!"}`}
+            className={`p-0! flex items-end gap-0 ${size === "sm" ? "mb-3!" : "mb-6!"}`}
         >
             {tabOptions.map((tab) => (
                 <ListItem
-                    className={` cursor-pointer ${currentActive === tab.value ? 'active__tab__controller' : ""}`}
+                    className={`cursor-pointer shrink-0 ${currentActive === tab.value ? 'active__tab__controller' : ""}`}
                     key={tab.value}
+                    sx={{ width: "auto", px: 0, pb: "1px" }}
                     onClick={() => tab.redirect_url ? navigate(tab.redirect_url) : setActiveTab(tab.value)}
                 >
                     <Typography
                         variant='subtitle2'
-                        color='text.middle'
-                        className={`rounded-sm text-nowrap ${size === "sm" ? "px-2.5 py-1" : "px-3 py-2"}`}
-                        fontWeight={400}
+                        color='text.secondary'
+                        className={`text-nowrap ${size === "sm" ? "px-2.5 py-1" : "px-3 py-2"}`}
+                        fontWeight={"400"}
                     >
                         {tab.label}
                     </Typography>

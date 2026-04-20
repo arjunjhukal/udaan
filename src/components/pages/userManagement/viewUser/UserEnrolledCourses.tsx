@@ -97,7 +97,7 @@ export default function UserEnrolledCourses() {
 
 
     return (
-        <div className="user__enrolled__course__root mt-6 lg:mt-8">
+        <div className="user__enrolled__course__root">
             <Typography variant="h5" className="mb-4!" fontWeight={600}>{t("messages.enrolled_courses")}</Typography>
             {!isLoading && !courses.length ? <EmptyRoute
                 title="No Enrolled Courses"
