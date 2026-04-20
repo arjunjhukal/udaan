@@ -94,7 +94,7 @@ export default function PerformanceTab() {
                 <SectionBox title="Test Rankings">
                     <EmptyBox />
                 </SectionBox>
-            </Box>
+        </Box>
         </Box>
     );
 }
