@@ -298,13 +298,13 @@ export default function AllUserTable() {
                 );
             },
         },
-        {
-            header: "Designation",
-            accessorKey: "designation",
-            cell: ({ row }) => (
-                <Typography fontWeight={500} className="capitalize">{row.original.designation}</Typography>
-            ),
-        },
+        // {
+        //     header: "Designation",
+        //     accessorKey: "designation",
+        //     cell: ({ row }) => (
+        //         <Typography fontWeight={500} className="capitalize">{row.original.designation}</Typography>
+        //     ),
+        // },
         {
             header: "Role",
             accessorKey: "role",

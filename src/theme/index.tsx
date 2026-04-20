@@ -444,7 +444,7 @@ const commonThemeOptions: ThemeOptions = {
                     ...theme.typography.subtitle1,
                     padding: "14px 16px",
                     borderRadius: "8px",
-                    fontWeight: "500",
+                    fontWeight: "400",
                 }),
                 input: {
                     padding: "2px",

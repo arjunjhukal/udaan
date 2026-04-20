@@ -69,6 +69,29 @@ export interface UserTransactionResponse extends GlobalResponse {
     }
 }
 
+export interface TransactionDetail {
+    id?: number;
+    student_id: number;
+    course_id?: number;
+    test_id?: number;
+    bundle_id?: number;
+    subscription_id: number;
+    invoice_id: string;
+    transaction_id: string;
+    payment_method: string;
+    status: string;
+    image_url?: string | null;
+    name?: string;
+    amount_paid?: number;
+    purchased_date?: string;
+    course_status?: TransactionCourseStatus;
+    issued_to?: string;
+}
+
+export interface TransactionDetailResponse extends GlobalResponse {
+    data: TransactionDetail;
+}
+
 export interface PaymentMethodItem {
     name: string;
     amount: number;

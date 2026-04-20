@@ -137,3 +137,38 @@ export interface CourseAnalyticsResponse {
     data: CourseAnalyticsItem[];
     message: string;
 }
+
+export interface PerformanceAnalyticsItem {
+    title: string;
+    value: number;
+    type: "success" | "error" | "info" | "warning";
+}
+
+export interface PerformanceAnalyticsResponse {
+    status: number;
+    data: PerformanceAnalyticsItem[];
+    message: string;
+}
+
+export interface TrackPerformanceItem {
+    title: string;
+    value: number;
+    type: "success" | "error" | "info" | "warning";
+}
+
+export interface TrackPerformanceResponse {
+    status: number;
+    data: TrackPerformanceItem[];
+    message: string;
+}
+
+export interface MonthlyActivityItem {
+    label: string;
+    hours: number;
+}
+
+export interface MonthlyActivityResponse {
+    status: number;
+    data: MonthlyActivityItem[];
+    message: string;
+}

@@ -1,31 +1,36 @@
-import { Box, Tooltip, Typography } from "@mui/material";
+import { Box, Divider, LinearProgress, Skeleton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { useGetAllUserTransacionsQuery } from "../../../../services/transactionApi";
-import { useGetUserTransactionAnalyticsQuery } from "../../../../services/userApi";
+import { useGetUserTransactionAnalyticsQuery, useGetUserTransactionPaymentMethodsQuery } from "../../../../services/userApi";
 import type { TransactionProps } from "../../../../types/transaction";
 import { formatDateForDisplay } from "../../../../utils/dateFormat";
 import { getTransactionStatus } from "../../../../utils/statusMap";
+import ActionIconVisible from "../../../molecules/Action/ActionIconVisible";
 import StatusPill from "../../../atoms/StatusPill";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import DashboardAnalyticsCard from "../../../organism/Cards/DashboardAnalyticsCard";
 import DashboardAnalyticsLoading from "../../../organism/Cards/DashboardAnalyticsCard/Loading";
 import EmptyRoute from "../../../organism/EmptyRoute";
+import TransactionDetailDialog from "./TransactionDetailDialog";
+
+const METHOD_COLORS = ["success", "error", "primary", "warning", "info"] as const;
 
 export default function UserTransactions() {
     const { t } = useTranslation();
     const { id } = useParams();
-    const [qp, setQp] = useState({
-        pageIndex: 1,
-        pageSize: 5,
-    });
+    const theme = useTheme();
+    const [qp, setQp] = useState({ pageIndex: 1, pageSize: 5 });
+    const [selectedId, setSelectedId] = useState<number | null>(null);
     const { data, isLoading } = useGetAllUserTransacionsQuery({ ...qp, id: Number(id) });
     const { data: analyticsData, isLoading: analyticsLoading } = useGetUserTransactionAnalyticsQuery({ id: Number(id) }, { skip: !id });
+    const { data: paymentData, isLoading: paymentLoading } = useGetUserTransactionPaymentMethodsQuery({ id: Number(id) }, { skip: !id });
 
     const courses = data?.data?.data || [];
+    const paymentMethods = paymentData?.data?.methods ?? [];
 
     const columns = useMemo<ColumnDef<TransactionProps>[]>(() => [
         {
@@ -91,7 +96,13 @@ export default function UserTransactions() {
                 <StatusPill status={row.original.status} variant={getTransactionStatus(row.original.status)} />
             ),
         },
-
+        {
+            header: "Action",
+            accessorKey: "action",
+            cell: ({ row }) => (
+                <ActionIconVisible onView={() => setSelectedId(row.original.id)} />
+            ),
+        },
     ], [qp])
 
 
@@ -120,6 +131,51 @@ export default function UserTransactions() {
                     totalPages={data?.data?.pagination?.total_pages || 0}
                 /></>
             }
+
+            <Box sx={{ border: `1px solid ${theme.palette.divider}`, borderRadius: 3, p: 2.5, mt: 3 }}>
+                <Typography variant="h5" fontWeight={600} mb={1.5}>Payment Method Uses</Typography>
+                <Divider sx={{ mb: 2 }} />
+                {paymentLoading ? (
+                    Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} height={40} sx={{ mb: 1 }} />)
+                ) : (
+                    <>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mb: 2 }}>
+                            {paymentMethods.map((method, i) => (
+                                <Stack key={method.name + i} direction="row" alignItems="center" gap={2}>
+                                    <Typography variant="body2" sx={{ minWidth: 120, textTransform: "capitalize" }}>
+                                        {method.name}
+                                    </Typography>
+                                    <Box flex={1}>
+                                        <LinearProgress
+                                            variant="determinate"
+                                            value={method.percentage}
+                                            color={METHOD_COLORS[i % METHOD_COLORS.length]}
+                                            sx={{ height: 8, borderRadius: 4 }}
+                                        />
+                                    </Box>
+                                    <Typography variant="body2" sx={{ minWidth: 90, textAlign: "right" }}>
+                                        NRs. {method.amount.toLocaleString()}
+                                    </Typography>
+                                </Stack>
+                            ))}
+                        </Box>
+                        <Divider sx={{ mb: 1.5 }} />
+                        <Stack direction="row" justifyContent="space-between" py={0.5}>
+                            <Typography variant="body2" color="text.secondary">Total Transaction</Typography>
+                            <Typography variant="body2" fontWeight={500}>{paymentData?.data?.total_transactions ?? "—"}</Typography>
+                        </Stack>
+                        <Stack direction="row" justifyContent="space-between" py={0.5}>
+                            <Typography variant="body2" color="text.secondary">Total Amount</Typography>
+                            <Typography variant="body2" fontWeight={500}>NRs. {paymentData?.data?.total_amount?.toLocaleString() ?? "—"}</Typography>
+                        </Stack>
+                        <Stack direction="row" justifyContent="space-between" py={0.5}>
+                            <Typography variant="body2" color="text.secondary">Last Payment</Typography>
+                            <Typography variant="body2" fontWeight={500}>{formatDateForDisplay(paymentData?.data?.last_payment ?? "") || "—"}</Typography>
+                        </Stack>
+                    </>
+                )}
+            </Box>
+            <TransactionDetailDialog id={selectedId} onClose={() => setSelectedId(null)} />
         </div>
     )
 }

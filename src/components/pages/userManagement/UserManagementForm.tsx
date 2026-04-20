@@ -1,4 +1,5 @@
 import { Box, Button, FormHelperText, InputLabel, MenuItem, OutlinedInput, Select, Typography, useTheme } from "@mui/material";
+import dayjs, { Dayjs } from "dayjs";
 import { useFormik } from "formik";
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,6 +10,7 @@ import { useCreateUserMutation, useEditUserMutation, useGetUserByIdQuery } from 
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
 import { RegisterUserInitialData } from "../../../types/user";
+import MakuraDatePicker from "../../atoms/MakuraDatePicker";
 import Password from "../../atoms/Password";
 import FileDragDrop from "../../molecules/FileDragDrop";
 import ConfirmationDialog from "../../organism/ConfirmationDialog";
@@ -58,6 +60,9 @@ const validationSchema = (id?: string) => {
                 .oneOf([Yup.ref('password')], "Passwords must match"),
 
         profile: Yup.mixed().nullable(),
+        dob: Yup.mixed().nullable(),
+        address: Yup.string(),
+        temporary_address: Yup.string(),
     });
 };
 
@@ -110,6 +115,18 @@ export default function UserManagementForm() {
             }
             if (values.profile_url) {
                 formData.append("profile_url", values.profile_url)
+            }
+            if (values.dob) {
+                const dateStr = typeof values.dob === 'string'
+                    ? values.dob
+                    : (values.dob as Dayjs).format('YYYY-MM-DD');
+                formData.append("dob", dateStr)
+            }
+            if (values.address) {
+                formData.append("address", values.address)
+            }
+            if (values.temporary_address) {
+                formData.append("temporary_address", values.temporary_address)
             }
             if (id) {
                 try {
@@ -329,6 +346,65 @@ export default function UserManagementForm() {
                                 />
                                 {formik.touched.password_confirmation && formik.errors.password_confirmation && (
                                     <FormHelperText error>{formik.errors.password_confirmation}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <Typography variant="h6" className="pb-2 mb-8! mt-8!" sx={{
+                        borderBottom: `1px solid ${theme.palette.textField.border}`
+                    }}>Additional Information</Typography>
+
+                    <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-3 mb-6">
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel htmlFor="dob">Date of Birth</InputLabel>
+                                <MakuraDatePicker
+                                    value={formik.values.dob ? dayjs(formik.values.dob) : null}
+                                    onChange={(newValue) => {
+                                        formik.setFieldValue("dob", newValue ? newValue.format('YYYY-MM-DD') : null);
+                                    }}
+                                    placeholder="Select date of birth"
+                                    error={formik.touched.dob && Boolean(formik.errors.dob)}
+                                />
+                                {formik.touched.dob && formik.errors.dob && (
+                                    <FormHelperText error>{formik.errors.dob}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel htmlFor="address">Permanent Address</InputLabel>
+                                <OutlinedInput
+                                    name="address"
+                                    id="address"
+                                    fullWidth
+                                    placeholder="Enter permanent address"
+                                    value={formik.values.address}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.address && Boolean(formik.errors.address)}
+                                />
+                                {formik.touched.address && formik.errors.address && (
+                                    <FormHelperText error>{formik.errors.address}</FormHelperText>
+                                )}
+                            </div>
+                        </div>
+                        <div className="col-span-1">
+                            <div className="input__field">
+                                <InputLabel htmlFor="temporary_address">Temporary Address</InputLabel>
+                                <OutlinedInput
+                                    name="temporary_address"
+                                    id="temporary_address"
+                                    fullWidth
+                                    placeholder="Enter temporary address"
+                                    value={formik.values.temporary_address}
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    error={formik.touched.temporary_address && Boolean(formik.errors.temporary_address)}
+                                />
+                                {formik.touched.temporary_address && formik.errors.temporary_address && (
+                                    <FormHelperText error>{formik.errors.temporary_address}</FormHelperText>
                                 )}
                             </div>
                         </div>
