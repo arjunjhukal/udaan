@@ -22,7 +22,7 @@ export default function SelectFromMedia({ open, setOpen, type, onSelect, allowMu
     const [selectedItems, setSelectedItems] = React.useState<Set<number>>(new Set());
     const [qp, setQp] = React.useState({
         pageIndex: 1,
-        pageSize: 6,
+        pageSize: 9,
     });
 
     const { data, isLoading } = useGetallMediaQuery({ ...qp, search, type: type });

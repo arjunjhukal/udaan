@@ -18,7 +18,7 @@ export interface SelectionType {
 export type CourseTypeProps = "free" | "expiry" | "subscription"
 export type DiscountTypeProps = "percentage" | "amount"
 export type BillingCycle = "days" | "months" | "years"
-export type courseClonePropertyProps = "media" | "live_classes" | "curriculums" | "tests"
+export type courseClonePropertyProps = "audios" | "videos" | "notes" | "curriculums" | "tests"
 
 export interface DurationProps {
     hours: number;

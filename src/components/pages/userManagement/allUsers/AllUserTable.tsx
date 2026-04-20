@@ -262,7 +262,7 @@ export default function AllUserTable() {
                         >
                             {row.original.name?.charAt(0)?.toUpperCase()}
                         </Avatar>
-                        <Typography fontWeight={500} className="capitalize">{row.original.name}</Typography>
+                        <Typography fontWeight={500} className="capitalize line-clamp-1" >{row.original.name}</Typography>
                     </Stack>
                 </Link>
             ),
@@ -281,8 +281,6 @@ export default function AllUserTable() {
                             backgroundColor: variant.light,
                             color: variant.main,
                             border: `1px solid ${variant.main}`,
-                            fontWeight: 500,
-                            borderRadius: "6px",
                         }}
                     />
                 );
@@ -306,7 +304,7 @@ export default function AllUserTable() {
             header: "Email",
             accessorKey: "email",
             cell: ({ row }) => (
-                <Typography fontWeight={500}>{row.original.email}</Typography>
+                <Typography fontWeight={500} className="line-clamp-1" >{row.original.email}</Typography>
             ),
         },
         {
@@ -449,16 +447,16 @@ export default function AllUserTable() {
                                 data={user}
                                 columns={columns}
                             />
+                            <TablePagination
+                                qp={qp}
+                                setQp={setQp}
+                                totalPages={data?.data?.pagination?.total_pages || 0}
+                            />
                         </Box>
                     )}
                 </div>
             </div>
 
-            <TablePagination
-                qp={qp}
-                setQp={setQp}
-                totalPages={data?.data?.pagination?.total_pages || 0}
-            />
             <ConfirmationDialog
                 open={openConfirm}
                 setOpen={setOpenConfirm}
