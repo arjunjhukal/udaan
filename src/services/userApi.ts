@@ -1,7 +1,8 @@
 import type { QueryParams, UserStatus } from "../types";
+import type { PaymentMethodsResponse } from "../types/transaction";
 import type { GlobalResponse, RegisterUserProps, UserList } from "../types/user";
 import type { NewSignUpsResponse, RoleDistributionResponse, UserAnalyticsResponse } from "../types/userAnalytics";
-import type { CourseAnalyticsResponse, LoginHistoryResponse, RecentActivityResponse, UserEnrolledBundleResponse, UserEnrolledTestResponse, UserProfileResponse } from "../types/userProfile";
+import type { CourseAnalyticsResponse, LoginHistoryResponse, MonthlyActivityResponse, PerformanceAnalyticsResponse, RecentActivityResponse, TrackPerformanceResponse, UserEnrolledBundleResponse, UserEnrolledTestResponse, UserProfileResponse } from "../types/userProfile";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseApi } from "./baseApi";
 
@@ -188,6 +189,26 @@ export const userApi = baseApi.injectEndpoints({
             },
             providesTags: (_result, _error, { id }) => [{ type: "User", id }],
         }),
+
+        getUserTransactionPaymentMethods: builder.query<PaymentMethodsResponse, { id: number }>({
+            query: ({ id }) => ({ url: `/admin/user/${id}/transaction/payment-methods`, method: "GET" }),
+            providesTags: (_result, _error, { id }) => [{ type: "User", id }],
+        }),
+
+        getUserPerformanceAnalytics: builder.query<PerformanceAnalyticsResponse, { id: number }>({
+            query: ({ id }) => ({ url: `/admin/user/${id}/performance/analytics`, method: "GET" }),
+            providesTags: (_result, _error, { id }) => [{ type: "User", id }],
+        }),
+
+        getUserTrackPerformance: builder.query<TrackPerformanceResponse, { id: number }>({
+            query: ({ id }) => ({ url: `/admin/user/${id}/performance/track-performance`, method: "GET" }),
+            providesTags: (_result, _error, { id }) => [{ type: "User", id }],
+        }),
+
+        getUserMonthlyActivity: builder.query<MonthlyActivityResponse, { id: number; period: 7 | 30 }>({
+            query: ({ id, period }) => ({ url: `/admin/user/${id}/performance/monthly-activity?period=${period}`, method: "GET" }),
+            providesTags: (_result, _error, { id }) => [{ type: "User", id }],
+        }),
     })
 })
 
@@ -210,4 +231,8 @@ export const {
     useGetUserEnrolledCourseAnalyticsQuery,
     useGetUserEnrolledTestsQuery,
     useGetUserEnrolledBundlesQuery,
+    useGetUserTransactionPaymentMethodsQuery,
+    useGetUserPerformanceAnalyticsQuery,
+    useGetUserTrackPerformanceQuery,
+    useGetUserMonthlyActivityQuery,
 } = userApi;

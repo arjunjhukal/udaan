@@ -1,6 +1,6 @@
 import type { CategoryFilterParams, DeviceType, QueryParams, Status } from "../types";
 import type { CourseList } from "../types/course";
-import type { EnrollmentType, TransactionList, TransactionPayload, UserTransactionResponse } from "../types/transaction";
+import type { EnrollmentType, TransactionDetail, TransactionDetailResponse, TransactionList, TransactionPayload, UserTransactionResponse } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseApi } from "./baseApi";
@@ -47,7 +47,7 @@ export const transactionApi = baseApi.injectEndpoints({
                     ]
                     : [{ type: 'Transaction', id: 'LIST' }]
         }),
-        getTransactionById: builder.query<{ data: TransactionPayload }, number>({
+        getTransactionById: builder.query<TransactionDetailResponse, number>({
             query: (id) => ({
                 url: `admin/transaction/${id}`,
                 method: "GET",
