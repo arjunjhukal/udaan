@@ -1,5 +1,6 @@
 import type { QueryParams, UserStatus } from "../types";
 import type { GlobalResponse, RegisterUserProps, UserList } from "../types/user";
+import type { NewSignUpsResponse, RoleDistributionResponse, UserAnalyticsResponse } from "../types/userAnalytics";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseApi } from "./baseApi";
 
@@ -14,8 +15,8 @@ export const userApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "User", id: "LIST" }]
         }),
 
-        getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days?: number | null; }>({
-            query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate }) => {
+        getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days?: number | null; admin_filter?: string | null; }>({
+            query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate, admin_filter }) => {
                 const params = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -25,6 +26,7 @@ export const userApi = baseApi.injectEndpoints({
                     start_date: startDate,
                     end_date: endDate,
                     days: days,
+                    admin_filter: admin_filter ?? undefined,
                 });
 
                 return {
@@ -109,7 +111,31 @@ export const userApi = baseApi.injectEndpoints({
                 url: `/admin/user/${id}/generate-otp`,
                 method: "POST",
             })
-        })
+        }),
+
+        getUserAnalytics: builder.query<UserAnalyticsResponse, void>({
+            query: () => ({
+                url: `/admin/user/analytics`,
+                method: "GET",
+            }),
+            providesTags: [{ type: "Analytics" }],
+        }),
+
+        getNewSignUps: builder.query<NewSignUpsResponse, void>({
+            query: () => ({
+                url: `/admin/user/new-sign-ups`,
+                method: "GET",
+            }),
+            providesTags: [{ type: "Analytics" }],
+        }),
+
+        getRoleDistribution: builder.query<RoleDistributionResponse, void>({
+            query: () => ({
+                url: `/admin/user/role-distribution`,
+                method: "GET",
+            }),
+            providesTags: [{ type: "Analytics" }],
+        }),
     })
 })
 
@@ -121,5 +147,8 @@ export const {
     useDeleteUserMutation,
     useGetUserByIdQuery,
     useSuspendUserMutation,
-    useGenerateOTPMutation
+    useGenerateOTPMutation,
+    useGetUserAnalyticsQuery,
+    useGetNewSignUpsQuery,
+    useGetRoleDistributionQuery,
 } = userApi;

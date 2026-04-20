@@ -19,7 +19,7 @@ export default function DashboardAnalyticsCard({ data }: { data: Analytics }) {
     }
     return (
         <Box
-            className="dashboard__analytics__card relative rounded-xl lg:py-4 lg:px-6 px-3 py-2 backdrop-blur-2xl"
+            className="dashboard__analytics__card relative rounded-xl lg:py-4 lg:px-6 px-3 py-2 backdrop-blur-2xl h-full"
             sx={{
                 background: "rgba(255, 255, 255, 0.08)",
                 backdropFilter: "blur(20px)",

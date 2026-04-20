@@ -37,7 +37,7 @@ export const DeviceFilter: { label: string; value: DeviceType }[] = [
     { label: "Mobile", value: "mobile" },
 ]
 
-export type UserStatus = "all" | "suspended"
+export type UserStatus = "all" | "suspended" | "active"
 
 export const paymentOptions = [
     { label: "Esewa", value: "esewa" },
