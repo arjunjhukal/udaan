@@ -9,7 +9,9 @@ import { PATH } from "./PATH";
 
 function SocketBridge() {
     const { addToast } = useAdminNotification();
-    useAdminNotificationSocket({ onNotification: addToast });
+    const user = useAppSelector((state) => state.auth.user);
+    const userId = user?.id ? Number(user.id) : undefined;
+    useAdminNotificationSocket(userId, { onNotification: addToast });
     return null;
 }
 

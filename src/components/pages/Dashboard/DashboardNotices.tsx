@@ -30,8 +30,8 @@ export default function DashboardNotices() {
                 redirectUrl={PATH.NOTIFICATION_MANAGEMENT.ROOT}
             />
             <Box className="h-full overflow-auto">
-                {data?.data?.data && data?.data?.data.map((notice) => (
-                    <Box className="activiti__card pb-4 mb-4 border-b " sx={{
+                {data?.data?.data?.length ? data.data.data.map((notice) => (
+                    <Box key={notice.id} className="activiti__card pb-4 mb-4 border-b " sx={{
                         borderColor: (theme) => theme.palette.separator.dark
                     }}>
                         <Typography variant="h6" className="capitalize mb-1.5!" fontWeight={500}>{notice.name}</Typography>
@@ -42,7 +42,11 @@ export default function DashboardNotices() {
                                 {formatDateForDisplay(notice?.updated_at)}</Typography>
                         </Stack>
                     </Box>
-                ))}
+                )) : (
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                        <Typography variant="subtitle2" color="text.light">No notices available</Typography>
+                    </Box>
+                )}
             </Box>
         </Box>
     )

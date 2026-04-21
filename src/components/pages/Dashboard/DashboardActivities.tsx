@@ -29,8 +29,8 @@ export default function DashboardActivities() {
                 redirectUrl={PATH.ACTIVITY_LOG.ROOT}
             />
             <Box className="h-full overflow-auto">
-                {data?.data?.data && data?.data?.data.map((activity) => (
-                    <Box className="activiti__card pb-4 mb-4 border-b " sx={{
+                {data?.data?.data?.length ? data.data.data.map((activity) => (
+                    <Box key={activity.id ?? activity.timestamp} className="activiti__card pb-4 mb-4 border-b " sx={{
                         borderColor: (theme) => theme.palette.separator.dark
                     }}>
                         <Typography variant="h6" className="mb-1.5!" fontWeight={500}>{activity?.log}- {activity.username}</Typography>
@@ -40,7 +40,11 @@ export default function DashboardActivities() {
                                 {formatDateForDisplay(activity?.timestamp)}</Typography>
                         </Stack>
                     </Box>
-                ))}
+                )) : (
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>
+                        <Typography variant="subtitle2" color="text.light">No recent activities available</Typography>
+                    </Box>
+                )}
             </Box>
         </Box>
     )

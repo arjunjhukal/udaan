@@ -7,6 +7,7 @@ import SearchIcon from "../../../icons/SearchIcon";
 import { PATH } from "../../../routes/PATH";
 import { useGetResetRequestAnalyticsQuery, useGetResetRequestsQuery } from "../../../services/deviceResetApi";
 import type { DeviceResetRequestProps } from "../../../types/deviceReset";
+import EmptyRoute from "../../organism/EmptyRoute";
 import PageHeader from "../../organism/PageHeader";
 import DeviceResetAnalyticsBar from "./components/DeviceResetAnalyticsBar";
 import UserResetCard from "./components/UserResetCard";
@@ -90,116 +91,121 @@ export default function DeviceResetManagementRoot() {
 					/>
 				</div>
 
-				<Stack alignItems={"center"} className="lg:hidden!">
-					<IconButton onClick={() => setOpenDrawer(true)}>
-						<HamburgerMenu />
-					</IconButton>
-					<Typography variant="h4" fontWeight={500}>
-						Request Timeline
-					</Typography>
-				</Stack>
-				<Box flex={1} display="flex" className="h-full" gap={2}>
-					{/* Backdrop — mobile only, closes drawer on outside click */}
-					{openDrawer && (
+				{data?.data?.data && data?.data?.data?.length > 0 ? <>
+					<Stack alignItems={"center"} className="lg:hidden!">
+						<IconButton onClick={() => setOpenDrawer(true)}>
+							<HamburgerMenu />
+						</IconButton>
+						<Typography variant="h4" fontWeight={500}>
+							Request Timeline
+						</Typography>
+					</Stack>
+					<Box flex={1} display="flex" className="h-full" gap={2}>
+						{/* Backdrop — mobile only, closes drawer on outside click */}
+						{openDrawer && (
+							<Box
+								onClick={() => setOpenDrawer(false)}
+								sx={{
+									display: { lg: "none" },
+									position: "fixed",
+									inset: 0,
+									bgcolor: "rgba(0,0,0,0.45)",
+									zIndex: 9998,
+								}}
+							/>
+						)}
+
 						<Box
-							onClick={() => setOpenDrawer(false)}
 							sx={{
-								display: { lg: "none" },
-								position: "fixed",
-								inset: 0,
-								bgcolor: "rgba(0,0,0,0.45)",
-								zIndex: 9998,
+								width: { xs: "100%", lg: 400, xl: 549 },
+								flexShrink: 0,
+								display: "flex",
+								flexDirection: "column",
+								p: "24px",
+								borderRadius: 2,
+								bgcolor: "gray.gray1",
 							}}
-						/>
-					)}
+							className={`request__list fixed left-0 top-0 bottom-0 max-w-[350px] lg:max-w-[unset] lg:static z-9999 lg:z-0 lg:visible lg:opacity-100 lg:translate-x-0 transition-[transform,opacity,visibility] duration-300 ease-in-out ${openDrawer ? "opacity-100 visible translate-x-0" : "opacity-0 invisible -translate-x-full"}`}
+						>
+							<Stack direction="row" alignItems="center" justifyContent="space-between" >
+								<Typography variant="h6" fontWeight={500}>
+									Request Timeline
+								</Typography>
+								<div className="lg:hidden!">
+									<IconButton color="error" onClick={() => setOpenDrawer(false)} >
+										<CloseCircle variant="Bold" />
+									</IconButton>
+								</div>
+							</Stack>
+							<Divider className="my-4!" />
+							<OutlinedInput
+								fullWidth
+								placeholder="Search users..."
+								startAdornment={<SearchIcon />}
+								value={search}
+								onChange={(e) => setSearch(e.target.value)}
+								sx={{ gap: "8px", mb: 1.5, p: "8px 12px", bgcolor: "primary.contrastText" }}
+							/>
 
-					<Box
-						sx={{
-							width: { xs: "100%", lg: 400, xl: 549 },
-							flexShrink: 0,
-							display: "flex",
-							flexDirection: "column",
-							p: "24px",
-							borderRadius: 2,
-							bgcolor: "gray.gray1",
-						}}
-						className={`request__list fixed left-0 top-0 bottom-0 max-w-[350px] lg:max-w-[unset] lg:static z-9999 lg:z-0 lg:visible lg:opacity-100 lg:translate-x-0 transition-[transform,opacity,visibility] duration-300 ease-in-out ${openDrawer ? "opacity-100 visible translate-x-0" : "opacity-0 invisible -translate-x-full"}`}
-					>
-						<Stack direction="row" alignItems="center" justifyContent="space-between" >
-							<Typography variant="h6" fontWeight={500}>
-								Request Timeline
-							</Typography>
-							<div className="lg:hidden!">
-								<IconButton color="error" onClick={() => setOpenDrawer(false)} >
-									<CloseCircle variant="Bold" />
-								</IconButton>
-							</div>
-						</Stack>
-						<Divider className="my-4!" />
-						<OutlinedInput
-							fullWidth
-							placeholder="Search users..."
-							startAdornment={<SearchIcon />}
-							value={search}
-							onChange={(e) => setSearch(e.target.value)}
-							sx={{ gap: "8px", mb: 1.5, p: "8px 12px", bgcolor: "primary.contrastText" }}
-						/>
+							<Box id="user-list-scroll" flex={1} height="100%" overflow="auto" pr={0.5}>
+								<InfiniteScroll
+									dataLength={allRequests.length}
+									next={() => setPage((p) => p + 1)}
+									hasMore={hasMore}
+									scrollableTarget="user-list-scroll"
+									loader={
+										<Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+											<CircularProgress size={20} />
+										</Box>
+									}
+								>
+									{allRequests.map((req) => (
+										<UserResetCard
+											key={req.user_id}
+											request={req}
+											active={activeUserId === req.user_id}
+											onClick={() => {
+												navigate(PATH.DEVICE_RESET.DETAIL.ROOT(req.user_id));
+												setOpenDrawer(false);
+											}}
+										/>
+									))}
+									{!isFetching && allRequests.length === 0 && (
+										<Box textAlign="center" py={4}>
+											<Typography variant="body2" color="text.secondary">
+												No requests found
+											</Typography>
+										</Box>
+									)}
+								</InfiniteScroll>
+							</Box>
+						</Box>
 
-						<Box id="user-list-scroll" flex={1} height="100%" overflow="auto" pr={0.5}>
-							<InfiniteScroll
-								dataLength={allRequests.length}
-								next={() => setPage((p) => p + 1)}
-								hasMore={hasMore}
-								scrollableTarget="user-list-scroll"
-								loader={
-									<Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-										<CircularProgress size={20} />
-									</Box>
-								}
-							>
-								{allRequests.map((req) => (
-									<UserResetCard
-										key={req.user_id}
-										request={req}
-										active={activeUserId === req.user_id}
-										onClick={() => {
-											navigate(PATH.DEVICE_RESET.DETAIL.ROOT(req.user_id));
-											setOpenDrawer(false);
-										}}
-									/>
-								))}
-								{!isFetching && allRequests.length === 0 && (
-									<Box textAlign="center" py={4}>
-										<Typography variant="body2" color="text.secondary">
-											No requests found
-										</Typography>
-									</Box>
-								)}
-							</InfiniteScroll>
+						{/* Right panel */}
+						<Box
+							flex={1}
+							overflow="hidden"
+							sx={{
+								borderRadius: 2,
+								border: "1px solid",
+								borderColor: "divider",
+							}}
+						>
+							{activeUserId ? (
+								<Outlet />
+							) : (
+								<Box display="flex" alignItems="center" justifyContent="center" height="100%">
+									<Typography variant="body2" color="text.secondary">
+										Select a user to view their requests
+									</Typography>
+								</Box>
+							)}
 						</Box>
 					</Box>
-
-					{/* Right panel */}
-					<Box
-						flex={1}
-						overflow="hidden"
-						sx={{
-							borderRadius: 2,
-							border: "1px solid",
-							borderColor: "divider",
-						}}
-					>
-						{activeUserId ? (
-							<Outlet />
-						) : (
-							<Box display="flex" alignItems="center" justifyContent="center" height="100%">
-								<Typography variant="body2" color="text.secondary">
-									Select a user to view their requests
-								</Typography>
-							</Box>
-						)}
-					</Box>
-				</Box>
+				</> : <EmptyRoute
+					title="No Pending Requests"
+					message="There are currently no device reset requests. Once users start requesting resets, you'll see them here."
+				/>}
 			</Box>
 		</Box>
 	);

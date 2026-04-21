@@ -99,7 +99,7 @@ export const notificationApi = baseApi.injectEndpoints({
         }),
         readNotification: builder.mutation<GlobalResponse, { id?: number }>({
             query: ({ id }) => ({
-                url: id ? `/notification/${id}/read` : `/notification/read-all`,
+                url: id ? `/notification/${id}` : `/notification`,
                 method: "POST",
             }),
             invalidatesTags: [{ type: "Notifications", id: "LIST" }],

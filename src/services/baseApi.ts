@@ -49,7 +49,8 @@ export const baseApi = createApi({
         "Comment",
         "ResetRequest",
         "Controls",
-        "Theme"
+        "Theme",
+        "MenuCounts",
     ],
     endpoints: () => ({}),
 });

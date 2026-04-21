@@ -10,6 +10,7 @@ interface AdminNotificationContextValue {
     toasts: ToastNotification[];
     addToast: (payload: AdminNotificationPayload) => void;
     removeToast: (id: string) => void;
+    clearAll: () => void;
     unreadCount: number;
     incrementUnread: () => void;
     resetUnread: () => void;
@@ -31,11 +32,13 @@ export function AdminNotificationProvider({ children }: { children: ReactNode })
         setToasts((prev) => prev.filter((t) => t.id !== id));
     }, []);
 
+    const clearAll = useCallback(() => setToasts([]), []);
+
     const incrementUnread = useCallback(() => setUnreadCount((prev) => prev + 1), []);
     const resetUnread = useCallback(() => setUnreadCount(0), []);
 
     return (
-        <AdminNotificationContext.Provider value={{ toasts, addToast, removeToast, unreadCount, incrementUnread, resetUnread }}>
+        <AdminNotificationContext.Provider value={{ toasts, addToast, removeToast, clearAll, unreadCount, incrementUnread, resetUnread }}>
             {children}
         </AdminNotificationContext.Provider>
     );
