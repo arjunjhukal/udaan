@@ -95,7 +95,7 @@ export default function ProfileMenu() {
                             </Box>
                         )}
 
-                        <Typography variant="subtitle2" color="primary.contrastText">
+                        <Typography variant="subtitle2" color="text.primary">
                             {user?.name}
                         </Typography>
                     </div>
@@ -105,7 +105,7 @@ export default function ProfileMenu() {
                     background: (theme) => theme.palette.separator.dark,
                     minWidth: "44px",
                 }}>
-                    <Typography variant="body1" color="primary.contrastText">
+                    <Typography variant="body1" color="text.primary">
                         {user?.name ? user?.name.charAt(0).toUpperCase() : ""}
                     </Typography>
                 </IconButton>
@@ -125,7 +125,6 @@ export default function ProfileMenu() {
                         <Paper elevation={3}>
                             <ClickAwayListener onClickAway={handleClose}>
                                 <List className="min-w-[180px] p-2!">
-                                    {/* My Account */}
                                     <ListItem className="menu__item action__item">
                                         <ListItemButton
                                             sx={{ m: 0, border: "none" }}

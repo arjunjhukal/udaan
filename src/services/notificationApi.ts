@@ -1,5 +1,5 @@
 import type { QueryParams } from "../types";
-import type { CompletionStatus, DeliveryMethodsType, NotificationList, NotificationPayload, TargetStudentType } from "../types/notification";
+import type { CompletionStatus, DeliveryMethodsType, NotificationList, NotificationListResponse, NotificationPayload, TargetStudentType } from "../types/notification";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseApi } from "./baseApi";
@@ -87,6 +87,23 @@ export const notificationApi = baseApi.injectEndpoints({
                 { type: "Notifications", id }
             ],
         }),
+        getAllNotifications: builder.query<NotificationListResponse, QueryParams & { type?: "notice_board" | "push_notification" }>({
+            query: ({ pageIndex, pageSize, type, search }) => {
+                const queryParams = buildQueryParams({ page: pageIndex, page_size: pageSize, type, search });
+                return {
+                    url: `/notification?${queryParams}`,
+                    method: "GET",
+                };
+            },
+            providesTags: [{ type: "Notifications", id: "LIST" }],
+        }),
+        readNotification: builder.mutation<GlobalResponse, { id?: number }>({
+            query: ({ id }) => ({
+                url: id ? `/notification/${id}/read` : `/notification/read-all`,
+                method: "POST",
+            }),
+            invalidatesTags: [{ type: "Notifications", id: "LIST" }],
+        }),
     })
 })
 
@@ -96,5 +113,7 @@ export const {
     useGetNotificationByIdQuery,
     useUpdateNotificationByIdMutation,
     useDeleteNotificationMutation,
-    useSendNotificationMutation
+    useSendNotificationMutation,
+    useGetAllNotificationsQuery,
+    useReadNotificationMutation,
 } = notificationApi;

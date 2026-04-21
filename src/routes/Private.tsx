@@ -1,24 +1,45 @@
 import React from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import AdminNotificationToast from "../components/common/AdminNotificationToast";
 import ResponsiveDrawer from "../components/pages/layout/sidebar";
+import { AdminNotificationProvider, useAdminNotification } from "../context/AdminNotificationContext";
+import { useAdminNotificationSocket } from "../hooks/useAdminNotificationSocket";
 import { useAppSelector } from "../store/hook";
 import { PATH } from "./PATH";
 
-export default function Private() {
-	const navigate = useNavigate();
-	const user = useAppSelector((state) => state.auth.user);
-	React.useEffect(() => {
-		if (!user) {
-			navigate(PATH.AUTH.LOGIN.ROOT);
-		}
-	}, [user, navigate]);
+function SocketBridge() {
+    const { addToast } = useAdminNotification();
+    useAdminNotificationSocket({ onNotification: addToast });
+    return null;
+}
 
-	if (!user) return null;
-	return (
-		<div className="udaan__root">
-			<ResponsiveDrawer>
-				<Outlet />
-			</ResponsiveDrawer>
-		</div>
-	);
+function PrivateContent() {
+    const navigate = useNavigate();
+    const user = useAppSelector((state) => state.auth.user);
+
+    React.useEffect(() => {
+        if (!user) {
+            navigate(PATH.AUTH.LOGIN.ROOT);
+        }
+    }, [user, navigate]);
+
+    if (!user) return null;
+
+    return (
+        <div className="udaan__root">
+            <SocketBridge />
+            <ResponsiveDrawer>
+                <Outlet />
+            </ResponsiveDrawer>
+            <AdminNotificationToast />
+        </div>
+    );
+}
+
+export default function Private() {
+    return (
+        <AdminNotificationProvider>
+            <PrivateContent />
+        </AdminNotificationProvider>
+    );
 }

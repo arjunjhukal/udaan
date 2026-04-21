@@ -16,7 +16,6 @@ import CAN from "../../../../routes/CAN";
 import { PATH } from "../../../../routes/PATH";
 import { setMode, ThemeMode } from "../../../../slice/themeSlice";
 import { useAppDispatch, useAppSelector } from "../../../../store/hook";
-import ProfileMenu from "../appbar/Profile";
 
 export default function PrimaryMenu() {
     const { t, i18n } = useTranslation();
@@ -673,9 +672,9 @@ export default function PrimaryMenu() {
 
             </List>
 
-            <div className="sticky bottom-0">
+            {/* <div className="sticky bottom-0">
                 <ProfileMenu />
-            </div>
+            </div> */}
         </Box >
     );
 }

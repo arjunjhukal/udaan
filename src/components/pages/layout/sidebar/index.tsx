@@ -74,9 +74,7 @@ export default function ResponsiveDrawer(props: Props) {
 
 	return (
 		<Box sx={{ display: "flex" }}>
-			<div className="lg:hidden">
-				<CustomAppbar handleDrawerToggle={handleDrawerToggle} />
-			</div>
+			<CustomAppbar handleDrawerToggle={handleDrawerToggle} />
 			<Box
 				component="nav"
 				sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
@@ -123,11 +121,13 @@ export default function ResponsiveDrawer(props: Props) {
 					flexGrow: 1,
 					overflowX: "hidden"
 				}}>
-				<Box className="content p-4 lg:p-6  overflow-y-auto flex flex-col" sx={{
+				{/* Spacer to offset the fixed 64px AppBar */}
+				<Toolbar sx={{ minHeight: "64px !important" }} />
+				<Box className="content p-4 lg:p-6 overflow-y-auto flex flex-col" sx={{
 					background: pathname === "/" || pathname === "/dashboard"
 						? "transparent"
 						: theme.palette.primary.contrastText,
-					height: "100vh",
+					height: "calc(100vh - 64px)",
 				}}>
 					{props.children}
 				</Box>
