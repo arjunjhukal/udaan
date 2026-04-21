@@ -1,8 +1,3 @@
-// =============================================================================
-// Bikram Sambat (BS) Calendar — Global Utility
-// Month data personally verified from Nepali Patro by the project team.
-// DO NOT modify BS_CALENDAR_DATA without a supporting reference from Nepali Patro.
-// =============================================================================
 
 export interface BSDate {
     year: number;
@@ -10,8 +5,6 @@ export interface BSDate {
     day: number;
 }
 
-// Months: Baisakh, Jestha, Ashadh, Shrawan, Bhadra, Ashwin,
-//         Kartik, Mangsir, Poush, Magh, Falgun, Chaitra
 export const BS_CALENDAR_DATA: Readonly<Record<number, readonly number[]>> = {
     2082: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
     2083: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
@@ -24,13 +17,12 @@ export const BS_CALENDAR_DATA: Readonly<Record<number, readonly number[]>> = {
     2090: [31, 31, 32, 31, 31, 31, 30, 29, 30, 29, 30, 30],
 } as const;
 
-// Anchor: Baisakh 1, 2083 BS = April 14, 2026 AD (Tuesday)
-// Verified: Baisakh 8, 2083 = April 21, 2026 (Tuesday)
+
 export const BS_AD_ANCHOR = {
     bsYear: 2083,
     bsMonth: 1,
     bsDay: 1,
-    adDate: new Date(2026, 3, 14), // April 14, 2026
+    adDate: new Date(2026, 3, 14),
 } as const;
 
 export const NEPALI_MONTHS = [
@@ -63,7 +55,6 @@ export const getDaysInBSMonth = (year: number, month: number): number => {
 export const getTotalDaysInBSYear = (year: number): number =>
     BS_CALENDAR_DATA[year]?.reduce((a, b) => a + b, 0) ?? (() => { throw new Error(`BS year ${year} not in data.`); })();
 
-// Count signed day difference: positive = toDate is after fromDate
 const daysBetween = (
     fy: number, fm: number, fd: number,
     ty: number, tm: number, td: number,
@@ -73,10 +64,9 @@ const daysBetween = (
     const forward = ty > fy || (ty === fy && tm > fm) || (ty === fy && tm === fm && td > fd);
     if (!forward) return -daysBetween(ty, tm, td, fy, fm, fd);
 
-    // Same year + month: simple difference, no wrap-around needed
     if (fy === ty && fm === tm) return td - fd;
 
-    let days = getDaysInBSMonth(fy, fm) - fd; // remaining days in from-month
+    let days = getDaysInBSMonth(fy, fm) - fd;
     let y = fy, m = fm + 1;
     if (m > 12) { m = 1; y++; }
 
@@ -86,7 +76,7 @@ const daysBetween = (
         if (m > 12) { m = 1; y++; }
     }
 
-    days += td; // days in to-month up to target day
+    days += td;
     return days;
 };
 
@@ -102,12 +92,11 @@ export const adToBs = (adDate: Date): BSDate => {
     const { bsYear: ry, bsMonth: rm, bsDay: rd, adDate: refAd } = BS_AD_ANCHOR;
 
     const msPerDay = 1000 * 60 * 60 * 24;
-    // Normalize to midnight to avoid DST skew
     const adMidnight = new Date(adDate.getFullYear(), adDate.getMonth(), adDate.getDate());
     const refMidnight = new Date(refAd.getFullYear(), refAd.getMonth(), refAd.getDate());
     const totalDiff = Math.round((adMidnight.getTime() - refMidnight.getTime()) / msPerDay);
 
-    let y = ry, m = rm, d = rd;
+    let y: number = ry, m: number = rm, d: number = rd;
     let remaining = totalDiff;
 
     if (remaining > 0) {
