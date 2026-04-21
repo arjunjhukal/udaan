@@ -52,6 +52,7 @@ export const deviceResetApi = baseApi.injectEndpoints({
 				{ type: "ResetRequest", id: `INFO_${userId}` },
 				{ type: "ResetRequest", id: `TIMELINE_${userId}` },
 				{ type: "ResetRequest", id: "ANALYTICS" },
+				{ type: "MenuCounts", id: "ALL" },
 			],
 		}),
 

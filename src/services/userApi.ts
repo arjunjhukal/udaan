@@ -14,7 +14,7 @@ export const userApi = baseApi.injectEndpoints({
                 method: "POST",
                 body
             }),
-            invalidatesTags: [{ type: "User", id: "LIST" }]
+            invalidatesTags: [{ type: "User", id: "LIST" }, { type: "MenuCounts", id: "ALL" }]
         }),
 
         getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days?: number | null; admin_filter?: string | null; }>({
@@ -89,7 +89,8 @@ export const userApi = baseApi.injectEndpoints({
                 body: { users: body }
             }),
             invalidatesTags: (_result, _error,) => [
-                { type: "User", id: "LIST" }
+                { type: "User", id: "LIST" },
+                { type: "MenuCounts", id: "ALL" },
             ],
         }),
         getUserById: builder.query<{ data: RegisterUserProps }, { id: string }>({
@@ -106,7 +107,8 @@ export const userApi = baseApi.injectEndpoints({
                 body: { users: body }
             }),
             invalidatesTags: (_result, _error,) => [
-                { type: "User", id: "LIST" }
+                { type: "User", id: "LIST" },
+                { type: "MenuCounts", id: "ALL" },
             ],
         }),
         generateOTP: builder.mutation<GlobalResponse & { data: { otp: string } }, { id: number }>({

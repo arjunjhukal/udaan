@@ -13,7 +13,7 @@ export const transactionApi = baseApi.injectEndpoints({
                 method: "POST",
                 body
             }),
-            invalidatesTags: [{ type: "Transaction", id: "LIST" }]
+            invalidatesTags: [{ type: "Transaction", id: "LIST" }, { type: "MenuCounts", id: "ALL" }]
         }),
         getAllTransactions: builder.query<TransactionList, QueryParams & { categoryFilter?: CategoryFilterParams; status?: Status, payment_method?: string, days?: number | null; device_type?: DeviceType; module_type?: EnrollmentType; }>({
             query: ({ pageIndex, pageSize, search, startDate, endDate, days, status, categoryFilter, device_type, payment_method, module_type }) => {
@@ -61,7 +61,8 @@ export const transactionApi = baseApi.injectEndpoints({
                 body: body
             }),
             invalidatesTags: (_result, _error, _arg) => [
-                { type: "Transaction", id: "LIST" }
+                { type: "Transaction", id: "LIST" },
+                { type: "MenuCounts", id: "ALL" },
             ]
         }),
         deleteTransaction: builder.mutation<GlobalResponse, { body: string[] }>({
@@ -72,7 +73,7 @@ export const transactionApi = baseApi.injectEndpoints({
                     transactions: body
                 }
             }),
-            invalidatesTags: [{ type: "Transaction", id: "LIST" }]
+            invalidatesTags: [{ type: "Transaction", id: "LIST" }, { type: "MenuCounts", id: "ALL" }]
         }),
         getUserPurchasedCourse: builder.query<CourseList, QueryParams & { id: number }>({
             query: ({ pageIndex, pageSize, search, id }) => ({

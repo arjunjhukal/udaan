@@ -44,7 +44,7 @@ export const discussionApi = baseApi.injectEndpoints({
 				method: "POST",
 				body,
 			}),
-			invalidatesTags: [{ type: "Discussion", id: "LIST" }],
+			invalidatesTags: [{ type: "Discussion", id: "LIST" }, { type: "MenuCounts", id: "ALL" }],
 		}),
 		updateDiscussion: builder.mutation<GlobalResponse, { id: number; body: { title: string; description: string; mega_category_id: number | null; status: string } }>({
 			query: ({ id, body }) => ({
@@ -55,6 +55,7 @@ export const discussionApi = baseApi.injectEndpoints({
 			invalidatesTags: (_result, _error, { id }) => [
 				{ type: "Discussion", id },
 				{ type: "Discussion", id: "LIST" },
+				{ type: "MenuCounts", id: "ALL" },
 			],
 		}),
 		deleteDiscussion: builder.mutation<GlobalResponse, { ids: number[] }>({
@@ -63,7 +64,7 @@ export const discussionApi = baseApi.injectEndpoints({
 				method: "DELETE",
 				body: { discussions: ids },
 			}),
-			invalidatesTags: [{ type: "Discussion", id: "LIST" }],
+			invalidatesTags: [{ type: "Discussion", id: "LIST" }, { type: "MenuCounts", id: "ALL" }],
 		}),
 		toggleDiscussionVisibility: builder.mutation<GlobalResponse, { id: number; status: "visible" | "hidden" }>({
 			query: ({ id, status }) => ({
@@ -74,6 +75,7 @@ export const discussionApi = baseApi.injectEndpoints({
 			invalidatesTags: (_result, _error, { id }) => [
 				{ type: "Discussion", id },
 				{ type: "Discussion", id: "LIST" },
+				{ type: "MenuCounts", id: "ALL" },
 			],
 		}),
 		likeDiscussion: builder.mutation<GlobalResponse, { id: number }>({

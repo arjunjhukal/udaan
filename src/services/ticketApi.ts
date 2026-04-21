@@ -47,7 +47,7 @@ export const ticketApi = baseApi.injectEndpoints({
 			{ subject: string; description: string; type_id: number | null; priority?: string }
 		>({
 			query: (body) => ({ url: "/tickets", method: "POST", body }),
-			invalidatesTags: [{ type: "Ticket", id: "LIST" }],
+			invalidatesTags: [{ type: "Ticket", id: "LIST" }, { type: "MenuCounts", id: "ALL" }],
 		}),
 
 		updateTicket: builder.mutation<
@@ -69,6 +69,7 @@ export const ticketApi = baseApi.injectEndpoints({
 			invalidatesTags: (_result, _error, { id }) => [
 				{ type: "Ticket", id },
 				{ type: "Ticket", id: "LIST" },
+				{ type: "MenuCounts", id: "ALL" },
 			],
 		}),
 
@@ -78,7 +79,7 @@ export const ticketApi = baseApi.injectEndpoints({
 				method: "DELETE",
 				body: { tickets: ids },
 			}),
-			invalidatesTags: [{ type: "Ticket", id: "LIST" }],
+			invalidatesTags: [{ type: "Ticket", id: "LIST" }, { type: "MenuCounts", id: "ALL" }],
 		}),
 
 
