@@ -367,6 +367,10 @@ export default function AllUserTable() {
 
     const dialogContent = getDialogContent();
 
+    const handleAdminFilterChange = (filter: string | null) => {
+        setAdminFilter(filter);
+        setQp(prev => ({ ...prev, pageIndex: 1 }));
+    };
 
     const handleResetFilter = () => {
         setCustomRange({ startDate: "", endDate: "" });
@@ -425,7 +429,7 @@ export default function AllUserTable() {
                 />
             </div>
             <div className="page__bottom h-full  overflow-auto">
-                <UserAnalytics adminFilter={adminFilter} onFilterChange={setAdminFilter} />
+                <UserAnalytics adminFilter={adminFilter} onFilterChange={handleAdminFilterChange} />
 
                 <div className="xl:grid xl:grid-cols-12 xl:gap-4">
                     <div className="xl:col-span-9 h-full">
