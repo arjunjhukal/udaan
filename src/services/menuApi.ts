@@ -21,7 +21,15 @@ export const menuApi = baseApi.injectEndpoints({
             }),
             providesTags: [{ type: "MenuCounts", id: "ALL" }],
         }),
+        markNewUsersSeen: builder.mutation<void, void>({
+            query: () => ({ url: "/admin/menu-counts/new-users/seen", method: "PATCH" }),
+            invalidatesTags: [{ type: "MenuCounts", id: "ALL" }],
+        }),
+        markTransactionSeen: builder.mutation<void, void>({
+            query: () => ({ url: "/admin/menu-counts/transaction/seen", method: "PATCH" }),
+            invalidatesTags: [{ type: "MenuCounts", id: "ALL" }],
+        }),
     }),
 });
 
-export const { useGetMenuCountsQuery } = menuApi;
+export const { useGetMenuCountsQuery, useMarkNewUsersSeenMutation, useMarkTransactionSeenMutation } = menuApi;

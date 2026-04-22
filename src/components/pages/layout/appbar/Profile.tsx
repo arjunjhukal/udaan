@@ -48,7 +48,7 @@ export default function ProfileMenu() {
 
 
     const onMyAccount = () => {
-        navigate(PATH.SETTINGS.PROFILE.ROOT)
+        navigate(PATH.SETTINGS.SYSTEM.PROFILE.ROOT)
     }
 
     const onLogout = async () => {

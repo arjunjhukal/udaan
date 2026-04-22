@@ -54,7 +54,7 @@ export default function SettingMenu() {
         i18n.changeLanguage(newLang);
     };
 
-    const handleSettingsRedirect = () => navigate(PATH.SETTINGS.APP_SETTINGS.ROOT);
+    const handleSettingsRedirect = () => navigate(PATH.SETTINGS.SYSTEM.GENERAL.ROOT);
 
     return (
         <>

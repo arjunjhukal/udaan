@@ -1,14 +1,12 @@
 import { Button, Divider, InputLabel, OutlinedInput, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { useTranslation } from "react-i18next";
-import FileDragDrop from "../../../molecules/FileDragDrop";
 import { useGetThemeSettingsQuery, useUpdateThemeSettingMutation } from "../../../../services/settingApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import type { ThemeSettingFormProps } from "../../../../types/setting";
+import FileDragDrop from "../../../molecules/FileDragDrop";
 
 export default function SiteInfoRoot() {
-    const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
     const { data } = useGetThemeSettingsQuery();
