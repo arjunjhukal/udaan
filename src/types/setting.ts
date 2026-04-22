@@ -147,13 +147,11 @@ export interface ZoomAccount {
     name: string;
     is_active: boolean;
     email: string;
-    // Server-to-Server OAuth app (for creating/hosting meetings)
     account_id: string;
     client_id: string;
-    client_secret: string;   // always masked from API
-    // Meeting SDK app (for public joining)
+    client_secret: string;
     sdk_key: string;
-    sdk_secret: string;      // always masked from API
+    sdk_secret: string;
 }
 
 export interface ZoomAccountCreateProps {

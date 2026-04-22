@@ -600,14 +600,14 @@ export default function PrimaryMenu() {
                             <List component="div" disablePadding sx={{ pl: 3 }}>
                                 <ListItem disablePadding className="menu__item">
                                     <ListItemButton
-                                        onClick={() => navigate(PATH.SETTINGS.SYSTEM.ROOT)}
+                                        onClick={() => navigate(PATH.SETTINGS.SYSTEM.PROFILE.ROOT)}
                                         className={location.pathname.startsWith(PATH.SETTINGS.SYSTEM.ROOT) ? "active-nested" : ""}>
                                         <ListItemText primary="System Setting" />
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem disablePadding className="menu__item">
                                     <ListItemButton
-                                        onClick={() => navigate(PATH.SETTINGS.API.ROOT)}
+                                        onClick={() => navigate(PATH.SETTINGS.API.ZOOM.ROOT)}
                                         className={location.pathname.startsWith(PATH.SETTINGS.API.ROOT) ? "active-nested" : ""}>
                                         <ListItemText primary="API Setting" />
                                     </ListItemButton>

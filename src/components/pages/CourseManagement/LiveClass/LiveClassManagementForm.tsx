@@ -20,6 +20,7 @@ import { useGetAllCategoryRelatedToMegaCategoryQuery, useGetAllMegaCategoryQuery
 import { useGetAllCourseQuery } from "../../../../services/courseApi";
 import { useCreateLiveClassMutation, useEditLiveClassMutation, useGetLiveClassByIdQuery } from "../../../../services/liveClass";
 import { useGetAllPositionQuery } from "../../../../services/positionApi";
+import { useGetZoomAccountsQuery } from "../../../../services/settingApi";
 import { useGetAllUserQuery } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
@@ -32,11 +33,6 @@ import { YesNoSwitch } from "../../../atoms/YesNoSwitch";
 import FooterAction from "../../../molecules/FooterAction";
 import InfiniteScrolling from "../../../molecules/InfiniteScrolling";
 import CategoryFilter from "../../../organism/CategoryFilter";
-
-type ZoomAccount = {
-    id: number;
-    name: string;
-};
 
 export default function LiveClassManagementForm() {
     const dispatch = useAppDispatch();
@@ -105,16 +101,8 @@ export default function LiveClassManagementForm() {
     const [updateLiveClass, { isLoading: updating }] = useEditLiveClassMutation();
     const { data: liveClassData } = useGetLiveClassByIdQuery({ id: Number(id) }, { skip: !id });
 
-    const zoomAccounts: { data: { data: ZoomAccount[] } } = {
-        data: {
-            data: [
-                { name: "udaanshaikshikkendra@gmail.com", id: 1 },
-                { name: "sushantsanu123@gmail.com", id: 2 },
-                { name: "udaanshaikshikkendra805@gmail.com", id: 3 },
-                { name: "ssktirtha085@gmail.com", id: 4 },
-            ]
-        }
-    }
+    const { data: zoomAccountsData } = useGetZoomAccountsQuery();
+    const activeZoomAccounts = (zoomAccountsData?.data ?? []).filter((a) => a.is_active);
 
     const { data: teachers } = useGetAllUserQuery({
         pageIndex: 1,
@@ -300,21 +288,16 @@ export default function LiveClassManagementForm() {
                     {/* ZOOM ACCOUNT */}
                     <div className="col-span-1">
                         <InputLabel className="required">Zoom Account</InputLabel>
-                        <Autocomplete<ZoomAccount, false, false, false>
-                            options={zoomAccounts?.data?.data || []}
-                            getOptionLabel={(option) => option.name || ""}
+                        <Autocomplete
+                            options={activeZoomAccounts}
+                            getOptionLabel={(option) => option.email || ""}
                             isOptionEqualToValue={(option, value) => option.id === value.id}
-                            value={
-                                zoomAccounts?.data?.data?.find(
-                                    acc => acc.id === formik.values.account_id
-                                ) || null
-                            }
+                            value={activeZoomAccounts.find((a) => a.id === formik.values.account_id) || null}
                             onChange={(_e, v) => formik.setFieldValue("account_id", v?.id || null)}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
                                     placeholder="Select Zoom Account"
-                               
                                 />
                             )}
                             disabled={!!id}
