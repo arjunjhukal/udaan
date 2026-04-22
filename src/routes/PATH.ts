@@ -291,7 +291,10 @@ export const PATH = {
 		}
 	},
 	ACTIVITY_LOG: {
-		ROOT: "/activity-log"
+		ROOT: "/activity-log",
+		ARCHIVED: {
+			ROOT: "/activity-log/archived"
+		}
 	},
 	MEDIA_MANAGEMENT: {
 		ROOT: "/medias"

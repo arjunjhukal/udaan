@@ -29,6 +29,7 @@ export default function PrimaryMenu() {
     const [openOmr, setOpenOmr] = React.useState<boolean>(false);
     const [openDiscussion, setOpenDiscussion] = React.useState<boolean>(false);
     const [openTicket, setOpenTicket] = React.useState<boolean>(false);
+    const [openActivityLog, setOpenActivityLog] = React.useState<boolean>(false);
     // const mode = useAppSelector((state) => state.theme.mode);
     const counts = useMenuCounts();
 
@@ -91,6 +92,7 @@ export default function PrimaryMenu() {
         if (p.startsWith(PATH.SETTINGS.ROOT) || p.startsWith(PATH.CONTROLS.ROOT)) setOpenSetting(true);
         if (p.startsWith(PATH.DISCUSSION.ROOT) || p.startsWith(PATH.MODERATION.ROOT)) setOpenDiscussion(true);
         if (p.startsWith(PATH.TICKET.ROOT)) setOpenTicket(true);
+        if (p.startsWith(PATH.ACTIVITY_LOG.ROOT)) setOpenActivityLog(true);
     }, [location.pathname]);
 
     // const handleThemeSwitch = () => {
@@ -484,14 +486,33 @@ export default function PrimaryMenu() {
                 <CAN permissions={["add_activity_logs", "edit_activity_logs", "delete_activity_logs", "view_activity_logs"]}>
                     <ListItem disablePadding className="menu__item">
                         <ListItemButton
-                            onClick={() => navigate(PATH.ACTIVITY_LOG.ROOT)}
+                            onClick={() => setOpenActivityLog((prev) => !prev)}
                             className={location.pathname.startsWith(PATH.ACTIVITY_LOG.ROOT) ? "active" : ""}>
                             <ListItemIcon>
                                 <Brodcast />
                             </ListItemIcon>
                             <ListItemText primary={t("messages.activity_log")} />
                             <MenuBadge count={counts.activityLog} />
+                            {openActivityLog ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
+                        <Collapse in={openActivityLog} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding sx={{ pl: 3 }}>
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => navigate(PATH.ACTIVITY_LOG.ROOT)}
+                                        className={location.pathname === PATH.ACTIVITY_LOG.ROOT ? "active-nested" : ""}>
+                                        <ListItemText primary={t("messages.current_logs")} />
+                                    </ListItemButton>
+                                </ListItem>
+                                <ListItem disablePadding className="menu__item">
+                                    <ListItemButton
+                                        onClick={() => navigate(PATH.ACTIVITY_LOG.ARCHIVED.ROOT)}
+                                        className={location.pathname.startsWith(PATH.ACTIVITY_LOG.ARCHIVED.ROOT) ? "active-nested" : ""}>
+                                        <ListItemText primary={t("messages.archived_logs")} />
+                                    </ListItemButton>
+                                </ListItem>
+                            </List>
+                        </Collapse>
                     </ListItem>
                 </CAN>
 

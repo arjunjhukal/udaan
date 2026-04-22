@@ -6,6 +6,7 @@ import CategoryManagementRoot from "../components/pages/CategoryManagement";
 import AllCategories from "../components/pages/CategoryManagement/allCategory";
 
 import ActivityRoot from "../components/pages/ActivityLog";
+import ArchivedLogs from "../components/pages/ActivityLog/ArchivedLogs";
 import ContentManagementRoot from "../components/pages/ContentManagement";
 import HomeScreens from "../components/pages/ContentManagement/HomeScreens";
 import BannerRoot from "../components/pages/ContentManagement/HomeScreens/Banner";
@@ -351,6 +352,10 @@ const router = createBrowserRouter([
 			{
 				path: PATH.ACTIVITY_LOG.ROOT,
 				element: <ActivityRoot />
+			},
+			{
+				path: PATH.ACTIVITY_LOG.ARCHIVED.ROOT,
+				element: <ArchivedLogs />
 			},
 			{
 				element: <MediaManagementRoot />,
