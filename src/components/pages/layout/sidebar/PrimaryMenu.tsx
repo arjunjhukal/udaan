@@ -6,24 +6,22 @@ import {
     ListItem,
     ListItemButton,
     ListItemIcon,
-    ListItemText, Typography
+    ListItemText
 } from "@mui/material";
 import { AttachSquare, Brodcast, Mobile } from "iconsax-reactjs";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import MenuBadge from "../../../atoms/MenuBadge";
+import { useMenuCounts } from "../../../../hooks/useMenuCounts";
 import CAN from "../../../../routes/CAN";
 import { PATH } from "../../../../routes/PATH";
-import { setMode, ThemeMode } from "../../../../slice/themeSlice";
-import { useAppDispatch, useAppSelector } from "../../../../store/hook";
-import { useMenuCounts } from "../../../../hooks/useMenuCounts";
+import MenuBadge from "../../../atoms/MenuBadge";
 
 export default function PrimaryMenu() {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const [openCourse, setOpenCourse] = React.useState<boolean>(false);
     const [openCategory, setOpenCategory] = React.useState<boolean>(false);
     const [openTest, setOpenTest] = React.useState<boolean>(false);
@@ -31,7 +29,7 @@ export default function PrimaryMenu() {
     const [openOmr, setOpenOmr] = React.useState<boolean>(false);
     const [openDiscussion, setOpenDiscussion] = React.useState<boolean>(false);
     const [openTicket, setOpenTicket] = React.useState<boolean>(false);
-    const mode = useAppSelector((state) => state.theme.mode);
+    // const mode = useAppSelector((state) => state.theme.mode);
     const counts = useMenuCounts();
 
     const isActive = (path: string) => location.pathname === path;
@@ -95,14 +93,14 @@ export default function PrimaryMenu() {
         if (p.startsWith(PATH.TICKET.ROOT)) setOpenTicket(true);
     }, [location.pathname]);
 
-    const handleThemeSwitch = () => {
-        dispatch(setMode(mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK));
-    };
+    // const handleThemeSwitch = () => {
+    //     dispatch(setMode(mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK));
+    // };
 
-    const handleLanguageSwitch = () => {
-        const newLang = i18n.language === "en" ? "np" : "en";
-        i18n.changeLanguage(newLang);
-    };
+    // const handleLanguageSwitch = () => {
+    //     const newLang = i18n.language === "en" ? "np" : "en";
+    //     i18n.changeLanguage(newLang);
+    // };
 
     return (
         <Box className="primary__menu relative h-full" sx={{ padding: "0 32px 32px", overflow: "hidden" }}>
@@ -594,7 +592,7 @@ export default function PrimaryMenu() {
                                         <ListItemText primary="API Setting" />
                                     </ListItemButton>
                                 </ListItem>
-                                <ListItem disablePadding className="menu__item">
+                                {/* <ListItem disablePadding className="menu__item">
                                     <ListItemButton onClick={handleThemeSwitch}>
                                         <ListItemText
                                             primary={
@@ -615,7 +613,7 @@ export default function PrimaryMenu() {
                                             }
                                         />
                                     </ListItemButton>
-                                </ListItem>
+                                </ListItem> */}
                             </List>
                         </Collapse>
                     </ListItem>
