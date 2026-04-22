@@ -55,12 +55,21 @@ import CreateNotificationRoot from "../components/pages/NotificationManagement/c
 import RoleManagementRoot from "../components/pages/RoleManagement";
 import AllRoles from "../components/pages/RoleManagement/allRoles";
 import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
-import SettingRoot from "../components/pages/Setting";
 import AppSettingRoot from "../components/pages/Setting/AppSetting";
 import ChangePassword from "../components/pages/Setting/ChangePassword";
 import LinkedDevices from "../components/pages/Setting/LinkedDevices";
 import ProfilePageRoot from "../components/pages/Setting/Profile";
-import ThemeSettingRoot from "../components/pages/Setting/ThemeSetting";
+import ApiSettingRoot from "../components/pages/Setting/ApiSetting";
+import EsewaSettingRoot from "../components/pages/Setting/ApiSetting/Esewa";
+import KhaltiSettingRoot from "../components/pages/Setting/ApiSetting/Khalti";
+import SmsGatewayRoot from "../components/pages/Setting/ApiSetting/SmsGateway";
+import ZoomSettingRoot from "../components/pages/Setting/ApiSetting/Zoom";
+import CourseSettingRoot from "../components/pages/Setting/CourseSetting";
+import EmailTemplatesRoot from "../components/pages/Setting/EmailTemplates";
+import LoginTypeRoot from "../components/pages/Setting/LoginType";
+import SiteInfoRoot from "../components/pages/Setting/SiteInfo";
+import SmtpSettingRoot from "../components/pages/Setting/Smtp";
+import SettingRoot from "../components/pages/Setting";
 import SubscriptionManagementRoot from "../components/pages/SubscriptionManagement";
 import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
 import OmrSheetRoot from "../components/pages/TestAndQuestionManagement/OmrSheets";
@@ -340,14 +349,37 @@ const router = createBrowserRouter([
 				]
 			},
 			{
-				path: PATH.SETTINGS.ROOT, element: <Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}><SettingRoot /></Unauthorized>,
+				path: PATH.SETTINGS.SYSTEM.ROOT,
+				element: (
+					<Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
+						<SettingRoot />
+					</Unauthorized>
+				),
 				children: [
-					{ path: PATH.SETTINGS.PROFILE.ROOT, element: <ProfilePageRoot /> },
-					{ path: PATH.SETTINGS.CHANGE_PASSWORD.ROOT, element: <ChangePassword /> },
-					{ path: PATH.SETTINGS.LINKED_DEVICE.ROOT, element: <LinkedDevices /> },
-					{ path: PATH.SETTINGS.APP_SETTINGS.ROOT, element: <AppSettingRoot /> },
-					{ path: PATH.SETTINGS.THEME.ROOT, element: <ThemeSettingRoot /> },
-				]
+					{ path: PATH.SETTINGS.SYSTEM.PROFILE.ROOT, element: <ProfilePageRoot /> },
+					{ path: PATH.SETTINGS.SYSTEM.CHANGE_PASSWORD.ROOT, element: <ChangePassword /> },
+					{ path: PATH.SETTINGS.SYSTEM.SITE_INFO.ROOT, element: <SiteInfoRoot /> },
+					{ path: PATH.SETTINGS.SYSTEM.SMTP.ROOT, element: <SmtpSettingRoot /> },
+					{ path: PATH.SETTINGS.SYSTEM.GENERAL.ROOT, element: <AppSettingRoot /> },
+					{ path: PATH.SETTINGS.SYSTEM.LINKED_DEVICE.ROOT, element: <LinkedDevices /> },
+					{ path: PATH.SETTINGS.SYSTEM.EMAIL_TEMPLATES.ROOT, element: <EmailTemplatesRoot /> },
+					{ path: PATH.SETTINGS.SYSTEM.COURSE_SETTING.ROOT, element: <CourseSettingRoot /> },
+					{ path: PATH.SETTINGS.SYSTEM.LOGIN_TYPE.ROOT, element: <LoginTypeRoot /> },
+				],
+			},
+			{
+				path: PATH.SETTINGS.API.ROOT,
+				element: (
+					<Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
+						<ApiSettingRoot />
+					</Unauthorized>
+				),
+				children: [
+					{ path: PATH.SETTINGS.API.ZOOM.ROOT, element: <ZoomSettingRoot /> },
+					{ path: PATH.SETTINGS.API.ESEWA.ROOT, element: <EsewaSettingRoot /> },
+					{ path: PATH.SETTINGS.API.KHALTI.ROOT, element: <KhaltiSettingRoot /> },
+					{ path: PATH.SETTINGS.API.SMS_GATEWAY.ROOT, element: <SmsGatewayRoot /> },
+				],
 			},
 			{
 				path: PATH.ACTIVITY_LOG.ROOT,

@@ -274,21 +274,51 @@ export const PATH = {
 	},
 	SETTINGS: {
 		ROOT: "/settings",
-		PROFILE: {
-			ROOT: "/settings/profile"
+		SYSTEM: {
+			ROOT: "/settings/system",
+			PROFILE: {
+				ROOT: "/settings/system/profile"
+			},
+			CHANGE_PASSWORD: {
+				ROOT: "/settings/system/change-password"
+			},
+			SITE_INFO: {
+				ROOT: "/settings/system/site-info"
+			},
+			SMTP: {
+				ROOT: "/settings/system/smtp"
+			},
+			GENERAL: {
+				ROOT: "/settings/system/general"
+			},
+			LINKED_DEVICE: {
+				ROOT: "/settings/system/linked-devices"
+			},
+			EMAIL_TEMPLATES: {
+				ROOT: "/settings/system/email-templates"
+			},
+			COURSE_SETTING: {
+				ROOT: "/settings/system/course-setting"
+			},
+			LOGIN_TYPE: {
+				ROOT: "/settings/system/login-type"
+			},
 		},
-		CHANGE_PASSWORD: {
-			ROOT: "/settings/change-password"
+		API: {
+			ROOT: "/settings/api",
+			ZOOM: {
+				ROOT: "/settings/api/zoom"
+			},
+			ESEWA: {
+				ROOT: "/settings/api/esewa"
+			},
+			KHALTI: {
+				ROOT: "/settings/api/khalti"
+			},
+			SMS_GATEWAY: {
+				ROOT: "/settings/api/sms-gateway"
+			},
 		},
-		LINKED_DEVICE: {
-			ROOT: "/settings/linked-devices"
-		},
-		APP_SETTINGS: {
-			ROOT: "/settings/app-settings"
-		},
-		THEME: {
-			ROOT: "/settings/theme"
-		}
 	},
 	ACTIVITY_LOG: {
 		ROOT: "/activity-log",

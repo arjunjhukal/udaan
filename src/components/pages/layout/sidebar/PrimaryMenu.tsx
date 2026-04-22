@@ -64,8 +64,7 @@ export default function PrimaryMenu() {
         location.pathname.startsWith(PATH.TICKET.ROOT);
 
     const isSettingGroupActive = () =>
-        location.pathname.startsWith(PATH.SETTINGS.ROOT) ||
-        location.pathname.startsWith(PATH.CONTROLS.ROOT);
+        location.pathname.startsWith(PATH.SETTINGS.ROOT);
 
     React.useEffect(() => {
         const p = location.pathname;
@@ -89,7 +88,7 @@ export default function PrimaryMenu() {
             p.startsWith(PATH.OMR.ROOT)
         ) setOpenTest(true);
         if (p.startsWith(PATH.OMR.ROOT)) setOpenOmr(true);
-        if (p.startsWith(PATH.SETTINGS.ROOT) || p.startsWith(PATH.CONTROLS.ROOT)) setOpenSetting(true);
+        if (p.startsWith(PATH.SETTINGS.ROOT)) setOpenSetting(true);
         if (p.startsWith(PATH.DISCUSSION.ROOT) || p.startsWith(PATH.MODERATION.ROOT)) setOpenDiscussion(true);
         if (p.startsWith(PATH.TICKET.ROOT)) setOpenTicket(true);
         if (p.startsWith(PATH.ACTIVITY_LOG.ROOT)) setOpenActivityLog(true);
@@ -601,40 +600,18 @@ export default function PrimaryMenu() {
                             <List component="div" disablePadding sx={{ pl: 3 }}>
                                 <ListItem disablePadding className="menu__item">
                                     <ListItemButton
-                                        onClick={() => navigate(PATH.CONTROLS.ROOT)}
-                                        className={location.pathname.startsWith(PATH.CONTROLS.ROOT) ? "active-nested" : ""}>
+                                        onClick={() => navigate(PATH.SETTINGS.SYSTEM.ROOT)}
+                                        className={location.pathname.startsWith(PATH.SETTINGS.SYSTEM.ROOT) ? "active-nested" : ""}>
                                         <ListItemText primary="System Setting" />
                                     </ListItemButton>
                                 </ListItem>
                                 <ListItem disablePadding className="menu__item">
                                     <ListItemButton
-                                        onClick={() => navigate(PATH.SETTINGS.APP_SETTINGS.ROOT)}
-                                        className={location.pathname.startsWith(PATH.SETTINGS.APP_SETTINGS.ROOT) ? "active-nested" : ""}>
+                                        onClick={() => navigate(PATH.SETTINGS.API.ROOT)}
+                                        className={location.pathname.startsWith(PATH.SETTINGS.API.ROOT) ? "active-nested" : ""}>
                                         <ListItemText primary="API Setting" />
                                     </ListItemButton>
                                 </ListItem>
-                                {/* <ListItem disablePadding className="menu__item">
-                                    <ListItemButton onClick={handleThemeSwitch}>
-                                        <ListItemText
-                                            primary={
-                                                <Typography variant="subtitle2">
-                                                    {mode === ThemeMode.DARK ? "Light Mode" : "Dark Mode"}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItemButton>
-                                </ListItem>
-                                <ListItem disablePadding className="menu__item">
-                                    <ListItemButton onClick={handleLanguageSwitch}>
-                                        <ListItemText
-                                            primary={
-                                                <Typography variant="subtitle2">
-                                                    {i18n.language === "en" ? "नेपाली (Nepali)" : "English"}
-                                                </Typography>
-                                            }
-                                        />
-                                    </ListItemButton>
-                                </ListItem> */}
                             </List>
                         </Collapse>
                     </ListItem>

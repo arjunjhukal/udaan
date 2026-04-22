@@ -1,5 +1,22 @@
 import type { QueryParams } from "../types";
-import type { AppSettingProps, ChangePasswordProps, LinkedDeviceList, ThemeSettingProps } from "../types/setting";
+import type {
+    AppSettingProps,
+    ChangePasswordProps,
+    CourseSettingProps,
+    EmailTemplateActor,
+    EmailTemplateMethod,
+    EmailTemplateProps,
+    EsewaSettingProps,
+    KhaltiSettingProps,
+    LinkedDeviceList,
+    LoginTypeSettingProps,
+    SmsGatewaySettingProps,
+    SmtpSettingProps,
+    ThemeSettingProps,
+    ZoomAccount,
+    ZoomAccountCreateProps,
+    ZoomAccountUpdateProps,
+} from "../types/setting";
 import type { GlobalResponse, User } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseApi } from "./baseApi";
@@ -76,6 +93,125 @@ export const settingApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["Theme"],
         }),
+
+        // ── SMTP ────────────────────────────────────────────────────────────
+        getSmtpSettings: builder.query<GlobalResponse & { data: SmtpSettingProps }, void>({
+            query: () => ({ url: `/admin/settings/smtp`, method: "GET" }),
+            providesTags: ["SmtpSetting"],
+        }),
+        updateSmtpSettings: builder.mutation<GlobalResponse, SmtpSettingProps>({
+            query: (body) => ({ url: `/admin/settings/smtp`, method: "POST", body }),
+            invalidatesTags: ["SmtpSetting"],
+        }),
+
+        // ── Course Setting ───────────────────────────────────────────────────
+        getCourseSettings: builder.query<GlobalResponse & { data: CourseSettingProps }, void>({
+            query: () => ({ url: `/admin/settings/course`, method: "GET" }),
+            providesTags: ["CourseSetting"],
+        }),
+        updateCourseSettings: builder.mutation<GlobalResponse, CourseSettingProps>({
+            query: (body) => ({ url: `/admin/settings/course`, method: "POST", body }),
+            invalidatesTags: ["CourseSetting"],
+        }),
+
+        // ── Login Type ───────────────────────────────────────────────────────
+        getLoginTypeSetting: builder.query<GlobalResponse & { data: LoginTypeSettingProps }, void>({
+            query: () => ({ url: `/admin/settings/login-type`, method: "GET" }),
+            providesTags: ["LoginType"],
+        }),
+        updateLoginTypeSetting: builder.mutation<GlobalResponse, LoginTypeSettingProps>({
+            query: (body) => ({ url: `/admin/settings/login-type`, method: "POST", body }),
+            invalidatesTags: ["LoginType"],
+        }),
+
+        // ── Email Templates ──────────────────────────────────────────────────
+        getEmailTemplates: builder.query<
+            GlobalResponse & { data: EmailTemplateProps[] },
+            { actor: EmailTemplateActor; method: EmailTemplateMethod }
+        >({
+            query: ({ actor, method }) => ({
+                url: `/admin/settings/email-templates?actor=${actor}&method=${method}`,
+                method: "GET",
+            }),
+            providesTags: ["EmailTemplate"],
+        }),
+        getEmailTemplate: builder.query<
+            GlobalResponse & { data: EmailTemplateProps },
+            { actor: EmailTemplateActor; method: EmailTemplateMethod; template_key: string }
+        >({
+            query: ({ actor, method, template_key }) => ({
+                url: `/admin/settings/email-templates/${template_key}?actor=${actor}&method=${method}`,
+                method: "GET",
+            }),
+            providesTags: ["EmailTemplate"],
+        }),
+        updateEmailTemplate: builder.mutation<GlobalResponse, EmailTemplateProps>({
+            query: ({ actor, method, template_key, ...body }) => ({
+                url: `/admin/settings/email-templates/${template_key}?actor=${actor}&method=${method}`,
+                method: "POST",
+                body,
+            }),
+            invalidatesTags: ["EmailTemplate"],
+        }),
+
+        // ── Zoom Accounts ────────────────────────────────────────────────────
+        getZoomAccounts: builder.query<GlobalResponse & { data: ZoomAccount[] }, void>({
+            query: () => ({ url: `/admin/settings/api/zoom`, method: "GET" }),
+            providesTags: ["ZoomAccount"],
+        }),
+        createZoomAccount: builder.mutation<GlobalResponse, ZoomAccountCreateProps>({
+            query: (body) => ({ url: `/admin/settings/api/zoom`, method: "POST", body }),
+            invalidatesTags: ["ZoomAccount"],
+        }),
+        updateZoomAccount: builder.mutation<GlobalResponse, ZoomAccountUpdateProps>({
+            query: ({ id, ...body }) => ({ url: `/admin/settings/api/zoom/${id}`, method: "PUT", body }),
+            invalidatesTags: ["ZoomAccount"],
+        }),
+        toggleZoomAccount: builder.mutation<GlobalResponse, number>({
+            query: (id) => ({ url: `/admin/settings/api/zoom/${id}/toggle`, method: "PATCH" }),
+            invalidatesTags: ["ZoomAccount"],
+        }),
+        deleteZoomAccount: builder.mutation<GlobalResponse, number>({
+            query: (id) => ({ url: `/admin/settings/api/zoom/${id}`, method: "DELETE" }),
+            invalidatesTags: ["ZoomAccount"],
+        }),
+
+        getEsewaSettings: builder.query<GlobalResponse & { data: EsewaSettingProps }, void>({
+            query: () => ({ url: `/admin/settings/api/esewa`, method: "GET" }),
+            providesTags: ["ApiSetting"],
+        }),
+        updateEsewaSettings: builder.mutation<GlobalResponse, Partial<EsewaSettingProps>>({
+            query: (body) => ({ url: `/admin/settings/api/esewa`, method: "POST", body }),
+            invalidatesTags: ["ApiSetting"],
+        }),
+        toggleEsewaActive: builder.mutation<GlobalResponse, void>({
+            query: () => ({ url: `/admin/settings/api/esewa/toggle`, method: "PATCH" }),
+            invalidatesTags: ["ApiSetting"],
+        }),
+
+        // ── Khalti ───────────────────────────────────────────────────────────
+        getKhaltiSettings: builder.query<GlobalResponse & { data: KhaltiSettingProps }, void>({
+            query: () => ({ url: `/admin/settings/api/khalti`, method: "GET" }),
+            providesTags: ["ApiSetting"],
+        }),
+        updateKhaltiSettings: builder.mutation<GlobalResponse, Partial<KhaltiSettingProps>>({
+            query: (body) => ({ url: `/admin/settings/api/khalti`, method: "POST", body }),
+            invalidatesTags: ["ApiSetting"],
+        }),
+        toggleKhaltiActive: builder.mutation<GlobalResponse, void>({
+            query: () => ({ url: `/admin/settings/api/khalti/toggle`, method: "PATCH" }),
+            invalidatesTags: ["ApiSetting"],
+        }),
+
+        // ── SMS Gateway ──────────────────────────────────────────────────────
+        getSmsGatewaySettings: builder.query<GlobalResponse & { data: SmsGatewaySettingProps }, void>({
+            query: () => ({ url: `/admin/settings/api/sms-gateway`, method: "GET" }),
+            providesTags: ["ApiSetting"],
+        }),
+        updateSmsGatewaySettings: builder.mutation<GlobalResponse, Partial<SmsGatewaySettingProps>>({
+            query: (body) => ({ url: `/admin/settings/api/sms-gateway`, method: "POST", body }),
+            invalidatesTags: ["ApiSetting"],
+        }),
     }),
 });
 
@@ -89,4 +225,26 @@ export const {
     useGetProfileQuery,
     useGetThemeSettingsQuery,
     useUpdateThemeSettingMutation,
+    useGetSmtpSettingsQuery,
+    useUpdateSmtpSettingsMutation,
+    useGetCourseSettingsQuery,
+    useUpdateCourseSettingsMutation,
+    useGetLoginTypeSettingQuery,
+    useUpdateLoginTypeSettingMutation,
+    useGetEmailTemplatesQuery,
+    useGetEmailTemplateQuery,
+    useUpdateEmailTemplateMutation,
+    useGetZoomAccountsQuery,
+    useCreateZoomAccountMutation,
+    useUpdateZoomAccountMutation,
+    useToggleZoomAccountMutation,
+    useDeleteZoomAccountMutation,
+    useGetEsewaSettingsQuery,
+    useUpdateEsewaSettingsMutation,
+    useToggleEsewaActiveMutation,
+    useGetKhaltiSettingsQuery,
+    useUpdateKhaltiSettingsMutation,
+    useToggleKhaltiActiveMutation,
+    useGetSmsGatewaySettingsQuery,
+    useUpdateSmsGatewaySettingsMutation,
 } = settingApi;

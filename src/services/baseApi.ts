@@ -51,6 +51,12 @@ export const baseApi = createApi({
         "Controls",
         "Theme",
         "MenuCounts",
+        "SmtpSetting",
+        "CourseSetting",
+        "LoginType",
+        "EmailTemplate",
+        "ApiSetting",
+        "ZoomAccount",
     ],
     endpoints: () => ({}),
 });

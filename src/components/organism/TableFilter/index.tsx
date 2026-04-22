@@ -1,5 +1,5 @@
 import { Download } from "@mui/icons-material";
-import { Box, Button, ClickAwayListener, Dialog, DialogContent, Grow, IconButton, List, ListItem, ListItemButton, ListItemText, OutlinedInput, Paper, Popper, Stack, Typography, useTheme } from "@mui/material";
+import { Box, Button, CircularProgress, ClickAwayListener, Dialog, DialogContent, Grow, IconButton, List, ListItem, ListItemButton, ListItemText, OutlinedInput, Paper, Popper, Stack, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { t } from "i18next";
 import { Add, Send, Status } from "iconsax-reactjs";
@@ -325,12 +325,10 @@ export default function TableFilter({
                             </Typography>
                         </Button>
                     )}
-                    {onDownload ? <Button onClick={onDownload} disabled={donwloading} startIcon={<Download sx={{
-                        color: (theme) => theme.palette.primary.black
-                    }} />} sx={{
+                    {onDownload ? <Button onClick={onDownload} disabled={donwloading} startIcon={donwloading ? <CircularProgress size={16} color="inherit" /> : <Download sx={{ color: (theme) => theme.palette.primary.black }} />} sx={{
                         border: `1px solid ${theme.palette.separator.dark}`
                     }} className="py-2.5! px-3.5! rounded-md!">
-                        <Typography variant="subtitle1" color="text.dark">{donwloading ? "Downloading" : "Download"}</Typography>
+                        <Typography variant="subtitle1" color="text.dark">{donwloading ? "Downloading..." : "Download"}</Typography>
                     </Button> : ""}
                     {onStatusChange ? <Button
                         disabled={selectedRows!.size === 0}
