@@ -70,17 +70,19 @@ export default function SmsGatewayRoot() {
                     </FormControl>
                 </div>
 
-                <div>
-                    <InputLabel>Sender ID</InputLabel>
-                    <OutlinedInput
-                        fullWidth
-                        name="sender_id"
-                        value={formik.values.sender_id}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="e.g. MAKURA"
-                    />
-                </div>
+                {formik.values.provider !== "aakash" && (
+                    <div>
+                        <InputLabel>Sender ID</InputLabel>
+                        <OutlinedInput
+                            fullWidth
+                            name="sender_id"
+                            value={formik.values.sender_id}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            placeholder="e.g. MAKURA"
+                        />
+                    </div>
+                )}
 
                 <div>
                     <InputLabel>API Key</InputLabel>

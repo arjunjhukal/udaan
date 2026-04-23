@@ -6,18 +6,21 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hook";
 import LanguageModal from "./LanguageModal";
 import NotificationBell from "./NotificationBell";
 import Profile from "./Profile";
+const DRAWER_EXPANDED = 356;
+const DRAWER_COLLAPSED = 72;
 
-const drawerWidth = 356;
 
 export default function CustomAppbar({
     handleDrawerToggle,
+    collapsed,
 }: {
     handleDrawerToggle: () => void;
+    collapsed: boolean;
 }) {
     const theme = useTheme();
     const dispatch = useAppDispatch();
     const mode = useAppSelector((state) => state.theme.mode);
-
+    const drawerWidth = collapsed ? DRAWER_COLLAPSED : DRAWER_EXPANDED;
     const handleThemeToggle = () => {
         dispatch(setMode(mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK));
     };

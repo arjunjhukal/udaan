@@ -17,6 +17,7 @@ export default function ThemeSettingRoot() {
     const formik = useFormik<ThemeSettingFormProps>({
         initialValues: {
             company_name: data?.data?.company_name || "",
+            brand_name: data?.data?.brand_name || "",
             tagline: data?.data?.tagline || "",
             meta_description: data?.data?.meta_description || "",
             logo_url: data?.data?.logo_url || "",
@@ -30,6 +31,7 @@ export default function ThemeSettingRoot() {
         onSubmit: async (values) => {
             const fd = new FormData();
             fd.append("company_name", values.company_name);
+            fd.append("brand_name", values.brand_name);
             fd.append("tagline", values.tagline);
             fd.append("meta_description", values.meta_description);
             if (values.logo) fd.append("logo", values.logo);
@@ -74,6 +76,18 @@ export default function ThemeSettingRoot() {
                         fullWidth
                         name="tagline"
                         value={formik.values.tagline}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        placeholder="e.g. Learn smarter, grow faster"
+                    />
+                </div>
+                {/* Brand Name */}
+                <div>
+                    <InputLabel>Brand Name</InputLabel>
+                    <OutlinedInput
+                        fullWidth
+                        name="brand_name"
+                        value={formik.values.brand_name}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         placeholder="e.g. Learn smarter, grow faster"

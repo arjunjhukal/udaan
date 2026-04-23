@@ -29,7 +29,6 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
     const [openCourse, setOpenCourse] = React.useState<boolean>(false);
     const [openCategory, setOpenCategory] = React.useState<boolean>(false);
     const [openTest, setOpenTest] = React.useState<boolean>(false);
-    const [openSetting, setOpenSetting] = React.useState<boolean>(false);
     const [openOmr, setOpenOmr] = React.useState<boolean>(false);
     const [openDiscussion, setOpenDiscussion] = React.useState<boolean>(false);
     const [openTicket, setOpenTicket] = React.useState<boolean>(false);
@@ -42,7 +41,6 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
             setOpenCategory(false);
             setOpenTest(false);
             setOpenOmr(false);
-            setOpenSetting(false);
             setOpenDiscussion(false);
             setOpenTicket(false);
             setOpenActivityLog(false);
@@ -71,7 +69,6 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
             p.startsWith(PATH.OMR.ROOT)
         ) setOpenTest(true);
         if (p.startsWith(PATH.OMR.ROOT)) setOpenOmr(true);
-        if (p.startsWith(PATH.SETTINGS.ROOT)) setOpenSetting(true);
         if (p.startsWith(PATH.DISCUSSION.ROOT) || p.startsWith(PATH.MODERATION.ROOT)) setOpenDiscussion(true);
         if (p.startsWith(PATH.TICKET.ROOT)) setOpenTicket(true);
         if (p.startsWith(PATH.ACTIVITY_LOG.ROOT)) setOpenActivityLog(true);
@@ -107,6 +104,7 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
     const isTicketGroupActive = () => location.pathname.startsWith(PATH.TICKET.ROOT);
 
     const isSettingGroupActive = () => location.pathname.startsWith(PATH.SETTINGS.ROOT);
+
 
     const btnSx = collapsed ? { justifyContent: "center", px: 1, minHeight: 44 } : {};
     const iconSx = collapsed ? { minWidth: 0 } : {};
@@ -669,10 +667,7 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                     <ListItem disablePadding className="menu__item">
                         <Tooltip title={collapsed ? t("messages.settings") : ""} placement="right" arrow>
                             <ListItemButton
-                                onClick={() => collapsed
-                                    ? navigate(PATH.SETTINGS.SYSTEM.PROFILE.ROOT)
-                                    : setOpenSetting((prev) => !prev)
-                                }
+                                onClick={() => navigate(PATH.SETTINGS.SYSTEM.PROFILE.ROOT)}
                                 className={isSettingGroupActive() ? "active" : ""}
                                 sx={btnSx}
                             >
@@ -682,27 +677,8 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                     </svg>
                                 </ListItemIcon>
                                 {!collapsed && <ListItemText primary={t("messages.settings")} />}
-                                {!collapsed && (openSetting ? <ExpandLess /> : <ExpandMore />)}
                             </ListItemButton>
                         </Tooltip>
-                        <Collapse in={openSetting && !collapsed} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding sx={{ pl: 3 }}>
-                                <ListItem disablePadding className="menu__item">
-                                    <ListItemButton
-                                        onClick={() => navigate(PATH.SETTINGS.SYSTEM.PROFILE.ROOT)}
-                                        className={location.pathname.startsWith(PATH.SETTINGS.SYSTEM.ROOT) ? "active-nested" : ""}>
-                                        <ListItemText primary="System Setting" />
-                                    </ListItemButton>
-                                </ListItem>
-                                <ListItem disablePadding className="menu__item">
-                                    <ListItemButton
-                                        onClick={() => navigate(PATH.SETTINGS.API.ZOOM.ROOT)}
-                                        className={location.pathname.startsWith(PATH.SETTINGS.API.ROOT) ? "active-nested" : ""}>
-                                        <ListItemText primary="API Setting" />
-                                    </ListItemButton>
-                                </ListItem>
-                            </List>
-                        </Collapse>
                     </ListItem>
                 </CAN>
 

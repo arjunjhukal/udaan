@@ -97,25 +97,6 @@ export default function ResponsiveDrawer(props: Props) {
 			</Toolbar>
 
 			<PrimaryMenu collapsed={collapsed} />
-
-			{/* Collapse toggle — desktop only */}
-			<Box
-				sx={{
-					display: { xs: "none", lg: "flex" },
-					justifyContent: "center",
-					py: 2,
-					mt: "auto",
-				}}
-			>
-				<Tooltip
-					title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-					placement="right"
-				>
-					<IconButton size="small" onClick={handleToggleCollapse} className="">
-						{collapsed ? <ChevronRight fontSize="small" /> : <ChevronLeft fontSize="small" />}
-					</IconButton>
-				</Tooltip>
-			</Box>
 		</div>
 	);
 
@@ -124,16 +105,42 @@ export default function ResponsiveDrawer(props: Props) {
 
 	return (
 		<Box sx={{ display: "flex" }}>
-			<CustomAppbar handleDrawerToggle={handleDrawerToggle} />
+			<CustomAppbar handleDrawerToggle={handleDrawerToggle} collapsed={collapsed} />
 			<Box
 				component="nav"
 				sx={{
 					width: { lg: drawerWidth },
 					flexShrink: { lg: 0 },
 					transition: "width 0.2s ease",
+					position: "relative",
 				}}
 				aria-label="navigation"
 			>
+				{/* Collapse toggle — desktop only, right edge vertically centered */}
+				<Tooltip title={collapsed ? "Expand sidebar" : "Collapse sidebar"} placement="right">
+					<IconButton
+						size="small"
+						onClick={handleToggleCollapse}
+						sx={{
+							display: { xs: "none", lg: "flex" },
+							position: "absolute",
+							right: -13,
+							top: "50%",
+							transform: "translateY(-50%)",
+							zIndex: 1250,
+							width: 26,
+							height: 26,
+							p: 0,
+							bgcolor: "background.paper",
+							border: "1px solid",
+							borderColor: "divider",
+							"&:hover": { bgcolor: "action.hover" },
+						}}
+					>
+						{collapsed ? <ChevronRight sx={{ fontSize: 16 }} /> : <ChevronLeft sx={{ fontSize: 16 }} />}
+					</IconButton>
+				</Tooltip>
+
 				{/* Mobile temporary drawer — always full width */}
 				<Drawer
 					container={container}
