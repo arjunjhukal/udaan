@@ -195,7 +195,7 @@ export default function SettingRoot() {
                 breadcrumb={[
                     {
                         title: "Settings",
-                        icon: <Setting2 size={20} color={theme.palette.primary.main} />,
+                        icon: <Setting2 color={theme.palette.primary.main} />,
                         url: PATH.SETTINGS.SYSTEM.PROFILE.ROOT,
                     },
                     ...(activeItem ? [{ title: activeItem.label }] : []),

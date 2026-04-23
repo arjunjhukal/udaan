@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
+import { useGetThemeSettingsQuery } from "../../../../services/settingApi";
 import AuthHeader from "../../../molecules/AuthHeader";
 import LoginForm from "../../../organism/LoginForm";
 
@@ -9,10 +10,12 @@ export default function Login({
 }: {
 	requirePassword?: boolean;
 }) {
+	const { data: themeSettings } = useGetThemeSettingsQuery();
+	const brandName = themeSettings?.data?.brand_name || themeSettings?.data?.company_name || "";
 	return (
 		<>
 			<AuthHeader
-				title="Welcome to Udann 👋🏻 "
+				title={`Welcome to ${brandName} 👋🏻 `}
 				description="You're one step closer to exponential growth"
 			/>
 			<LoginForm requirePassword={requirePassword} />

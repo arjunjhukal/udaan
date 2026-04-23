@@ -5,7 +5,7 @@ import { useGetThemeSettingsQuery } from "../../../services/settingApi";
 export default function AuthLayout() {
 	const { data: themeSettings } = useGetThemeSettingsQuery();
 	// Auth pages always have a light background — always use the light logo
-	const logoSrc = themeSettings?.data?.logo_url || "/logo.svg";
+	const logoSrc = themeSettings?.data?.logo_dark_url || "/logo.svg";
 	const brandName = themeSettings?.data?.brand_name || themeSettings?.data?.company_name || "";
 
 	return (

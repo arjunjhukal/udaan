@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hook";
 import LanguageModal from "./LanguageModal";
 import NotificationBell from "./NotificationBell";
 import Profile from "./Profile";
-const DRAWER_EXPANDED = 356;
+const DRAWER_EXPANDED = 340;
 const DRAWER_COLLAPSED = 72;
 
 

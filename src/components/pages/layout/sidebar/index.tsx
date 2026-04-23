@@ -10,7 +10,7 @@ import { useGetThemeSettingsQuery } from "../../../../services/settingApi";
 import CustomAppbar from "../appbar";
 import PrimaryMenu from "./PrimaryMenu";
 
-const DRAWER_EXPANDED = 356;
+const DRAWER_EXPANDED = 340;
 const DRAWER_COLLAPSED = 72;
 
 interface Props {

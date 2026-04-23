@@ -94,7 +94,6 @@ export interface CourseSettingProps {
     global_discount_value: number | string;
 }
 
-
 export type LoginType = "otp" | "password" | "both";
 export interface LoginTypeSettingProps {
     login_type: LoginType;

@@ -1,6 +1,6 @@
+import { useTheme } from "@mui/material";
 import React from "react";
 import { useGetThemeSettingsQuery } from "../../../services/settingApi";
-import { useTheme } from "@mui/material";
 
 export default function SingleFormAuthLayout({
 	children,
@@ -11,8 +11,8 @@ export default function SingleFormAuthLayout({
 	const { data: themeSettings } = useGetThemeSettingsQuery();
 	const isDark = theme.palette.mode === "dark";
 	const logoSrc = isDark
-		? (themeSettings?.data?.logo_dark_url || themeSettings?.data?.logo_url || "/logo.svg")
-		: (themeSettings?.data?.logo_url || "/logo.svg");
+		? (themeSettings?.data?.logo_url || "/logo.svg")
+		: (themeSettings?.data?.logo_dark_url || "/logo.svg");
 
 	return (
 		<>
