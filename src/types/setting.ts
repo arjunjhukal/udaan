@@ -25,6 +25,7 @@ export interface LinkedDeviceList {
 
 export interface ThemeSettingProps {
     company_name: string;
+    brand_name: string;
     tagline: string;
     meta_description: string;
     logo_url?: string;
@@ -175,21 +176,32 @@ export interface ZoomAccountUpdateProps {
     sdk_secret?: string;
 }
 
+export type PaymentMode = "test" | "live";
+
 export interface EsewaSettingProps {
-    merchant_id: string;
-    secret_key: string;
-    test_mode: boolean;
+    merchant_id: string | null;
+    product_code: string | null;
+    secret_key: string | null;
+    merchant_secret: string | null;
+    mode: PaymentMode;
     is_active: boolean;
+    urls?: {
+        payment_check_url: string;
+        checkurl_mobile: string;
+    };
 }
 
 export interface KhaltiSettingProps {
-    public_key: string;
-    secret_key: string;
-    test_mode: boolean;
+    public_key: string | null;
+    secret_key: string | null;
+    mode: PaymentMode;
     is_active: boolean;
+    urls?: {
+        api_url: string;
+    };
 }
 
-export type SmsGatewayProvider = "sparrow" | "aakash" | "custom";
+export type SmsGatewayProvider = "samaya" | "aakash" | "custom";
 
 export interface SmsGatewaySettingProps {
     provider: SmsGatewayProvider;

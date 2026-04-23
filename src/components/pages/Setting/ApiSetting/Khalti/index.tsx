@@ -1,32 +1,23 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Alert, Box, Button, Chip, Divider, FormControlLabel, IconButton, InputAdornment, InputLabel, OutlinedInput, Switch, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, Button, Chip, Divider, InputLabel, MenuItem, OutlinedInput, Select, Switch, Tooltip, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { useState } from "react";
 import {
-    useGetEsewaSettingsQuery,
     useGetKhaltiSettingsQuery,
     useToggleKhaltiActiveMutation,
     useUpdateKhaltiSettingsMutation,
 } from "../../../../../services/settingApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
+import Password from "../../../../atoms/Password";
 
 export default function KhaltiSettingRoot() {
     const dispatch = useAppDispatch();
     const { data } = useGetKhaltiSettingsQuery();
-    const { data: esewaData } = useGetEsewaSettingsQuery();
     const [updateKhalti, { isLoading }] = useUpdateKhaltiSettingsMutation();
     const [toggleKhalti, { isLoading: toggling }] = useToggleKhaltiActiveMutation();
-    const [showSecret, setShowSecret] = useState(false);
 
     const isActive = data?.data?.is_active ?? false;
-    const esewaActive = esewaData?.data?.is_active ?? false;
 
     const handleToggle = async () => {
-        if (isActive && !esewaActive) {
-            dispatch(showToast({ message: "Cannot disable Khalti — at least one payment gateway must remain active", severity: "error" }));
-            return;
-        }
         try {
             await toggleKhalti().unwrap();
         } catch (e: any) {
@@ -38,13 +29,13 @@ export default function KhaltiSettingRoot() {
         initialValues: {
             public_key: data?.data?.public_key || "",
             secret_key: "",
-            test_mode: data?.data?.test_mode ?? true,
+            mode: data?.data?.mode ?? "test",
         },
         enableReinitialize: true,
         onSubmit: async (values, { resetForm }) => {
             const payload: Record<string, any> = {
                 public_key: values.public_key,
-                test_mode: values.test_mode,
+                mode: values.mode,
             };
             if (values.secret_key) payload.secret_key = values.secret_key;
 
@@ -70,7 +61,7 @@ export default function KhaltiSettingRoot() {
                         variant="outlined"
                     />
                 </div>
-                <Tooltip title={isActive && !esewaActive ? "Cannot disable — eSewa is also inactive" : ""}>
+                <Tooltip title={isActive ? "Disable Khalti" : "Enable Khalti"}>
                     <Box>
                         <Switch
                             checked={isActive}
@@ -89,47 +80,37 @@ export default function KhaltiSettingRoot() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <InputLabel>Public Key</InputLabel>
+                    <InputLabel className="required">Public Key</InputLabel>
                     <OutlinedInput
                         fullWidth
                         name="public_key"
                         value={formik.values.public_key}
                         onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
                         placeholder="Khalti Public Key"
                     />
                 </div>
 
                 <div>
-                    <InputLabel>Secret Key</InputLabel>
-                    <OutlinedInput
-                        fullWidth
+                    <InputLabel>Secret Key <span style={{ fontWeight: 400, fontSize: 12, marginLeft: 4 }}>(blank = keep existing)</span></InputLabel>
+                    <Password
                         name="secret_key"
-                        type={showSecret ? "text" : "password"}
                         value={formik.values.secret_key}
                         onChange={formik.handleChange}
-                        placeholder="Enter new secret key (blank = keep existing)"
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setShowSecret((v) => !v)} edge="end">
-                                    {showSecret ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
+                        placeholder="Enter new secret key to replace"
                     />
                 </div>
 
                 <div>
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                name="test_mode"
-                                checked={formik.values.test_mode}
-                                onChange={formik.handleChange}
-                            />
-                        }
-                        label="Test Mode (Sandbox)"
-                    />
+                    <InputLabel className="required">Mode</InputLabel>
+                    <Select
+                        fullWidth
+                        name="mode"
+                        value={formik.values.mode}
+                        onChange={formik.handleChange}
+                    >
+                        <MenuItem value="test">Test (Sandbox)</MenuItem>
+                        <MenuItem value="live">Live (Production)</MenuItem>
+                    </Select>
                 </div>
             </div>
 

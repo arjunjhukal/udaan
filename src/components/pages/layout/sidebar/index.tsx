@@ -2,14 +2,16 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import * as React from "react";
 
-import { useTheme } from "@mui/material";
+import { ChevronLeft, ChevronRight } from "@mui/icons-material";
+import { IconButton, Tooltip, useTheme } from "@mui/material";
 import Toolbar from "@mui/material/Toolbar";
 import { Link, useLocation } from "react-router-dom";
+import { useGetThemeSettingsQuery } from "../../../../services/settingApi";
 import CustomAppbar from "../appbar";
 import PrimaryMenu from "./PrimaryMenu";
-import { useGetThemeSettingsQuery } from "../../../../services/settingApi";
 
-const drawerWidth = 356;
+const DRAWER_EXPANDED = 356;
+const DRAWER_COLLAPSED = 72;
 
 interface Props {
 	window?: () => Window;
@@ -20,6 +22,11 @@ export default function ResponsiveDrawer(props: Props) {
 	const { window } = props;
 	const [mobileOpen, setMobileOpen] = React.useState(false);
 	const [isClosing, setIsClosing] = React.useState(false);
+	const [collapsed, setCollapsed] = React.useState(() => {
+		try { return localStorage.getItem("sidebar_collapsed") === "true"; }
+		catch { return false; }
+	});
+
 	const location = useLocation();
 	const pathname = location.pathname;
 	const theme = useTheme();
@@ -28,6 +35,15 @@ export default function ResponsiveDrawer(props: Props) {
 	const logoSrc = isDark
 		? (themeSettings?.data?.logo_dark_url || themeSettings?.data?.logo_url || "/logo.svg")
 		: (themeSettings?.data?.logo_url || "/logo.svg");
+	const faviconSrc = themeSettings?.data?.favicon_url || "/favicon.ico";
+
+	const drawerWidth = collapsed ? DRAWER_COLLAPSED : DRAWER_EXPANDED;
+
+	const handleToggleCollapse = () => {
+		const next = !collapsed;
+		setCollapsed(next);
+		try { localStorage.setItem("sidebar_collapsed", String(next)); } catch { /* noop */ }
+	};
 
 	const handleDrawerClose = () => {
 		setIsClosing(true);
@@ -45,30 +61,64 @@ export default function ResponsiveDrawer(props: Props) {
 	};
 
 	React.useEffect(() => {
-		if (mobileOpen) {
-			handleDrawerClose();
-		}
+		if (mobileOpen) handleDrawerClose();
 	}, [pathname]);
 
 	const drawer = (
-		<div className="min-h-screen overflow-hidden">
+		<div className="min-h-screen overflow-hidden flex flex-col">
 			<Toolbar
 				sx={{
-					padding: {
-						xs: "32px 32px 16px",
-						"2xl": "32px 32px 56px"
-					},
+					padding: collapsed
+						? "20px 8px 16px"
+						: { xs: "32px 32px 16px", "2xl": "32px 32px 56px" },
 					justifyContent: "center",
-				}}>
-				<Link to={"/"}>
-					<img src={logoSrc} alt={themeSettings?.data?.company_name || ""} width={137} height={73} className="max-w-120 mx-auto" />
-				</Link>
+					minHeight: collapsed ? "72px !important" : undefined,
+				}}
+			>
+				{collapsed ? (
+					<img
+						src={faviconSrc}
+						alt=""
+						width={32}
+						height={32}
+						style={{ borderRadius: 6, objectFit: "contain" }}
+					/>
+				) : (
+					<Link to="/">
+						<img
+							src={logoSrc}
+							alt={themeSettings?.data?.company_name || ""}
+							width={137}
+							height={73}
+							className="max-w-[120px] mx-auto"
+						/>
+					</Link>
+				)}
 			</Toolbar>
-			<PrimaryMenu />
+
+			<PrimaryMenu collapsed={collapsed} />
+
+			{/* Collapse toggle — desktop only */}
+			<Box
+				sx={{
+					display: { xs: "none", lg: "flex" },
+					justifyContent: "center",
+					py: 2,
+					mt: "auto",
+				}}
+			>
+				<Tooltip
+					title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+					placement="right"
+				>
+					<IconButton size="small" onClick={handleToggleCollapse} className="">
+						{collapsed ? <ChevronRight fontSize="small" /> : <ChevronLeft fontSize="small" />}
+					</IconButton>
+				</Tooltip>
+			</Box>
 		</div>
 	);
 
-	// Remove this const when copying and pasting into your project.
 	const container =
 		window !== undefined ? () => window().document.body : undefined;
 
@@ -77,8 +127,14 @@ export default function ResponsiveDrawer(props: Props) {
 			<CustomAppbar handleDrawerToggle={handleDrawerToggle} />
 			<Box
 				component="nav"
-				sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
-				aria-label="mailbox folders">
+				sx={{
+					width: { lg: drawerWidth },
+					flexShrink: { lg: 0 },
+					transition: "width 0.2s ease",
+				}}
+				aria-label="navigation"
+			>
+				{/* Mobile temporary drawer — always full width */}
 				<Drawer
 					container={container}
 					variant="temporary"
@@ -89,18 +145,17 @@ export default function ResponsiveDrawer(props: Props) {
 						display: { xs: "block", lg: "none" },
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
-							width: drawerWidth,
+							width: DRAWER_EXPANDED,
 							height: "100svh",
-							backgroundColor: (theme) => theme.palette.background.sidebar,
+							backgroundColor: (t) => t.palette.background.sidebar,
 						},
 					}}
-					slotProps={{
-						root: {
-							keepMounted: true,
-						},
-					}}>
+					slotProps={{ root: { keepMounted: true } }}
+				>
 					{drawer}
 				</Drawer>
+
+				{/* Desktop permanent drawer */}
 				<Drawer
 					variant="permanent"
 					sx={{
@@ -108,30 +163,39 @@ export default function ResponsiveDrawer(props: Props) {
 						"& .MuiDrawer-paper": {
 							boxSizing: "border-box",
 							width: drawerWidth,
-							backgroundColor: (theme) => theme.palette.background.sidebar,
+							backgroundColor: (t) => t.palette.background.sidebar,
+							transition: "width 0.2s ease",
+							overflowX: "hidden",
 						},
 					}}
-					open>
+					open
+				>
 					{drawer}
 				</Drawer>
 			</Box>
+
 			<Box
 				component="main"
 				sx={{
 					flexGrow: 1,
-					overflowX: "hidden"
-				}}>
-				{/* Spacer to offset the fixed 64px AppBar */}
+					overflowX: "hidden",
+					transition: "margin 0.2s ease",
+				}}
+			>
 				<Toolbar sx={{ minHeight: "64px !important" }} />
-				<Box className="content p-4 lg:p-6 overflow-y-auto flex flex-col" sx={{
-					background: pathname === "/" || pathname === "/dashboard"
-						? "transparent"
-						: theme.palette.primary.contrastText,
-					height: "calc(100vh - 64px)",
-				}}>
+				<Box
+					className="content p-4 lg:p-6 overflow-y-auto flex flex-col"
+					sx={{
+						background:
+							pathname === "/" || pathname === "/dashboard"
+								? "transparent"
+								: theme.palette.primary.contrastText,
+						height: "calc(100vh - 64px)",
+					}}
+				>
 					{props.children}
 				</Box>
 			</Box>
-		</Box >
+		</Box>
 	);
 }

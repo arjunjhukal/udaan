@@ -59,7 +59,6 @@ import AppSettingRoot from "../components/pages/Setting/AppSetting";
 import ChangePassword from "../components/pages/Setting/ChangePassword";
 import LinkedDevices from "../components/pages/Setting/LinkedDevices";
 import ProfilePageRoot from "../components/pages/Setting/Profile";
-import ApiSettingRoot from "../components/pages/Setting/ApiSetting";
 import EsewaSettingRoot from "../components/pages/Setting/ApiSetting/Esewa";
 import KhaltiSettingRoot from "../components/pages/Setting/ApiSetting/Khalti";
 import SmsGatewayRoot from "../components/pages/Setting/ApiSetting/SmsGateway";
@@ -349,7 +348,7 @@ const router = createBrowserRouter([
 				]
 			},
 			{
-				path: PATH.SETTINGS.SYSTEM.ROOT,
+				path: PATH.SETTINGS.ROOT,
 				element: (
 					<Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
 						<SettingRoot />
@@ -365,16 +364,6 @@ const router = createBrowserRouter([
 					{ path: PATH.SETTINGS.SYSTEM.EMAIL_TEMPLATES.ROOT, element: <EmailTemplatesRoot /> },
 					{ path: PATH.SETTINGS.SYSTEM.COURSE_SETTING.ROOT, element: <CourseSettingRoot /> },
 					{ path: PATH.SETTINGS.SYSTEM.LOGIN_TYPE.ROOT, element: <LoginTypeRoot /> },
-				],
-			},
-			{
-				path: PATH.SETTINGS.API.ROOT,
-				element: (
-					<Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
-						<ApiSettingRoot />
-					</Unauthorized>
-				),
-				children: [
 					{ path: PATH.SETTINGS.API.ZOOM.ROOT, element: <ZoomSettingRoot /> },
 					{ path: PATH.SETTINGS.API.ESEWA.ROOT, element: <EsewaSettingRoot /> },
 					{ path: PATH.SETTINGS.API.KHALTI.ROOT, element: <KhaltiSettingRoot /> },

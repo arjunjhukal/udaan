@@ -56,15 +56,14 @@ export default function SmsGatewayRoot() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
+                    <InputLabel>Provider</InputLabel>
                     <FormControl fullWidth>
-                        <InputLabel>Provider</InputLabel>
                         <Select
                             name="provider"
                             value={formik.values.provider}
-                            label="Provider"
                             onChange={formik.handleChange}
                         >
-                            <MenuItem value="sparrow">Sparrow SMS</MenuItem>
+                            <MenuItem value="samaya">Samaya SMS</MenuItem>
                             <MenuItem value="aakash">Aakash SMS</MenuItem>
                             <MenuItem value="custom">Custom</MenuItem>
                         </Select>

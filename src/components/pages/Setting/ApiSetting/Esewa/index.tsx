@@ -1,32 +1,23 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Alert, Box, Button, Chip, Divider, FormControlLabel, IconButton, InputAdornment, InputLabel, OutlinedInput, Switch, Tooltip, Typography } from "@mui/material";
+import { Alert, Box, Button, Chip, Divider, InputLabel, MenuItem, OutlinedInput, Select, Switch, Tooltip, Typography } from "@mui/material";
 import { useFormik } from "formik";
-import { useState } from "react";
 import {
     useGetEsewaSettingsQuery,
-    useGetKhaltiSettingsQuery,
     useToggleEsewaActiveMutation,
     useUpdateEsewaSettingsMutation,
 } from "../../../../../services/settingApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
+import Password from "../../../../atoms/Password";
 
 export default function EsewaSettingRoot() {
     const dispatch = useAppDispatch();
     const { data } = useGetEsewaSettingsQuery();
-    const { data: khaltiData } = useGetKhaltiSettingsQuery();
     const [updateEsewa, { isLoading }] = useUpdateEsewaSettingsMutation();
     const [toggleEsewa, { isLoading: toggling }] = useToggleEsewaActiveMutation();
-    const [showSecret, setShowSecret] = useState(false);
 
     const isActive = data?.data?.is_active ?? false;
-    const khaltiActive = khaltiData?.data?.is_active ?? false;
 
     const handleToggle = async () => {
-        if (isActive && !khaltiActive) {
-            dispatch(showToast({ message: "Cannot disable eSewa — at least one payment gateway must remain active", severity: "error" }));
-            return;
-        }
         try {
             await toggleEsewa().unwrap();
         } catch (e: any) {
@@ -37,21 +28,25 @@ export default function EsewaSettingRoot() {
     const formik = useFormik({
         initialValues: {
             merchant_id: data?.data?.merchant_id || "",
+            product_code: data?.data?.product_code || "",
             secret_key: "",
-            test_mode: data?.data?.test_mode ?? true,
+            merchant_secret: "",
+            mode: data?.data?.mode ?? "test",
         },
         enableReinitialize: true,
         onSubmit: async (values, { resetForm }) => {
             const payload: Record<string, any> = {
                 merchant_id: values.merchant_id,
-                test_mode: values.test_mode,
+                product_code: values.product_code,
+                mode: values.mode,
             };
             if (values.secret_key) payload.secret_key = values.secret_key;
+            if (values.merchant_secret) payload.merchant_secret = values.merchant_secret;
 
             try {
                 const res = await updateEsewa(payload).unwrap();
                 dispatch(showToast({ message: res?.message || "eSewa settings updated", severity: "success" }));
-                resetForm({ values: { ...values, secret_key: "" } });
+                resetForm({ values: { ...values, secret_key: "", merchant_secret: "" } });
             } catch (e: any) {
                 dispatch(showToast({ message: e?.data?.message || "Unable to update eSewa settings", severity: "error" }));
             }
@@ -70,7 +65,7 @@ export default function EsewaSettingRoot() {
                         variant="outlined"
                     />
                 </div>
-                <Tooltip title={isActive && !khaltiActive ? "Cannot disable — Khalti is also inactive" : ""}>
+                <Tooltip title={isActive ? "Disable eSewa" : "Enable eSewa"}>
                     <Box>
                         <Switch
                             checked={isActive}
@@ -84,52 +79,63 @@ export default function EsewaSettingRoot() {
             <Divider className="mt-4! mb-4!" />
 
             <Alert severity="info" className="mb-6!">
-                Secret keys are stored securely and never returned in responses. Leave the secret key blank to keep the existing value.
+                Secret keys are stored securely and never returned in responses. Leave secret fields blank to keep the existing values.
             </Alert>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <InputLabel>Merchant ID</InputLabel>
+                    <InputLabel className="required">Merchant ID</InputLabel>
                     <OutlinedInput
                         fullWidth
                         name="merchant_id"
                         value={formik.values.merchant_id}
                         onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
                         placeholder="eSewa Merchant ID"
                     />
                 </div>
 
                 <div>
-                    <InputLabel>Secret Key</InputLabel>
+                    <InputLabel className="required">Product Code</InputLabel>
                     <OutlinedInput
                         fullWidth
-                        name="secret_key"
-                        type={showSecret ? "text" : "password"}
-                        value={formik.values.secret_key}
+                        name="product_code"
+                        value={formik.values.product_code}
                         onChange={formik.handleChange}
-                        placeholder="Enter new secret key (blank = keep existing)"
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton onClick={() => setShowSecret((v) => !v)} edge="end">
-                                    {showSecret ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        }
+                        placeholder="eSewa Product Code"
                     />
                 </div>
 
                 <div>
-                    <FormControlLabel
-                        control={
-                            <Switch
-                                name="test_mode"
-                                checked={formik.values.test_mode}
-                                onChange={formik.handleChange}
-                            />
-                        }
-                        label="Test Mode (Sandbox)"
+                    <InputLabel>Secret Key <span style={{ fontWeight: 400, fontSize: 12, marginLeft: 4 }}>(blank = keep existing)</span></InputLabel>
+                    <Password
+                        name="secret_key"
+                        value={formik.values.secret_key}
+                        onChange={formik.handleChange}
+                        placeholder="Enter new secret key to replace"
                     />
+                </div>
+
+                <div>
+                    <InputLabel>Merchant Secret <span style={{ fontWeight: 400, fontSize: 12, marginLeft: 4 }}>(blank = keep existing)</span></InputLabel>
+                    <Password
+                        name="merchant_secret"
+                        value={formik.values.merchant_secret}
+                        onChange={formik.handleChange}
+                        placeholder="Enter new merchant secret to replace"
+                    />
+                </div>
+
+                <div>
+                    <InputLabel className="required">Mode</InputLabel>
+                    <Select
+                        fullWidth
+                        name="mode"
+                        value={formik.values.mode}
+                        onChange={formik.handleChange}
+                    >
+                        <MenuItem value="test">Test (Sandbox)</MenuItem>
+                        <MenuItem value="live">Live (Production)</MenuItem>
+                    </Select>
                 </div>
             </div>
 

@@ -55,7 +55,7 @@ export default function SingleStudentSingleQuestion() {
         skip: !id || !resultId || !questionId
     });
 
-    const maxMarks = data?.data?.points || 100;
+    const maxMarks = data?.data?.points || 0;
 
     const formik = useFormik({
         initialValues: {

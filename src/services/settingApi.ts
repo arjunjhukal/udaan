@@ -93,8 +93,6 @@ export const settingApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["Theme"],
         }),
-
-        // ── SMTP ────────────────────────────────────────────────────────────
         getSmtpSettings: builder.query<GlobalResponse & { data: SmtpSettingProps }, void>({
             query: () => ({ url: `/admin/settings/smtp`, method: "GET" }),
             providesTags: ["SmtpSetting"],
@@ -103,8 +101,6 @@ export const settingApi = baseApi.injectEndpoints({
             query: (body) => ({ url: `/admin/settings/smtp`, method: "POST", body }),
             invalidatesTags: ["SmtpSetting"],
         }),
-
-        // ── Course Setting ───────────────────────────────────────────────────
         getCourseSettings: builder.query<GlobalResponse & { data: CourseSettingProps }, void>({
             query: () => ({ url: `/admin/settings/course`, method: "GET" }),
             providesTags: ["CourseSetting"],
@@ -113,8 +109,6 @@ export const settingApi = baseApi.injectEndpoints({
             query: (body) => ({ url: `/admin/settings/course`, method: "POST", body }),
             invalidatesTags: ["CourseSetting"],
         }),
-
-        // ── Login Type ───────────────────────────────────────────────────────
         getLoginTypeSetting: builder.query<GlobalResponse & { data: LoginTypeSettingProps }, void>({
             query: () => ({ url: `/admin/settings/login-type`, method: "GET" }),
             providesTags: ["LoginType"],
@@ -123,8 +117,6 @@ export const settingApi = baseApi.injectEndpoints({
             query: (body) => ({ url: `/admin/settings/login-type`, method: "POST", body }),
             invalidatesTags: ["LoginType"],
         }),
-
-        // ── Email Templates ──────────────────────────────────────────────────
         getEmailTemplates: builder.query<
             GlobalResponse & { data: EmailTemplateProps[] },
             { actor: EmailTemplateActor; method: EmailTemplateMethod }
@@ -153,8 +145,6 @@ export const settingApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: ["EmailTemplate"],
         }),
-
-        // ── Zoom Accounts ────────────────────────────────────────────────────
         getZoomAccounts: builder.query<GlobalResponse & { data: ZoomAccount[] }, void>({
             query: () => ({ url: `/admin/settings/api/zoom`, method: "GET" }),
             providesTags: ["ZoomAccount"],
@@ -175,7 +165,6 @@ export const settingApi = baseApi.injectEndpoints({
             query: (id) => ({ url: `/admin/settings/api/zoom/${id}`, method: "DELETE" }),
             invalidatesTags: ["ZoomAccount"],
         }),
-
         getEsewaSettings: builder.query<GlobalResponse & { data: EsewaSettingProps }, void>({
             query: () => ({ url: `/admin/settings/api/esewa`, method: "GET" }),
             providesTags: ["ApiSetting"],
@@ -188,8 +177,6 @@ export const settingApi = baseApi.injectEndpoints({
             query: () => ({ url: `/admin/settings/api/esewa/toggle`, method: "PATCH" }),
             invalidatesTags: ["ApiSetting"],
         }),
-
-        // ── Khalti ───────────────────────────────────────────────────────────
         getKhaltiSettings: builder.query<GlobalResponse & { data: KhaltiSettingProps }, void>({
             query: () => ({ url: `/admin/settings/api/khalti`, method: "GET" }),
             providesTags: ["ApiSetting"],
@@ -202,8 +189,6 @@ export const settingApi = baseApi.injectEndpoints({
             query: () => ({ url: `/admin/settings/api/khalti/toggle`, method: "PATCH" }),
             invalidatesTags: ["ApiSetting"],
         }),
-
-        // ── SMS Gateway ──────────────────────────────────────────────────────
         getSmsGatewaySettings: builder.query<GlobalResponse & { data: SmsGatewaySettingProps }, void>({
             query: () => ({ url: `/admin/settings/api/sms-gateway`, method: "GET" }),
             providesTags: ["ApiSetting"],
