@@ -78,6 +78,7 @@ export interface SocialFormItem extends SocialItem {
 }
 
 export interface SmtpSettingProps {
+    mailer: "smtp";
     host: string;
     port: number | string;
     encryption: "tls" | "ssl" | "none";
@@ -87,11 +88,14 @@ export interface SmtpSettingProps {
     from_email: string;
 }
 
+export type GlobalDiscountApplicableTo = "expiry" | "subscription" | "both";
+
 export interface CourseSettingProps {
     free_trial_days: number | string;
     free_trial_items: number | string;
     global_discount_enabled: boolean;
     global_discount_value: number | string;
+    global_discount_applicable_to: GlobalDiscountApplicableTo;
 }
 
 export type LoginType = "otp" | "password" | "both";

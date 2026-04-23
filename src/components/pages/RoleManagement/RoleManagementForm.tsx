@@ -110,6 +110,7 @@ export default function RoleManagementForm() {
                     view: matched?.view ?? false,
                     edit: matched?.edit ?? false,
                     delete: matched?.delete ?? false,
+                    download: matched?.download ?? false,
                 };
             });
 
@@ -124,7 +125,7 @@ export default function RoleManagementForm() {
     const handlePermissionToggle = useCallback(
         (
             rowIndex: number,
-            field: keyof Pick<PermissionProps, "add" | "view" | "edit" | "delete">
+            field: keyof Pick<PermissionProps, "add" | "view" | "edit" | "delete" | "download">
         ) => {
             const updatedPermissions: PermissionProps[] = [...formik.values.permissions];
             if (updatedPermissions[rowIndex] && field in updatedPermissions[rowIndex]) {
@@ -152,6 +153,7 @@ export default function RoleManagementForm() {
             view: !allSelected,
             edit: !allSelected,
             delete: !allSelected,
+            download: !allSelected,
         };
 
         formik.setFieldValue("permissions", updatedPermissions);
@@ -233,6 +235,19 @@ export default function RoleManagementForm() {
                         color="primary"
                         onChange={() =>
                             handlePermissionToggle(info.row.index, "delete")
+                        }
+                    />
+                ),
+            },
+            {
+                header: "Download",
+                accessorKey: "download",
+                cell: (info) => (
+                    <Checkbox
+                        checked={(info.getValue() as boolean) || false}
+                        color="primary"
+                        onChange={() =>
+                            handlePermissionToggle(info.row.index, "download")
                         }
                     />
                 ),

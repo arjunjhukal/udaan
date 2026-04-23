@@ -6,6 +6,7 @@ export interface PermissionProps {
     add: boolean;
     view: boolean;
     edit: boolean;
+    download: boolean;
     delete: boolean;
 }
 

@@ -12,6 +12,7 @@ export default function SmtpSettingRoot() {
 
     const formik = useFormik<SmtpSettingProps>({
         initialValues: {
+            mailer: "smtp",
             host: data?.data?.host || "",
             port: data?.data?.port || 587,
             encryption: data?.data?.encryption || "tls",

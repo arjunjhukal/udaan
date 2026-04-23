@@ -1,4 +1,4 @@
-import { Button, Divider, FormControlLabel, InputLabel, OutlinedInput, Switch, Typography } from "@mui/material";
+import { Button, Divider, FormControlLabel, InputLabel, OutlinedInput, Radio, RadioGroup, Switch, Typography } from "@mui/material";
 import { useFormik } from "formik";
 import { useGetCourseSettingsQuery, useUpdateCourseSettingsMutation } from "../../../../services/settingApi";
 import { showToast } from "../../../../slice/toastSlice";
@@ -16,6 +16,7 @@ export default function CourseSettingRoot() {
             free_trial_items: data?.data?.free_trial_items ?? 3,
             global_discount_enabled: data?.data?.global_discount_enabled ?? false,
             global_discount_value: data?.data?.global_discount_value ?? 0,
+            global_discount_applicable_to: data?.data?.global_discount_applicable_to ?? "both",
         },
         enableReinitialize: true,
         onSubmit: async (values) => {
@@ -96,6 +97,22 @@ export default function CourseSettingRoot() {
                             onBlur={formik.handleBlur}
                             placeholder="e.g. 10"
                         />
+                    </div>
+                )}
+
+                {formik.values.global_discount_enabled && (
+                    <div className="md:col-span-2">
+                        <InputLabel className="mb-2!">Apply Discount To</InputLabel>
+                        <RadioGroup
+                            row
+                            name="global_discount_applicable_to"
+                            value={formik.values.global_discount_applicable_to}
+                            onChange={formik.handleChange}
+                        >
+                            <FormControlLabel className="items-center! gap-0!" value="expiry" control={<Radio />} label="Expiry Purchase" />
+                            <FormControlLabel className="items-center! gap-0!" value="subscription" control={<Radio />} label="Subscription" />
+                            <FormControlLabel className="items-center! gap-0!" value="both" control={<Radio />} label="Both" />
+                        </RadioGroup>
                     </div>
                 )}
             </div>
