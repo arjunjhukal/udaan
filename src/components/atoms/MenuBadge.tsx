@@ -19,7 +19,6 @@ export default function MenuBadge({ count }: MenuBadgeProps) {
                 backgroundColor: "error.main",
                 color: "white !important",
                 fontSize: "11px",
-                fontWeight: 600,
                 lineHeight: "20px",
                 textAlign: "center",
                 display: "inline-flex",

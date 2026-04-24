@@ -40,7 +40,7 @@ export default function ProfilePageRoot() {
             phone: user?.data?.phone || "",
             address: user?.data?.address || "",
             profile: null,
-            profile_url: user?.data?.profile_url || "",
+            thumbnail_url: user?.data?.thumbnail_url || "",
         },
         enableReinitialize: true,
         validationSchema,
@@ -60,8 +60,8 @@ export default function ProfilePageRoot() {
                     formData.append("profile", values.profile);
                 }
 
-                if (values.profile_url) {
-                    formData.append("profile_url", values.profile_url);
+                if (values.thumbnail_url) {
+                    formData.append("thumbnail_url", values.thumbnail_url);
                 }
                 const response = await updateProfile(formData).unwrap();
                 dispatch(
@@ -97,7 +97,7 @@ export default function ProfilePageRoot() {
 
                     <ProfileImageUpload
                         // value={formik.values.profile}
-                        previewUrl={formik.values.profile_url}
+                        previewUrl={formik.values.thumbnail_url}
                         onChange={(file) => formik.setFieldValue("profile", file)}
                     />
                 </div>

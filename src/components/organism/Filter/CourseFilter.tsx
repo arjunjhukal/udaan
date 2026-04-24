@@ -203,7 +203,7 @@ export const CourseFilter = ({
                       label={
                         <div className="flex items-center gap-3">
                           <img
-                            src={teacher?.profile_url || "/logo.svg"}
+                            src={teacher?.thumbnail_url || "/logo.svg"}
                             alt={teacher.name}
                             className="w-8 h-8 rounded-full object-cover"
                           />

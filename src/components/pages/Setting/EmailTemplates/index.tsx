@@ -1,223 +1,298 @@
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
     Button,
+    Checkbox,
     Chip,
     Divider,
-    FormControl,
-    InputLabel,
-    MenuItem,
+    FormControlLabel,
     OutlinedInput,
-    Select,
-    ToggleButton,
-    ToggleButtonGroup,
+    Skeleton,
     Typography,
 } from "@mui/material";
-import { useFormik } from "formik";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-    useGetEmailTemplateQuery,
+    useGetEmailTemplatesQuery,
     useUpdateEmailTemplateMutation,
 } from "../../../../services/settingApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
-import type {
-    EmailTemplateActor,
-    EmailTemplateMethod,
-} from "../../../../types/setting";
-import {
-    ADMIN_EMAIL_TEMPLATES,
-    ADMIN_SMS_TEMPLATES,
-    USER_EMAIL_TEMPLATES,
-    USER_SMS_TEMPLATES,
-} from "../../../../types/setting";
+import type { EmailTemplateMethod, EmailTemplateProps } from "../../../../types/setting";
+import { TEMPLATE_VARIABLES } from "../../../../types/setting";
+import type { TextEditorHandle } from "../../../atoms/TextEditor";
+import TextEditor from "../../../atoms/TextEditor";
+import TabController from "../../../molecules/TabController";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function toLabel(key: string) {
     return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-const TEMPLATE_MAP: Record<EmailTemplateActor, Record<EmailTemplateMethod, readonly string[]>> = {
-    user: {
-        email: USER_EMAIL_TEMPLATES,
-        sms: USER_SMS_TEMPLATES,
-    },
-    admin: {
-        email: ADMIN_EMAIL_TEMPLATES,
-        sms: ADMIN_SMS_TEMPLATES,
-    },
-};
+const TAB_OPTIONS: { label: string; value: EmailTemplateMethod }[] = [
+    { label: "Email", value: "email" },
+    { label: "SMS", value: "sms" },
+];
 
-export default function EmailTemplatesRoot() {
+// ─── Accordion Item ───────────────────────────────────────────────────────────
+
+interface AccordionItemProps {
+    method: EmailTemplateMethod;
+    serverData: EmailTemplateProps;
+    expanded: boolean;
+    onToggle: () => void;
+}
+
+function TemplateAccordionItem({ method, serverData, expanded, onToggle }: AccordionItemProps) {
     const dispatch = useAppDispatch();
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const editorRef = useRef<TextEditorHandle>(null);
 
-    const [actor, setActor] = useState<EmailTemplateActor>("user");
-    const [method, setMethod] = useState<EmailTemplateMethod>("email");
-    const [templateKey, setTemplateKey] = useState<string>(TEMPLATE_MAP.user.email[0]);
+    const [enabled, setEnabled] = useState(serverData.is_enabled ?? true);
+    const [subject, setSubject] = useState(serverData.subject ?? "");
+    const [body, setBody] = useState(serverData.body ?? "");
 
-    const templateOptions = TEMPLATE_MAP[actor][method];
+    // Sync when server data updates (e.g. after a save refetch)
+    const synced = useRef(false);
+    useEffect(() => {
+        if (!synced.current) {
+            setEnabled(serverData.is_enabled ?? true);
+            setSubject(serverData.subject ?? "");
+            setBody(serverData.body ?? "");
+            synced.current = true;
+        }
+    }, [serverData]);
 
-    const { data, isFetching } = useGetEmailTemplateQuery(
-        { actor, method, template_key: templateKey },
-        { skip: !templateKey }
-    );
+    const [updateTemplate, { isLoading: isSaving }] = useUpdateEmailTemplateMutation();
+    const [toggleTemplate, { isLoading: isToggling }] = useUpdateEmailTemplateMutation();
 
-    const [updateTemplate, { isLoading }] = useUpdateEmailTemplateMutation();
+    // Prefer variables from backend; fall back to frontend map
+    const variables = serverData.variables?.length
+        ? serverData.variables
+        : (TEMPLATE_VARIABLES[serverData.template_key] ?? []);
 
-    const formik = useFormik({
-        initialValues: {
-            subject: data?.data?.subject || "",
-            body: data?.data?.body || "",
-        },
-        enableReinitialize: true,
-        onSubmit: async (values) => {
-            try {
-                const res = await updateTemplate({
-                    actor,
-                    method,
-                    template_key: templateKey,
-                    subject: method === "email" ? values.subject : undefined,
-                    body: values.body,
-                }).unwrap();
-                dispatch(showToast({ message: res?.message || "Template updated", severity: "success" }));
-            } catch (e: any) {
-                dispatch(showToast({ message: e?.data?.message || "Unable to update template", severity: "error" }));
-            }
-        },
-    });
+    const insertVariable = (variable: string) => {
+        const tag = `{{${variable}}}`;
 
-    const handleActorChange = (newActor: EmailTemplateActor) => {
-        setActor(newActor);
-        const firstKey = TEMPLATE_MAP[newActor][method][0];
-        setTemplateKey(firstKey || "");
+        if (method === "email") {
+            editorRef.current?.insertAtCursor(tag);
+        } else if (textareaRef.current) {
+            const el = textareaRef.current;
+            const start = el.selectionStart ?? body.length;
+            const end = el.selectionEnd ?? body.length;
+            const next = body.slice(0, start) + tag + body.slice(end);
+            setBody(next);
+            setTimeout(() => {
+                el.selectionStart = el.selectionEnd = start + tag.length;
+                el.focus();
+            }, 0);
+        }
     };
 
-    const handleMethodChange = (newMethod: EmailTemplateMethod) => {
-        setMethod(newMethod);
-        const firstKey = TEMPLATE_MAP[actor][newMethod][0];
-        setTemplateKey(firstKey || "");
+    const handleToggleEnabled = async (nextVal: boolean) => {
+        setEnabled(nextVal);
+        try {
+            await toggleTemplate({
+                actor: "user",
+                method,
+                template_key: serverData.template_key,
+                subject: method === "email" ? subject : undefined,
+                body,
+                is_enabled: nextVal,
+            }).unwrap();
+        } catch (e: any) {
+            setEnabled(!nextVal); // revert on failure
+            dispatch(showToast({ message: e?.data?.message || "Unable to update status", severity: "error" }));
+        }
+    };
+
+    const handleSave = async () => {
+        try {
+            const res = await updateTemplate({
+                actor: "user",
+                method,
+                template_key: serverData.template_key,
+                subject: method === "email" ? subject : undefined,
+                body,
+                is_enabled: enabled,
+            }).unwrap();
+            dispatch(showToast({ message: res?.message || "Template saved", severity: "success" }));
+        } catch (e: any) {
+            dispatch(showToast({ message: e?.data?.message || "Unable to save template", severity: "error" }));
+        }
     };
 
     return (
-        <div className="app__settings__page__root pb-4 lg:pb-6">
-            <Typography variant="h5">Email Templates</Typography>
-            <Divider className="mt-4! mb-6!" />
-
-            {/* Step 1: Select Actor */}
-            <div className="mb-6">
-                <Typography variant="subtitle2" fontWeight={600} className="mb-2!">Recipient</Typography>
-                <ToggleButtonGroup
-                    value={actor}
-                    exclusive
-                    onChange={(_, val) => val && handleActorChange(val)}
-                    size="small"
+        <Accordion
+            expanded={expanded}
+            onChange={onToggle}
+            disableGutters
+            elevation={0}
+            sx={{
+                mb: 1.5,
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: "10px !important",
+                "&:before": { display: "none" },
+                "&.Mui-expanded": { borderColor: "primary.main" },
+            }}
+        >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 2.5, py: 0.5 }}>
+                {/* Wrapper stops the checkbox click from bubbling to the accordion toggle */}
+                <div
+                    className="flex items-center justify-between w-full pr-2"
+                    onClick={(e) => e.stopPropagation()}
                 >
-                    <ToggleButton value="user">User</ToggleButton>
-                    <ToggleButton value="admin">Admin</ToggleButton>
-                </ToggleButtonGroup>
-            </div>
-
-            {/* Step 2: Select Method */}
-            <div className="mb-6">
-                <Typography variant="subtitle2" fontWeight={600} className="mb-2!">Channel</Typography>
-                <ToggleButtonGroup
-                    value={method}
-                    exclusive
-                    onChange={(_, val) => val && handleMethodChange(val)}
-                    size="small"
-                >
-                    <ToggleButton value="email">Email</ToggleButton>
-                    <ToggleButton value="sms">SMS</ToggleButton>
-                </ToggleButtonGroup>
-            </div>
-
-            {/* Step 3: Select Template */}
-            <div className="mb-6">
-                <FormControl fullWidth>
-                    <InputLabel>Template</InputLabel>
-                    <Select
-                        value={templateKey}
-                        label="Template"
-                        onChange={(e) => setTemplateKey(e.target.value)}
+                    <Typography
+                        variant="h6"
+                        onClick={onToggle}
+                        sx={{ cursor: "pointer", flex: 1 }}
                     >
-                        {templateOptions.map((key) => (
-                            <MenuItem key={key} value={key}>
-                                {toLabel(key)}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </div>
-
-            <Divider className="mt-2! mb-6!" />
-
-            {/* Template Editor */}
-            <form onSubmit={formik.handleSubmit}>
-                {isFetching ? (
-                    <Typography variant="body2" color="text.secondary">Loading template...</Typography>
-                ) : (
-                    <div className="flex flex-col gap-5">
-                        {/* Variable hints */}
-                        {data?.data?.variables && data.data.variables.length > 0 && (
-                            <div>
-                                <Typography variant="caption" color="text.secondary" className="mb-2! block">
-                                    Available variables — click to copy:
-                                </Typography>
-                                <div className="flex flex-wrap gap-2">
-                                    {data.data.variables.map((v) => (
-                                        <Chip
-                                            key={v}
-                                            label={`{{${v}}}`}
-                                            size="small"
-                                            onClick={() => navigator.clipboard.writeText(`{{${v}}}`)}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Subject — email only */}
-                        {method === "email" && (
-                            <div>
-                                <InputLabel>Subject</InputLabel>
-                                <OutlinedInput
-                                    fullWidth
-                                    name="subject"
-                                    value={formik.values.subject}
-                                    onChange={formik.handleChange}
-                                    onBlur={formik.handleBlur}
-                                    placeholder="Email subject line"
-                                />
-                            </div>
-                        )}
-
-                        {/* Body */}
-                        <div>
-                            <InputLabel>
-                                {method === "email" ? "Email Body (HTML supported)" : "SMS Body"}
-                            </InputLabel>
-                            <OutlinedInput
-                                fullWidth
-                                multiline
-                                minRows={method === "email" ? 10 : 4}
-                                name="body"
-                                value={formik.values.body}
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                placeholder={
-                                    method === "email"
-                                        ? "Write your email body here. HTML tags are supported."
-                                        : "Write your SMS message. Keep it concise."
-                                }
-                                sx={{ fontFamily: method === "email" ? "monospace" : "inherit" }}
+                        {toLabel(serverData.template_key)}
+                    </Typography>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                size="small"
+                                checked={enabled}
+                                disabled={isToggling}
+                                onChange={(e) => handleToggleEnabled(e.target.checked)}
                             />
-                        </div>
+                        }
+                        label={
+                            <Typography variant="body2" color="text.secondary">
+                                {method === "email" ? "Send via Email" : "Send via SMS"}
+                            </Typography>
+                        }
+                        sx={{ mr: 0 }}
+                    />
+                </div>
+            </AccordionSummary>
 
-                        <div className="text-right">
-                            <Button type="submit" variant="contained" disabled={isLoading || isFetching}>
-                                {isLoading ? "Saving..." : "Save Template"}
-                            </Button>
+            <AccordionDetails sx={{ px: 2.5, pb: 2.5 }}>
+                <Divider className="mb-4!" />
+
+                {/* Variable chips — click inserts at cursor */}
+                {variables.length > 0 && (
+                    <div className="mb-5">
+                        <Typography variant="caption" color="text.secondary">
+                            Click a variable to insert it at your cursor:
+                        </Typography>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                            {variables.map((v) => (
+                                <Chip
+                                    key={v}
+                                    label={`{{${v}}}`}
+                                    size="small"
+                                    variant="outlined"
+                                    color="primary"
+                                    onClick={() => insertVariable(v)}
+                                    sx={{ fontFamily: "monospace", fontSize: "0.7rem", cursor: "pointer" }}
+                                />
+                            ))}
                         </div>
                     </div>
                 )}
-            </form>
+
+                {/* Subject — email only */}
+                {method === "email" && (
+                    <div className="mb-4">
+                        <Typography variant="caption" fontWeight={600} color="text.secondary" className="mb-1! block">
+                            Subject
+                        </Typography>
+                        <OutlinedInput
+                            fullWidth
+                            size="small"
+                            value={subject}
+                            onChange={(e) => setSubject(e.target.value)}
+                            placeholder="Enter email subject line"
+                        />
+                    </div>
+                )}
+
+                {/* Body */}
+                <div className="mb-5">
+                    <Typography variant="caption" fontWeight={600} color="text.secondary" className="mb-2! block">
+                        {method === "email" ? "Email Body" : "SMS Message"}
+                    </Typography>
+
+                    {method === "email" ? (
+                        <TextEditor ref={editorRef} value={body} onChange={setBody} />
+                    ) : (
+                        <OutlinedInput
+                            fullWidth
+                            multiline
+                            minRows={4}
+                            value={body}
+                            onChange={(e) => setBody(e.target.value)}
+                            placeholder="Write your SMS message. Click a variable above to insert it."
+                            inputRef={textareaRef}
+                            inputProps={{ style: { resize: "vertical" } }}
+                        />
+                    )}
+                </div>
+
+                <div className="flex justify-end">
+                    <Button variant="contained" size="small" onClick={handleSave} disabled={isSaving}>
+                        {isSaving ? "Saving…" : "Save Template"}
+                    </Button>
+                </div>
+            </AccordionDetails>
+        </Accordion>
+    );
+}
+
+export default function EmailTemplatesRoot() {
+    const [activeTab, setActiveTab] = useState<EmailTemplateMethod>("email");
+    const [expandedKey, setExpandedKey] = useState<string | false>(false);
+
+    const { data, isFetching } = useGetEmailTemplatesQuery({ actor: "user", method: activeTab });
+
+    const handleTabChange = (tab: EmailTemplateMethod) => {
+        setActiveTab(tab);
+        setExpandedKey(false);
+    };
+
+    const templates = data?.data ?? [];
+
+    return (
+        <div className="app__settings__page__root pb-4 lg:pb-6">
+            <Typography variant="h5">Message Templates</Typography>
+            <Divider className="mt-4! mb-2!" />
+
+            <TabController<EmailTemplateMethod>
+                options={TAB_OPTIONS}
+                currentActive={activeTab}
+                setActiveTab={handleTabChange}
+            />
+
+            <div className="mt-6">
+                {isFetching ? (
+                    <div className="flex flex-col gap-3">
+                        {Array.from({ length: 7 }, (_, i) => (
+                            <Skeleton key={i} variant="rounded" height={56} />
+                        ))}
+                    </div>
+                ) : templates.length === 0 ? (
+                    <Typography variant="body2" color="text.secondary">
+                        No templates configured for this channel.
+                    </Typography>
+                ) : (
+                    templates.map((tpl) => (
+                        <TemplateAccordionItem
+                            key={`${activeTab}-${tpl.template_key}`}
+                            method={activeTab}
+                            serverData={tpl}
+                            expanded={expandedKey === tpl.template_key}
+                            onToggle={() =>
+                                setExpandedKey(expandedKey === tpl.template_key ? false : tpl.template_key)
+                            }
+                        />
+                    ))
+                )}
+            </div>
         </div>
     );
 }

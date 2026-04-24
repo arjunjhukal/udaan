@@ -1,12 +1,9 @@
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { Box, FormHelperText, InputLabel } from "@mui/material";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useUploadMediaImageMutation } from "../../services/mediaApi";
 
-// -------------------------
-// Upload Adapter Factory
-// -------------------------
 function createUploadAdapterPlugin(uploadImage: any) {
     return function (editor: any) {
         editor.plugins.get("FileRepository").createUploadAdapter = (loader: any) => {
@@ -14,58 +11,45 @@ function createUploadAdapterPlugin(uploadImage: any) {
                 upload: async () => {
                     try {
                         const file = await loader.file;
-
                         const formData = new FormData();
                         formData.append("upload", file);
-
                         const response = await uploadImage({ body: formData }).unwrap();
-
-                        return {
-                            default: response?.data?.url,
-                        };
+                        return { default: response?.data?.url };
                     } catch (err) {
                         console.error("Upload failed:", err);
                         throw err;
                     }
                 },
-                abort: () => {
-                    console.log("Upload aborted");
-                },
+                abort: () => {},
             };
         };
     };
 }
 
-// -------------------------
-// Component
-// -------------------------
+export interface TextEditorHandle {
+    insertAtCursor: (text: string) => void;
+}
 
-export default function TextEditor({
-    label,
-    error,
-    value,
-    onChange,
-    onBlur,
-    required
-}: {
+interface TextEditorProps {
     label?: string;
     error?: string;
     value?: string;
     onChange?: (value: string) => void;
     onBlur?: (value: string) => void;
     required?: boolean;
-}) {
+}
+
+const TextEditor = forwardRef<TextEditorHandle, TextEditorProps>(function TextEditor(
+    { label, error, value, onChange, onBlur, required },
+    ref
+) {
     const [data, setData] = useState(value || "");
     const prevValueRef = useRef(value);
+    const ckEditorRef = useRef<any>(null);
     const [uploadImage] = useUploadMediaImageMutation();
 
-    // Keep plugin stable using useCallback
-    const uploadPlugin = useCallback(
-        createUploadAdapterPlugin(uploadImage),
-        [uploadImage]
-    );
+    const uploadPlugin = useCallback(createUploadAdapterPlugin(uploadImage), [uploadImage]);
 
-    // Sync internal value with external changes
     useEffect(() => {
         if (value !== prevValueRef.current) {
             setData(value || "");
@@ -73,10 +57,23 @@ export default function TextEditor({
         }
     }, [value]);
 
+    useImperativeHandle(ref, () => ({
+        insertAtCursor: (text: string) => {
+            const editor = ckEditorRef.current;
+            if (!editor) return;
+            editor.model.change((writer: any) => {
+                const position = editor.model.document.selection.getFirstPosition();
+                if (position) writer.insertText(text, position);
+            });
+            // Sync the new content back
+            const updated = editor.getData();
+            setData(updated);
+            onChange?.(updated);
+        },
+    }));
+
     return (
-        <Box className="input__field" sx={{
-            height: "calc(100%)"
-        }}>
+        <Box className="input__field" sx={{ height: "calc(100%)" }}>
             <InputLabel className={required ? "required" : ""}>
                 {label || "Description"}
             </InputLabel>
@@ -101,8 +98,11 @@ export default function TextEditor({
                             "bold", "italic", "link", "|",
                             "bulletedList", "numberedList", "|",
                             "imageUpload", "blockQuote", "|",
-                            "undo", "redo"
-                        ]
+                            "undo", "redo",
+                        ],
+                    }}
+                    onReady={(editor) => {
+                        ckEditorRef.current = editor;
                     }}
                     onChange={(_, editor) => {
                         const val = editor.getData();
@@ -119,4 +119,6 @@ export default function TextEditor({
             {error && <FormHelperText error>{error}</FormHelperText>}
         </Box>
     );
-}
+});
+
+export default TextEditor;

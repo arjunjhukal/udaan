@@ -111,7 +111,7 @@ export default function CourseOverviewForm({
                                 >
                                     <div className="teacher__info flex items-center gap-2">
                                         <img
-                                            src={teacher.profile_url || "/auth-image.png"}
+                                            src={teacher.thumbnail_url || "/auth-image.png"}
                                             alt=""
                                             width={22}
                                             height={22}
