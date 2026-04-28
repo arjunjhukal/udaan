@@ -1,11 +1,11 @@
-import { Autocomplete, Box, Button, Checkbox, CircularProgress, Dialog, DialogContent, Divider, FormControlLabel, IconButton, InputLabel, OutlinedInput, TextField, Typography, useTheme } from "@mui/material";
+import { Autocomplete, Box, Button, Checkbox, CircularProgress, Dialog, DialogContent, Divider, FormControlLabel, FormHelperText, IconButton, InputLabel, OutlinedInput, Stack, TextField, Typography, useTheme } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
 import { useFormik } from "formik";
 import { useEffect, useMemo, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import * as Yup from "yup";
 import SearchIcon from "../../../icons/SearchIcon";
-import { useGetAllCourseQuery } from "../../../services/courseApi";
+import { useGetAllCourseQuery, useGetCourseByIdQuery } from "../../../services/courseApi";
 import { useGetAllBundleQuery, useGetAllIndividualTestQuery } from "../../../services/questionApi";
 import { useAddTransactionMutation, useGetTransactionByIdQuery, useUpdateTransactionByIdMutation } from "../../../services/transactionApi";
 import { useGetAllUserQuery } from "../../../services/userApi";
@@ -68,10 +68,16 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     const [courseList, setCourseList] = useState<CourseProps[]>([]);
     const [testList, setTestList] = useState<TestProps[]>([]);
     const [bundleList, setBundleList] = useState<SetProps[]>([]);
+    const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
 
     const { data: transactionData, isLoading: loadingTransaction } = useGetTransactionByIdQuery(
         transactionId as number,
         { skip: !transactionId }
+    );
+
+    const { data: selectedCourseData } = useGetCourseByIdQuery(
+        { id: String(selectedCourseId ?? "") },
+        { skip: !selectedCourseId }
     );
 
     const transaction = transactionData?.data;
@@ -89,6 +95,14 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     }, [search]);
 
     const { data, isLoading } = useGetAllUserQuery({ ...qp, search: debounceSearch });
+
+    const selectedCourse = useMemo(() => {
+        if (!selectedCourseId) return undefined;
+        return courseList.find((course) => course.id === selectedCourseId) || selectedCourseData?.data;
+    }, [courseList, selectedCourseData, selectedCourseId]);
+
+    const isSelectedCourseSubscription = enrollmentType === "course" && selectedCourse?.course_type === "subscription";
+    const courseSubscriptionPlans = selectedCourse?.course_subscription || [];
 
     const paymentStatus = [
         { label: "Success", value: "success" },
@@ -120,6 +134,9 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         bundle_id: enrollmentType === "bundle"
             ? Yup.number().min(1, "Please select a bundle").required("Please select a bundle")
             : Yup.number(),
+        subscription_id: isSelectedCourseSubscription
+            ? Yup.number().min(1, "Please select a subscription plan").required("Please select a subscription plan")
+            : Yup.number(),
         invoice_id: Yup.string().required("Invoice ID is required"),
         transaction_id: Yup.string().required("Transaction/Bill No. is required"),
         payment_method: Yup.string()
@@ -130,7 +147,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
             .required("Payment status is required"),
         image: Yup.mixed().nullable(),
         image_url: Yup.string().nullable()
-    }), [enrollmentType]);
+    }), [enrollmentType, isSelectedCourseSubscription]);
 
     const formik = useFormik({
         initialValues: transaction ? {
@@ -138,6 +155,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
             course_id: transaction.course_id || 0,
             test_id: transaction.test_id || 0,
             bundle_id: transaction.bundle_id || 0,
+            subscription_id: transaction.subscription_id || 0,
             invoice_id: transaction.invoice_id || ``,
             transaction_id: transaction.transaction_id || "",
             payment_method: transaction.payment_method || "",
@@ -158,6 +176,9 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
 
             if (enrollmentType === "course") {
                 formData.append("course_id", String(values.course_id));
+                if (values.subscription_id && values.subscription_id > 0) {
+                    formData.append("subscription_id", String(values.subscription_id));
+                }
             } else if (enrollmentType === "test") {
                 formData.append("test_id", String(values.test_id));
             } else if (enrollmentType === "bundle") {
@@ -205,6 +226,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         setSearchBundle("");
         setTestQp({ pageIndex: 1, pageSize: 10 });
         setBundleQp({ pageIndex: 1, pageSize: 10 });
+        setSelectedCourseId(null);
         setOpen(false);
     };
 
@@ -213,6 +235,8 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         formik.setFieldValue("course_id", 0);
         formik.setFieldValue("test_id", 0);
         formik.setFieldValue("bundle_id", 0);
+        formik.setFieldValue("subscription_id", 0);
+        setSelectedCourseId(null);
         // Don't clear lists — existing data stays visible while fresh data loads.
         // pageIndex resets only if user had scrolled, triggering a fresh query with new params.
         setCourseQp(prev => prev.pageIndex !== 1 ? { pageIndex: 1, pageSize: 10 } : prev);
@@ -225,7 +249,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
             const newInvoiceId = generateInvoiceId(formik.values.student_id);
             formik.setFieldValue("invoice_id", newInvoiceId);
         }
-    }, [formik.values.student_id, transactionId]);
+    }, [formik, formik.values.student_id, transactionId]);
 
     const handleSelectRow = (id: number) => {
         formik.setFieldValue("student_id", Number(id));
@@ -234,6 +258,27 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
             formik.setFieldValue("invoice_id", newInvoiceId);
         }
     };
+
+    const handleSelectCourse = (course: CourseProps) => {
+        formik.setFieldValue("course_id", course.id ?? 0);
+        formik.setFieldValue("subscription_id", 0);
+        setSelectedCourseId(course.id ?? null);
+    };
+
+    useEffect(() => {
+        const selectedCourseIdValue = formik.values.course_id ?? 0;
+        if (selectedCourseIdValue > 0) {
+            setSelectedCourseId(selectedCourseIdValue);
+        } else {
+            setSelectedCourseId(null);
+        }
+    }, [formik.values.course_id]);
+
+    useEffect(() => {
+        if (!isSelectedCourseSubscription) {
+            formik.setFieldValue("subscription_id", 0);
+        }
+    }, [formik, isSelectedCourseSubscription]);
 
     const columns = useMemo<ColumnDef<RegisterUserProps>[]>(() => [
         {
@@ -265,7 +310,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
             accessorKey: "phone",
             cell: ({ row }) => <Typography fontWeight={500}>{row.original.phone}</Typography>,
         },
-    ], [formik.values.student_id]);
+    ], [formik.values.student_id, handleSelectRow]);
 
     const {
         megaCategories,
@@ -437,37 +482,41 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                             <>
                                                 {/* Course list */}
                                                 {enrollmentType === "course" && (
-                                                    <InfiniteScroll
-                                                        dataLength={courseList.length}
-                                                        next={fetchMoreCourses}
-                                                        hasMore={hasMoreCourses}
-                                                        scrollableTarget="items__listing"
-                                                        loader={<Box sx={{ textAlign: "center", p: 2 }}><CircularProgress size={22} /></Box>}
-                                                        endMessage={courseList.length > 0 && (
-                                                            <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>No more items</Typography>
-                                                        )}
-                                                    >
-                                                        <div className="flex flex-col gap-0.5">
-                                                            {courseList.length === 0 ? (
-                                                                <Box sx={{ p: 3, textAlign: "center" }}>
-                                                                    <Typography variant="body2" color="text.secondary">No items available</Typography>
-                                                                </Box>
-                                                            ) : courseList.map((course) => (
-                                                                <FormControlLabel
-                                                                    key={course.id}
-                                                                    label={course.name}
-                                                                    control={
-                                                                        <Checkbox
-                                                                            checked={formik.values.course_id === Number(course.id)}
-                                                                            onChange={() => formik.setFieldValue("course_id", course.id)}
-                                                                            color="primary"
-                                                                        />
-                                                                    }
-                                                                />
-                                                            ))}
-                                                        </div>
-                                                    </InfiniteScroll>
+                                                    <>
+                                                        <InfiniteScroll
+                                                            dataLength={courseList.length}
+                                                            next={fetchMoreCourses}
+                                                            hasMore={hasMoreCourses}
+                                                            scrollableTarget="items__listing"
+                                                            loader={<Box sx={{ textAlign: "center", p: 2 }}><CircularProgress size={22} /></Box>}
+                                                            endMessage={courseList.length > 0 && (
+                                                                <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>No more items</Typography>
+                                                            )}
+                                                        >
+                                                            <div className="flex flex-col gap-0.5">
+                                                                {courseList.length === 0 ? (
+                                                                    <Box sx={{ p: 3, textAlign: "center" }}>
+                                                                        <Typography variant="body2" color="text.secondary">No items available</Typography>
+                                                                    </Box>
+                                                                ) : courseList.map((course) => (
+                                                                    <FormControlLabel
+                                                                        key={course.id}
+                                                                        label={course.name}
+                                                                        control={
+                                                                            <Checkbox
+                                                                                checked={formik.values.course_id === Number(course.id)}
+                                                                                onChange={() => handleSelectCourse(course)}
+                                                                                color="primary"
+                                                                            />
+                                                                        }
+                                                                    />
+                                                                ))}
+                                                            </div>
+                                                        </InfiniteScroll>
+
+                                                    </>
                                                 )}
+                                              
 
                                                 {/* Test list */}
                                                 {enrollmentType === "test" && (
@@ -539,6 +588,62 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                             </>
                                         )}
                                     </Box>
+
+                                        {isSelectedCourseSubscription && (
+                                            <Box sx={{ mt: 3, p: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 2, backgroundColor: theme.palette.background.default }}>
+                                                <InputLabel className="required mb-2">Select Subscription Plan</InputLabel>
+                                                {courseSubscriptionPlans.length > 0 ? (
+                                                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} flexWrap="wrap" useFlexGap>
+                                                        {courseSubscriptionPlans.map((plan, index) => (
+                                                            <Box
+                                                                key={`${plan.subscription_id}-${index}`}
+                                                                onClick={() => formik.setFieldValue("subscription_id", plan.subscription_id)}
+                                                                sx={{
+                                                                    border: formik.values.subscription_id === plan.subscription_id ? `2px solid ${theme.palette.primary.main}` : `1px solid ${theme.palette.divider}`,
+                                                                    borderRadius: 2,
+                                                                    p: 2,
+                                                                    flex: '1 1 200px',
+                                                                    cursor: 'pointer',
+                                                                    transition: 'border-color 0.15s ease',
+                                                                    backgroundColor: formik.values.subscription_id === plan.subscription_id ? theme.palette.action.selected : theme.palette.background.paper,
+                                                                    '&:hover': {
+                                                                        borderColor: theme.palette.primary.main,
+                                                                    }
+                                                                }}
+                                                            >
+                                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                                                                    <Typography variant="subtitle2" fontWeight={600}>
+                                                                        {`Plan ${plan.subscription_id}`}
+                                                                    </Typography>
+                                                                    {formik.values.subscription_id === plan.subscription_id && (
+                                                                        <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                                                                            Selected
+                                                                        </Typography>
+                                                                    )}
+                                                                </Stack>
+                                                                <Stack gap={0.5} mt={1}>
+                                                                    <Typography variant="body2">
+                                                                        <strong>Price:</strong> {plan.price || "N/A"}
+                                                                    </Typography>
+                                                                    <Typography variant="body2">
+                                                                        <strong>Duration:</strong> {plan.number} {plan.billing_cycle}
+                                                                    </Typography>
+                                                                </Stack>
+                                                            </Box>
+                                                        ))}
+                                                    </Stack>
+                                                ) : (
+                                                    <Typography variant="body2" color="text.secondary">
+                                                        No subscription plans available for this course.
+                                                    </Typography>
+                                                )}
+                                                {(formik.touched.subscription_id || formik.submitCount > 0) && formik.errors.subscription_id && (
+                                                    <FormHelperText error sx={{ mt: 1 }}>
+                                                        {formik.errors.subscription_id}
+                                                    </FormHelperText>
+                                                )}
+                                            </Box>
+                                        )}
 
                                     {activeFieldError && (
                                         <Typography color="error" variant="caption" className="mt-1">
