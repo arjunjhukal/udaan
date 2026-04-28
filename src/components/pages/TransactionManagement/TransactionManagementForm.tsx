@@ -249,7 +249,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
             const newInvoiceId = generateInvoiceId(formik.values.student_id);
             formik.setFieldValue("invoice_id", newInvoiceId);
         }
-    }, [formik, formik.values.student_id, transactionId]);
+    }, [formik.values.student_id, formik.values.invoice_id, transactionId]);
 
     const handleSelectRow = (id: number) => {
         formik.setFieldValue("student_id", Number(id));
@@ -275,10 +275,10 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     }, [formik.values.course_id]);
 
     useEffect(() => {
-        if (!isSelectedCourseSubscription) {
+        if (!isSelectedCourseSubscription && formik.values.subscription_id !== 0) {
             formik.setFieldValue("subscription_id", 0);
         }
-    }, [formik, isSelectedCourseSubscription]);
+    }, [formik.values.subscription_id, isSelectedCourseSubscription]);
 
     const columns = useMemo<ColumnDef<RegisterUserProps>[]>(() => [
         {
@@ -516,7 +516,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
 
                                                     </>
                                                 )}
-                                              
+
 
                                                 {/* Test list */}
                                                 {enrollmentType === "test" && (
@@ -589,61 +589,61 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                         )}
                                     </Box>
 
-                                        {isSelectedCourseSubscription && (
-                                            <Box sx={{ mt: 3, p: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 2, backgroundColor: theme.palette.background.default }}>
-                                                <InputLabel className="required mb-2">Select Subscription Plan</InputLabel>
-                                                {courseSubscriptionPlans.length > 0 ? (
-                                                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} flexWrap="wrap" useFlexGap>
-                                                        {courseSubscriptionPlans.map((plan, index) => (
-                                                            <Box
-                                                                key={`${plan.subscription_id}-${index}`}
-                                                                onClick={() => formik.setFieldValue("subscription_id", plan.subscription_id)}
-                                                                sx={{
-                                                                    border: formik.values.subscription_id === plan.subscription_id ? `2px solid ${theme.palette.primary.main}` : `1px solid ${theme.palette.divider}`,
-                                                                    borderRadius: 2,
-                                                                    p: 2,
-                                                                    flex: '1 1 200px',
-                                                                    cursor: 'pointer',
-                                                                    transition: 'border-color 0.15s ease',
-                                                                    backgroundColor: formik.values.subscription_id === plan.subscription_id ? theme.palette.action.selected : theme.palette.background.paper,
-                                                                    '&:hover': {
-                                                                        borderColor: theme.palette.primary.main,
-                                                                    }
-                                                                }}
-                                                            >
-                                                                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
-                                                                    <Typography variant="subtitle2" fontWeight={600}>
-                                                                        {`Plan ${plan.subscription_id}`}
+                                    {isSelectedCourseSubscription && (
+                                        <Box sx={{ mt: 3, p: 2, border: `1px solid ${theme.palette.divider}`, borderRadius: 2, backgroundColor: theme.palette.background.default }}>
+                                            <InputLabel className="required mb-2">Select Subscription Plan</InputLabel>
+                                            {courseSubscriptionPlans.length > 0 ? (
+                                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} flexWrap="wrap" useFlexGap>
+                                                    {courseSubscriptionPlans.map((plan, index) => (
+                                                        <Box
+                                                            key={`${plan.subscription_id}-${index}`}
+                                                            onClick={() => formik.setFieldValue("subscription_id", plan.subscription_id)}
+                                                            sx={{
+                                                                border: formik.values.subscription_id === plan.subscription_id ? `2px solid ${theme.palette.primary.main}` : `1px solid ${theme.palette.divider}`,
+                                                                borderRadius: 2,
+                                                                p: 2,
+                                                                flex: '1 1 200px',
+                                                                cursor: 'pointer',
+                                                                transition: 'border-color 0.15s ease',
+                                                                backgroundColor: formik.values.subscription_id === plan.subscription_id ? theme.palette.action.selected : theme.palette.background.paper,
+                                                                '&:hover': {
+                                                                    borderColor: theme.palette.primary.main,
+                                                                }
+                                                            }}
+                                                        >
+                                                            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                                                                <Typography variant="subtitle2" fontWeight={600}>
+                                                                    {`Plan ${plan.subscription_id}`}
+                                                                </Typography>
+                                                                {formik.values.subscription_id === plan.subscription_id && (
+                                                                    <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                                                                        Selected
                                                                     </Typography>
-                                                                    {formik.values.subscription_id === plan.subscription_id && (
-                                                                        <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
-                                                                            Selected
-                                                                        </Typography>
-                                                                    )}
-                                                                </Stack>
-                                                                <Stack gap={0.5} mt={1}>
-                                                                    <Typography variant="body2">
-                                                                        <strong>Price:</strong> {plan.price || "N/A"}
-                                                                    </Typography>
-                                                                    <Typography variant="body2">
-                                                                        <strong>Duration:</strong> {plan.number} {plan.billing_cycle}
-                                                                    </Typography>
-                                                                </Stack>
-                                                            </Box>
-                                                        ))}
-                                                    </Stack>
-                                                ) : (
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        No subscription plans available for this course.
-                                                    </Typography>
-                                                )}
-                                                {(formik.touched.subscription_id || formik.submitCount > 0) && formik.errors.subscription_id && (
-                                                    <FormHelperText error sx={{ mt: 1 }}>
-                                                        {formik.errors.subscription_id}
-                                                    </FormHelperText>
-                                                )}
-                                            </Box>
-                                        )}
+                                                                )}
+                                                            </Stack>
+                                                            <Stack gap={0.5} mt={1}>
+                                                                <Typography variant="body2">
+                                                                    <strong>Price:</strong> {plan.price || "N/A"}
+                                                                </Typography>
+                                                                <Typography variant="body2">
+                                                                    <strong>Duration:</strong> {plan.number} {plan.billing_cycle}
+                                                                </Typography>
+                                                            </Stack>
+                                                        </Box>
+                                                    ))}
+                                                </Stack>
+                                            ) : (
+                                                <Typography variant="body2" color="text.secondary">
+                                                    No subscription plans available for this course.
+                                                </Typography>
+                                            )}
+                                            {(formik.touched.subscription_id || formik.submitCount > 0) && formik.errors.subscription_id && (
+                                                <FormHelperText error sx={{ mt: 1 }}>
+                                                    {formik.errors.subscription_id}
+                                                </FormHelperText>
+                                            )}
+                                        </Box>
+                                    )}
 
                                     {activeFieldError && (
                                         <Typography color="error" variant="caption" className="mt-1">
