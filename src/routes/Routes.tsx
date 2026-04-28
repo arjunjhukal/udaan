@@ -110,6 +110,8 @@ import UserActivityHistory from "../components/pages/userManagement/viewUser/Use
 import { PATH } from "./PATH";
 import Private from "./Private";
 import Unauthorized from "./Unauthorized";
+import QuestionLabelsRoot from "../components/pages/TestAndQuestionManagement/QuestionLabels";
+import QuestionLabelDetail from "../components/pages/TestAndQuestionManagement/QuestionLabels/detail";
 
 const router = createBrowserRouter([
 	{
@@ -209,6 +211,14 @@ const router = createBrowserRouter([
 					{
 						path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT,
 						element: <QuestionManagementRoot />,
+					},
+					{
+						path: PATH.TEST_QUESTION_MANAGEMENT.QUESTION_LABELS.ROOT,
+						element: <QuestionLabelsRoot />,
+					},
+					{
+						path: PATH.TEST_QUESTION_MANAGEMENT.QUESTION_LABELS.DETAIL.ROOT(),
+						element: <QuestionLabelDetail />,
 					},
 					{
 						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT,

@@ -16,6 +16,7 @@ export interface QuestionLabelProps {
     created_by: string;
     number_of_questions: number;
     created_at: string;
+    question_type?: QuestionTypeProps;
 }
 
 export interface QuestionLabelList extends GlobalResponse {
@@ -23,6 +24,19 @@ export interface QuestionLabelList extends GlobalResponse {
         data: QuestionLabelProps[];
         pagination: Pagination;
     }
+}
+
+export interface QuestionLabelFormProps {
+    id?: number;
+    name: string;
+}
+
+export interface QuestionLabelDetailProps extends QuestionLabelProps {
+    questions: QuestionProps[];
+}
+
+export interface QuestionLabelDetailResponse extends GlobalResponse {
+    data: QuestionLabelDetailProps;
 }
 
 export interface QuestionProps {

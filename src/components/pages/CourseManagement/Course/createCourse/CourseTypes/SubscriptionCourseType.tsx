@@ -21,12 +21,12 @@ const billingCycleOptions: { value: BillingCycle; label: string }[] = [
 export default function SubscriptionCourseType({ handleClick, formik }: Props) {
     const { data } = useGetAllSubscriptionQuery({
         pageIndex: 1,
-        pageSize: 10,
+        pageSize: 100,
+        search: "",
     });
 
     const subscriptionPlans: SubscriptionPlanProps[] = data?.data?.data || [];
 
-    // Initialize with at least one empty row if none exist
     const ensureInitialRow = () => {
         if (!formik.values.course_subscription || formik.values.course_subscription.length === 0) {
             formik.setFieldValue("course_subscription", [{
@@ -38,7 +38,6 @@ export default function SubscriptionCourseType({ handleClick, formik }: Props) {
         }
     };
 
-    // Call on mount if needed
     useMemo(() => {
         ensureInitialRow();
     }, []);

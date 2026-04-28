@@ -3,20 +3,21 @@ import type { ColumnDef } from '@tanstack/react-table';
 import { Add } from 'iconsax-reactjs';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDeleteQuestionMutation, useGetAllQuestionQuery } from '../../../../../services/questionApi';
+import { useBulkUpdateQuestionMarksMutation, useDeleteQuestionMutation, useGetAllQuestionQuery } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import type { QuestionProps, QuestionTypeProps } from '../../../../../types/question';
 import { renderHtml } from '../../../../../utils/renderHtml';
 import Actions from '../../../../molecules/Action';
 import TabController from '../../../../molecules/TabController';
-import UdaanTable from '../../../../molecules/Table';
+import CustomTable from '../../../../molecules/Table';
 import TablePagination from '../../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../../organism/ConfirmationDialog';
 import EmptyRoute from '../../../../organism/EmptyRoute';
 import PageHeader from '../../../../organism/PageHeader';
 import TableFilter from '../../../../organism/TableFilter';
 import QuestionManagementModal from '../QuestionManagementModal';
+import BulkMarksDialog from '../BulkMarksDialog';
 export interface Props {
     open: boolean;
     setOpen: (newValue: boolean) => void;
@@ -39,6 +40,7 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
     });
     const [days, setDays] = useState<number | null>(null);
     const [editQuestion, setEditQuestion] = useState<QuestionProps | null>(null);
+    const [openBulkMarks, setOpenBulkMarks] = useState(false);
 
     const handleEdit = (question: QuestionProps) => {
         setEditQuestion(question);
@@ -50,6 +52,7 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
         days,
     });
     const [deleteQuestion, { isLoading: deleting }] = useDeleteQuestionMutation();
+    const [bulkUpdateMarks, { isLoading: bulkUpdating }] = useBulkUpdateQuestionMarksMutation();
 
     const questions = data?.data?.data || [];
     const handleSelectAll = (checked: boolean) => {
@@ -141,6 +144,15 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
             ),
         },
         {
+            header: "Points",
+            accessorKey: "points",
+            cell: ({ row }) => (
+                <Typography fontWeight={500} >
+                    {row.original.points?.toString() || "N/A"}
+                </Typography>
+            ),
+        },
+        {
             header: "Actions",
             accessorKey: "actions",
             cell: ({ row }) => (
@@ -154,6 +166,18 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
         },
     ], [selectedRows, isAllSelected, isSomeSelected, qp])
 
+
+    const handleBulkAssignMarks = async (marks: number) => {
+        try {
+            const ids = Array.from(selectedRows).map(Number);
+            const response = await bulkUpdateMarks({ question_ids: ids, points: marks }).unwrap();
+            dispatch(showToast({ message: response.message || "Marks assigned successfully.", severity: "success" }));
+            setSelectedRows(new Set());
+            setOpenBulkMarks(false);
+        } catch (e: any) {
+            dispatch(showToast({ message: e?.data?.message || "Unable to assign marks.", severity: "error" }));
+        }
+    };
 
     const handleResetFilter = () => {
         setCustomRange({ startDate: "", endDate: "" });
@@ -200,6 +224,7 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
                     setCustomRange={setCustomRange}
                     setDays={setDays}
                     handleResetFilter={handleResetFilter}
+                    onAssignMarks={activeTab === "subjective" ? () => setOpenBulkMarks(true) : undefined}
                 />
             </div>
 
@@ -219,7 +244,7 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
                             overflow: "auto"
                         }}>
 
-                            <UdaanTable
+                            <CustomTable
                                 data={questions || []}
                                 columns={columns}
                                 loading={isLoading}
@@ -245,6 +270,13 @@ export default function AllQuestionListing({ open, setOpen }: Props) {
                 )}
             />
             <QuestionManagementModal open={open} setOpen={setOpen} editData={editQuestion} />
+            <BulkMarksDialog
+                open={openBulkMarks}
+                onClose={() => setOpenBulkMarks(false)}
+                onApply={handleBulkAssignMarks}
+                count={selectedRows.size}
+                isLoading={bulkUpdating}
+            />
         </div>
     )
 }
