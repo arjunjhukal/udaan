@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
     useAddQuestionsToLabelMutation,
+    useBulkUpdateQuestionMarksMutation,
     useGetQuestionLabelByIdQuery,
     useGetQuestionsByLabelQuery,
     useRemoveQuestionsFromLabelMutation,
@@ -22,6 +23,7 @@ import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../../organism/EmptyRoute";
 import PageHeader from "../../../../organism/PageHeader";
 import TableFilter from "../../../../organism/TableFilter";
+import BulkMarksDialog from "../../QuestionManagement/BulkMarksDialog";
 import AddQuestionsDialog from "./AddQuestionsDialog";
 
 export default function QuestionLabelDetail() {
@@ -37,6 +39,7 @@ export default function QuestionLabelDetail() {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [questionsToRemove, setQuestionsToRemove] = useState<number[]>([]);
     const [openAddDialog, setOpenAddDialog] = useState(false);
+    const [openBulkMarks, setOpenBulkMarks] = useState(false);
 
     const { data: labelData } = useGetQuestionLabelByIdQuery({ id: labelId });
     const questionType: QuestionTypeProps = labelData?.data?.question_type ?? "mcq";
@@ -49,6 +52,7 @@ export default function QuestionLabelDetail() {
     const [updateLabel, { isLoading: updating }] = useUpdateQuestionLabelMutation();
     const [addQuestions, { isLoading: adding }] = useAddQuestionsToLabelMutation();
     const [removeQuestions, { isLoading: removing }] = useRemoveQuestionsFromLabelMutation();
+    const [bulkUpdateMarks, { isLoading: bulkUpdating }] = useBulkUpdateQuestionMarksMutation();
 
     const questions = data?.data?.data || [];
     const existingIds = useMemo(() => new Set(questions.map((q) => q.id as number)), [questions]);
@@ -160,6 +164,15 @@ export default function QuestionLabelDetail() {
             ),
         },
         {
+            header: "Points",
+            accessorKey: "points",
+            cell: ({ row }) => (
+                <Typography fontWeight={500}>
+                    {row.original.points?.toString() || "N/A"}
+                </Typography>
+            ),
+        },
+        {
             header: "Actions",
             accessorKey: "actions",
             cell: ({ row }) => (
@@ -172,6 +185,18 @@ export default function QuestionLabelDetail() {
             ),
         },
     ], [selectedRows, isAllSelected, isSomeSelected, qp, removing]);
+
+    const handleBulkAssignMarks = async (marks: number) => {
+        try {
+            const ids = Array.from(selectedRows).map(Number);
+            const response = await bulkUpdateMarks({ question_ids: ids, points: marks }).unwrap();
+            dispatch(showToast({ message: response.message || "Marks assigned successfully.", severity: "success" }));
+            setSelectedRows(new Set());
+            setOpenBulkMarks(false);
+        } catch (e: any) {
+            dispatch(showToast({ message: e?.data?.message || "Unable to assign marks.", severity: "error" }));
+        }
+    };
 
     const handleResetFilter = () => {
         setSearch("");
@@ -230,6 +255,7 @@ export default function QuestionLabelDetail() {
                     selectedRows={selectedRows as Set<number | string>}
                     handleRoleDelete={(ids) => openRemoveConfirmation(ids.map(Number))}
                     handleResetFilter={handleResetFilter}
+                    onAssignMarks={() => setOpenBulkMarks(true)}
                 />
             </div>
 
@@ -278,6 +304,14 @@ export default function QuestionLabelDetail() {
                 existingIds={existingIds}
                 isLoading={adding}
                 questionType={questionType}
+            />
+
+            <BulkMarksDialog
+                open={openBulkMarks}
+                onClose={() => setOpenBulkMarks(false)}
+                onApply={handleBulkAssignMarks}
+                count={selectedRows.size}
+                isLoading={bulkUpdating}
             />
         </div>
     );

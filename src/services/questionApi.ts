@@ -494,12 +494,13 @@ export const questionApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: (_result, _error, { id }) => [{ type: "BundleEnrollment", id }, { type: "BundleEnrollment", id: "LIST" }]
         }),
-        getAllQuestionSets: builder.query<QuestionLabelList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => ({
+        getAllQuestionSets: builder.query<QuestionLabelList, QueryParams & { type?: QuestionTypeProps }>({
+            query: ({ pageIndex, pageSize, search, type }) => ({
                 url: `/admin/question-labels?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search,
+                    type,
                 })}`,
                 method: "GET",
             }),

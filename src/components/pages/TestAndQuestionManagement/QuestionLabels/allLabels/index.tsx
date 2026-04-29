@@ -7,8 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { useDeleteQuestionLabelMutation, useGetAllQuestionSetsQuery } from "../../../../../services/questionApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
-import type { QuestionLabelProps } from "../../../../../types/question";
+import type { QuestionLabelProps, QuestionTypeProps } from "../../../../../types/question";
 import Actions from "../../../../molecules/Action";
+import TabController from "../../../../molecules/TabController";
 import CustomTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
@@ -28,8 +29,9 @@ export default function AllQuestionLabels() {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [labelsToDelete, setLabelsToDelete] = useState<number[]>([]);
     const [openForm, setOpenForm] = useState(false);
+    const [activeTab, setActiveTab] = useState<QuestionTypeProps>("mcq");
 
-    const { data, isLoading } = useGetAllQuestionSetsQuery({ ...qp, search });
+    const { data, isLoading } = useGetAllQuestionSetsQuery({ ...qp, search, type: activeTab });
     const [deleteLabel, { isLoading: deleting }] = useDeleteQuestionLabelMutation();
 
     const labels = data?.data?.data || [];
@@ -165,6 +167,12 @@ export default function AllQuestionLabels() {
                     }]}
                     cta={{ icon: <Add />, url: "", label: "Add Set" }}
                     handleOpenPopup={handleCreate}
+                />
+
+                <TabController
+                    options={[{ label: "MCQs", value: "mcq" }, { label: "Subjective", value: "subjective" }]}
+                    setActiveTab={setActiveTab}
+                    currentActive={activeTab}
                 />
 
                 <TableFilter
