@@ -137,12 +137,21 @@ export type AdminEmailTemplateKey = typeof ADMIN_EMAIL_TEMPLATES[number];
 export type UserSmsTemplateKey = typeof USER_SMS_TEMPLATES[number];
 export type AdminSmsTemplateKey = typeof ADMIN_SMS_TEMPLATES[number];
 
+export const TEMPLATE_VARIABLES: Record<string, string[]> = {
+    transaction: ["user_name", "amount", "transaction_id", "date"],
+    password_reset: ["user_name", "reset_link", "expiry_time"],
+    otp: ["user_name", "otp", "expiry_time"],
+    welcome_email: ["user_name", "login_url"],
+    device_reset_request: ["user_name", "device_name"],
+    inactive_state: ["user_name"],
+};
 export interface EmailTemplateProps {
     actor: EmailTemplateActor;
     method: EmailTemplateMethod;
     template_key: string;
     subject?: string;
     body: string;
+    is_enabled?: boolean;
     variables?: string[];
 }
 
