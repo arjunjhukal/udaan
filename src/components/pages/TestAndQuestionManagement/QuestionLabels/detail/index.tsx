@@ -3,6 +3,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { Add } from "iconsax-reactjs";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { PATH } from "../../../../../routes/PATH";
 import {
     useAddQuestionsToLabelMutation,
     useBulkUpdateQuestionMarksMutation,
@@ -13,7 +14,6 @@ import {
 } from "../../../../../services/questionApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
-import { PATH } from "../../../../../routes/PATH";
 import type { QuestionProps, QuestionTypeProps } from "../../../../../types/question";
 import { renderHtml } from "../../../../../utils/renderHtml";
 import Actions from "../../../../molecules/Action";
@@ -47,14 +47,13 @@ export default function QuestionLabelDetail() {
         id: labelId,
         ...qp,
         search,
-        type: questionType,
     });
     const [updateLabel, { isLoading: updating }] = useUpdateQuestionLabelMutation();
     const [addQuestions, { isLoading: adding }] = useAddQuestionsToLabelMutation();
     const [removeQuestions, { isLoading: removing }] = useRemoveQuestionsFromLabelMutation();
     const [bulkUpdateMarks, { isLoading: bulkUpdating }] = useBulkUpdateQuestionMarksMutation();
 
-    const questions = data?.data?.data || [];
+    const questions = useMemo(() => data?.data?.data || [], [data]);
     const existingIds = useMemo(() => new Set(questions.map((q) => q.id as number)), [questions]);
 
     useEffect(() => {
@@ -80,7 +79,12 @@ export default function QuestionLabelDetail() {
 
     const handleSelectRow = (qId: number, checked: boolean) => {
         const next = new Set(selectedRows);
-        checked ? next.add(qId) : next.delete(qId);
+        if (checked) {
+            next.add(qId);
+        } else {
+            next.delete(qId);
+        }
+        // checked ? next.add(qId) : next.delete(qId);
         setSelectedRows(next);
     };
 

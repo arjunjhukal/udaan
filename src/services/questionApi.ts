@@ -580,7 +580,7 @@ export const questionApi = baseApi.injectEndpoints({
                 method: "PUT",
                 body,
             }),
-            invalidatesTags: [{ type: "Questions", id: "LIST" }],
+            invalidatesTags: [{ type: "Questions", id: "LIST" }, { type: "QuestionLabel" }],
         }),
     })
 });
