@@ -310,6 +310,9 @@ export const PATH = {
 			LOGIN_TYPE: {
 				ROOT: "/settings/system/login-type"
 			},
+			CONTROLS: {
+				ROOT: "/settings/system/controls"
+			},
 		},
 		API: {
 			ROOT: "/settings/api",
@@ -358,7 +361,7 @@ export const PATH = {
 		},
 	},
 	CONTROLS: {
-		ROOT: "/controls",
+		ROOT: "/settings/system/controls",
 	},
 	TICKET: {
 		ROOT: "/tickets",

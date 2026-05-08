@@ -8,7 +8,7 @@ import {
     Card,
     Category, Devices, DirectboxNotif, Global,
     Lock, LoginCurve, MessageText1, Mobile, Profile, Setting2,
-    Video, Wallet,
+    Setting4, Video, Wallet,
 } from "iconsax-reactjs";
 import React, { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -31,6 +31,7 @@ const MENU_GROUPS = [
             { label: "Email Templates", url: PATH.SETTINGS.SYSTEM.EMAIL_TEMPLATES.ROOT, icon: MessageText1 },
             { label: "Course Setting", url: PATH.SETTINGS.SYSTEM.COURSE_SETTING.ROOT, icon: Book1 },
             { label: "Login Type", url: PATH.SETTINGS.SYSTEM.LOGIN_TYPE.ROOT, icon: LoginCurve },
+            { label: "Controls", url: PATH.SETTINGS.SYSTEM.CONTROLS.ROOT, icon: Setting4 },
         ],
     },
     {
