@@ -157,6 +157,15 @@ export const questionApi = baseApi.injectEndpoints({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
+        getOmrResultAttempts: builder.query<StudentSubmitTestList, { testId: number, resultId: number, pageSize?: number }>({
+            query: ({ testId, resultId, pageSize = 10 }) => ({
+                url: `/admin/test/${testId}/result/${resultId}/attempts?${buildQueryParams({
+                    page_size: pageSize,
+                })}`,
+                method: "GET",
+            }),
+            providesTags: (_result, _error, { testId }) => [{ type: "Test", id: testId }]
+        }),
         getSingleStudentResult: builder.query<{ data: StudentSubmitTestProps }, { id?: number, resultId?: number }>({
             query: ({ id, resultId }) => ({
                 url: `/admin/test/${id}/result/${resultId}`,
@@ -645,4 +654,5 @@ export const {
     useAddQuestionsToLabelMutation,
     useRemoveQuestionsFromLabelMutation,
     useBulkUpdateQuestionMarksMutation,
+    useGetOmrResultAttemptsQuery,
 } = questionApi;

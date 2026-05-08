@@ -54,8 +54,8 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
                 background: (theme) => theme.palette.primary.contrastText
             }}>
                 <Box>
-                    <Typography variant='h4'>{data?.test_type === "mcq" ? data?.total_correct : data?.total_attempted}/{data?.total_questions}</Typography>
-                    <Typography variant='subtitle2' color='text.middle'>{data?.test_type === "mcq" ? "Correct Answer" : "Attempted Questions"}</Typography>
+                    <Typography variant='h4'>{(data?.test_type === "mcq" || data?.test_type === "omr") ? data?.total_correct : data?.total_attempted}/{data?.total_questions}</Typography>
+                    <Typography variant='subtitle2' color='text.middle'>{(data?.test_type === "mcq" || data?.test_type === "omr") ? "Correct Answer" : "Attempted Questions"}</Typography>
                 </Box>
                 <Divider orientation='vertical' />
                 <Box>
@@ -78,7 +78,7 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
                 </Box>
             </Box>
             <Stack className="gap-2 mt-6">
-                <Button variant='contained' color='primary' fullWidth onClick={() => handleSubmitFeedback()}>{(data?.test_type === "mcq") ? "Submit & Next" : "Submit"}</Button>
+                <Button variant='contained' color='primary' fullWidth onClick={() => handleSubmitFeedback()}>{(data?.test_type === "mcq" || data?.test_type === "omr") ? "Submit & Next" : "Submit"}</Button>
             </Stack>
         </Box>
     )

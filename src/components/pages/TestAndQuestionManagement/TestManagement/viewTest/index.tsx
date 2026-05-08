@@ -199,7 +199,7 @@ export default function ViewTestRoot() {
                     </Box>
                 </div>
             )}
-            {activeTab === "results" && <StudentResult id={id || ""} />}
+            {activeTab === "results" && <StudentResult id={id || ""} testType={data?.data?.test_type} />}
             {activeTab === "sample" && <TestSampleForm id={id || ""} />}
         </div>
     )

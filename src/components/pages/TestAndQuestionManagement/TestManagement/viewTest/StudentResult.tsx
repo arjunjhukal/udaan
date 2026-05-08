@@ -1,12 +1,13 @@
-import { Checkbox, Stack, Typography } from "@mui/material";
+import { Checkbox, IconButton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Repeat } from "iconsax-reactjs";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../../routes/PATH";
 import { useGetListOfStudentSubmittedTestQuery, usePublishTestResultsMutation } from "../../../../../services/questionApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
-import type { StudentSubmitTestProps } from "../../../../../types/question";
+import type { StudentSubmitTestProps, TestTypeProps } from "../../../../../types/question";
 import { msToHMS } from "../../../../../utils/parseDateTime";
 import ActionIconVisible from "../../../../molecules/Action/ActionIconVisible";
 import UdaanTable from "../../../../molecules/Table";
@@ -14,10 +15,15 @@ import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../../organism/EmptyRoute";
 import TableFilter from "../../../../organism/TableFilter";
+import OmrAttemptsDialog from "./OmrAttemptsDialog";
 
-export default function StudentResult({ id }: { id: string }) {
+export default function StudentResult({ id, testType }: { id: string; testType?: TestTypeProps }) {
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const theme = useTheme();
+	const [attemptsDialog, setAttemptsDialog] = useState<{ open: boolean; resultId: number; studentName: string }>({
+		open: false, resultId: 0, studentName: ""
+	});
 	const [qp, setQp] = useState({
 		pageIndex: 1,
 		pageSize: 10,
@@ -144,10 +150,24 @@ export default function StudentResult({ id }: { id: string }) {
 					</div>
 				),
 			},
-			{
+			...(testType === "mcq" || testType === "omr" ? [{
+				header: "Correct",
+				accessorKey: "total_correct",
+				cell: ({ row }: { row: { original: StudentSubmitTestProps } }) => (
+					<div className="flex justify-start items-center">
+						<Typography variant="subtitle1" color="text.dark">
+							{row.original?.total_correct}
+						</Typography>
+
+						<Typography variant="subtitle1" color="text.middle">
+							/{row.original?.total_attempted}
+						</Typography>
+					</div>
+				),
+			}] : [{
 				header: "Checked",
 				accessorKey: "checked_answers",
-				cell: ({ row }) => (
+				cell: ({ row }: { row: { original: StudentSubmitTestProps } }) => (
 					<div className="flex justify-start items-center">
 						<Typography variant="subtitle1" color="text.dark">
 							{row.original?.checked_answers}
@@ -158,7 +178,7 @@ export default function StudentResult({ id }: { id: string }) {
 						</Typography>
 					</div>
 				),
-			},
+			}]),
 			{
 				header: "Started At",
 				accessorKey: "started_at",
@@ -253,7 +273,7 @@ export default function StudentResult({ id }: { id: string }) {
 				accessorKey: "marks",
 				cell: ({ row }) => (
 					<Typography variant="subtitle1">
-						{row.original?.total_marks}%
+						{row.original?.total_marks}
 					</Typography>
 				),
 			},
@@ -264,24 +284,58 @@ export default function StudentResult({ id }: { id: string }) {
 					<Typography variant="subtitle1">{row.original?.score}</Typography>
 				),
 			},
+			...(testType === "omr" ? [{
+				header: "Attempt",
+				accessorKey: "attempt_number",
+				cell: ({ row }: { row: { original: StudentSubmitTestProps } }) => (
+					<Typography variant="subtitle1" fontWeight={500}>
+						#{row.original?.attempt_number ?? 1}
+					</Typography>
+				),
+				size: 80,
+			}] : []),
 			{
 				header: "Action",
 				accessorKey: "action",
-				cell: ({ row }) => (
-					<ActionIconVisible
-						onView={() =>
-							navigate(
-								PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.ROOT(
-									Number(id),
-									row.original.id,
-								),
-							)
-						}
-					/>
+				cell: ({ row }: { row: { original: StudentSubmitTestProps } }) => (
+					<div className="flex items-center gap-1">
+						<ActionIconVisible
+							onView={() =>
+								navigate(
+									PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.ROOT(
+										Number(id),
+										row.original.id,
+									),
+								)
+							}
+						/>
+						{testType === "omr" && (row.original?.attempt_number ?? 1) > 1 && (
+							<Tooltip title="View All Attempts">
+								<IconButton
+									className="p-1.5 rounded-md!"
+									sx={{
+										border: `1px solid ${theme.palette.separator.darker}`,
+										background: theme.palette.primary.contrastText,
+										"&:hover": {
+											color: theme.palette.primary.contrastText,
+											background: theme.palette.primary.main,
+										},
+									}}
+									onClick={() => setAttemptsDialog({
+										open: true,
+										resultId: row.original.id,
+										studentName: row.original?.student?.name || "",
+									})}
+								>
+									<Repeat size={16} />
+								</IconButton>
+							</Tooltip>
+						)}
+					</div>
 				),
 			},
 		],
-		[selectedRows, isAllSelected, isSomeSelected],
+		[selectedRows, isAllSelected, isSomeSelected, testType],
 	);
 
 	const handleTestResultPublish = async () => {
@@ -326,6 +380,15 @@ export default function StudentResult({ id }: { id: string }) {
 				totalPages={pagination?.total_pages || 0}
 			/>
 
+			{testType === "omr" && (
+				<OmrAttemptsDialog
+					open={attemptsDialog.open}
+					onClose={() => setAttemptsDialog({ open: false, resultId: 0, studentName: "" })}
+					testId={id}
+					resultId={attemptsDialog.resultId}
+					studentName={attemptsDialog.studentName}
+				/>
+			)}
 			<ConfirmationDialog
 				open={openConfirm}
 				setOpen={setOpenConfirm}

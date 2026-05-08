@@ -8,9 +8,10 @@ import { useChangeTestStatusMutation, useDeleteTestMutation, useGetAllTestQuery 
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import { useCourseFilter } from '../../../../../store/useCourseFilter';
-import type { TestProps } from '../../../../../types/question';
+import type { TestProps, TestTypeProps } from '../../../../../types/question';
 import StatusPill from '../../../../atoms/StatusPill';
 import Actions from '../../../../molecules/Action';
+import TabController from '../../../../molecules/TabController';
 import UdaanTable from '../../../../molecules/Table';
 import TablePagination from '../../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../../organism/ConfirmationDialog';
@@ -35,6 +36,7 @@ export default function AllTestListing() {
         const timer = setTimeout(() => setDebouncedSearch(search), 1000);
         return () => clearTimeout(timer);
     }, [search]);
+    const [activeTab, setActiveTab] = useState<TestTypeProps | "all">("all");
     const [layout, setLayout] = useState<LayoutProps>('table');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [testsToDelete, setTestsToDelete] = useState<string[]>([]);
@@ -63,6 +65,7 @@ export default function AllTestListing() {
     const { data, isLoading } = useGetAllTestQuery({
         ...qp, search: debouncedSearch, ...customRange,
         days,
+        type: activeTab === "all" ? undefined : activeTab,
         categoryFilter: { ...categoryFilter },
     });
     const [deleteTest, { isLoading: deleting }] = useDeleteTestMutation();
@@ -255,6 +258,7 @@ export default function AllTestListing() {
         setCustomRange({ startDate: "", endDate: "" });
         setSearch("");
         setDays(null);
+        setActiveTab("all");
         setQp((prev) => ({ ...prev, pageIndex: 1 }));
         resetFilters();
     };
@@ -279,6 +283,19 @@ export default function AllTestListing() {
                             label: t("messages.empty_states.test.action"),
                         }
                     }
+                />
+                <TabController
+                    options={[
+                        { label: "All", value: "all" },
+                        { label: "MCQs", value: "mcq" },
+                        { label: "Subjective", value: "subjective" },
+                        { label: "OMR", value: "omr" },
+                    ]}
+                    setActiveTab={(value) => {
+                        setActiveTab(value);
+                        setQp((prev) => ({ ...prev, pageIndex: 1 }));
+                    }}
+                    currentActive={activeTab}
                 />
 
                 <TableFilter

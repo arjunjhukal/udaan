@@ -299,7 +299,8 @@ export interface StudentSubmitTestProps {
     result: ResultProps,
     total_marks: number,
     score: number,
-    test_type: TestTypeProps
+    test_type: TestTypeProps,
+    attempt_number: number | null
 }
 
 export interface StudentSubmitTestList {
