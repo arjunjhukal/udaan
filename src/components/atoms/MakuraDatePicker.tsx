@@ -17,6 +17,7 @@ interface MakuraDatePickerProps {
     includeTime?: boolean;
     format?: string;
     minDate?: Dayjs | null;
+    maxDate?: Dayjs | null;
     error?: boolean;
     defaultTime?: { hour: number; minute: number }; // optional default time
 }
@@ -51,6 +52,7 @@ export default function MakuraDatePicker({
     includeTime = false,
     format,
     minDate,
+    maxDate,
     error = false,
     defaultTime,
 }: MakuraDatePickerProps) {
@@ -127,6 +129,7 @@ export default function MakuraDatePicker({
         onChange: handleChange,
         format: displayFormat,
         minDate: minDate || undefined,
+        maxDate: maxDate || undefined,
         open,
         onOpen: () => setOpen(true),
         onClose: () => setOpen(false),

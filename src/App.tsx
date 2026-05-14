@@ -1,3 +1,4 @@
+import DashboardActiveUsers from "./components/pages/Dashboard/DashboardActiveUsers";
 import DashboardAnalytics from "./components/pages/Dashboard/DashboardAnalytics";
 import DashboardNoticeAndActivities from "./components/pages/Dashboard/DashboardNoticeAndActivities";
 import DashboardTransaction from "./components/pages/Dashboard/DashboardTransaction";
@@ -13,6 +14,7 @@ export default function App() {
       </CAN>
       <DashboardNoticeAndActivities />
       <LiveClassAndTestFilter />
+      <DashboardActiveUsers />
     </div>
   )
 }

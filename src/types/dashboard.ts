@@ -9,3 +9,12 @@ export interface Analytics {
 export interface AnalyticsList {
     data: Analytics[];
 }
+
+export interface ActiveUserPoint {
+    timestamp: string;
+    count: number;
+}
+
+export interface ActiveUsersResponse {
+    data: ActiveUserPoint[];
+}

@@ -1,4 +1,4 @@
-import type { AnalyticsList } from "../types/dashboard";
+import type { ActiveUsersResponse, AnalyticsList } from "../types/dashboard";
 import { baseApi } from "./baseApi";
 
 export const dashboardApi = baseApi.injectEndpoints({
@@ -9,9 +9,17 @@ export const dashboardApi = baseApi.injectEndpoints({
                 method: "GET"
             })
         }),
+        getActiveUsers: builder.query<ActiveUsersResponse, { date?: string } | void>({
+            query: (arg) => ({
+                url: `/admin/analytics/active-users`,
+                method: "GET",
+                params: arg && arg.date ? { date: arg.date } : undefined,
+            })
+        }),
     })
 })
 
 export const {
     useGetAnalyticsQuery,
+    useGetActiveUsersQuery,
 } = dashboardApi;
