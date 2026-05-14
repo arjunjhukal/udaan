@@ -17,7 +17,7 @@ export const liveClassApi = baseApi.injectEndpoints({
             ],
         }),
         getAllLiveClass: builder.query<LiveClassList, QueryParams & { status?: liveClassTabType; days?: number | null, categoryFilter?: CategoryFilterParams; }>({
-            query: ({ pageIndex, pageSize, search, status, days, startDate, endDate, categoryFilter }) => {
+            query: ({ pageIndex, pageSize, search, status, days, startDate, endDate, categoryFilter, sort_field, sort_by }) => {
                 return {
                     url: `/admin/course/live?${buildQueryParams({
                         page: pageIndex,
@@ -31,6 +31,8 @@ export const liveClassApi = baseApi.injectEndpoints({
                         categories: categoryFilter?.category,
                         sub_categories: categoryFilter?.sub_category,
                         positions: categoryFilter?.positions,
+                        sort_field,
+                        sort_by,
                     })}`,
                     method: "GET",
                 };

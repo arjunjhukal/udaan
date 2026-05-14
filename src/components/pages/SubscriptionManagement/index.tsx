@@ -8,7 +8,9 @@ import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
 import type { SubscriptionPlanProps } from "../../../types/subscriptionPlan";
 import { renderHtml } from "../../../utils/renderHtml";
+import useServerSort from "../../../utils/useServerSort";
 import Actions from "../../molecules/Action";
+import SortableHeader from "../../molecules/SortableHeader";
 import UdaanTable from "../../molecules/Table";
 import TablePagination from "../../molecules/Table/Pagination";
 import SubscriptionCard from "../../organism/Cards/SubscriptionCard";
@@ -38,7 +40,11 @@ export default function SubscriptionManagementRoot() {
 
 
     const [openConfirm, setOpenConfirm] = React.useState(false);
-    const { data, isLoading } = useGetAllSubscriptionQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: search })
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
+    const { data, isLoading } = useGetAllSubscriptionQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: search, sort_field: sort.sort_field, sort_by: sort.sort_by })
     const [deletePlan, { isLoading: deleting }] = useDeleteSubscriptionMutation();
 
     const plans = data?.data?.data || [];
@@ -126,7 +132,7 @@ export default function SubscriptionManagementRoot() {
         size: 80,
     },
     {
-        header: "Name",
+        header: () => <SortableHeader field="name" label="Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
         accessorKey: "name",
         cell: ({ row }) => (
             <Typography fontWeight={500} className="capitalize">
@@ -135,7 +141,7 @@ export default function SubscriptionManagementRoot() {
         ),
     },
     {
-        header: "Description",
+        header: () => <SortableHeader field="description" label="Description" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
         accessorKey: "desription",
         cell: ({ row }) => (
             <Typography fontWeight={500} className="capitalize">
@@ -161,7 +167,7 @@ export default function SubscriptionManagementRoot() {
             />
         ),
     },
-    ], [selectedRows, search]);
+    ], [selectedRows, search, sort]);
 
     return (
         <div className="subscription__root h-full flex justify-between flex-col">

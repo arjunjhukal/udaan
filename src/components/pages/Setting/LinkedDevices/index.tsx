@@ -8,6 +8,8 @@ import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import type { LinkedDeviceProps } from "../../../../types/setting";
 import { formatDateTime } from "../../../../utils/dateFormat";
+import useServerSort from "../../../../utils/useServerSort";
+import SortableHeader from "../../../molecules/SortableHeader";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 
@@ -18,7 +20,10 @@ export default function LinkedDevices() {
         pageIndex: 1,
         pageSize: 10,
     })
-    const { data, isLoading } = useGetAllLinkedDevicesQuery(qp);
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+    const { data, isLoading } = useGetAllLinkedDevicesQuery({ ...qp, sort_field: sort.sort_field, sort_by: sort.sort_by });
     const [logout, { isLoading: loggingOut }] =
         useLogoutFromLinkedDeviceMutation();
     const [loggingOutId, setLoggingOutId] = useState<number | null>(null);
@@ -48,7 +53,7 @@ export default function LinkedDevices() {
     const columns = useMemo<ColumnDef<LinkedDeviceProps>[]>(
         () => [
             {
-                header: "Location & IP",
+                header: () => <SortableHeader field="location" label="Location & IP" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
                 accessorKey: "location_ip",
                 cell: ({ row }) => (
                     <Stack className="gap-3">
@@ -78,7 +83,7 @@ export default function LinkedDevices() {
                 ),
             },
             {
-                header: "OS",
+                header: () => <SortableHeader field="os" label="OS" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
                 accessorKey: "os",
                 cell: ({ row }) => (
                     <Typography fontWeight={500} className="capitalize">
@@ -87,7 +92,7 @@ export default function LinkedDevices() {
                 ),
             },
             {
-                header: "Browser",
+                header: () => <SortableHeader field="browser" label="Browser" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
                 accessorKey: "browser",
                 cell: ({ row }) => (
                     <Typography fontWeight={500} className="capitalize">
@@ -96,7 +101,7 @@ export default function LinkedDevices() {
                 ),
             },
             {
-                header: "Last accessed",
+                header: () => <SortableHeader field="updated_at" label="Last accessed" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
                 accessorKey: "last_accessed",
                 cell: ({ row }) => (
                     <Typography fontWeight={500} className="capitalize">
@@ -127,7 +132,7 @@ export default function LinkedDevices() {
                 },
             },
         ],
-        [loggingOut]
+        [loggingOut, sort]
     );
 
     return (

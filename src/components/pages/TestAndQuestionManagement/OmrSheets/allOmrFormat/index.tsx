@@ -9,7 +9,9 @@ import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import type { OmrFormatProps } from "../../../../../types/question";
 import { formatDateCustom } from "../../../../../utils/dateFormat";
+import useServerSort from "../../../../../utils/useServerSort";
 import Actions from "../../../../molecules/Action";
+import SortableHeader from "../../../../molecules/SortableHeader";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
@@ -27,7 +29,11 @@ export default function AllOmrFormats() {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [formatsToDelete, setFormatsToDelete] = useState<number[]>([]);
 
-    const { data, isLoading } = useGetAllOmrFormatQuery({ ...qp, search });
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
+    const { data, isLoading } = useGetAllOmrFormatQuery({ ...qp, search, sort_field: sort.sort_field, sort_by: sort.sort_by });
     const [deleteFormat, { isLoading: deleting }] = useDeleteOmrFormatMutation();
 
     const formats = data?.data?.data || [];
@@ -98,7 +104,7 @@ export default function AllOmrFormats() {
             size: 80,
         },
         {
-            header: "Format Title",
+            header: () => <SortableHeader field="title" label="Format Title" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "title",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize max-w-[400px]">
@@ -107,7 +113,7 @@ export default function AllOmrFormats() {
             ),
         },
         {
-            header: "Created At",
+            header: () => <SortableHeader field="created_at" label="Created At" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => (
                 <Typography>
@@ -126,7 +132,7 @@ export default function AllOmrFormats() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp]);
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp, sort]);
 
     return (
         <div className="all__omr__formats h-full flex flex-col justify-between">

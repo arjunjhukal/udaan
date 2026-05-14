@@ -27,7 +27,7 @@ export const courseApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Course", id: "LIST" }]
         }),
         getAllCourse: builder.query<CourseList, QueryParams & { categoryFilter?: CategoryFilterParams; status?: "all" | "published" | "draft" }>({
-            query: ({ pageIndex, pageSize, search, categoryFilter, status }) => {
+            query: ({ pageIndex, pageSize, search, categoryFilter, status, sort_field, sort_by }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -38,7 +38,9 @@ export const courseApi = baseApi.injectEndpoints({
                     positions: categoryFilter?.positions,
                     teachers: categoryFilter?.teachers,
                     payment: categoryFilter?.course_type,
-                    status: status === "all" ? null : status
+                    status: status === "all" ? null : status,
+                    sort_field,
+                    sort_by,
                 })
                 return {
                     url: `/course?${queryString}`,
@@ -273,12 +275,14 @@ export const courseApi = baseApi.injectEndpoints({
             })
         }),
         getEnrolledStudents: builder.query<TransactionList, QueryParams & { id: number; status?: "active" | "archived"; }>({
-            query: ({ id, search, status, pageIndex, pageSize }) => ({
+            query: ({ id, search, status, pageIndex, pageSize, sort_field, sort_by }) => ({
                 url: `/admin/course/${id}/user?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
                     type: status,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET"
             }),

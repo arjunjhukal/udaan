@@ -14,7 +14,7 @@ export const categoryApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Category", id: "LIST" }]
         }),
         getAllCategory: builder.query<CategroyList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => {
+            query: ({ pageIndex, pageSize, search, sort_field, sort_by }) => {
                 const params = new URLSearchParams();
 
                 if (pageIndex) {
@@ -26,6 +26,8 @@ export const categoryApi = baseApi.injectEndpoints({
                 if (search) {
                     params.append('search', search.toString());
                 }
+                if (sort_field) params.append("sort_field", sort_field);
+                if (sort_by) params.append("sort_by", sort_by);
 
                 return {
                     url: `/admin/category?${params.toString()}`,

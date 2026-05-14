@@ -11,8 +11,10 @@ import type { GorkhapatraProps } from "../../../../types/gorkhapatra";
 import { formatDate } from "../../../../utils/dateFormat";
 import { renderHtml } from "../../../../utils/renderHtml";
 import { getPublishedStatus, type PublishedStatus } from "../../../../utils/statusMap";
+import useServerSort from "../../../../utils/useServerSort";
 import StatusPill from "../../../atoms/StatusPill";
 import Actions from "../../../molecules/Action";
+import SortableHeader from "../../../molecules/SortableHeader";
 import TabController from "../../../molecules/TabController";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
@@ -50,12 +52,18 @@ export default function AllGorkhapatraRoot() {
         return () => clearTimeout(timer);
     }, [search]);
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading } = useGetAllGorkhapatraQuery({
         ...qp,
         search: debouncedSearch,
         status: activeTab,
         days,
-        ...customRange
+        ...customRange,
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
 
     const [deleteGorkhapatra, { isLoading: deleting }] = useDeleteGorkhapatraMutation();
@@ -175,7 +183,7 @@ export default function AllGorkhapatraRoot() {
             size: 80,
         },
         {
-            header: "Title",
+            header: () => <SortableHeader field="title" label="Title" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "title",
             cell: ({ row }) => (
                 <Tooltip title={row.original.title} arrow>
@@ -186,7 +194,7 @@ export default function AllGorkhapatraRoot() {
             ),
         },
         {
-            header: "Description",
+            header: () => <SortableHeader field="description" label="Description" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "description",
             cell: ({ row }) => (
                 <Typography fontWeight={500} variant="subtitle1" className="line-clamp-1">
@@ -195,7 +203,7 @@ export default function AllGorkhapatraRoot() {
             ),
         },
         {
-            header: "Type",
+            header: () => <SortableHeader field="type" label="Type" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "type",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -204,7 +212,7 @@ export default function AllGorkhapatraRoot() {
             ),
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "status",
             cell: ({ row }) => {
                 const variant = getPublishedStatus(row.original.status || "published" as PublishedStatus);
@@ -222,7 +230,7 @@ export default function AllGorkhapatraRoot() {
             },
         },
         {
-            header: "Created Date",
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => {
                 return (
@@ -233,7 +241,7 @@ export default function AllGorkhapatraRoot() {
             },
         },
         {
-            header: "Views",
+            header: () => <SortableHeader field="views" label="Views" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "views",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -253,7 +261,7 @@ export default function AllGorkhapatraRoot() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp, sort])
 
 
     const handleResetFilter = () => {

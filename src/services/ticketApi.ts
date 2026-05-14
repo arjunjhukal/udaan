@@ -17,7 +17,7 @@ export const ticketApi = baseApi.injectEndpoints({
 	// tagTypes: ["Ticket", "TicketReply", "TicketType"],
 	endpoints: (builder) => ({
 		getAllTickets: builder.query<TicketList, QueryParams & TicketFilterParams>({
-			query: ({ pageIndex, pageSize, search, status, priority, type_id }) => {
+			query: ({ pageIndex, pageSize, search, status, priority, type_id, sort_field, sort_by }) => {
 				const params = buildQueryParams({
 					page: pageIndex,
 					page_size: pageSize,
@@ -25,6 +25,8 @@ export const ticketApi = baseApi.injectEndpoints({
 					status,
 					priority,
 					type_id,
+					sort_field,
+					sort_by,
 				});
 				return { url: `/tickets?${params}`, method: "GET" };
 			},
@@ -126,8 +128,8 @@ export const ticketApi = baseApi.injectEndpoints({
 		}),
 
 		getTicketTypes: builder.query<TicketTypeList, QueryParams>({
-			query: ({ pageIndex, pageSize, search } = {}) => {
-				const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search });
+			query: ({ pageIndex, pageSize, search, sort_field, sort_by } = {}) => {
+				const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search, sort_field, sort_by });
 				return { url: `/ticket/ticket-type?${params}`, method: "GET" };
 			},
 			providesTags: (result) =>

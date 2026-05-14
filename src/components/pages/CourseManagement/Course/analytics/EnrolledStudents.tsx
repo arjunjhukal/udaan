@@ -9,8 +9,10 @@ import { useAppDispatch } from "../../../../../store/hook";
 import type { TransactionCourseStatus, TransactionResponse } from "../../../../../types/transaction";
 import { formatDate } from "../../../../../utils/dateFormat";
 import { getTransactionStatusVariant } from "../../../../../utils/statusMap";
+import useServerSort from "../../../../../utils/useServerSort";
 import StatusPill from "../../../../atoms/StatusPill";
 import ActionIconVisible from "../../../../molecules/Action/ActionIconVisible";
+import SortableHeader from "../../../../molecules/SortableHeader";
 import TabController from "../../../../molecules/TabController";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
@@ -41,11 +43,17 @@ export default function EnrolledStudents({ id }: { id: number }) {
         return () => clearTimeout(timer);
     }, [search]);
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading } = useGetEnrolledStudentsQuery({
         ...qp,
         status: activeTab,
         search: debouncedSearch,
-        id: Number(id)
+        id: Number(id),
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
 
     const [removeUser, { isLoading: removingUser }] = useArchiveEnrolledStudentMutation();
@@ -80,7 +88,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
             size: 80,
         },
         {
-            header: "Student Name",
+            header: () => <SortableHeader field="name" label="Student Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -89,7 +97,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
             ),
         },
         {
-            header: "Added By",
+            header: () => <SortableHeader field="added_by" label="Added By" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "added_by",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -98,7 +106,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
             ),
         },
         {
-            header: "Course Status",
+            header: () => <SortableHeader field="course_status" label="Course Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "course_status",
             cell: ({ row }) => {
                 const variant = getTransactionStatusVariant(row.original.course_status || "purchased" as TransactionCourseStatus);
@@ -109,7 +117,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
             },
         },
         {
-            header: "Contact No.",
+            header: () => <SortableHeader field="contact" label="Contact No." activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "contact",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="">
@@ -118,7 +126,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
             ),
         },
         {
-            header: "Email",
+            header: () => <SortableHeader field="email" label="Email" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "email",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="">
@@ -127,7 +135,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
             ),
         },
         {
-            header: "Payment Mode",
+            header: () => <SortableHeader field="payment_method" label="Payment Mode" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "payment_method",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -136,7 +144,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
             ),
         },
         {
-            header: "Created Date",
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => {
                 return (
@@ -160,7 +168,7 @@ export default function EnrolledStudents({ id }: { id: number }) {
                 />
             ),
         },
-    ], [qp, activeTab]);
+    ], [qp, activeTab, sort]);
 
 
 

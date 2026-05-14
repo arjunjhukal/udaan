@@ -1,44 +1,52 @@
-import { Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { ArrowDown, ArrowUp } from "iconsax-reactjs";
-
-type SortOrder = "asc" | "desc";
+import type { SortOrder } from "../../../types";
 
 interface SortableHeaderProps {
-    column: any;
+    field: string;
     label: string;
-    onSortChange?: (order: SortOrder) => void;
+    activeField?: string;
+    activeOrder?: SortOrder;
+    onSortChange?: (field: string, order: SortOrder) => void;
 }
 
 export default function SortableHeader({
-    column,
+    field,
     label,
-    onSortChange
+    activeField,
+    activeOrder,
+    onSortChange,
 }: SortableHeaderProps) {
-
-    const sortState = column.getIsSorted() as SortOrder | false;
+    const isActive = activeField === field && (activeOrder === "asc" || activeOrder === "desc");
+    const currentOrder: SortOrder = isActive ? (activeOrder as SortOrder) : "";
 
     const handleClick = () => {
         let nextOrder: SortOrder;
+        if (currentOrder === "") nextOrder = "asc";
+        else if (currentOrder === "asc") nextOrder = "desc";
+        else nextOrder = "";
 
-        if (sortState === "asc") {
-            nextOrder = "desc";
-        } else {
-            nextOrder = "asc";
-        }
-
-        column.toggleSorting(nextOrder === "desc"); // tanstack expects boolean
-        onSortChange?.(nextOrder);
+        onSortChange?.(nextOrder === "" ? "" : field, nextOrder);
     };
 
     return (
-        <Typography
-
+        <Box
+            component="span"
             onClick={handleClick}
-            className="flex items-center gap-1 cursor-pointer select-none"
+            className="inline-flex items-center gap-1 cursor-pointer select-none"
         >
-            {label}
-            {sortState === "asc" && <ArrowUp size={14} />}
-            {sortState === "desc" && <ArrowDown size={14} />}
-        </Typography>
+            <Box component="span" className="text-nowrap">{label}</Box>
+            {currentOrder === "asc" && <ArrowUp size={14} />}
+            {currentOrder === "desc" && <ArrowDown size={14} />}
+            {currentOrder === "" && (
+                <Box
+                    component="span"
+                    sx={{ display: "inline-flex", alignItems: "center", opacity: 0.35 }}
+                >
+                    <ArrowUp size={12} />
+                    <ArrowDown size={12} />
+                </Box>
+            )}
+        </Box>
     );
 }

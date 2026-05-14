@@ -6,6 +6,7 @@ import { showToast } from '../../../slice/toastSlice';
 import { useAppDispatch } from '../../../store/hook';
 import { DeviceFilter, StatusFilter, type DeviceType, type Status } from '../../../types';
 import { ActivityTypes, type ActivityProps, type ActivityType } from '../../../types/activity';
+import useServerSort from '../../../utils/useServerSort';
 import SortableHeader from '../../molecules/SortableHeader';
 import UdaanTable from '../../molecules/Table';
 import TablePagination from '../../molecules/Table/Pagination';
@@ -24,7 +25,9 @@ export default function ActivityRoot() {
         startDate: "",
         endDate: ""
     });
-    const [sortBy, setSortBy] = useState<"asc" | "desc" | "">("");
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
 
     const [selectedActivityTypes, setSelectedActivityTypes] = useState<string[]>([]);
     const [appliedActivityTypes, setAppliedActivityTypes] = useState<string[]>([]);
@@ -42,7 +45,8 @@ export default function ActivityRoot() {
         type: appliedActivityTypes.join(",") as ActivityType,
         device_type: appliedDeviceType.join(",") as DeviceType,
         status: appliedStatus.join(",") as Status,
-        sort_by: sortBy,
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
 
     const [downloadActivity, { isLoading: downloading }] = useDownloadCsvMutation();
@@ -84,7 +88,7 @@ export default function ActivityRoot() {
             )
         },
         {
-            header: "Log",
+            header: () => <SortableHeader field="log" label="Log" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "log",
             cell: ({ row }) => (
                 <Tooltip title={row.original.log} arrow>
@@ -93,55 +97,48 @@ export default function ActivityRoot() {
             ),
         },
         {
-            header: "Device",
+            header: () => <SortableHeader field="device_type" label="Device" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "device_type",
             cell: ({ row }) => (
                 <Typography className='line-clamp-1'>{row.original.device_type || "N/A"}</Typography>
             ),
         },
         {
-            header: "Username",
+            header: () => <SortableHeader field="username" label="Username" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "username",
             cell: ({ row }) => (
                 <Typography variant='subtitle2'>{row.original.username || "N/A"}</Typography>
             ),
         },
         {
-            header: "Email",
+            header: () => <SortableHeader field="email" label="Email" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "email",
             cell: ({ row }) => (
                 <Typography variant='subtitle2'>{row.original.email || "N/A"}</Typography>
             ),
         },
         {
-            header: "Phone",
+            header: () => <SortableHeader field="phone" label="Phone" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "phone",
             cell: ({ row }) => (
                 <Typography variant='subtitle2'>{row.original.phone || "N/A"}</Typography>
             ),
         },
         {
-            header: "Type",
+            header: () => <SortableHeader field="type" label="Type" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "type",
             cell: ({ row }) => (
                 <Typography variant='subtitle2'>{row.original.type || "N/A"}</Typography>
             ),
         },
         {
-            header: ({ column }) => <SortableHeader
-                column={column}
-                label="Date"
-                onSortChange={(order: "asc" | "desc") => {
-                    setSortBy(order);
-                    setQp((prev) => ({ ...prev, pageIndex: 1 }));
-                }}
-            />,
+            header: () => <SortableHeader field="timestamp" label="Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "date",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className='text-nowrap'>{formatToNepalTime(row.original.timestamp) || "N/A"}</Typography>
             ),
         },
-    ], [qp]);
+    ], [qp, sort]);
 
     const hasData = data?.data?.data && data.data.data.length > 0;
     const showEmptyState = !isLoading && !hasData;

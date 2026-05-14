@@ -12,7 +12,9 @@ import { useAppDispatch } from "../../../../store/hook";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { UserStatus } from "../../../../types";
 import type { RegisterUserProps } from "../../../../types/user";
+import useServerSort from "../../../../utils/useServerSort";
 import Actions from "../../../molecules/Action";
+import SortableHeader from "../../../molecules/SortableHeader";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
@@ -71,10 +73,16 @@ export default function AllUserTable() {
 
     const categoryFilter = getCategoryFilterParams();
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading, isFetching } = useGetAllUserQuery({
         pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, role: categoryFilter && categoryFilter?.roles?.join(","), status: userStatusFilter ?? activeTab, ...customRange,
         days,
         admin_filter: adminFilter,
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
     const [deleteUser, { isLoading: deleting }] = useDeleteUserMutation();
     const [suspendUser] = useSuspendUserMutation();
@@ -262,7 +270,7 @@ export default function AllUserTable() {
             size: 80,
         },
         {
-            header: "Name",
+            header: () => <SortableHeader field="name" label="Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Link to={PATH.USER_MANAGEMENT.VIEW_USER.ROOT(row.original.id?.toString() || "")}>
@@ -280,7 +288,7 @@ export default function AllUserTable() {
             ),
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="is_suspended" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "is_suspended",
             cell: ({ row }) => {
                 const isSuspended = row.original.is_suspended;
@@ -306,28 +314,28 @@ export default function AllUserTable() {
         //     ),
         // },
         {
-            header: "Role",
+            header: () => <SortableHeader field="role" label="Role" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "role",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">{row.original.role?.name}</Typography>
             ),
         },
         {
-            header: "Email",
+            header: () => <SortableHeader field="email" label="Email" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "email",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="line-clamp-1" >{row.original.email}</Typography>
             ),
         },
         {
-            header: "Phone",
+            header: () => <SortableHeader field="phone" label="Phone" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "phone",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">{row.original.phone}</Typography>
             ),
         },
         {
-            header: "Enrolled Courses",
+            header: () => <SortableHeader field="enrolled_courses" label="Enrolled Courses" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "enrolled_courses",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">{row.original.enrolled_courses || 0}</Typography>
@@ -363,7 +371,7 @@ export default function AllUserTable() {
                 </Box>
             ),
         },
-    ], [isAllSelected, selectedRows, deleting, qp]);
+    ], [isAllSelected, selectedRows, deleting, qp, sort]);
 
     const dialogContent = getDialogContent();
 

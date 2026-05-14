@@ -18,7 +18,7 @@ export const userApi = baseApi.injectEndpoints({
         }),
 
         getAllUser: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days?: number | null; admin_filter?: string | null; }>({
-            query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate, admin_filter }) => {
+            query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate, admin_filter, sort_field, sort_by }) => {
                 const params = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -29,6 +29,8 @@ export const userApi = baseApi.injectEndpoints({
                     end_date: endDate,
                     days: days,
                     admin_filter: admin_filter ?? undefined,
+                    sort_field,
+                    sort_by,
                 });
 
                 return {
@@ -45,7 +47,7 @@ export const userApi = baseApi.injectEndpoints({
                     : [{ type: "User", id: "LIST" }],
         }),
         getAllUserExcludeStudents: builder.query<UserList, QueryParams & { role?: number | string; status?: UserStatus; days?: number | null; }>({
-            query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate }) => {
+            query: ({ pageIndex, pageSize, search, role, status, days, startDate, endDate, sort_field, sort_by }) => {
                 const params = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -55,7 +57,8 @@ export const userApi = baseApi.injectEndpoints({
                     start_date: startDate,
                     end_date: endDate,
                     days: days,
-                    
+                    sort_field,
+                    sort_by,
                 });
 
                 return {
@@ -150,17 +153,17 @@ export const userApi = baseApi.injectEndpoints({
             providesTags: (_result, _error, { id }) => [{ type: "User", id }],
         }),
 
-        getUserLoginHistory: builder.query<LoginHistoryResponse, { id: number; pageIndex?: number; pageSize?: number; search?: string }>({
-            query: ({ id, pageIndex = 1, pageSize = 5, search }) => {
-                const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search });
+        getUserLoginHistory: builder.query<LoginHistoryResponse, { id: number; pageIndex?: number; pageSize?: number; search?: string; sort_field?: string; sort_by?: "asc" | "desc" | "" }>({
+            query: ({ id, pageIndex = 1, pageSize = 5, search, sort_field, sort_by }) => {
+                const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search, sort_field, sort_by });
                 return { url: `/admin/user/${id}/login-history?${params}`, method: "GET" };
             },
             providesTags: (_result, _error, { id }) => [{ type: "User", id }],
         }),
 
-        getUserRecentActivities: builder.query<RecentActivityResponse, { id: number; pageIndex?: number; pageSize?: number; search?: string }>({
-            query: ({ id, pageIndex = 1, pageSize = 10, search }) => {
-                const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search });
+        getUserRecentActivities: builder.query<RecentActivityResponse, { id: number; pageIndex?: number; pageSize?: number; search?: string; sort_field?: string; sort_by?: "asc" | "desc" | "" }>({
+            query: ({ id, pageIndex = 1, pageSize = 10, search, sort_field, sort_by }) => {
+                const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search, sort_field, sort_by });
                 return { url: `/admin/user/${id}/recent-activities?${params}`, method: "GET" };
             },
             providesTags: (_result, _error, { id }) => [{ type: "User", id }],
@@ -176,17 +179,17 @@ export const userApi = baseApi.injectEndpoints({
             providesTags: (_result, _error, { id }) => [{ type: "User", id }],
         }),
 
-        getUserEnrolledTests: builder.query<UserEnrolledTestResponse, { id: number; pageIndex?: number; pageSize?: number; search?: string }>({
-            query: ({ id, pageIndex = 1, pageSize = 10, search }) => {
-                const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search });
+        getUserEnrolledTests: builder.query<UserEnrolledTestResponse, { id: number; pageIndex?: number; pageSize?: number; search?: string; sort_field?: string; sort_by?: "asc" | "desc" | "" }>({
+            query: ({ id, pageIndex = 1, pageSize = 10, search, sort_field, sort_by }) => {
+                const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search, sort_field, sort_by });
                 return { url: `/admin/user/${id}/tests?${params}`, method: "GET" };
             },
             providesTags: (_result, _error, { id }) => [{ type: "User", id }],
         }),
 
-        getUserEnrolledBundles: builder.query<UserEnrolledBundleResponse, { id: number; pageIndex?: number; pageSize?: number; search?: string }>({
-            query: ({ id, pageIndex = 1, pageSize = 10, search }) => {
-                const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search });
+        getUserEnrolledBundles: builder.query<UserEnrolledBundleResponse, { id: number; pageIndex?: number; pageSize?: number; search?: string; sort_field?: string; sort_by?: "asc" | "desc" | "" }>({
+            query: ({ id, pageIndex = 1, pageSize = 10, search, sort_field, sort_by }) => {
+                const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search, sort_field, sort_by });
                 return { url: `/admin/user/${id}/bundles?${params}`, method: "GET" };
             },
             providesTags: (_result, _error, { id }) => [{ type: "User", id }],

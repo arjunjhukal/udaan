@@ -11,7 +11,9 @@ import { useCourseFilter } from "../../../../../store/useCourseFilter";
 import { type LiveClassPayload, type liveClassTabType } from "../../../../../types/liveClass";
 import { formatDate } from "../../../../../utils/dateFormat";
 import { useGetStatusStyle } from "../../../../../utils/getStyleBasedOnStatus";
+import useServerSort from "../../../../../utils/useServerSort";
 import Actions from "../../../../molecules/Action";
+import SortableHeader from "../../../../molecules/SortableHeader";
 import TabController from "../../../../molecules/TabController";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
@@ -61,6 +63,10 @@ export default function AllLiveClassList() {
 
   const categoryFilter = getCategoryFilterParams();
 
+  const { sort, handleSortChange } = useServerSort();
+  const onSort = (field: string, order: "asc" | "desc" | "") =>
+    handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
   const { data, isLoading, isFetching } = useGetAllLiveClassQuery({
     ...qp,
     search: search,
@@ -68,6 +74,8 @@ export default function AllLiveClassList() {
     ...customRange,
     days,
     categoryFilter: { ...categoryFilter },
+    sort_field: sort.sort_field,
+    sort_by: sort.sort_by,
   });
   const { data: ongoingData } = useGetAllLiveClassQuery({ pageIndex: 1, pageSize: 1, search: "", status: "ongoing" });
   const { data: upcomingData } = useGetAllLiveClassQuery({ pageIndex: 1, pageSize: 1, search: "", status: "upcoming" });
@@ -157,7 +165,7 @@ export default function AllLiveClassList() {
       size: 80,
     },
     {
-      header: "Live Class Name",
+      header: () => <SortableHeader field="name" label="Live Class Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
       accessorKey: "name",
       cell: ({ row }) => (
         <Typography fontWeight={500} className="capitalize">
@@ -166,7 +174,7 @@ export default function AllLiveClassList() {
       ),
     },
     {
-      header: activeTab !== "ended" ? "Enrolled Students" : "Attended By",
+      header: () => <SortableHeader field={activeTab === "ended" ? "participants_count" : "active_students"} label={activeTab !== "ended" ? "Enrolled Students" : "Attended By"} activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
       accessorKey: "enrolled_students",
       cell: ({ row }) => (
         <Typography fontWeight={500} className="capitalize">
@@ -175,7 +183,7 @@ export default function AllLiveClassList() {
       ),
     },
     {
-      header: "Status",
+      header: () => <SortableHeader field="status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
       accessorKey: "status",
       cell: ({ row }) => {
 
@@ -212,7 +220,7 @@ export default function AllLiveClassList() {
       },
     },
     {
-      header: "Created Date",
+      header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
       accessorKey: "created_at",
       cell: ({ row }) => {
 
@@ -235,7 +243,7 @@ export default function AllLiveClassList() {
         />
       ),
     },
-  ], [selectedRows, isAllSelected, isSomeSelected, qp, activeTab])
+  ], [selectedRows, isAllSelected, isSomeSelected, qp, activeTab, sort])
 
 
   const handleResetFilter = () => {

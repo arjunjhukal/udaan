@@ -8,11 +8,13 @@ export const moderationApi = baseApi.injectEndpoints({
     // tagTypes: ["Moderation"],
     endpoints: (builder) => ({
         getModerationWords: builder.query<ModerationList, QueryParams & { page?: number }>({
-            query: ({ pageIndex = 1, pageSize = 20, search = "", page }) => {
+            query: ({ pageIndex = 1, pageSize = 20, search = "", page, sort_field, sort_by }) => {
                 const params = new URLSearchParams();
                 params.append("page", String(page ?? pageIndex));
                 params.append("page_size", String(pageSize));
                 if (search) params.append("search", search);
+                if (sort_field) params.append("sort_field", sort_field);
+                if (sort_by) params.append("sort_by", sort_by);
                 return {
                     url: `/admin/moderation?${params.toString()}`,
                     method: "GET",

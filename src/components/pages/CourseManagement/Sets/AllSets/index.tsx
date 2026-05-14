@@ -9,7 +9,9 @@ import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import { useCourseFilter } from "../../../../../store/useCourseFilter";
 import type { SetProps } from "../../../../../types/question";
+import useServerSort from "../../../../../utils/useServerSort";
 import Actions from "../../../../molecules/Action";
+import SortableHeader from "../../../../molecules/SortableHeader";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
@@ -58,11 +60,17 @@ export default function AllSets() {
 
     const categoryFilter = getCategoryFilterParams();
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading } = useGetAllBundleQuery({
         ...qp, search: debouncedSearch,
         ...customRange,
         days,
         categoryFilter: { ...categoryFilter },
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
     const [deleteSet, { isLoading: deleting }] = useDeleteBundleMutation();
     const [changeStatus] = useChangeBundleStatusMutation();
@@ -170,7 +178,7 @@ export default function AllSets() {
             size: 80,
         },
         {
-            header: "Bundle Name",
+            header: () => <SortableHeader field="name" label="Bundle Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize max-w-[450px]">
@@ -179,7 +187,7 @@ export default function AllSets() {
             ),
         },
         {
-            header: "Price",
+            header: () => <SortableHeader field="sale_price" label="Price" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "price",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize max-w-[450px]">
@@ -188,7 +196,7 @@ export default function AllSets() {
             ),
         },
         {
-            header: "No. of Set",
+            header: () => <SortableHeader field="set_count" label="No. of Set" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "set_count",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize max-w-[450px]">
@@ -197,7 +205,7 @@ export default function AllSets() {
             ),
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "status",
             cell: ({ row }) => (
                 <Tooltip title={`Click to change status to ${row.original.status === "published" ? "Draft" : "Publish"}`}>
@@ -222,7 +230,7 @@ export default function AllSets() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp, sort])
 
 
     const handleResetFilter = () => {

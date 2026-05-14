@@ -7,6 +7,8 @@ import { PATH } from "../../../routes/PATH";
 import { useGetAllTransactionsQuery } from "../../../services/transactionApi";
 import type { TransactionResponse } from "../../../types/transaction";
 import { formatDate } from "../../../utils/dateFormat";
+import useServerSort from "../../../utils/useServerSort";
+import SortableHeader from "../../molecules/SortableHeader";
 import UdaanTable from "../../molecules/Table";
 import EmptyRoute from "../../organism/EmptyRoute";
 import TableFilter from "../../organism/TableFilter";
@@ -15,7 +17,7 @@ export default function DashboardTransaction() {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
-    const [qp, _setQp] = useState({
+    const [qp, setQp] = useState({
         pageIndex: 1,
         pageSize: 6,
     })
@@ -25,11 +27,17 @@ export default function DashboardTransaction() {
     });
     const [days, setDays] = useState<number | null>(null);
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading, isFetching } = useGetAllTransactionsQuery({
         ...qp,
         days,
         ...customRange,
-        search
+        search,
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
 
     const transactions = data?.data?.data || [];
@@ -51,7 +59,7 @@ export default function DashboardTransaction() {
             size: 80,
         },
         {
-            header: "Student Name",
+            header: () => <SortableHeader field="name" label="Student Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -60,7 +68,7 @@ export default function DashboardTransaction() {
             ),
         },
         {
-            header: "Added By",
+            header: () => <SortableHeader field="added_by" label="Added By" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "added_by",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -69,7 +77,7 @@ export default function DashboardTransaction() {
             ),
         },
         {
-            header: "Course Name",
+            header: () => <SortableHeader field="course_name" label="Course Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -80,7 +88,7 @@ export default function DashboardTransaction() {
             ),
         },
         {
-            header: "Contact No.",
+            header: () => <SortableHeader field="contact" label="Contact No." activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "contact",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="">
@@ -89,7 +97,7 @@ export default function DashboardTransaction() {
             ),
         },
         {
-            header: "Invoice ID",
+            header: () => <SortableHeader field="invoice_id" label="Invoice ID" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "invoice_id",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="">
@@ -98,7 +106,7 @@ export default function DashboardTransaction() {
             ),
         },
         {
-            header: "Payment ID",
+            header: () => <SortableHeader field="transaction_id" label="Payment ID" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "transaction_id",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -107,7 +115,7 @@ export default function DashboardTransaction() {
             ),
         },
         {
-            header: "Payment Mode",
+            header: () => <SortableHeader field="payment_method" label="Payment Mode" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "payment_method",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -116,7 +124,7 @@ export default function DashboardTransaction() {
             ),
         },
         {
-            header: "Created Date",
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => {
                 return (
@@ -127,7 +135,7 @@ export default function DashboardTransaction() {
             },
         },
 
-    ], [navigate, qp]);
+    ], [navigate, qp, sort]);
 
     if (!transactions.length && !days && !customRange) {
         return;

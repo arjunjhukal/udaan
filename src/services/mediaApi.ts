@@ -15,9 +15,9 @@ export const mediaApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Media", id: "LIST" }]
         }),
         getallMedia: builder.query<MediaList, QueryParams & { type: string }>({
-            query: ({ pageIndex, pageSize, search, type }) => {
+            query: ({ pageIndex, pageSize, search, type, sort_field, sort_by }) => {
                 return {
-                    url: `/admin/media/${type}?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search })}`,
+                    url: `/admin/media/${type}?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search, sort_field, sort_by })}`,
                     method: "GET",
                 };
             },
@@ -46,8 +46,8 @@ export const mediaApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Media", id: "LIST" }]
         }),
         getAllMediaIrrespectiveOfType: builder.query<MediaList, QueryParams>(({
-            query: ({ pageIndex, pageSize, search }) => ({
-                url: `/admin/media?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search })}`,
+            query: ({ pageIndex, pageSize, search, sort_field, sort_by }) => ({
+                url: `/admin/media?${buildQueryParams({ page: pageIndex, page_size: pageSize, search: search, sort_field, sort_by })}`,
                 method: "GET",
             })
         })),

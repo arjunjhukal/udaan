@@ -8,7 +8,9 @@ import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import type { TransactionResponse } from "../../../../types/transaction";
 import { formatDate } from "../../../../utils/dateFormat";
+import useServerSort from "../../../../utils/useServerSort";
 import ActionIconVisible from "../../../molecules/Action/ActionIconVisible";
+import SortableHeader from "../../../molecules/SortableHeader";
 import TabController from "../../../molecules/TabController";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
@@ -35,11 +37,17 @@ export default function BundleEnrolledStudents({ id }: { id: number }) {
         return () => clearTimeout(timer);
     }, [search]);
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading } = useGetEnrolledStudentsByBundleQuery({
         ...qp,
         type: activeTab,
         search: debouncedSearch,
         id: Number(id),
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
 
     const [removeUser, { isLoading: removingUser }] = useArchiveStudentFromBundleMutation();
@@ -71,42 +79,42 @@ export default function BundleEnrolledStudents({ id }: { id: number }) {
             size: 80,
         },
         {
-            header: "Student Name",
+            header: () => <SortableHeader field="name" label="Student Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography variant="subtitle2" className="capitalize">{row.original.name || "N/A"}</Typography>
             ),
         },
         {
-            header: "Added By",
+            header: () => <SortableHeader field="added_by" label="Added By" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "added_by",
             cell: ({ row }) => (
                 <Typography variant="subtitle2" className="capitalize">{row.original.added_by || "N/A"}</Typography>
             ),
         },
         {
-            header: "Contact No.",
+            header: () => <SortableHeader field="contact" label="Contact No." activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "contact",
             cell: ({ row }) => (
                 <Typography variant="subtitle2">{row.original.contact || "N/A"}</Typography>
             ),
         },
         {
-            header: "Email",
+            header: () => <SortableHeader field="email" label="Email" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "email",
             cell: ({ row }) => (
                 <Typography variant="subtitle2">{row.original.email || "N/A"}</Typography>
             ),
         },
         {
-            header: "Payment Mode",
+            header: () => <SortableHeader field="payment_method" label="Payment Mode" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "payment_method",
             cell: ({ row }) => (
                 <Typography variant="subtitle2" className="capitalize">{row.original.payment_method || "N/A"}</Typography>
             ),
         },
         {
-            header: "Created Date",
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => (
                 <Typography variant="subtitle2">{formatDate(row.original?.created_at || "")}</Typography>
@@ -126,7 +134,7 @@ export default function BundleEnrolledStudents({ id }: { id: number }) {
                 />
             ),
         },
-    ], [qp, activeTab, removingUser]);
+    ], [qp, activeTab, removingUser, sort]);
 
     return (
         <div className="user__root">

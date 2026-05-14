@@ -11,7 +11,9 @@ import { useCourseFilter } from '../../../../store/useCourseFilter';
 import { DeviceFilter, paymentOptions, StatusFilter, type DeviceType, type Status } from '../../../../types';
 import type { EnrollmentType, TransactionResponse } from '../../../../types/transaction';
 import { formatDate } from '../../../../utils/dateFormat';
+import useServerSort from '../../../../utils/useServerSort';
 import Actions from '../../../molecules/Action';
+import SortableHeader from '../../../molecules/SortableHeader';
 import TabController from '../../../molecules/TabController';
 import UdaanTable from '../../../molecules/Table';
 import TablePagination from '../../../molecules/Table/Pagination';
@@ -68,6 +70,10 @@ export default function AllTransaction({ open, setOpen }: Props) {
 
     const categoryFilter = getCategoryFilterParams();
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading, isFetching } = useGetAllTransactionsQuery({
         ...qp,
         search,
@@ -77,7 +83,9 @@ export default function AllTransaction({ open, setOpen }: Props) {
         days,
         payment_method: paymentMethod.join(","),
         module_type: enrollmentType,
-        ...customRange
+        ...customRange,
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
 
     const [deleteTransaction, { isLoading: deleting }] = useDeleteTransactionMutation();
@@ -170,7 +178,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             size: 80,
         },
         {
-            header: "Student Name",
+            header: () => <SortableHeader field="name" label="Student Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -179,7 +187,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: "Added By",
+            header: () => <SortableHeader field="added_by" label="Added By" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "added_by",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -188,7 +196,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: enrollmentType === "course" ? "Course Name" : enrollmentType === "test" ? "Test Name" : "Bundle Name",
+            header: () => <SortableHeader field="course_name" label={enrollmentType === "course" ? "Course Name" : enrollmentType === "test" ? "Test Name" : "Bundle Name"} activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "course_name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.course_name} arrow>
@@ -199,7 +207,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: "Contact No.",
+            header: () => <SortableHeader field="contact" label="Contact No." activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "contact",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="">
@@ -208,7 +216,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: "Invoice ID",
+            header: () => <SortableHeader field="invoice_id" label="Invoice ID" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "invoice_id",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="">
@@ -217,7 +225,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: "Payment ID",
+            header: () => <SortableHeader field="transaction_id" label="Payment ID" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "transaction_id",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -226,7 +234,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: "Payment Mode",
+            header: () => <SortableHeader field="payment_method" label="Payment Mode" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "payment_method",
             cell: ({ row }) => (
                 <Typography variant='subtitle2' className="capitalize">
@@ -235,7 +243,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: "Created Date",
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => {
                 return (
@@ -258,7 +266,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp, enrollmentType]);
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp, enrollmentType, sort]);
 
 
     const handleResetFilter = () => {

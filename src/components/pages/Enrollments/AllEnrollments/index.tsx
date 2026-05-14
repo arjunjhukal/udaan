@@ -11,7 +11,9 @@ import type { CourseProps } from "../../../../types/course";
 import type { SetProps, TestProps } from "../../../../types/question";
 import type { EnrollmentType } from "../../../../types/transaction";
 import { formatDate } from "../../../../utils/dateFormat";
+import useServerSort from "../../../../utils/useServerSort";
 import ActionIconVisible from "../../../molecules/Action/ActionIconVisible";
+import SortableHeader from "../../../molecules/SortableHeader";
 import TabController from "../../../molecules/TabController";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
@@ -52,14 +54,18 @@ export default function AllEntrollments() {
         { value: "expiry", label: "Expiry" }
     ];
 
+    const { sort, handleSortChange, resetSort } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data: courseData, isLoading: loadingCourses } = useGetAllCourseQuery(
-        { ...qp, search, categoryFilter: { ...categoryFilter }, status: "published" },
+        { ...qp, search, categoryFilter: { ...categoryFilter }, status: "published", sort_field: sort.sort_field, sort_by: sort.sort_by },
     );
     const { data: testData, isLoading: loadingTests } = useGetAllIndividualTestQuery(
-        { ...qp, search },
+        { ...qp, search, sort_field: sort.sort_field, sort_by: sort.sort_by },
     );
     const { data: bundleData, isLoading: loadingBundles } = useGetAllBundleQuery(
-        { ...qp, search },
+        { ...qp, search, sort_field: sort.sort_field, sort_by: sort.sort_by },
     );
 
     useEffect(() => {
@@ -70,6 +76,7 @@ export default function AllEntrollments() {
         setActiveTab(tab);
         setSearch("");
         setQp({ pageIndex: 1, pageSize: 8 });
+        resetSort();
     };
 
     // ── Course columns ──────────────────────────────────────────────────────
@@ -91,7 +98,7 @@ export default function AllEntrollments() {
             size: 80,
         },
         {
-            header: "Course Name",
+            header: () => <SortableHeader field="name" label="Course Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -102,7 +109,7 @@ export default function AllEntrollments() {
             ),
         },
         {
-            header: "Course Type",
+            header: () => <SortableHeader field="course_type" label="Course Type" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "course_type",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -111,28 +118,28 @@ export default function AllEntrollments() {
             ),
         },
         {
-            header: "Price",
+            header: () => <SortableHeader field="marked_price" label="Price" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "price",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>{row.original.marked_price || "N/A"}</Typography>
             ),
         },
         {
-            header: "Subjects",
+            header: () => <SortableHeader field="subjects" label="Subjects" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "subjects",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>{row.original.subjects || "N/A"}</Typography>
             ),
         },
         {
-            header: "Enrolled Students",
+            header: () => <SortableHeader field="enrolled_students" label="Enrolled Students" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "enrolled_students",
             cell: ({ row }) => (
                 <Typography>{row.original.enrolled_students || "N/A"}</Typography>
             ),
         },
         {
-            header: "Created Date",
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>{formatDate(row.original?.created_at || "")}</Typography>
@@ -147,7 +154,7 @@ export default function AllEntrollments() {
                 />
             ),
         },
-    ], [navigate, qp]);
+    ], [navigate, qp, sort]);
 
     // ── Test columns ────────────────────────────────────────────────────────
     const testColumns = useMemo<ColumnDef<TestProps>[]>(() => [
@@ -168,7 +175,7 @@ export default function AllEntrollments() {
             size: 80,
         },
         {
-            header: "Test Name",
+            header: () => <SortableHeader field="name" label="Test Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -179,7 +186,7 @@ export default function AllEntrollments() {
             ),
         },
         {
-            header: "Test Type",
+            header: () => <SortableHeader field="test_type" label="Test Type" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "test_type",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -188,28 +195,28 @@ export default function AllEntrollments() {
             ),
         },
         {
-            header: "Price",
+            header: () => <SortableHeader field="price" label="Price" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "price",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>{row.original.price || "N/A"}</Typography>
             ),
         },
         {
-            header: "Total Questions",
+            header: () => <SortableHeader field="total_questions" label="Total Questions" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "total_questions",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>{row.original.total_questions ?? "N/A"}</Typography>
             ),
         },
         {
-            header: "Enrolled Students",
+            header: () => <SortableHeader field="no_of_students" label="Enrolled Students" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "no_of_students",
             cell: ({ row }) => (
                 <Typography>{row.original.no_of_students ?? "N/A"}</Typography>
             ),
         },
         {
-            header: "Created Date",
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>{formatDate(row.original?.created_at || "")}</Typography>
@@ -224,7 +231,7 @@ export default function AllEntrollments() {
                 />
             ),
         },
-    ], [navigate, qp]);
+    ], [navigate, qp, sort]);
 
     // ── Bundle columns ──────────────────────────────────────────────────────
     const bundleColumns = useMemo<ColumnDef<SetProps>[]>(() => [
@@ -245,7 +252,7 @@ export default function AllEntrollments() {
             size: 80,
         },
         {
-            header: "Bundle Name",
+            header: () => <SortableHeader field="name" label="Bundle Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -256,21 +263,21 @@ export default function AllEntrollments() {
             ),
         },
         {
-            header: "Price",
+            header: () => <SortableHeader field="marked_price" label="Price" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "price",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>{row.original.marked_price || row.original.price || "N/A"}</Typography>
             ),
         },
         {
-            header: "Tests Included",
+            header: () => <SortableHeader field="set_count" label="Tests Included" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "set_count",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>{row.original.set_count || "N/A"}</Typography>
             ),
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "status",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">{row.original.status || "N/A"}</Typography>
@@ -285,7 +292,7 @@ export default function AllEntrollments() {
                 />
             ),
         },
-    ], [navigate, qp]);
+    ], [navigate, qp, sort]);
 
     const isLoading = activeTab === "course" ? loadingCourses : activeTab === "test" ? loadingTests : loadingBundles;
     const courses = courseData?.data?.data || [];

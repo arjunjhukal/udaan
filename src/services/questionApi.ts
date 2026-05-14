@@ -38,7 +38,7 @@ export const questionApi = baseApi.injectEndpoints({
             ]
         }),
         getAllQuestion: builder.query<QuestionList, QueryParams & { type?: QuestionTypeProps; days?: number | null; set_ids?: number[]; }>({
-            query: ({ type, pageIndex, pageSize, search, days, startDate, endDate, set_ids }) => {
+            query: ({ type, pageIndex, pageSize, search, days, startDate, endDate, set_ids, sort_field, sort_by }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -48,6 +48,8 @@ export const questionApi = baseApi.injectEndpoints({
                     end_date: endDate,
                     days: days,
                     set_ids: set_ids?.length ? set_ids : undefined,
+                    sort_field,
+                    sort_by,
                 });
                 return {
                     url: `admin/questions?${queryString}`,
@@ -94,7 +96,7 @@ export const questionApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Test", id: "LIST" }, { type: "Set", id: "LIST" }]
         }),
         getAllTest: builder.query<TestList, QueryParams & { type?: TestTypeProps; days?: number | null; categoryFilter?: CategoryFilterParams; }>({
-            query: ({ pageIndex, pageSize, search, type, days, startDate, endDate, categoryFilter }) => {
+            query: ({ pageIndex, pageSize, search, type, days, startDate, endDate, categoryFilter, sort_field, sort_by }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -107,6 +109,8 @@ export const questionApi = baseApi.injectEndpoints({
                     categories: categoryFilter?.category,
                     sub_categories: categoryFilter?.sub_category,
                     positions: categoryFilter?.positions,
+                    sort_field,
+                    sort_by,
                 });
                 return {
                     url: `/admin/test?${queryString}`,
@@ -151,7 +155,9 @@ export const questionApi = baseApi.injectEndpoints({
                 url: `/admin/test/${id}/result?${buildQueryParams({
                     page: qp.pageIndex,
                     page_size: qp.pageSize,
-                    search: search
+                    search: search,
+                    sort_field: qp.sort_field,
+                    sort_by: qp.sort_by,
                 })}`,
                 method: "GET",
             }),
@@ -287,11 +293,13 @@ export const questionApi = baseApi.injectEndpoints({
             invalidatesTags: (_result, _error, { id }) => [{ type: "Test", id }, { type: "Test", id: "LIST" }]
         }),
         getAllIndividualTest: builder.query<TestList, QueryParams & { type?: TestTypeProps; days?: number | null; categoryFilter?: CategoryFilterParams; }>({
-            query: ({ pageIndex, pageSize, search }) => ({
+            query: ({ pageIndex, pageSize, search, sort_field, sort_by }) => ({
                 url: `/test?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
-                    search: search
+                    search: search,
+                    sort_field,
+                    sort_by,
                 })}`
             }),
             providesTags: [{ type: "Test", id: "LIST" }]
@@ -305,11 +313,13 @@ export const questionApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Set", id: "LIST" }]
         }),
         getAllBundle: builder.query<SetList, QueryParams & { type?: TestTypeProps; days?: number | null; categoryFilter?: CategoryFilterParams; }>({
-            query: ({ pageIndex, pageSize, search }) => ({
+            query: ({ pageIndex, pageSize, search, sort_field, sort_by }) => ({
                 url: `/bundle?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
-                    search
+                    search,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET",
             }),
@@ -377,12 +387,14 @@ export const questionApi = baseApi.injectEndpoints({
             providesTags: (_result, _error, { id }) => [{ type: "OMR", id }]
         }),
         getAllOmr: builder.query<OmrList, QueryParams & { days?: number | null; }>({
-            query: ({ pageIndex, pageSize, search, days }) => ({
+            query: ({ pageIndex, pageSize, search, days, sort_field, sort_by }) => ({
                 url: `/omr-sheet?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     days: days,
-                    search: search
+                    search: search,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET"
             }),
@@ -441,8 +453,8 @@ export const questionApi = baseApi.injectEndpoints({
             providesTags: (_result, _error, { id }) => [{ type: "OMR", id: `FORMAT_${id}` }]
         }),
         getAllOmrFormat: builder.query<OmrFormatList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => ({
-                url: `/omr/format?${buildQueryParams({ page: pageIndex, page_size: pageSize, search })}`,
+            query: ({ pageIndex, pageSize, search, sort_field, sort_by }) => ({
+                url: `/omr/format?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, sort_field, sort_by })}`,
                 method: "GET"
             }),
             providesTags: [{ type: "OMR", id: "FORMAT_LIST" }]
@@ -458,8 +470,8 @@ export const questionApi = baseApi.injectEndpoints({
 
         // ── Test Enrollment ──────────────────────────────────────────────────
         getEnrolledStudentsByTest: builder.query<TransactionList, QueryParams & { id: number; type?: "active" | "archived" }>({
-            query: ({ id, pageIndex, pageSize, search, type }) => ({
-                url: `/admin/test/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, type })}`,
+            query: ({ id, pageIndex, pageSize, search, type, sort_field, sort_by }) => ({
+                url: `/admin/test/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, type, sort_field, sort_by })}`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "TestEnrollment", id }, { type: "TestEnrollment", id: "LIST" }]
@@ -482,8 +494,8 @@ export const questionApi = baseApi.injectEndpoints({
 
         // ── Bundle Enrollment ────────────────────────────────────────────────
         getEnrolledStudentsByBundle: builder.query<TransactionList, QueryParams & { id: number; type?: "active" | "archived" }>({
-            query: ({ id, pageIndex, pageSize, search, type }) => ({
-                url: `/admin/bundle/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, type })}`,
+            query: ({ id, pageIndex, pageSize, search, type, sort_field, sort_by }) => ({
+                url: `/admin/bundle/${id}/user?${buildQueryParams({ page: pageIndex, page_size: pageSize, search, type, sort_field, sort_by })}`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "BundleEnrollment", id }, { type: "BundleEnrollment", id: "LIST" }]
@@ -504,12 +516,14 @@ export const questionApi = baseApi.injectEndpoints({
             invalidatesTags: (_result, _error, { id }) => [{ type: "BundleEnrollment", id }, { type: "BundleEnrollment", id: "LIST" }]
         }),
         getAllQuestionSets: builder.query<QuestionLabelList, QueryParams & { type?: QuestionTypeProps }>({
-            query: ({ pageIndex, pageSize, search, type }) => ({
+            query: ({ pageIndex, pageSize, search, type, sort_field, sort_by }) => ({
                 url: `/admin/question-labels?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search,
                     type,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET",
             }),
@@ -550,12 +564,14 @@ export const questionApi = baseApi.injectEndpoints({
             providesTags: (_result, _error, { id }) => [{ type: "QuestionLabel", id }],
         }),
         getQuestionsByLabel: builder.query<QuestionList, QueryParams & { id: number; type?: QuestionTypeProps }>({
-            query: ({ id, pageIndex, pageSize, search, type }) => ({
+            query: ({ id, pageIndex, pageSize, search, type, sort_field, sort_by }) => ({
                 url: `/admin/question-labels/${id}/questions?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search,
                     type,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET",
             }),

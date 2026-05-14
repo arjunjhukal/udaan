@@ -9,7 +9,9 @@ import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import type { StudentSubmitTestProps, TestTypeProps } from "../../../../../types/question";
 import { msToHMS } from "../../../../../utils/parseDateTime";
+import useServerSort from "../../../../../utils/useServerSort";
 import ActionIconVisible from "../../../../molecules/Action/ActionIconVisible";
+import SortableHeader from "../../../../molecules/SortableHeader";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
@@ -35,8 +37,12 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 	const [openConfirm, setOpenConfirm] = useState(false);
 	// const [resultToDelete, setResultToDelete] = useState<string[]>([]);
 
+	const { sort, handleSortChange } = useServerSort();
+	const onSort = (field: string, order: "asc" | "desc" | "") =>
+		handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
 	const { data, isLoading } = useGetListOfStudentSubmittedTestQuery(
-		{ id: Number(id), qp, search },
+		{ id: Number(id), qp: { ...qp, sort_field: sort.sort_field, sort_by: sort.sort_by }, search },
 		{ skip: !id },
 	);
 	const [publishTestResults] = usePublishTestResultsMutation();
@@ -127,7 +133,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				size: 80,
 			},
 			{
-				header: "Student Name",
+				header: () => <SortableHeader field="name" label="Student Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "name",
 				cell: ({ row }) => (
 					<Typography variant="subtitle1">
@@ -136,7 +142,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			},
 			{
-				header: "Answered",
+				header: () => <SortableHeader field="total_attempted" label="Answered" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "answered",
 				cell: ({ row }) => (
 					<div className="flex justify-start items-center">
@@ -151,7 +157,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			},
 			...(testType === "mcq" || testType === "omr" ? [{
-				header: "Correct",
+				header: () => <SortableHeader field="total_correct" label="Correct" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "total_correct",
 				cell: ({ row }: { row: { original: StudentSubmitTestProps } }) => (
 					<div className="flex justify-start items-center">
@@ -165,7 +171,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 					</div>
 				),
 			}] : [{
-				header: "Checked",
+				header: () => <SortableHeader field="checked_answers" label="Checked" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "checked_answers",
 				cell: ({ row }: { row: { original: StudentSubmitTestProps } }) => (
 					<div className="flex justify-start items-center">
@@ -180,7 +186,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			}]),
 			{
-				header: "Started At",
+				header: () => <SortableHeader field="started_at" label="Started At" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "started_at",
 				cell: ({ row }) => (
 					<Typography variant="subtitle1">
@@ -189,7 +195,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			},
 			{
-				header: "Finished At",
+				header: () => <SortableHeader field="finished_at" label="Finished At" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "finished_at",
 				cell: ({ row }) => (
 					<Typography variant="subtitle1">
@@ -198,7 +204,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			},
 			{
-				header: "Timer",
+				header: () => <SortableHeader field="timer" label="Timer" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "timer",
 				cell: ({ row }) => {
 					const { hours, minutes, seconds } = msToHMS(row.original?.timer || 0);
@@ -212,7 +218,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				},
 			},
 			{
-				header: "Status",
+				header: () => <SortableHeader field="status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "status",
 				cell: ({ row }) => (
 					<Typography
@@ -226,7 +232,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			},
 			{
-				header: "Result",
+				header: () => <SortableHeader field="result" label="Result" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "result",
 				cell: ({ row }) => (
 					<Typography
@@ -269,7 +275,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			},
 			{
-				header: "Total Marks",
+				header: () => <SortableHeader field="total_marks" label="Total Marks" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "marks",
 				cell: ({ row }) => (
 					<Typography variant="subtitle1">
@@ -278,14 +284,14 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			},
 			{
-				header: "Score",
+				header: () => <SortableHeader field="score" label="Score" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "score",
 				cell: ({ row }) => (
 					<Typography variant="subtitle1">{row.original?.score}</Typography>
 				),
 			},
 			...(testType === "omr" ? [{
-				header: "Attempt",
+				header: () => <SortableHeader field="attempt_number" label="Attempt" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "attempt_number",
 				cell: ({ row }: { row: { original: StudentSubmitTestProps } }) => (
 					<Typography variant="subtitle1" fontWeight={500}>
@@ -335,7 +341,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				),
 			},
 		],
-		[selectedRows, isAllSelected, isSomeSelected, testType],
+		[selectedRows, isAllSelected, isSomeSelected, testType, sort],
 	);
 
 	const handleTestResultPublish = async () => {

@@ -12,7 +12,9 @@ import type { CourseProps } from "../../../../../types/course";
 import type { UserEnrolledBundle, UserEnrolledTest } from "../../../../../types/userProfile";
 import { formatDateForDisplay } from "../../../../../utils/dateFormat";
 import { getCourseStatus } from "../../../../../utils/statusMap";
+import useServerSort from "../../../../../utils/useServerSort";
 import StatusPill from "../../../../atoms/StatusPill";
+import SortableHeader from "../../../../molecules/SortableHeader";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import DashboardAnalyticsCard from "../../../../organism/Cards/DashboardAnalyticsCard";
@@ -44,10 +46,20 @@ export default function CoursesTab() {
     const [testQp, setTestQp] = useState({ pageIndex: 1, pageSize: 10 });
     const [bundleQp, setBundleQp] = useState({ pageIndex: 1, pageSize: 10 });
 
+    const courseSort = useServerSort();
+    const testSort = useServerSort();
+    const bundleSort = useServerSort();
+    const onCourseSort = (field: string, order: "asc" | "desc" | "") =>
+        courseSort.handleSortChange(field, order, () => setCourseQp((prev) => ({ ...prev, pageIndex: 1 })));
+    const onTestSort = (field: string, order: "asc" | "desc" | "") =>
+        testSort.handleSortChange(field, order, () => setTestQp((prev) => ({ ...prev, pageIndex: 1 })));
+    const onBundleSort = (field: string, order: "asc" | "desc" | "") =>
+        bundleSort.handleSortChange(field, order, () => setBundleQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data: analyticsData, isLoading: analyticsLoading } = useGetUserEnrolledCourseAnalyticsQuery({ id: uid }, { skip: !uid });
-    const { data: courseData, isLoading: courseLoading } = useGetUserPurchasedCourseQuery({ ...courseQp, id: uid }, { skip: !uid });
-    const { data: testData, isLoading: testLoading } = useGetUserEnrolledTestsQuery({ id: uid, ...testQp }, { skip: !uid });
-    const { data: bundleData, isLoading: bundleLoading } = useGetUserEnrolledBundlesQuery({ id: uid, ...bundleQp }, { skip: !uid });
+    const { data: courseData, isLoading: courseLoading } = useGetUserPurchasedCourseQuery({ ...courseQp, id: uid, sort_field: courseSort.sort.sort_field, sort_by: courseSort.sort.sort_by }, { skip: !uid });
+    const { data: testData, isLoading: testLoading } = useGetUserEnrolledTestsQuery({ id: uid, ...testQp, sort_field: testSort.sort.sort_field, sort_by: testSort.sort.sort_by }, { skip: !uid });
+    const { data: bundleData, isLoading: bundleLoading } = useGetUserEnrolledBundlesQuery({ id: uid, ...bundleQp, sort_field: bundleSort.sort.sort_field, sort_by: bundleSort.sort.sort_by }, { skip: !uid });
 
     const courses = courseData?.data?.data ?? [];
     const tests = testData?.data?.data ?? [];
@@ -60,7 +72,7 @@ export default function CoursesTab() {
             cell: ({ row }) => <Typography variant="subtitle1" fontWeight={500}>{row.index + 1}</Typography>,
         },
         {
-            header: "Course Name",
+            header: () => <SortableHeader field="name" label="Course Name" activeField={courseSort.sort.sort_field} activeOrder={courseSort.sort.sort_by} onSortChange={onCourseSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -69,27 +81,27 @@ export default function CoursesTab() {
             ),
         },
         {
-            header: "Price",
+            header: () => <SortableHeader field="sale_price" label="Price" activeField={courseSort.sort.sort_field} activeOrder={courseSort.sort.sort_by} onSortChange={onCourseSort} />,
             accessorKey: "sale_price",
             cell: ({ row }) => <Typography variant="subtitle1">{row.original.sale_price || "N/A"}</Typography>,
         },
         {
-            header: "Enrolled On",
+            header: () => <SortableHeader field="started_from" label="Enrolled On" activeField={courseSort.sort.sort_field} activeOrder={courseSort.sort.sort_by} onSortChange={onCourseSort} />,
             accessorKey: "started_from",
             cell: ({ row }) => <Typography variant="subtitle1">{formatDateForDisplay(row.original.started_from) || "N/A"}</Typography>,
         },
         {
-            header: "Expires On",
+            header: () => <SortableHeader field="ends_at" label="Expires On" activeField={courseSort.sort.sort_field} activeOrder={courseSort.sort.sort_by} onSortChange={onCourseSort} />,
             accessorKey: "ends_at",
             cell: ({ row }) => <Typography variant="subtitle1">{formatDateForDisplay(row.original.ends_at) || "N/A"}</Typography>,
         },
         {
-            header: "Progress",
+            header: () => <SortableHeader field="progress" label="Progress" activeField={courseSort.sort.sort_field} activeOrder={courseSort.sort.sort_by} onSortChange={onCourseSort} />,
             accessorKey: "progress",
             cell: ({ row }) => <ProgressCell value={row.original.progress} />,
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="course_completion_status" label="Status" activeField={courseSort.sort.sort_field} activeOrder={courseSort.sort.sort_by} onSortChange={onCourseSort} />,
             accessorKey: "course_completion_status",
             cell: ({ row }) => {
                 const progress = Number(row.original.progress ?? 0);
@@ -97,7 +109,7 @@ export default function CoursesTab() {
                 return <StatusPill status={label} variant={getCourseStatus(progress)} />;
             },
         },
-    ], []);
+    ], [courseSort.sort]);
 
     const testColumns = useMemo<ColumnDef<UserEnrolledTest>[]>(() => [
         {
@@ -106,7 +118,7 @@ export default function CoursesTab() {
             cell: ({ row }) => <Typography variant="subtitle1" fontWeight={500}>{row.index + 1}</Typography>,
         },
         {
-            header: "Test Name",
+            header: () => <SortableHeader field="name" label="Test Name" activeField={testSort.sort.sort_field} activeOrder={testSort.sort.sort_by} onSortChange={onTestSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -115,27 +127,27 @@ export default function CoursesTab() {
             ),
         },
         {
-            header: "Type",
+            header: () => <SortableHeader field="test_type" label="Type" activeField={testSort.sort.sort_field} activeOrder={testSort.sort.sort_by} onSortChange={onTestSort} />,
             accessorKey: "test_type",
             cell: ({ row }) => <Typography variant="subtitle1" className="capitalize">{row.original.test_type || "N/A"}</Typography>,
         },
         {
-            header: "Full Mark",
+            header: () => <SortableHeader field="full_mark" label="Full Mark" activeField={testSort.sort.sort_field} activeOrder={testSort.sort.sort_by} onSortChange={onTestSort} />,
             accessorKey: "full_mark",
             cell: ({ row }) => <Typography variant="subtitle1">{row.original.full_mark ?? "N/A"}</Typography>,
         },
         {
-            header: "Pass Mark",
+            header: () => <SortableHeader field="pass_mark" label="Pass Mark" activeField={testSort.sort.sort_field} activeOrder={testSort.sort.sort_by} onSortChange={onTestSort} />,
             accessorKey: "pass_mark",
             cell: ({ row }) => <Typography variant="subtitle1">{row.original.pass_mark ?? "N/A"}</Typography>,
         },
         {
-            header: "Enrolled On",
+            header: () => <SortableHeader field="started_from" label="Enrolled On" activeField={testSort.sort.sort_field} activeOrder={testSort.sort.sort_by} onSortChange={onTestSort} />,
             accessorKey: "started_from",
             cell: ({ row }) => <Typography variant="subtitle1">{formatDateForDisplay(row.original.started_from) || "N/A"}</Typography>,
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="status" label="Status" activeField={testSort.sort.sort_field} activeOrder={testSort.sort.sort_by} onSortChange={onTestSort} />,
             accessorKey: "status",
             cell: ({ row }) => {
                 const progress = Number(row.original.progress ?? 0);
@@ -143,7 +155,7 @@ export default function CoursesTab() {
                 return <StatusPill status={label} variant={getCourseStatus(progress)} />;
             },
         },
-    ], []);
+    ], [testSort.sort]);
 
     const bundleColumns = useMemo<ColumnDef<UserEnrolledBundle>[]>(() => [
         {
@@ -152,7 +164,7 @@ export default function CoursesTab() {
             cell: ({ row }) => <Typography variant="subtitle1" fontWeight={500}>{row.index + 1}</Typography>,
         },
         {
-            header: "Bundle Name",
+            header: () => <SortableHeader field="name" label="Bundle Name" activeField={bundleSort.sort.sort_field} activeOrder={bundleSort.sort.sort_by} onSortChange={onBundleSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -161,22 +173,22 @@ export default function CoursesTab() {
             ),
         },
         {
-            header: "Enrolled On",
+            header: () => <SortableHeader field="started_from" label="Enrolled On" activeField={bundleSort.sort.sort_field} activeOrder={bundleSort.sort.sort_by} onSortChange={onBundleSort} />,
             accessorKey: "started_from",
             cell: ({ row }) => <Typography variant="subtitle1">{formatDateForDisplay(row.original.started_from) || "N/A"}</Typography>,
         },
         {
-            header: "Expires On",
+            header: () => <SortableHeader field="ends_at" label="Expires On" activeField={bundleSort.sort.sort_field} activeOrder={bundleSort.sort.sort_by} onSortChange={onBundleSort} />,
             accessorKey: "ends_at",
             cell: ({ row }) => <Typography variant="subtitle1">{formatDateForDisplay(row.original.ends_at) || "N/A"}</Typography>,
         },
         {
-            header: "Progress",
+            header: () => <SortableHeader field="progress" label="Progress" activeField={bundleSort.sort.sort_field} activeOrder={bundleSort.sort.sort_by} onSortChange={onBundleSort} />,
             accessorKey: "progress",
             cell: ({ row }) => <ProgressCell value={row.original.progress} />,
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="status" label="Status" activeField={bundleSort.sort.sort_field} activeOrder={bundleSort.sort.sort_by} onSortChange={onBundleSort} />,
             accessorKey: "status",
             cell: ({ row }) => {
                 const progress = Number(row.original.progress ?? 0);
@@ -184,7 +196,7 @@ export default function CoursesTab() {
                 return <StatusPill status={label} variant={getCourseStatus(progress)} />;
             },
         },
-    ], []);
+    ], [bundleSort.sort]);
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 4, pb: 4 }}>

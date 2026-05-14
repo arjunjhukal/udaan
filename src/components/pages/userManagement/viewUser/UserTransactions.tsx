@@ -8,8 +8,10 @@ import { useGetUserTransactionAnalyticsQuery, useGetUserTransactionPaymentMethod
 import type { TransactionProps } from "../../../../types/transaction";
 import { formatDateForDisplay } from "../../../../utils/dateFormat";
 import { getTransactionStatus } from "../../../../utils/statusMap";
+import useServerSort from "../../../../utils/useServerSort";
 import ActionIconVisible from "../../../molecules/Action/ActionIconVisible";
 import StatusPill from "../../../atoms/StatusPill";
+import SortableHeader from "../../../molecules/SortableHeader";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import DashboardAnalyticsCard from "../../../organism/Cards/DashboardAnalyticsCard";
@@ -25,7 +27,11 @@ export default function UserTransactions() {
     const theme = useTheme();
     const [qp, setQp] = useState({ pageIndex: 1, pageSize: 5 });
     const [selectedId, setSelectedId] = useState<number | null>(null);
-    const { data, isLoading } = useGetAllUserTransacionsQuery({ ...qp, id: Number(id) });
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
+    const { data, isLoading } = useGetAllUserTransacionsQuery({ ...qp, id: Number(id), sort_field: sort.sort_field, sort_by: sort.sort_by });
     const { data: analyticsData, isLoading: analyticsLoading } = useGetUserTransactionAnalyticsQuery({ id: Number(id) }, { skip: !id });
     const { data: paymentData, isLoading: paymentLoading } = useGetUserTransactionPaymentMethodsQuery({ id: Number(id) }, { skip: !id });
 
@@ -43,7 +49,7 @@ export default function UserTransactions() {
             ),
         },
         {
-            header: "Course Name",
+            header: () => <SortableHeader field="name" label="Course Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -54,7 +60,7 @@ export default function UserTransactions() {
             ),
         },
         {
-            header: "Payment Method",
+            header: () => <SortableHeader field="payment_method" label="Payment Method" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "payment_method",
             cell: ({ row }) => (
                 <Typography variant="subtitle1" className="capitalize">
@@ -63,7 +69,7 @@ export default function UserTransactions() {
             ),
         },
         {
-            header: "Purchased Date",
+            header: () => <SortableHeader field="purchased_date" label="Purchased Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "purchased_date",
             cell: ({ row }) => (
                 <Typography variant="subtitle1" className="capitalize">
@@ -72,7 +78,7 @@ export default function UserTransactions() {
             ),
         },
         {
-            header: "Amount Paid",
+            header: () => <SortableHeader field="amount_paid" label="Amount Paid" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "amount_paid",
             cell: ({ row }) => (
                 <Typography variant="subtitle1" className="capitalize">
@@ -81,7 +87,7 @@ export default function UserTransactions() {
             ),
         },
         {
-            header: "Invoice ID",
+            header: () => <SortableHeader field="invoice_id" label="Invoice ID" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "invoice_id",
             cell: ({ row }) => (
                 <Typography variant="subtitle1" className="capitalize">
@@ -90,7 +96,7 @@ export default function UserTransactions() {
             ),
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "status",
             cell: ({ row }) => (
                 <StatusPill status={row.original.status} variant={getTransactionStatus(row.original.status)} />
@@ -103,7 +109,7 @@ export default function UserTransactions() {
                 <ActionIconVisible onView={() => setSelectedId(row.original.id)} />
             ),
         },
-    ], [qp])
+    ], [qp, sort])
 
 
     return (

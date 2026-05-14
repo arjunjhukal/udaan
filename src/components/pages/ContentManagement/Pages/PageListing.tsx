@@ -7,7 +7,9 @@ import { showToast } from '../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../store/hook';
 import type { GeneralPageProps } from '../../../../types/page';
 import { formatDateForDisplay } from '../../../../utils/dateFormat';
+import useServerSort from '../../../../utils/useServerSort';
 import Actions from '../../../molecules/Action';
+import SortableHeader from '../../../molecules/SortableHeader';
 import UdaanTable from '../../../molecules/Table';
 import TablePagination from '../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../organism/ConfirmationDialog';
@@ -25,7 +27,11 @@ export default function PageListing() {
     })
     const [openConfirm, setOpenConfirm] = useState(false);
     const [pageToDelete, setPageToDelete] = useState<string[]>([]);
-    const { data, isLoading } = useGetAllPagesQuery({ ...qp, search })
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
+    const { data, isLoading } = useGetAllPagesQuery({ ...qp, search, sort_field: sort.sort_field, sort_by: sort.sort_by })
 
     const [deletePage, { isLoading: deleting }] = useDeletePagesMutation();
 
@@ -119,14 +125,14 @@ export default function PageListing() {
             size: 80,
         },
         {
-            header: "Title",
+            header: () => <SortableHeader field="heading" label="Title" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "heading",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">{row.original.heading}</Typography>
             ),
         },
         {
-            header: "Slug",
+            header: () => <SortableHeader field="slug" label="Slug" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "slug",
             cell: ({ row }) => (
                 <Typography >{row.original.slug}</Typography>
@@ -134,7 +140,7 @@ export default function PageListing() {
         },
 
         {
-            header: "Created At",
+            header: () => <SortableHeader field="created_at" label="Created At" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>
@@ -154,7 +160,7 @@ export default function PageListing() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, qp, sort])
 
 
 

@@ -16,7 +16,7 @@ export const transactionApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Transaction", id: "LIST" }, { type: "MenuCounts", id: "ALL" }]
         }),
         getAllTransactions: builder.query<TransactionList, QueryParams & { categoryFilter?: CategoryFilterParams; status?: Status, payment_method?: string, days?: number | null; device_type?: DeviceType; module_type?: EnrollmentType; }>({
-            query: ({ pageIndex, pageSize, search, startDate, endDate, days, status, categoryFilter, device_type, payment_method, module_type }) => {
+            query: ({ pageIndex, pageSize, search, startDate, endDate, days, status, categoryFilter, device_type, payment_method, module_type, sort_field, sort_by }) => {
                 const queryString = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -32,6 +32,8 @@ export const transactionApi = baseApi.injectEndpoints({
                     categories: categoryFilter?.category,
                     sub_categories: categoryFilter?.sub_category,
                     positions: categoryFilter?.positions,
+                    sort_field,
+                    sort_by,
                 });
 
                 return {
@@ -76,11 +78,13 @@ export const transactionApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Transaction", id: "LIST" }, { type: "MenuCounts", id: "ALL" }]
         }),
         getUserPurchasedCourse: builder.query<CourseList, QueryParams & { id: number }>({
-            query: ({ pageIndex, pageSize, search, id }) => ({
+            query: ({ pageIndex, pageSize, search, id, sort_field, sort_by }) => ({
                 url: `admin/user/${id}/enrolled-courses?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET",
             }),
@@ -93,11 +97,13 @@ export const transactionApi = baseApi.injectEndpoints({
                     : [{ type: 'Transaction', id: 'LIST' }]
         }),
         getAllUserTransacions: builder.query<UserTransactionResponse, QueryParams & { id: number }>({
-            query: ({ pageIndex, pageSize, search, id }) => ({
+            query: ({ pageIndex, pageSize, search, id, sort_field, sort_by }) => ({
                 url: `admin/user/${id}/transaction?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
                     search: search,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET",
             }),

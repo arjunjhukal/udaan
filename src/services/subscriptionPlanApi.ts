@@ -16,7 +16,7 @@ export const subscriptionPlanApi = baseApi.injectEndpoints({
         }),
 
         getAllSubscription: builder.query<SubscriptionList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => {
+            query: ({ pageIndex, pageSize, search, sort_field, sort_by }) => {
                 const params = new URLSearchParams();
 
                 if (pageIndex) {
@@ -28,6 +28,8 @@ export const subscriptionPlanApi = baseApi.injectEndpoints({
                 if (search) {
                     params.append('search', search.toString());
                 }
+                if (sort_field) params.append("sort_field", sort_field);
+                if (sort_by) params.append("sort_by", sort_by);
 
                 return {
                     url: `/admin/subscription?${params.toString()}`,

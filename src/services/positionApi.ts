@@ -8,12 +8,14 @@ import { baseApi } from "./baseApi";
 export const positionApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllPosition: builder.query<positionList, QueryParams>({
-            query: ({ pageIndex, pageSize, search }) => {
+            query: ({ pageIndex, pageSize, search, sort_field, sort_by }) => {
                 const params = new URLSearchParams();
 
                 if (pageIndex) params.append("page", pageIndex.toString());
                 if (pageSize) params.append("page_size", pageSize.toString());
                 if (search) params.append("search", search);
+                if (sort_field) params.append("sort_field", sort_field);
+                if (sort_by) params.append("sort_by", sort_by);
 
                 return {
                     url: `/admin/position?${params.toString()}`,

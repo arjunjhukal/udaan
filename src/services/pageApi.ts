@@ -16,11 +16,13 @@ export const pageApi = baseApi.injectEndpoints({
         }),
 
         getAllPages: builder.query<GeneralPageListing, QueryParams & { search: string }>({
-            query: ({ pageIndex, pageSize, search }) => ({
+            query: ({ pageIndex, pageSize, search, sort_field, sort_by }) => ({
                 url: `/admin/content/page?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
-                    search: search
+                    search: search,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET",
             }),

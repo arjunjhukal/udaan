@@ -10,8 +10,10 @@ import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { CompletionStatus, DeliveryMethodsType, NotificationPayload, TargetStudentType } from "../../../../types/notification";
 import { formatDateCustom } from "../../../../utils/dateFormat";
 import { renderHtml } from "../../../../utils/renderHtml";
+import useServerSort from "../../../../utils/useServerSort";
 import Actions from "../../../molecules/Action";
 import ScheduleNotification from "../../../molecules/Action/ScheduleNotification";
+import SortableHeader from "../../../molecules/SortableHeader";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
@@ -52,6 +54,10 @@ export default function AllNotifications() {
     } = useCourseFilter();
 
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading } = useGetAllNotificationQuery({
         ...qp,
         search: search,
@@ -59,7 +65,9 @@ export default function AllNotifications() {
         days,
         status: status.join(",") as CompletionStatus,
         delivey_method: paymentMethod.join(",") as DeliveryMethodsType,
-        target_audience: targetAudience.join(",") as TargetStudentType
+        target_audience: targetAudience.join(",") as TargetStudentType,
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
 
     const [deleteNotification, { isLoading: deleting }] = useDeleteNotificationMutation();
@@ -146,7 +154,7 @@ export default function AllNotifications() {
             size: 80,
         },
         {
-            header: "Name of the notification",
+            header: () => <SortableHeader field="name" label="Name of the notification" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography variant="subtitle2" className="capitalize max-w-[450px]">
@@ -155,7 +163,7 @@ export default function AllNotifications() {
             ),
         },
         {
-            header: "Description",
+            header: () => <SortableHeader field="description" label="Description" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "description",
             cell: ({ row }) => (
                 <Typography variant="subtitle2" className="capitalize line-clamp-1" >
@@ -164,7 +172,7 @@ export default function AllNotifications() {
             ),
         },
         {
-            header: "Target",
+            header: () => <SortableHeader field="target_students" label="Target" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "target",
             cell: ({ row }) => (
                 <Typography className="capitalize" variant="subtitle2">
@@ -175,7 +183,7 @@ export default function AllNotifications() {
             ),
         },
         {
-            header: "Delivery Method",
+            header: () => <SortableHeader field="delivery_methods" label="Delivery Method" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "delivery_methods",
             cell: ({ row }) => (
                 <Typography className="capitalize" variant="subtitle2">
@@ -186,7 +194,7 @@ export default function AllNotifications() {
             ),
         },
         {
-            header: "Schedule Notification",
+            header: () => <SortableHeader field="updated_at" label="Schedule Notification" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "schedule_notification",
             cell: ({ row }) => (
                 <>
@@ -207,7 +215,7 @@ export default function AllNotifications() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, qp, sort])
 
     const handleResetFilter = () => {
         setCustomRange({ startDate: "", endDate: "" });

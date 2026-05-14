@@ -15,7 +15,7 @@ export const notificationApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Notifications", id: "LIST" }],
         }),
         getAllNotification: builder.query<NotificationList, QueryParams & { days?: number | null, status?: CompletionStatus, delivey_method: DeliveryMethodsType, target_audience?: TargetStudentType }>({
-            query: ({ pageIndex, pageSize, startDate, endDate, days, status, delivey_method, target_audience }) => {
+            query: ({ pageIndex, pageSize, startDate, endDate, days, status, delivey_method, target_audience, sort_field, sort_by }) => {
                 const queryParams = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -24,7 +24,9 @@ export const notificationApi = baseApi.injectEndpoints({
                     days: days,
                     status: status,
                     delivery_method: delivey_method,
-                    target_audience: target_audience
+                    target_audience: target_audience,
+                    sort_field,
+                    sort_by,
                 })
                 return {
                     url: `/admin/notification?${queryParams}`,

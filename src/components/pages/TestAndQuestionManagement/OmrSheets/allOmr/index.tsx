@@ -8,7 +8,9 @@ import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import type { OmrSheetProps } from "../../../../../types/question";
 import { formatDateCustom } from "../../../../../utils/dateFormat";
+import useServerSort from "../../../../../utils/useServerSort";
 import Actions from "../../../../molecules/Action";
+import SortableHeader from "../../../../molecules/SortableHeader";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
@@ -42,9 +44,15 @@ export default function AllOmrSheets() {
     const [days, setDays] = useState<number | null>(null);
     const [selectedOmr, setSelectedOmr] = useState<OmrSheetProps | undefined>(undefined);
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading } = useGetAllOmrQuery({
         ...qp, search: debouncedSearch, ...customRange,
         days,
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
    
     const [deleteOmr, { isLoading: deleting }] = useDeleteOmrSheetMutation();
@@ -131,7 +139,7 @@ export default function AllOmrSheets() {
             size: 80,
         },
         {
-            header: "Test Name",
+            header: () => <SortableHeader field="name" label="Test Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize max-w-[450px]">
@@ -140,7 +148,7 @@ export default function AllOmrSheets() {
             ),
         },
         {
-            header: "No. of Questions",
+            header: () => <SortableHeader field="omr_format" label="No. of Questions" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "omr_format",
             cell: ({ row }) => (
                 <Typography >
@@ -149,7 +157,7 @@ export default function AllOmrSheets() {
             ),
         },
         {
-            header: "Updated at",
+            header: () => <SortableHeader field="created_at" label="Updated at" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => (
                 <Typography >
@@ -171,7 +179,7 @@ export default function AllOmrSheets() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp, sort])
 
     const handleResetFilter = () => {
         setCustomRange({ startDate: "", endDate: "" });

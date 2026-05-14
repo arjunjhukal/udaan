@@ -9,7 +9,9 @@ import { showToast } from '../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../store/hook';
 import type { RoleProps } from '../../../../types/roleAndPermission';
 import { formatDateForDisplay } from '../../../../utils/dateFormat';
+import useServerSort from '../../../../utils/useServerSort';
 import Actions from '../../../molecules/Action';
+import SortableHeader from '../../../molecules/SortableHeader';
 import UdaanTable from '../../../molecules/Table';
 import TablePagination from '../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../organism/ConfirmationDialog';
@@ -32,7 +34,11 @@ export default function AllRolesTable() {
     const [openConfirm, setOpenConfirm] = React.useState(false);
     const [rolesToDelete, setRolesToDelete] = React.useState<string[]>([]);
     
-    const { data, isLoading } = useGetAllRolesQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch });
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
+    const { data, isLoading } = useGetAllRolesQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, sort_field: sort.sort_field, sort_by: sort.sort_by });
     const [deleteRole, { isLoading: deleting }] = useDeleteRoleMutation();
 
 
@@ -126,14 +132,14 @@ export default function AllRolesTable() {
             size: 80,
         },
         {
-            header: "Role Name",
+            header: () => <SortableHeader field="name" label="Role Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">{row.original.name}</Typography>
             ),
         },
         {
-            header: "Members",
+            header: () => <SortableHeader field="members" label="Members" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "members",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -142,7 +148,7 @@ export default function AllRolesTable() {
             ),
         },
         {
-            header: "Created At",
+            header: () => <SortableHeader field="created_at" label="Created At" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => (
                 <Typography fontWeight={500}>
@@ -162,7 +168,7 @@ export default function AllRolesTable() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, theme, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, theme, qp, sort])
 
 
 

@@ -18,14 +18,12 @@ import {
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
-    getSortedRowModel,
     useReactTable
 } from "@tanstack/react-table";
 interface UdaanTableProps<T extends object> {
     data: T[];
     columns: ColumnDef<T, any>[];
     pagination?: boolean;
-    sortable?: boolean;
     className?: string;
     loading?: boolean
     skeletonRows?: number,
@@ -36,7 +34,6 @@ export default function UdaanTable<T extends object>({
     data,
     columns,
     pagination = false,
-    sortable = true,
     className,
     loading,
     skeletonRows = 8,
@@ -46,7 +43,6 @@ export default function UdaanTable<T extends object>({
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: pagination ? getPaginationRowModel() : undefined,
-        getSortedRowModel: sortable ? getSortedRowModel() : undefined,
         getFilteredRowModel: getFilteredRowModel(),
     });
 

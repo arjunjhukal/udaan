@@ -13,7 +13,9 @@ import { useAppDispatch } from "../../../../../store/hook";
 import { useCourseFilter } from "../../../../../store/useCourseFilter";
 import type { courseClonePropertyProps, CourseProps } from "../../../../../types/course";
 import { formatDate } from "../../../../../utils/dateFormat";
+import useServerSort from "../../../../../utils/useServerSort";
 import Actions from "../../../../molecules/Action";
+import SortableHeader from "../../../../molecules/SortableHeader";
 import TabController from "../../../../molecules/TabController";
 import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
@@ -82,11 +84,17 @@ export default function AllCourse() {
         { value: "expiry", label: "Expiry" }
     ];
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading, isFetching } = useGetAllCourseQuery({
         ...qp,
         search,
         categoryFilter: { ...categoryFilter },
-        status: activeTab
+        status: activeTab,
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
     const [changeStatus] = useChangeCourseStatusMutation();
 
@@ -230,7 +238,7 @@ export default function AllCourse() {
             size: 80,
         },
         {
-            header: "Course Name",
+            header: () => <SortableHeader field="name" label="Course Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -241,7 +249,7 @@ export default function AllCourse() {
             ),
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "status",
             cell: ({ row }) => (
                 <Tooltip title={`Click to change status to ${row.original.status === "published" ? "Draft" : "Publish"}`}>
@@ -255,7 +263,7 @@ export default function AllCourse() {
             ),
         },
         {
-            header: "Course Type",
+            header: () => <SortableHeader field="course_type" label="Course Type" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "course_type",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -264,7 +272,7 @@ export default function AllCourse() {
             ),
         },
         {
-            header: "Price",
+            header: () => <SortableHeader field="marked_price" label="Price" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "price",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -273,7 +281,7 @@ export default function AllCourse() {
             ),
         },
         {
-            header: "Subjects",
+            header: () => <SortableHeader field="subjects" label="Subjects" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "subjects",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -282,7 +290,7 @@ export default function AllCourse() {
             ),
         },
         {
-            header: "Enrolled Student",
+            header: () => <SortableHeader field="enrolled_students" label="Enrolled Student" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "enrolled_students",
             cell: ({ row }) => (
                 <Typography >
@@ -291,7 +299,7 @@ export default function AllCourse() {
             ),
         },
         {
-            header: "Created Date",
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "created_at",
             cell: ({ row }) => {
                 return (
@@ -319,7 +327,7 @@ export default function AllCourse() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp, sort])
 
 
 

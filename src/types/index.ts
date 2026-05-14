@@ -1,12 +1,15 @@
 import type { CourseTypeProps } from "./course";
 
+export type SortOrder = "asc" | "desc" | "";
+
 export interface QueryParams {
     pageIndex?: number;
     pageSize?: number;
     search?: string;
     startDate?: string;
     endDate?: string;
-    sort_by?: "asc" | "desc" | ""
+    sort_by?: SortOrder;
+    sort_field?: string;
 }
 
 

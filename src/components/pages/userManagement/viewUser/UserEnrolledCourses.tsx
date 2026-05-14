@@ -6,7 +6,9 @@ import { useParams } from "react-router-dom";
 import { useGetUserPurchasedCourseQuery } from "../../../../services/transactionApi";
 import type { CourseProps } from "../../../../types/course";
 import { getCourseStatus } from "../../../../utils/statusMap";
+import useServerSort from "../../../../utils/useServerSort";
 import StatusPill from "../../../atoms/StatusPill";
+import SortableHeader from "../../../molecules/SortableHeader";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import EmptyRoute from "../../../organism/EmptyRoute";
@@ -18,7 +20,11 @@ export default function UserEnrolledCourses() {
         pageIndex: 1,
         pageSize: 10,
     });
-    const { data, isLoading } = useGetUserPurchasedCourseQuery({ ...qp, id: Number(id) });
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
+    const { data, isLoading } = useGetUserPurchasedCourseQuery({ ...qp, id: Number(id), sort_field: sort.sort_field, sort_by: sort.sort_by });
 
     const courses = data?.data?.data || [];
 
@@ -34,7 +40,7 @@ export default function UserEnrolledCourses() {
             ),
         },
         {
-            header: "Course Name",
+            header: () => <SortableHeader field="name" label="Course Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -45,7 +51,7 @@ export default function UserEnrolledCourses() {
             ),
         },
         {
-            header: "Price",
+            header: () => <SortableHeader field="sale_price" label="Price" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "price",
             cell: ({ row }) => (
                 <Typography variant="subtitle1" className="capitalize">
@@ -54,7 +60,7 @@ export default function UserEnrolledCourses() {
             ),
         },
         {
-            header: "Purchased Date",
+            header: () => <SortableHeader field="started_from" label="Purchased Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "purchased_date",
             cell: ({ row }) => (
                 <Typography variant="subtitle1" className="capitalize">
@@ -63,7 +69,7 @@ export default function UserEnrolledCourses() {
             ),
         },
         {
-            header: "End Date",
+            header: () => <SortableHeader field="ends_at" label="End Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "end_date",
             cell: ({ row }) => (
                 <Typography variant="subtitle1" className="capitalize">
@@ -72,7 +78,7 @@ export default function UserEnrolledCourses() {
             ),
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="progress" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "course_completion_status",
             cell: ({ row }) => {
                 const progress = Number(row.original?.progress ?? 0);
@@ -93,7 +99,7 @@ export default function UserEnrolledCourses() {
         },
 
 
-    ], [qp])
+    ], [qp, sort])
 
 
     return (

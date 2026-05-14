@@ -10,13 +10,15 @@ export const discussionApi = baseApi.injectEndpoints({
 	// tagTypes: ["Discussion"],
 	endpoints: (builder) => ({
 		getAllDiscussions: builder.query<DiscussionList, QueryParams & { mega_category_id?: number | null; status?: "" | "visible" | "hidden" }>({
-			query: ({ pageIndex, pageSize, search, status, mega_category_id }) => {
+			query: ({ pageIndex, pageSize, search, status, mega_category_id, sort_field, sort_by }) => {
 				const params = buildQueryParams({
 					page: pageIndex,
 					page_size: pageSize,
 					search: search,
 					status: status,
 					mega_category_id: mega_category_id,
+					sort_field,
+					sort_by,
 				});
 				return {
 					url: `/discussions?${params}`,

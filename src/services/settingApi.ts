@@ -32,10 +32,12 @@ export const settingApi = baseApi.injectEndpoints({
         }),
 
         getAllLinkedDevices: builder.query<LinkedDeviceList, QueryParams>({
-            query: ({ pageIndex, pageSize }) => ({
+            query: ({ pageIndex, pageSize, sort_field, sort_by }) => ({
                 url: `/admin/settings/linked-device?${buildQueryParams({
                     page: pageIndex,
-                    page_size: pageSize
+                    page_size: pageSize,
+                    sort_field,
+                    sort_by,
                 })}`,
                 method: "GET",
             }),

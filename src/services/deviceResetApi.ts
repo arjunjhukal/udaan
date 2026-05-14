@@ -15,8 +15,8 @@ export const deviceResetApi = baseApi.injectEndpoints({
 			DeviceResetRequestList,
 			QueryParams & { days?: number | null; start_date?: string; end_date?: string }
 		>({
-			query: ({ pageIndex, pageSize, search, sort_by, days, start_date, end_date }) => {
-				const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search, sort_by, days, start_date, end_date });
+			query: ({ pageIndex, pageSize, search, sort_by, sort_field, days, start_date, end_date }) => {
+				const params = buildQueryParams({ page: pageIndex, page_size: pageSize, search, sort_by, sort_field, days, start_date, end_date });
 				return { url: `/admin/reset-request?${params}`, method: "GET" };
 			},
 			providesTags: [{ type: "ResetRequest", id: "LIST" }],
@@ -29,10 +29,10 @@ export const deviceResetApi = baseApi.injectEndpoints({
 
 		getResetRequestTimeline: builder.query<
 			DeviceResetTimeline,
-			{ userId: number; status?: string; search?: string; pageSize?: number; pageIndex?: number; sort_by?: string }
+			{ userId: number; status?: string; search?: string; pageSize?: number; pageIndex?: number; sort_by?: string; sort_field?: string }
 		>({
-			query: ({ userId, status, search, pageSize, pageIndex, sort_by }) => {
-				const params = buildQueryParams({ status, search, page_size: pageSize, page: pageIndex, sort_by });
+			query: ({ userId, status, search, pageSize, pageIndex, sort_by, sort_field }) => {
+				const params = buildQueryParams({ status, search, page_size: pageSize, page: pageIndex, sort_by, sort_field });
 				return { url: `/admin/reset-request/${userId}/timelines?${params}`, method: "GET" };
 			},
 			providesTags: (_result, _error, { userId }) => [{ type: "ResetRequest", id: `TIMELINE_${userId}` }],

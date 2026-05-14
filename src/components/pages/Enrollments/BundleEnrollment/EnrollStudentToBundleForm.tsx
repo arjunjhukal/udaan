@@ -9,6 +9,8 @@ import { useGetAllUserQuery } from "../../../../services/userApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import type { RegisterUserProps } from "../../../../types/user";
+import useServerSort from "../../../../utils/useServerSort";
+import SortableHeader from "../../../molecules/SortableHeader";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 
@@ -34,7 +36,11 @@ export default function EnrollStudentToBundleForm({ open, setOpen, id }: Props) 
         return () => clearTimeout(timer);
     }, [search]);
 
-    const { data, isLoading } = useGetAllUserQuery({ ...qp, search: debounceSearch, });
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
+    const { data, isLoading } = useGetAllUserQuery({ ...qp, search: debounceSearch, sort_field: sort.sort_field, sort_by: sort.sort_by });
 
     const handleClose = () => {
         formik.resetForm();
@@ -86,21 +92,21 @@ export default function EnrollStudentToBundleForm({ open, setOpen, id }: Props) 
             size: 80,
         },
         {
-            header: "Name",
+            header: () => <SortableHeader field="name" label="Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => <Typography fontWeight={500} className="capitalize">{row.original.name}</Typography>,
         },
         {
-            header: "Email",
+            header: () => <SortableHeader field="email" label="Email" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "email",
             cell: ({ row }) => <Typography fontWeight={500}>{row.original.email}</Typography>,
         },
         {
-            header: "Phone",
+            header: () => <SortableHeader field="phone" label="Phone" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "phone",
             cell: ({ row }) => <Typography fontWeight={500}>{row.original.phone}</Typography>,
         },
-    ], [formik.values.student_id]);
+    ], [formik.values.student_id, sort]);
 
     return (
         <Dialog open={open} onClose={handleClose} sx={{ "& .MuiPaper-root": { minWidth: { md: "664px", xl: "1041px" } } }}>

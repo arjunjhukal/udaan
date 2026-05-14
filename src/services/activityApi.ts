@@ -28,7 +28,7 @@ export const activitiyApi = baseApi.injectEndpoints({
             device_type?: DeviceType;
             status?: Status;
         }>({
-            query: ({ pageIndex, pageSize, search, startDate, endDate, sort_by, type, days, device_type, status }) => ({
+            query: ({ pageIndex, pageSize, search, startDate, endDate, sort_by, sort_field, type, days, device_type, status }) => ({
                 url: `/admin/activity-log?${buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -37,6 +37,7 @@ export const activitiyApi = baseApi.injectEndpoints({
                     end_date: endDate,
                     days: days,
                     sort_by: sort_by,
+                    sort_field: sort_field,
                     type: type,
                     device_type: device_type,
                     status: status

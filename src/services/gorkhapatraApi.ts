@@ -15,7 +15,7 @@ export const gorkhapatraApi = baseApi.injectEndpoints({
             invalidatesTags: [{ type: "Gorkhapatra", id: "LIST" }]
         }),
         getAllGorkhapatra: builder.query<GorkhapatraList, QueryParams & { type?: GorkhapatraTypes; days?: number | null; status?: "" | "draft" | "published" }>({
-            query: ({ pageIndex, pageSize, search, status, type, days, startDate, endDate }) => {
+            query: ({ pageIndex, pageSize, search, status, type, days, startDate, endDate, sort_field, sort_by }) => {
                 const params = buildQueryParams({
                     page: pageIndex,
                     page_size: pageSize,
@@ -25,6 +25,8 @@ export const gorkhapatraApi = baseApi.injectEndpoints({
                     start_date: startDate,
                     end_date: endDate,
                     days: days,
+                    sort_field,
+                    sort_by,
                 });
 
                 return {

@@ -7,7 +7,9 @@ import { useDeletePositionMutation, useGetAllPositionQuery } from "../../../../s
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import type { positionProps } from "../../../../types/position";
+import useServerSort from "../../../../utils/useServerSort";
 import ActionIconVisible from "../../../molecules/Action/ActionIconVisible";
+import SortableHeader from "../../../molecules/SortableHeader";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
@@ -36,7 +38,11 @@ export default function AllPositions() {
     const [debouncedSearch, setDebouncedSearch] = React.useState<string>("");
     const [selectedRows, setSelectedRows] = React.useState<Set<number | string>>(new Set());
 
-    const { data, isLoading } = useGetAllPositionQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch });
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
+    const { data, isLoading } = useGetAllPositionQuery({ pageIndex: qp.pageIndex, pageSize: qp.pageSize, search: debouncedSearch, sort_field: sort.sort_field, sort_by: sort.sort_by });
     const [deletePosition] = useDeletePositionMutation();
 
 
@@ -133,7 +139,7 @@ export default function AllPositions() {
             size: 80,
         },
         {
-            header: "Slug",
+            header: () => <SortableHeader field="slug" label="Slug" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "slug",
             cell: ({ row }) => (
                 <Typography fontWeight={500} >
@@ -154,7 +160,7 @@ export default function AllPositions() {
 
             ),
         },
-    ], [search, isAllSelected, isSomeSelected, selectedRows]);
+    ], [search, isAllSelected, isSomeSelected, selectedRows, sort]);
     return (
         <div className="all__position__root">
             <PageHeader

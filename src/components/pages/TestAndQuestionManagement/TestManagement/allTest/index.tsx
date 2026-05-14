@@ -9,8 +9,10 @@ import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import { useCourseFilter } from '../../../../../store/useCourseFilter';
 import type { TestProps, TestTypeProps } from '../../../../../types/question';
+import useServerSort from '../../../../../utils/useServerSort';
 import StatusPill from '../../../../atoms/StatusPill';
 import Actions from '../../../../molecules/Action';
+import SortableHeader from '../../../../molecules/SortableHeader';
 import TabController from '../../../../molecules/TabController';
 import UdaanTable from '../../../../molecules/Table';
 import TablePagination from '../../../../molecules/Table/Pagination';
@@ -62,11 +64,17 @@ export default function AllTestListing() {
 
     const categoryFilter = getCategoryFilterParams();
 
+    const { sort, handleSortChange } = useServerSort();
+    const onSort = (field: string, order: "asc" | "desc" | "") =>
+        handleSortChange(field, order, () => setQp((prev) => ({ ...prev, pageIndex: 1 })));
+
     const { data, isLoading } = useGetAllTestQuery({
         ...qp, search: debouncedSearch, ...customRange,
         days,
         type: activeTab === "all" ? undefined : activeTab,
         categoryFilter: { ...categoryFilter },
+        sort_field: sort.sort_field,
+        sort_by: sort.sort_by,
     });
     const [deleteTest, { isLoading: deleting }] = useDeleteTestMutation();
     const [changeStatus] = useChangeTestStatusMutation();
@@ -174,7 +182,7 @@ export default function AllTestListing() {
             size: 80,
         },
         {
-            header: "Test Name",
+            header: () => <SortableHeader field="name" label="Test Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize max-w-[450px]">
@@ -183,7 +191,7 @@ export default function AllTestListing() {
             ),
         },
         {
-            header: "Test Type",
+            header: () => <SortableHeader field="test_type" label="Test Type" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "Test Type",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -192,14 +200,14 @@ export default function AllTestListing() {
             ),
         },
         {
-            header: "Result Status",
+            header: () => <SortableHeader field="has_published" label="Result Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "has_published",
             cell: ({ row }) => (
                 <StatusPill variant={row.original.has_published ? 'success' : "error"} status={row.original.has_published ? "Published" : "Not Published"} />
             ),
         },
         {
-            header: "Status",
+            header: () => <SortableHeader field="test_published_status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "status",
             cell: ({ row }) => (
                 <Tooltip title={`Click to change status to ${row.original.test_published_status === "published" ? "Draft" : "Publish"}`}>
@@ -213,7 +221,7 @@ export default function AllTestListing() {
             ),
         },
         {
-            header: "No. of Questions",
+            header: () => <SortableHeader field="total_questions" label="No. of Questions" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "questions",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -222,7 +230,7 @@ export default function AllTestListing() {
             ),
         },
         {
-            header: "No. of Students",
+            header: () => <SortableHeader field="no_of_students" label="No. of Students" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "no_of_students",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -231,7 +239,7 @@ export default function AllTestListing() {
             ),
         },
         {
-            header: "Duration",
+            header: () => <SortableHeader field="duration" label="Duration" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "duration",
             cell: ({ row }) => (
                 <Typography fontWeight={500} className="capitalize">
@@ -251,7 +259,7 @@ export default function AllTestListing() {
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp, sort])
 
 
     const handleResetFilter = () => {
