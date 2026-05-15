@@ -51,7 +51,7 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
                 {isSubjective ? (
                     <Box className="mb-4 mt-2 flex items-baseline justify-center gap-1">
                         <Typography variant="h1" color="primary" fontWeight={600}>
-                            {data?.total_points ?? 0}
+                            {data?.score ?? 0}
                         </Typography>
                         <Typography component="span" color="text.middle" sx={{ fontSize: '1.5rem', fontWeight: 600 }}>
                             / {data?.full_mark ?? 0}
@@ -68,7 +68,7 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
                 <Box className="grid grid-cols-2 gap-3 mb-4">
                     {[
                         { label: "Attempted", value: `${data?.total_attempted ?? 0}/${data?.total_questions ?? 0}` },
-                        { label: "Marks Obtained", value: `${data?.total_points ?? 0}/${data?.full_mark ?? 0}` },
+                        { label: "Marks Obtained", value: `${data?.score ?? 0}/${data?.full_mark ?? 0}` },
                         { label: "Status", value: statusLabel },
                         { label: "Time Taken", value: timeTaken },
                     ].map((stat) => (
