@@ -67,7 +67,6 @@ export default function UdaanTable<T extends object>({
                                             top: 0,
                                             zIndex: 2,
                                             backgroundColor: theme.palette.background.paper,
-                                            // fontWeight: 600,
                                             borderBottom: `1px solid ${theme.palette.separator.dark}`,
                                         }}
                                         className="py-2! px-3! 2xl:px-4! 2xl:py-4!"

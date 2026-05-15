@@ -1,7 +1,7 @@
-import { Add, Close, Refresh } from "@mui/icons-material";
-import { Box, Button, Chip, Divider, IconButton, Skeleton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
+import { Add, Close, Fullscreen, Refresh } from "@mui/icons-material";
+import { Box, Button, Chip, Dialog, DialogContent, Divider, IconButton, Skeleton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Chart from "react-apexcharts";
 import { useGetActiveUsersQuery } from "../../../services/dashboardApi";
 import type { ActiveUserPoint } from "../../../types/dashboard";
@@ -47,6 +47,7 @@ export default function DashboardActiveUsers() {
     const [primaryDate, setPrimaryDate] = useState<Dayjs | null>(today);
     const [compareDate, setCompareDate] = useState<Dayjs | null>(null);
     const [compareEnabled, setCompareEnabled] = useState(false);
+    const [expanded, setExpanded] = useState(false);
 
     const primaryDateStr = (primaryDate ?? today).format("YYYY-MM-DD");
     const compareDateStr = compareDate ? compareDate.format("YYYY-MM-DD") : undefined;
@@ -97,11 +98,22 @@ export default function DashboardActiveUsers() {
         return list;
     }, [effectivePrimary, effectiveCompare, primaryDate, compareDate, compareEnabled, today]);
 
-    const options: ApexCharts.ApexOptions = useMemo(() => ({
+    const buildOptions = useCallback((zoomable: boolean): ApexCharts.ApexOptions => ({
         chart: {
             type: "area",
-            toolbar: { show: false },
-            zoom: { enabled: false },
+            toolbar: {
+                show: zoomable,
+                tools: {
+                    download: false,
+                    selection: true,
+                    zoom: true,
+                    zoomin: true,
+                    zoomout: true,
+                    pan: true,
+                    reset: true,
+                },
+            },
+            zoom: { enabled: zoomable, type: "x", autoScaleYaxis: true },
             background: "transparent",
             animations: { enabled: false },
         },
@@ -124,7 +136,12 @@ export default function DashboardActiveUsers() {
         },
         xaxis: {
             type: "datetime",
-            labels: { show: false },
+            labels: {
+                show: zoomable,
+                style: { colors: theme.palette.text.secondary, fontSize: "11px" },
+                datetimeUTC: false,
+                format: "HH:mm",
+            },
             axisBorder: { show: false },
             axisTicks: { show: false },
             tooltip: { enabled: false },
@@ -163,6 +180,9 @@ export default function DashboardActiveUsers() {
             horizontalAlign: "right",
         },
     }), [theme, compareEnabled]);
+
+    const options = useMemo(() => buildOptions(false), [buildOptions]);
+    const expandedOptions = useMemo(() => buildOptions(true), [buildOptions]);
 
     const handleRefresh = () => {
         primaryQuery.refetch();
@@ -271,6 +291,19 @@ export default function DashboardActiveUsers() {
                             </IconButton>
                         </span>
                     </Tooltip>
+
+                    <Tooltip title="Expand chart">
+                        <span>
+                            <IconButton
+                                onClick={() => setExpanded(true)}
+                                disabled={isLoading}
+                                size="small"
+                                aria-label="Expand active users chart"
+                            >
+                                <Fullscreen />
+                            </IconButton>
+                        </span>
+                    </Tooltip>
                 </Stack>
             </Stack>
             <Divider className="my-4!" />
@@ -282,6 +315,36 @@ export default function DashboardActiveUsers() {
                     <Chart options={options} series={series} type="area" height={320} width="100%" />
                 )}
             </Box>
+
+            <Dialog
+                open={expanded}
+                onClose={() => setExpanded(false)}
+                maxWidth="lg"
+                fullWidth
+                aria-label="Active users expanded chart"
+            >
+                <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    sx={{ px: 3, pt: 2.5 }}
+                >
+                    <Stack direction="row" alignItems="center" gap={1.5} flexWrap="wrap">
+                        <Typography variant="h4" fontWeight={600}>
+                            Active Users
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                            Drag across the chart to zoom into a time range.
+                        </Typography>
+                    </Stack>
+                    <IconButton onClick={() => setExpanded(false)} size="small" aria-label="Close expanded chart">
+                        <Close />
+                    </IconButton>
+                </Stack>
+                <DialogContent>
+                    <Chart options={expandedOptions} series={series} type="area" height={520} width="100%" />
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 }

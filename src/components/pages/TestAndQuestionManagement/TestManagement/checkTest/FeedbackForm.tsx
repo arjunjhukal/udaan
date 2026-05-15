@@ -12,6 +12,9 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
     const dispatch = useAppDispatch();
     const [feedback, setFeedback] = useState<string>("");
     const { hours, minutes } = msToHMS(data?.timer || 0);
+    const isSubjective = data?.test_type === "subjective";
+    const timeTaken = data?.timer ? `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}` : "N/A";
+    const statusLabel = data?.status ? `${String(data.status).charAt(0).toUpperCase()}${String(data.status).slice(1)}` : "N/A";
     const [submitTestFeedback, isLoading] = useSubmitTestFeedbackMutation();
     const { data: feeback } = useGetTestFeedbackQuery({ id: Number(testId), resultId: Number(resultId) }, { skip: !testId || !resultId });
 
@@ -45,26 +48,55 @@ export default function FeedbackForm({ data, test, testId, resultId }: { data: S
             background: (theme) => theme.palette.gray.gray1
         }}>
             <Box className="mb-6 text-center">
-                <div className="chart__wrapper max-w-32 mx-auto mb-4">
-                    <PercentageDonutChart value={Number(data?.total_marks)} />
-                </div>
+                {isSubjective ? (
+                    <Box className="mb-4 mt-2 flex items-baseline justify-center gap-1">
+                        <Typography variant="h1" color="primary" fontWeight={600}>
+                            {data?.total_points ?? 0}
+                        </Typography>
+                        <Typography component="span" color="text.middle" sx={{ fontSize: '1.5rem', fontWeight: 600 }}>
+                            / {data?.full_mark ?? 0}
+                        </Typography>
+                    </Box>
+                ) : (
+                    <div className="chart__wrapper max-w-32 mx-auto mb-4">
+                        <PercentageDonutChart value={Number(data?.total_marks)} />
+                    </div>
+                )}
                 <Typography variant='body1' color='text.dark' className='font-medium!'>{test?.name}</Typography>
             </Box>
-            <Box className="p-4 rounded-lg flex justify-between items-center mb-4" sx={{
-                background: (theme) => theme.palette.primary.contrastText
-            }}>
-                <Box>
-                    <Typography variant='h4'>{(data?.test_type === "mcq" || data?.test_type === "omr") ? data?.total_correct : data?.total_attempted}/{data?.total_questions}</Typography>
-                    <Typography variant='subtitle2' color='text.middle'>{(data?.test_type === "mcq" || data?.test_type === "omr") ? "Correct Answer" : "Attempted Questions"}</Typography>
+            {isSubjective ? (
+                <Box className="grid grid-cols-2 gap-3 mb-4">
+                    {[
+                        { label: "Attempted", value: `${data?.total_attempted ?? 0}/${data?.total_questions ?? 0}` },
+                        { label: "Marks Obtained", value: `${data?.total_points ?? 0}/${data?.full_mark ?? 0}` },
+                        { label: "Status", value: statusLabel },
+                        { label: "Time Taken", value: timeTaken },
+                    ].map((stat) => (
+                        <Box key={stat.label} className="p-3 rounded-lg" sx={{
+                            background: (theme) => theme.palette.primary.contrastText
+                        }}>
+                            <Typography variant='h5'>{stat.value}</Typography>
+                            <Typography variant='subtitle2' color='text.middle'>{stat.label}</Typography>
+                        </Box>
+                    ))}
                 </Box>
-                <Divider orientation='vertical' />
-                <Box>
-                    <Typography variant="h4">
-                        {String(hours).padStart(2, "0")}:{String(minutes).padStart(2, "0")}
-                    </Typography>
-                    <Typography variant='subtitle2' color='text.middle'>Time Taken</Typography>
+            ) : (
+                <Box className="p-4 rounded-lg flex justify-between items-center mb-4" sx={{
+                    background: (theme) => theme.palette.primary.contrastText
+                }}>
+                    <Box>
+                        <Typography variant='h4'>{(data?.test_type === "mcq" || data?.test_type === "omr") ? data?.total_correct : data?.total_attempted}/{data?.total_questions}</Typography>
+                        <Typography variant='subtitle2' color='text.middle'>{(data?.test_type === "mcq" || data?.test_type === "omr") ? "Correct Answer" : "Attempted Questions"}</Typography>
+                    </Box>
+                    <Divider orientation='vertical' />
+                    <Box>
+                        <Typography variant="h4">
+                            {String(hours).padStart(2, "0")}:{String(minutes).padStart(2, "0")}
+                        </Typography>
+                        <Typography variant='subtitle2' color='text.middle'>Time Taken</Typography>
+                    </Box>
                 </Box>
-            </Box>
+            )}
             <Box>
                 <Typography variant='subtitle1' className='mb-2!'>Add Feedback</Typography>
                 <Box className="input__field rounded-md" sx={{

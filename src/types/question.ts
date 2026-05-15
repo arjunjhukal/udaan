@@ -300,7 +300,11 @@ export interface StudentSubmitTestProps {
     total_marks: number,
     score: number,
     test_type: TestTypeProps,
-    attempt_number: number | null
+    attempt_number: number | null,
+    /** Subjective result fields */
+    full_mark?: number,
+    pass_mark?: number,
+    total_points?: number,
 }
 
 export interface StudentSubmitTestList {
