@@ -304,7 +304,7 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                     <ListItem disablePadding className="menu__item">
                                         <ListItemButton
                                             onClick={() => navigate(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT)}
-                                            className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT) ? "active-nested" : ""}>
+                                            className={location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT) && !location.pathname.startsWith(PATH.TEST_QUESTION_MANAGEMENT.TEST.INDIVIDUAL_TEST.ROOT) ? "active-nested" : ""}>
                                             <ListItemText primary={t("menus.test_question_management.test.root")} />
                                         </ListItemButton>
                                     </ListItem>
@@ -339,7 +339,7 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                                 <ListItem disablePadding className="menu__item">
                                                     <ListItemButton
                                                         onClick={() => navigate(PATH.OMR.ROOT)}
-                                                        className={location.pathname === PATH.OMR.ROOT ? "active-nested" : ""}>
+                                                        className={location.pathname.startsWith(PATH.OMR.ROOT) && !location.pathname.startsWith(PATH.OMR.FORMAT.ROOT) ? "active-nested" : ""}>
                                                         <ListItemText primary="Sheet" />
                                                     </ListItemButton>
                                                 </ListItem>
