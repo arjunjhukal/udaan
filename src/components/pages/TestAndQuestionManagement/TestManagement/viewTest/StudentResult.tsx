@@ -274,15 +274,15 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 					</Typography>
 				),
 			},
-			{
-				header: () => <SortableHeader field="total_marks" label="Total Marks" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
-				accessorKey: "marks",
-				cell: ({ row }) => (
-					<Typography variant="subtitle1">
-						{row.original?.total_marks}
-					</Typography>
-				),
-			},
+			// {
+			// 	header: () => <SortableHeader field="total_marks" label="Total Marks" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+			// 	accessorKey: "marks",
+			// 	cell: ({ row }) => (
+			// 		<Typography variant="subtitle1">
+			// 			{row.original?.total_marks}
+			// 		</Typography>
+			// 	),
+			// },
 			{
 				header: () => <SortableHeader field="score" label="Score" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
 				accessorKey: "score",
