@@ -468,7 +468,7 @@
 // export default DrawingCanvas;
 
 
-import { Redo, Undo } from '@mui/icons-material';
+import { Fullscreen, FullscreenExit, Redo, Undo } from '@mui/icons-material';
 import { Box, Button, Typography } from '@mui/material';
 import { Brush2, Eraser, Trash } from 'iconsax-reactjs';
 import { type MouseEvent, type TouchEvent, useCallback, useEffect, useRef, useState } from 'react';
@@ -499,6 +499,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   const historyStepRefs = useRef<Record<number, number>>({});
   const initializedRefs = useRef<Record<number, boolean>>({});
   const drawingsRef = useRef<Record<number, string>>(value);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   /* -------------------- State -------------------- */
   const [tool, setTool] = useState<Tool>('pen');
@@ -507,9 +508,28 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   const [isDrawing, setIsDrawing] = useState(false);
   const [activeImageId, setActiveImageId] = useState<number | null>(null);
   const [drawings, setDrawings] = useState<Record<number, string>>(value);
+  const [zoom, setZoom] = useState(100);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [, forceUpdate] = useState(0); // For re-rendering on undo/redo
 
   const colors = ['#000000', '#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF'];
+
+  /* -------------------- Fullscreen Handling -------------------- */
+  useEffect(() => {
+    const handleFsChange = () => {
+      setIsFullscreen(document.fullscreenElement === containerRef.current);
+    };
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      containerRef.current?.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  };
 
   // Keep drawingsRef in sync
   useEffect(() => {
@@ -626,6 +646,18 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [images, initializeCanvas]); // Removed 'drawings' from dependencies
+
+  // Re-init canvases when zoom changes so internal resolution matches new display size
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      images.forEach((img) => {
+        if (imageRefs.current[img.id]) {
+          initializeCanvas(img.id);
+        }
+      });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [zoom, images, initializeCanvas]);
 
   /* -------------------- Coordinate Calculation -------------------- */
   const getCoordinates = (
@@ -793,8 +825,14 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   /* -------------------- Render -------------------- */
   return (
     <Box
+      ref={containerRef}
       className="rounded-md py-3 px-4"
-      sx={{ border: (t) => `1px solid ${t.palette.separator.dark}` }}
+      sx={{
+        border: (t) => `1px solid ${t.palette.separator.dark}`,
+        background: (t) => isFullscreen ? t.palette.background.default : 'transparent',
+        overflow: isFullscreen ? 'auto' : 'visible',
+        height: isFullscreen ? '100vh' : 'auto',
+      }}
     >
       <Typography variant="caption" color="text.middle" className="mb-4! block">
         Answer
@@ -854,6 +892,46 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
           <span className="text-sm whitespace-nowrap">{lineWidth}px</span>
         </div>
 
+        {/* Zoom */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm whitespace-nowrap">Zoom</span>
+          <input
+            type="range"
+            min={50}
+            max={250}
+            step={10}
+            value={zoom}
+            onChange={(e) => setZoom(+e.target.value)}
+            className="w-28"
+            title="Zoom answer images"
+          />
+          <span className="text-sm whitespace-nowrap min-w-[3ch] text-right">{zoom}%</span>
+          <Button
+            variant='contained'
+            color='primary'
+            size="small"
+
+            onClick={() => setZoom(100)}
+            title="Reset zoom"
+          >
+            <Typography variant="subtitle2" color='text.white'>Reset</Typography>
+          </Button>
+        </div>
+
+        {/* Fullscreen */}
+        <Button
+          variant='contained'
+          color='primary'
+          onClick={toggleFullscreen}
+          className="p-2 rounded hover:bg-gray-200 transition-colors flex items-center gap-1"
+          title={isFullscreen ? 'Exit fullscreen' : 'Go fullscreen'}
+        >
+          {isFullscreen ? <FullscreenExit /> : <Fullscreen />}
+          <Typography variant="subtitle2" color='text.white'>
+            {isFullscreen ? 'Exit Fullscreen' : 'Full Screen'}
+          </Typography>
+        </Button>
+
         {/* Actions */}
         <div className="flex gap-2 ml-auto">
           <Button
@@ -900,10 +978,11 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
       {/* ===== Scrollable Canvas Area ===== */}
       <Box
         sx={{
-          maxHeight: 'calc(100vh - 350px)',
+          maxHeight: isFullscreen ? 'calc(100vh - 140px)' : 'calc(100vh - 350px)',
           overflow: 'auto',
           '&::-webkit-scrollbar': {
             width: '8px',
+            height: '8px',
           },
           '&::-webkit-scrollbar-track': {
             background: '#f1f1f1',
@@ -922,6 +1001,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
           <div
             key={img.id}
             className="mb-8 relative"
+            style={{ width: `${zoom}%` }}
             onClick={() => setActiveImageId(img.id)}
           >
             {/* Image */}
