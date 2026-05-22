@@ -94,6 +94,13 @@ export default function LiveClassCard({ liveClass }: { liveClass: LiveClassPaylo
                     <Typography variant='subtitle2' color='text.middle'>{liveClass.active_students} students active</Typography>
                 </div> : ""}
             </div>
+            {liveClass.status === "ended" && (liveClass.app_join_count ?? 0) > 0 ? (
+                <div className="feature flex gap-1 items-center">
+                    <Typography variant='caption' color='text.middle'>
+                        {liveClass.app_join_count} joined via app
+                    </Typography>
+                </div>
+            ) : ""}
             <Button
                 variant="contained"
                 color="primary"

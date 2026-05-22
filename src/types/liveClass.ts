@@ -35,6 +35,7 @@ export interface LiveClassPayload {
     active_students?: number;
     enrolled_students?: number;
     participants_count?: number;
+    app_join_count?: number;
 }
 
 

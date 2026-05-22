@@ -182,6 +182,17 @@ export default function AllLiveClassList() {
         </Typography>
       ),
     },
+    ...(activeTab === "ended"
+      ? [{
+        header: () => <SortableHeader field="app_join_count" label="Joined via App" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+        accessorKey: "app_join_count",
+        cell: ({ row }: { row: { original: LiveClassPayload } }) => (
+          <Typography fontWeight={500} className="capitalize">
+            {row.original.app_join_count || 0} Students
+          </Typography>
+        ),
+      } as ColumnDef<LiveClassPayload>]
+      : []),
     {
       header: () => <SortableHeader field="status" label="Status" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
       accessorKey: "status",

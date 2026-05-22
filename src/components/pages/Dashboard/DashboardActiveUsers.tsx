@@ -1,11 +1,44 @@
 import { Add, Close, Fullscreen, Refresh } from "@mui/icons-material";
-import { Box, Button, Chip, Dialog, DialogContent, Divider, IconButton, Skeleton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
+import { Box, Button, Chip, Dialog, DialogContent, Divider, IconButton, MenuItem, Select, Skeleton, Stack, Tooltip, Typography, useTheme } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { useCallback, useMemo, useState } from "react";
 import Chart from "react-apexcharts";
 import { useGetActiveUsersQuery } from "../../../services/dashboardApi";
 import type { ActiveUserPoint } from "../../../types/dashboard";
 import MakuraDatePicker from "../../atoms/MakuraDatePicker";
+
+type BucketMinutes = 5 | 10 | 15 | 30 | 60;
+
+const BUCKET_OPTIONS: { value: BucketMinutes; label: string }[] = [
+    { value: 5, label: "5 min" },
+    { value: 10, label: "10 min" },
+    { value: 15, label: "15 min" },
+    { value: 30, label: "30 min" },
+    { value: 60, label: "1 hr" },
+];
+
+// Roll up raw points into buckets of `bucketMinutes` width, anchored at the
+// day boundary. For each bucket we keep the peak count seen — `Active Users`
+// is a level, not a flow, so max-per-bucket is the right summary.
+function aggregateByBucket(
+    points: ActiveUserPoint[],
+    bucketMinutes: number,
+    dateStr: string,
+): ActiveUserPoint[] {
+    if (points.length === 0 || bucketMinutes <= 5) return points;
+    const base = dayjs(dateStr).startOf("day").valueOf();
+    const bucketMs = bucketMinutes * 60 * 1000;
+    const buckets = new Map<number, number>();
+    for (const p of points) {
+        const t = new Date(p.timestamp).getTime();
+        const bucketStart = Math.floor((t - base) / bucketMs) * bucketMs + base;
+        const prev = buckets.get(bucketStart);
+        buckets.set(bucketStart, prev === undefined ? p.count : Math.max(prev, p.count));
+    }
+    return Array.from(buckets.entries())
+        .sort(([a], [b]) => a - b)
+        .map(([t, count]) => ({ timestamp: new Date(t).toISOString(), count }));
+}
 
 const SAMPLE_ANCHOR = "2000-01-01T";
 
@@ -48,6 +81,7 @@ export default function DashboardActiveUsers() {
     const [compareDate, setCompareDate] = useState<Dayjs | null>(null);
     const [compareEnabled, setCompareEnabled] = useState(false);
     const [expanded, setExpanded] = useState(false);
+    const [bucketMinutes, setBucketMinutes] = useState<BucketMinutes>(5);
 
     const primaryDateStr = (primaryDate ?? today).format("YYYY-MM-DD");
     const compareDateStr = compareDate ? compareDate.format("YYYY-MM-DD") : undefined;
@@ -82,21 +116,30 @@ export default function DashboardActiveUsers() {
         [compareEnabled, compareDateStr, hasRealCompare, comparePoints, isSample]
     );
 
+    const aggregatedPrimary = useMemo(
+        () => aggregateByBucket(effectivePrimary, bucketMinutes, primaryDateStr),
+        [effectivePrimary, bucketMinutes, primaryDateStr],
+    );
+    const aggregatedCompare = useMemo(
+        () => aggregateByBucket(effectiveCompare, bucketMinutes, compareDateStr ?? primaryDateStr),
+        [effectiveCompare, bucketMinutes, compareDateStr, primaryDateStr],
+    );
+
     const series = useMemo(() => {
         const list: { name: string; data: { x: number; y: number }[] }[] = [
             {
                 name: (primaryDate ?? today).format("MMM D, YYYY"),
-                data: toSeriesData(effectivePrimary),
+                data: toSeriesData(aggregatedPrimary),
             },
         ];
         if (compareEnabled && compareDate) {
             list.push({
                 name: compareDate.format("MMM D, YYYY"),
-                data: toSeriesData(effectiveCompare),
+                data: toSeriesData(aggregatedCompare),
             });
         }
         return list;
-    }, [effectivePrimary, effectiveCompare, primaryDate, compareDate, compareEnabled, today]);
+    }, [aggregatedPrimary, aggregatedCompare, primaryDate, compareDate, compareEnabled, today]);
 
     const buildOptions = useCallback((zoomable: boolean): ApexCharts.ApexOptions => ({
         chart: {
@@ -258,6 +301,24 @@ export default function DashboardActiveUsers() {
                                 placeholder="Select date"
                             />
                         </Box>
+                    </Stack>
+
+                    <Stack direction="row" alignItems="center" gap={0.5}>
+                        <Typography variant="caption" color="text.secondary">
+                            Interval:
+                        </Typography>
+                        <Select
+                            size="small"
+                            value={bucketMinutes}
+                            onChange={(e) => setBucketMinutes(Number(e.target.value) as BucketMinutes)}
+                            sx={{ minWidth: 100 }}
+                        >
+                            {BUCKET_OPTIONS.map((opt) => (
+                                <MenuItem key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
                     </Stack>
 
                     {!compareEnabled && (
