@@ -3,6 +3,10 @@ import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [react()],
+  esbuild: {
+    drop: ['debugger'],
+    pure: ['console.log', 'console.debug'],
+  },
   optimizeDeps: {
     include: [
       "@ckeditor/ckeditor5-react",

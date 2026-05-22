@@ -8,6 +8,7 @@ import { useDeleteRoleMutation, useGetAllRolesQuery } from '../../../../services
 import { showToast } from '../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../store/hook';
 import type { RoleProps } from '../../../../types/roleAndPermission';
+import { getApiErrorMessage } from '../../../../utils/apiError';
 import { formatDateForDisplay } from '../../../../utils/dateFormat';
 import useServerSort from '../../../../utils/useServerSort';
 import Actions from '../../../molecules/Action';
@@ -46,8 +47,8 @@ export default function AllRolesTable() {
 
     const handleSelectAll = (checked: boolean) => {
         if (checked) {
-            const allIndices = new Set(roles.map((_, index) => index));
-            setSelectedRows(allIndices);
+            const allIds = new Set<number | string>(roles.map((r) => r.id ?? ''));
+            setSelectedRows(allIds);
         } else {
             setSelectedRows(new Set());
         }
@@ -89,10 +90,10 @@ export default function AllRolesTable() {
             setSelectedRows(new Set());
             setOpenConfirm(false);
             setRolesToDelete([]);
-        } catch (e: any) {
+        } catch (e) {
             dispatch(
                 showToast({
-                    message: e?.data?.message || "Unable to delete Role",
+                    message: getApiErrorMessage(e, "Unable to delete Role"),
                     severity: "error",
                 })
             );
@@ -170,11 +171,6 @@ export default function AllRolesTable() {
         },
     ], [selectedRows, isAllSelected, isSomeSelected, theme, qp, sort])
 
-
-
-    console.log({
-        rolesToDelete, selectedRows
-    })
     return (
         <div className='roles__root h-full flex flex-col justify-start'>
             <div className="page__top">
