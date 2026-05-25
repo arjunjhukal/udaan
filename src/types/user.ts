@@ -21,6 +21,8 @@ export interface RegisterUserProps {
 	enrolled_courses?: number;
 	dob?: string | null;
 	temporary_address?: string;
+	live_preview?: File | null;
+	live_preview_url?: string;
 }
 
 export const RegisterUserInitialData = {
@@ -39,6 +41,8 @@ export const RegisterUserInitialData = {
 	dob: null,
 	address: "",
 	temporary_address: "",
+	live_preview: null,
+	live_preview_url: "",
 }
 
 export interface LoginUserProps {

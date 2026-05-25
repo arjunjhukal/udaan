@@ -5,7 +5,7 @@ import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { PATH } from "../../../routes/PATH";
-import { useGetAllRolesQuery } from "../../../services/roleAndPermissionApi";
+import { useGetAllRolesQuery, useGetRoleByIdQuery } from "../../../services/roleAndPermissionApi";
 import { useCreateUserMutation, useEditUserMutation, useGetUserByIdQuery } from "../../../services/userApi";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
@@ -116,6 +116,12 @@ export default function UserManagementForm() {
             if (values.profile_url) {
                 formData.append("profile_url", values.profile_url)
             }
+            if (values.live_preview instanceof File) {
+                formData.append("live_preview", values.live_preview)
+            }
+            if (values.live_preview_url) {
+                formData.append("live_preview_url", values.live_preview_url)
+            }
             if (values.dob) {
                 const dateStr = typeof values.dob === 'string'
                     ? values.dob
@@ -179,6 +185,26 @@ export default function UserManagementForm() {
         formik.setFieldValue('profile', file);
         formik.setFieldTouched('profile', true);
     };
+
+    const handleLivePreviewChange = (file: File | null) => {
+        formik.setFieldValue('live_preview', file);
+        formik.setFieldTouched('live_preview', true);
+    };
+
+    // Fetch the selected role's full permission set so the live-preview upload
+    // only shows for roles that actually have any live_classes permission.
+    const selectedRoleId = formik.values.role?.id;
+    const { data: selectedRoleData } = useGetRoleByIdQuery(
+        { id: String(selectedRoleId ?? "") },
+        { skip: !selectedRoleId }
+    );
+    const showLivePreview = Boolean(
+        selectedRoleData?.data?.permissions?.some(
+            (p) =>
+                p.module === "live_classes" &&
+                (p.view || p.add || p.edit || p.delete || p.download)
+        )
+    );
 
     // Handle cancel with dirty check
     const handleCancel = () => {
@@ -409,6 +435,22 @@ export default function UserManagementForm() {
                             </div>
                         </div>
                     </div>
+
+                    {showLivePreview && (
+                        <div className="flex flex-col gap-4 lg:gap-6 md:grid md:grid-cols-2 mb-6">
+                            <div className="col-span-1">
+                                <FileDragDrop
+                                    label="Live Preview Image"
+                                    onFileChange={handleLivePreviewChange}
+                                    initialFile={formik.values.live_preview}
+                                    initialPreview={formik.values.live_preview_url}
+                                />
+                                <Typography variant="caption" sx={{ color: theme.palette.text.secondary, display: "block", mb: 1 }}>
+                                    Shown when this teacher appears in live class cards. Recommended: 600×600 or larger.
+                                </Typography>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <Box

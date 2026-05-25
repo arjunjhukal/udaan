@@ -17,23 +17,26 @@ const BUCKET_OPTIONS: { value: BucketMinutes; label: string }[] = [
     { value: 60, label: "1 hr" },
 ];
 
-// Roll up raw points into buckets of `bucketMinutes` width, anchored at the
-// day boundary. For each bucket we keep the peak count seen — `Active Users`
-// is a level, not a flow, so max-per-bucket is the right summary.
+// Roll up raw points into trailing windows of `bucketMinutes` width, anchored
+// at the day boundary. The plotted timestamp is the END of the window — so a
+// point at 10:00 with a 10-min interval represents the peak count seen
+// between 09:50 and 10:00. We keep peak (max) per window because `Active
+// Users` is a level, not a flow.
 function aggregateByBucket(
     points: ActiveUserPoint[],
     bucketMinutes: number,
     dateStr: string,
 ): ActiveUserPoint[] {
-    if (points.length === 0 || bucketMinutes <= 5) return points;
+    if (points.length === 0) return [];
     const base = dayjs(dateStr).startOf("day").valueOf();
     const bucketMs = bucketMinutes * 60 * 1000;
     const buckets = new Map<number, number>();
     for (const p of points) {
         const t = new Date(p.timestamp).getTime();
         const bucketStart = Math.floor((t - base) / bucketMs) * bucketMs + base;
-        const prev = buckets.get(bucketStart);
-        buckets.set(bucketStart, prev === undefined ? p.count : Math.max(prev, p.count));
+        const bucketEnd = bucketStart + bucketMs;
+        const prev = buckets.get(bucketEnd);
+        buckets.set(bucketEnd, prev === undefined ? p.count : Math.max(prev, p.count));
     }
     return Array.from(buckets.entries())
         .sort(([a], [b]) => a - b)
