@@ -9,7 +9,7 @@ import {
     ListItemText,
     Tooltip,
 } from "@mui/material";
-import { AttachSquare, Brodcast, Mobile, Setting2 } from "iconsax-reactjs";
+import { Activity, AttachSquare, Brodcast, Mobile, Setting2 } from "iconsax-reactjs";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -141,6 +141,21 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                 </svg>
                             </ListItemIcon>
                             {!collapsed && <ListItemText primary={t("menus.dashboard")} />}
+                        </ListItemButton>
+                    </Tooltip>
+                </ListItem>
+
+                <ListItem disablePadding className="menu__item">
+                    <Tooltip title={collapsed ? "Live Analytics" : ""} placement="right" arrow>
+                        <ListItemButton
+                            onClick={() => navigate(PATH.LIVE_ANALYTICS.ROOT)}
+                            className={isActive(PATH.LIVE_ANALYTICS.ROOT) ? "active" : ""}
+                            sx={btnSx}
+                        >
+                            <ListItemIcon sx={iconSx}>
+                                <Activity size={20} color="#9CA3B0" />
+                            </ListItemIcon>
+                            {!collapsed && <ListItemText primary="Live Analytics" />}
                         </ListItemButton>
                     </Tooltip>
                 </ListItem>

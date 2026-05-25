@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 // Pages & Layouts
 import App from "../App";
+import LiveAnalyticsPage from "../components/pages/LiveAnalytics";
 import CategoryManagementRoot from "../components/pages/CategoryManagement";
 import AllCategories from "../components/pages/CategoryManagement/allCategory";
 
@@ -141,6 +142,10 @@ const router = createBrowserRouter([
 			{
 				path: PATH.DASHBOARD.ROOT,
 				element: <App />,
+			},
+			{
+				path: PATH.LIVE_ANALYTICS.ROOT,
+				element: <LiveAnalyticsPage />,
 			},
 			{
 				element: <Unauthorized permissions={["add_courses", "edit_courses", "delete_courses", "view_courses"]}><CourseManagementRoot /></Unauthorized>,

@@ -336,6 +336,9 @@ export const PATH = {
 			ROOT: "/activity-log/archived"
 		}
 	},
+	LIVE_ANALYTICS: {
+		ROOT: "/live-analytics",
+	},
 	MEDIA_MANAGEMENT: {
 		ROOT: "/medias"
 	},
