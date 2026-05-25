@@ -35,7 +35,12 @@ const validationSchema = (id?: string) => {
             .matches(/^[0-9]{10}$/, "Phone number must be exactly 10 digits")
             .length(10, "Phone number must be exactly 10 digits"),
 
-        role: Yup.mixed(),
+        role: Yup.object({
+            id: Yup.string().required("Role is required"),
+        })
+            .nullable()
+            .required("Role is required")
+            .test("has-id", "Role is required", (val) => Boolean(val && (val as { id?: string }).id)),
         designation: Yup.string()
             .required("Designation is required"),
 
