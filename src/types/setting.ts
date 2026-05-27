@@ -220,3 +220,8 @@ export interface SmsGatewaySettingProps {
     api_key: string;
     sender_id: string;
 }
+
+export interface OmrSettingProps {
+    max_attempt: number | null;
+    override_all: boolean;
+}

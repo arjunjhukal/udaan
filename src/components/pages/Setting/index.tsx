@@ -6,7 +6,7 @@ import {
 import {
     Book1,
     Card,
-    Category, Devices, DirectboxNotif, Global,
+    Category, ClipboardText, Devices, DirectboxNotif, Global,
     Lock, LoginCurve, MessageText1, Mobile, Profile, Setting2,
     Setting4, Video, Wallet,
 } from "iconsax-reactjs";
@@ -32,6 +32,7 @@ const MENU_GROUPS = [
             { label: "Course Setting", url: PATH.SETTINGS.SYSTEM.COURSE_SETTING.ROOT, icon: Book1 },
             { label: "Login Type", url: PATH.SETTINGS.SYSTEM.LOGIN_TYPE.ROOT, icon: LoginCurve },
             { label: "Controls", url: PATH.SETTINGS.SYSTEM.CONTROLS.ROOT, icon: Setting4 },
+            { label: "OMR Setting", url: PATH.SETTINGS.SYSTEM.OMR_SETTING.ROOT, icon: ClipboardText },
         ],
     },
     {

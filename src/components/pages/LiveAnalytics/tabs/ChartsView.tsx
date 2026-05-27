@@ -287,7 +287,7 @@ export default function ChartsView({ payload }: Props) {
 
             {/* Row 2 — CPU load and resource usage */}
             <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 2 }}>
-                <Section title="CPU Load Trend" description="1m / 5m / 15m averages" tone="primary" icon={<Activity size={18} variant="Bold" />}>
+                <Section title="CPU Load Trend" description={`1m / 5m / 15m averages${payload.system?.cpu_count ? ` · ${payload.system.cpu_count} cores` : ""}`} tone="primary" icon={<Activity size={18} variant="Bold" />}>
                     <ReactApexChart
                         options={{
                             ...baseChart,
@@ -307,6 +307,28 @@ export default function ChartsView({ payload }: Props) {
                                 },
                             },
                             grid: { borderColor: theme.palette.divider, strokeDashArray: 4 },
+                            annotations: payload.system?.cpu_count
+                                ? {
+                                    yaxis: [
+                                        {
+                                            y: payload.system.cpu_count,
+                                            borderColor: theme.palette.warning.main,
+                                            strokeDashArray: 4,
+                                            label: {
+                                                text: `${payload.system.cpu_count} cores (full load)`,
+                                                position: "right",
+                                                offsetX: -8,
+                                                offsetY: -6,
+                                                style: {
+                                                    color: "#fff",
+                                                    background: theme.palette.warning.main,
+                                                    fontSize: "10px",
+                                                },
+                                            },
+                                        },
+                                    ],
+                                }
+                                : {},
                         }}
                         series={cpuLoadBars.series}
                         type="bar"
@@ -314,7 +336,7 @@ export default function ChartsView({ payload }: Props) {
                     />
                 </Section>
 
-                <Section title="Resource Usage" description="% used per resource (color = severity)" tone="warning" icon={<Cpu size={18} variant="Bold" />}>
+                <Section title="Resource Usage" description="% used per resource · orange = warn (65%) · red = critical (85%)" tone="warning" icon={<Cpu size={18} variant="Bold" />}>
                     <ReactApexChart
                         options={{
                             ...baseChart,
@@ -336,6 +358,42 @@ export default function ChartsView({ payload }: Props) {
                             },
                             legend: { show: false },
                             grid: { borderColor: theme.palette.divider, strokeDashArray: 4 },
+                            annotations: {
+                                yaxis: [
+                                    {
+                                        y: 65,
+                                        borderColor: theme.palette.warning.main,
+                                        strokeDashArray: 4,
+                                        label: {
+                                            text: "Warning 65%",
+                                            position: "right",
+                                            offsetX: -8,
+                                            offsetY: -6,
+                                            style: {
+                                                color: "#fff",
+                                                background: theme.palette.warning.main,
+                                                fontSize: "10px",
+                                            },
+                                        },
+                                    },
+                                    {
+                                        y: 85,
+                                        borderColor: theme.palette.error.main,
+                                        strokeDashArray: 4,
+                                        label: {
+                                            text: "Critical 85%",
+                                            position: "right",
+                                            offsetX: -8,
+                                            offsetY: -6,
+                                            style: {
+                                                color: "#fff",
+                                                background: theme.palette.error.main,
+                                                fontSize: "10px",
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
                         }}
                         series={resourceBars.series}
                         type="bar"

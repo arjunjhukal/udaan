@@ -112,7 +112,8 @@ export interface TestProps {
     is_individual_test: boolean;
     discount: number | null;
     discount_type: DiscountTypeProps;
-    omr_format?: number | null
+    omr_format?: number | null;
+    max_attempt?: number | null;
 }
 
 export const TestInitialState: TestProps = {
@@ -138,6 +139,7 @@ export const TestInitialState: TestProps = {
     discount: null,
     discount_type: "percentage",
     omr_format: null,
+    max_attempt: null,
 };
 
 export interface TestList {

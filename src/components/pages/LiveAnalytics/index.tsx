@@ -1,25 +1,48 @@
 import { Box, Button, CircularProgress, Typography, useTheme } from "@mui/material";
 import { alpha } from "@mui/material/styles";
 import { Refresh } from "iconsax-reactjs";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useGetLiveAnalyticsQuery } from "../../../services/liveAnalyticsApi";
 import TabController from "../../molecules/TabController";
 import PageHeader from "../../organism/PageHeader";
 import ChartsView from "./tabs/ChartsView";
 import DetailedView from "./tabs/DetailedView";
+import TrendsView, { type SnapshotPoint } from "./tabs/TrendsView";
 import { timeAgo } from "./utils";
 
-type TabKey = "detailed" | "charts";
+type TabKey = "detailed" | "charts" | "trends";
 
 export default function LiveAnalyticsPage() {
     const theme = useTheme();
     const [activeTab, setActiveTab] = useState<TabKey>("detailed");
+    const [history, setHistory] = useState<SnapshotPoint[]>([]);
 
     const { data, isLoading, isFetching, refetch, error } = useGetLiveAnalyticsQuery();
 
     const payload = data?.data;
     const generatedAt = payload?.generated_at;
     const lastUpdatedLabel = useMemo(() => timeAgo(generatedAt), [generatedAt]);
+
+    useEffect(() => {
+        if (!payload) return;
+        const redisHits = payload.redis?.keyspace_hits ?? 0;
+        const redisMisses = payload.redis?.keyspace_misses ?? 0;
+        const redisTotal = redisHits + redisMisses;
+        const pt: SnapshotPoint = {
+            ts: payload.generated_at,
+            rps: payload.request_rate?.rps ?? 0,
+            activeUsers: payload.users?.active_total ?? 0,
+            cpuPct: payload.system?.load_per_core_pct ?? 0,
+            memPct: payload.system?.mem_used_pct ?? 0,
+            nginxActive: payload.nginx?.active_connections ?? 0,
+            queueTotal: payload.queues?.total ?? 0,
+            redisHitRate: redisTotal === 0 ? 0 : Math.round((redisHits / redisTotal) * 100),
+        };
+        setHistory((prev) => {
+            if (prev.some((p) => p.ts === pt.ts)) return prev;
+            return [...prev.slice(-49), pt];
+        });
+    }, [payload]);
 
     return (
         <Box className="h-full overflow-auto pr-2">
@@ -62,6 +85,7 @@ export default function LiveAnalyticsPage() {
                 options={[
                     { value: "detailed", label: "Detailed" },
                     { value: "charts", label: "Charts" },
+                    { value: "trends", label: "Trends & Comparison" },
                 ]}
                 currentActive={activeTab}
                 setActiveTab={(v) => setActiveTab(v)}
@@ -94,6 +118,7 @@ export default function LiveAnalyticsPage() {
 
             {payload && activeTab === "detailed" && <DetailedView payload={payload} />}
             {payload && activeTab === "charts" && <ChartsView payload={payload} />}
+            {payload && activeTab === "trends" && <TrendsView payload={payload} history={history} />}
         </Box>
     );
 }

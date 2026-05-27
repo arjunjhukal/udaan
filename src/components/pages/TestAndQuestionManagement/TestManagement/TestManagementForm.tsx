@@ -90,7 +90,8 @@ export default function TestManagementForm() {
                 rules: test.rules,
                 discount: test.discount,
                 discount_type: test.discount_type,
-                omr_format: test.omr_format
+                omr_format: test.omr_format,
+                max_attempt: test.max_attempt ?? null,
             };
         }
         return TestInitialState;
@@ -361,6 +362,28 @@ export default function TestManagementForm() {
                         )}
                     </div>
                 ) : ""}
+
+                {formik.values.test_type === "omr" && (
+                    <div className="col-span-1">
+                        <div className="input__field">
+                            <InputLabel>Max Attempts (leave blank to use global setting)</InputLabel>
+                            <OutlinedInput
+                                fullWidth
+                                name="max_attempt"
+                                type="number"
+                                inputProps={{ min: 0, step: 1 }}
+                                value={formik.values.max_attempt === null || formik.values.max_attempt === undefined ? "" : formik.values.max_attempt}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    formik.setFieldValue("max_attempt", val === "" ? null : Number(val));
+                                }}
+                                onBlur={formik.handleBlur}
+                                placeholder="e.g. 3  (0 = unlimited)"
+                            />
+                        </div>
+                    </div>
+                )}
+
                 <div className="col-span-1">
                     <div className="input__field">
                         <InputLabel className="required">Total No. of Questions</InputLabel>

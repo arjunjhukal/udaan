@@ -65,6 +65,7 @@ import KhaltiSettingRoot from "../components/pages/Setting/ApiSetting/Khalti";
 import SmsGatewayRoot from "../components/pages/Setting/ApiSetting/SmsGateway";
 import ZoomSettingRoot from "../components/pages/Setting/ApiSetting/Zoom";
 import CourseSettingRoot from "../components/pages/Setting/CourseSetting";
+import OmrSettingRoot from "../components/pages/Setting/OmrSetting";
 import EmailTemplatesRoot from "../components/pages/Setting/EmailTemplates";
 import LoginTypeRoot from "../components/pages/Setting/LoginType";
 import SiteInfoRoot from "../components/pages/Setting/SiteInfo";
@@ -384,6 +385,7 @@ const router = createBrowserRouter([
 					{ path: PATH.SETTINGS.API.KHALTI.ROOT, element: <KhaltiSettingRoot /> },
 					{ path: PATH.SETTINGS.API.SMS_GATEWAY.ROOT, element: <SmsGatewayRoot /> },
 					{ path: PATH.SETTINGS.SYSTEM.CONTROLS.ROOT, element: <ControlsRoot /> },
+					{ path: PATH.SETTINGS.SYSTEM.OMR_SETTING.ROOT, element: <OmrSettingRoot /> },
 				],
 			},
 			{

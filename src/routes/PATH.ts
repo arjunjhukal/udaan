@@ -313,6 +313,9 @@ export const PATH = {
 			CONTROLS: {
 				ROOT: "/settings/system/controls"
 			},
+			OMR_SETTING: {
+				ROOT: "/settings/system/omr-setting"
+			},
 		},
 		API: {
 			ROOT: "/settings/api",

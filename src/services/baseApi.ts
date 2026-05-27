@@ -58,6 +58,7 @@ export const baseApi = createApi({
         "ApiSetting",
         "ZoomAccount",
         "QuestionLabel",
+        "OmrSetting",
     ],
     endpoints: () => ({}),
 });

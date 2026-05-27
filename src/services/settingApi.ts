@@ -10,6 +10,7 @@ import type {
     KhaltiSettingProps,
     LinkedDeviceList,
     LoginTypeSettingProps,
+    OmrSettingProps,
     SmsGatewaySettingProps,
     SmtpSettingProps,
     ThemeSettingProps,
@@ -199,6 +200,14 @@ export const settingApi = baseApi.injectEndpoints({
             query: (body) => ({ url: `/admin/settings/api/sms-gateway`, method: "POST", body }),
             invalidatesTags: ["ApiSetting"],
         }),
+        getOmrSettings: builder.query<GlobalResponse & { data: OmrSettingProps }, void>({
+            query: () => ({ url: `/admin/settings/omr`, method: "GET" }),
+            providesTags: ["OmrSetting"],
+        }),
+        updateOmrSettings: builder.mutation<GlobalResponse, OmrSettingProps>({
+            query: (body) => ({ url: `/admin/settings/omr`, method: "POST", body }),
+            invalidatesTags: ["OmrSetting"],
+        }),
     }),
 });
 
@@ -234,4 +243,6 @@ export const {
     useToggleKhaltiActiveMutation,
     useGetSmsGatewaySettingsQuery,
     useUpdateSmsGatewaySettingsMutation,
+    useGetOmrSettingsQuery,
+    useUpdateOmrSettingsMutation,
 } = settingApi;
