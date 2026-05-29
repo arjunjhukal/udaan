@@ -3,15 +3,21 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useGetTestByIdQuery, useGetTestOverviewQuery, useGetTestQuestionsQuery } from "../../../../../services/questionApi";
 import { renderHtml } from "../../../../../utils/renderHtml";
+import TablePagination from "../../../../molecules/Table/Pagination";
 import StudentResult from "./StudentResult";
 import TestSampleForm from "./TestSampleForm";
 
 export default function ViewTestRoot() {
     const theme = useTheme();
     const { id } = useParams();
+    const [questionQp, setQuestionQp] = useState({ pageIndex: 1, pageSize: 10 });
     const { data } = useGetTestByIdQuery({ id: Number(id) }, { skip: !id });
     const { data: overview } = useGetTestOverviewQuery({ id: Number(id) }, { skip: !id });
-    const { data: questions } = useGetTestQuestionsQuery({ id: Number(id) }, { skip: !id });
+    const { data: questions } = useGetTestQuestionsQuery(
+        { id: Number(id), pageIndex: questionQp.pageIndex, pageSize: questionQp.pageSize },
+        { skip: !id },
+    );
+    const questionPagination = questions?.data?.pagination;
     const [activeTab, setActiveTab] = useState("results");
 
     const overviewListing = [
@@ -108,7 +114,7 @@ export default function ViewTestRoot() {
 
 
     return (
-        <div className="single__test__root">
+        <div className="single__test__root h-full">
             <div className="flex flex-col gap-4 sm:grid sm:grid-cols-2 md:grid-cols-3 2xl:grid-cols-5">
                 {overviewListing.map((overview) => (
                     <Box
@@ -166,18 +172,17 @@ export default function ViewTestRoot() {
             </List>
 
             {activeTab === "questions" && (
-                <div className="question__wrapper mt-8">
+                <div className="question__wrapper h-full mt-8">
                     <Box sx={{
-                        maxHeight: "calc(100vh - 540px)",
+                        // maxHeight: "calc(100vh - 540px)",
                         overflowY: "auto",
                         pr: 3,
                     }}>
 
-                        {/* <InfiniteScroll> */}
                         {questions?.data?.data.length ? questions?.data?.data.map((question, index) => (
                             <Box className="question__box pb-4 mb-4 lg:pb-8 lg:mb-8 border-b last:border-b-0 last:mb-0 last:pb-0" key={question.id} sx={{ borderColor: (theme) => theme.palette.separator.dark }}>
                                 <div className="flex justify-between items-center">
-                                    <Typography className="mb-6!" variant="body2">Question {index + 1} of {questions?.data?.data?.length}</Typography>
+                                    <Typography className="mb-6!" variant="body2">Question {(questionQp.pageIndex - 1) * questionQp.pageSize + index + 1} of {questionPagination?.total ?? questions?.data?.data?.length}</Typography>
                                     <Typography className="mb-6! flex gap-2 items-center" variant="subtitle1">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                                             <path d="M17.7095 15.3914L16.3345 15.7164C16.0262 15.7914 15.7845 16.0248 15.7178 16.3331L15.4262 17.5581C15.2678 18.2248 14.4178 18.4331 13.9762 17.9081L11.4845 15.0414C11.2845 14.8081 11.3928 14.4414 11.6928 14.3664C13.1678 14.0081 14.4928 13.1831 15.4678 12.0081C15.6262 11.8164 15.9095 11.7914 16.0845 11.9664L17.9345 13.8164C18.5678 14.4498 18.3428 15.2414 17.7095 15.3914Z" fill="#F59F0A" />
@@ -195,8 +200,14 @@ export default function ViewTestRoot() {
                                 </div>
                             </Box>
                         )) : ""}
-                        {/* </InfiniteScroll> */}
+
                     </Box>
+                    <TablePagination
+                        qp={questionQp}
+                        setQp={setQuestionQp}
+                        totalPages={questionPagination?.total_pages || 0}
+                        totalRecords={questionPagination?.total}
+                    />
                 </div>
             )}
             {activeTab === "results" && <StudentResult id={id || ""} testType={data?.data?.test_type} />}

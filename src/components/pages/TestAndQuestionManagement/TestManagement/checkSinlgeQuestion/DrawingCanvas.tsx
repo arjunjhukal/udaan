@@ -468,10 +468,10 @@
 // export default DrawingCanvas;
 
 
-import { Fullscreen, FullscreenExit, Redo, Undo } from '@mui/icons-material';
-import { Box, Button, Typography } from '@mui/material';
+import { Fullscreen, FullscreenExit, Redo, RotateLeft, RotateRight, Undo } from '@mui/icons-material';
+import { Box, Button, IconButton, Typography } from '@mui/material';
 import { Brush2, Eraser, Trash } from 'iconsax-reactjs';
-import { type MouseEvent, type TouchEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { type CSSProperties, type MouseEvent, type TouchEvent, useCallback, useEffect, useRef, useState } from 'react';
 
 type Tool = 'pen' | 'eraser';
 
@@ -510,7 +510,17 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   const [drawings, setDrawings] = useState<Record<number, string>>(value);
   const [zoom, setZoom] = useState(100);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [rotations, setRotations] = useState<Record<number, number>>({});
+  const [naturalDims, setNaturalDims] = useState<Record<number, { w: number; h: number }>>({});
   const [, forceUpdate] = useState(0); // For re-rendering on undo/redo
+
+  const rotateImage = (imageId: number, direction: 'cw' | 'ccw') => {
+    setRotations((prev) => {
+      const current = ((prev[imageId] ?? 0) % 360 + 360) % 360;
+      const delta = direction === 'cw' ? 90 : 270;
+      return { ...prev, [imageId]: (current + delta) % 360 };
+    });
+  };
 
   const colors = ['#000000', '#FF0000', '#0000FF', '#00FF00', '#FFFF00', '#FF00FF'];
 
@@ -647,7 +657,8 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, [images, initializeCanvas]); // Removed 'drawings' from dependencies
 
-  // Re-init canvases when zoom changes so internal resolution matches new display size
+  // Re-init canvases when zoom, rotation, or measured natural dims change so internal
+  // resolution matches new display size. Drawings are preserved+rescaled inside initializeCanvas.
   useEffect(() => {
     const raf = requestAnimationFrame(() => {
       images.forEach((img) => {
@@ -657,16 +668,19 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
       });
     });
     return () => cancelAnimationFrame(raf);
-  }, [zoom, images, initializeCanvas]);
+  }, [zoom, rotations, naturalDims, images, initializeCanvas]);
 
   /* -------------------- Coordinate Calculation -------------------- */
+  // getBoundingClientRect returns the AABB of the (CSS-)rotated canvas, so we map
+  // back from the visual AABB into canvas-internal pixel space based on the rotation
+  // applied to this image. Drawings are stored in unrotated canvas-internal coords,
+  // so they stay aligned with the underlying image at any rotation.
   const getCoordinates = (
     e: MouseEvent<HTMLCanvasElement> | TouchEvent<HTMLCanvasElement>,
-    canvas: HTMLCanvasElement
+    canvas: HTMLCanvasElement,
+    rotation: number
   ) => {
     const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
 
     let clientX: number;
     let clientY: number;
@@ -681,10 +695,22 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
       clientY = e.clientY;
     }
 
-    return {
-      x: (clientX - rect.left) * scaleX,
-      y: (clientY - rect.top) * scaleY
-    };
+    const relX = (clientX - rect.left) / rect.width;
+    const relY = (clientY - rect.top) / rect.height;
+    const W = canvas.width;
+    const H = canvas.height;
+    const norm = ((rotation % 360) + 360) % 360;
+
+    switch (norm) {
+      case 90:
+        return { x: relY * W, y: (1 - relX) * H };
+      case 180:
+        return { x: (1 - relX) * W, y: (1 - relY) * H };
+      case 270:
+        return { x: (1 - relY) * W, y: relX * H };
+      default:
+        return { x: relX * W, y: relY * H };
+    }
   };
 
   /* -------------------- Drawing Functions -------------------- */
@@ -701,7 +727,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     setActiveImageId(imageId);
     setIsDrawing(true);
 
-    const { x, y } = getCoordinates(e, canvas);
+    const { x, y } = getCoordinates(e, canvas, rotations[imageId] ?? 0);
 
     ctx.beginPath();
     ctx.moveTo(x, y);
@@ -728,7 +754,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
     const ctx = ctxRefs.current[imageId];
     if (!canvas || !ctx) return;
 
-    const { x, y } = getCoordinates(e, canvas);
+    const { x, y } = getCoordinates(e, canvas, rotations[imageId] ?? 0);
     ctx.lineTo(x, y);
     ctx.stroke();
   };
@@ -819,6 +845,12 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
   };
 
   const handleImageLoad = (imageId: number) => {
+    const el = imageRefs.current[imageId];
+    if (el && el.naturalWidth && el.naturalHeight) {
+      setNaturalDims((prev) =>
+        prev[imageId] ? prev : { ...prev, [imageId]: { w: el.naturalWidth, h: el.naturalHeight } },
+      );
+    }
     initializeCanvas(imageId);
   };
 
@@ -997,53 +1029,131 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
           },
         }}
       >
-        {images.map((img) => (
-          <div
-            key={img.id}
-            className="mb-8 relative"
-            style={{ width: `${zoom}%` }}
-            onClick={() => setActiveImageId(img.id)}
-          >
-            {/* Image */}
-            <img
-              ref={(el) => {
-                imageRefs.current[img.id] = el;
-              }}
-              src={img.url}
-              alt={`Question ${img.id}`}
-              className="w-full block pointer-events-none select-none"
-              onLoad={() => handleImageLoad(img.id)}
-              draggable={false}
-            />
+        {images.map((img) => {
+          const rotation = ((rotations[img.id] ?? 0) % 360 + 360) % 360;
+          const isPerpendicular = rotation === 90 || rotation === 270;
+          const dims = naturalDims[img.id];
 
-            {/* Canvas Overlay */}
-            <canvas
-              ref={(el) => {
-                canvasRefs.current[img.id] = el;
-              }}
-              className="absolute top-0 left-0 w-full h-full"
-              style={{
-                cursor: tool === 'pen' ? 'crosshair' : 'pointer',
-                touchAction: 'none',
-              }}
-              onMouseDown={(e) => startDrawing(e, img.id)}
-              onMouseMove={(e) => draw(e, img.id)}
-              onMouseUp={() => stopDrawing(img.id)}
-              onMouseLeave={() => stopDrawing(img.id)}
-              onTouchStart={(e) => startDrawing(e, img.id)}
-              onTouchMove={(e) => draw(e, img.id)}
-              onTouchEnd={() => stopDrawing(img.id)}
-              onTouchCancel={() => stopDrawing(img.id)}
-            />
+          const wrapperStyle: CSSProperties = { width: `${zoom}%` };
+          if (dims) {
+            wrapperStyle.aspectRatio = isPerpendicular
+              ? `${dims.h} / ${dims.w}`
+              : `${dims.w} / ${dims.h}`;
+          }
 
-            {/* Active Indicator */}
-            {activeImageId === img.id && (
-              <div className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-normal">
-                Active
+          let innerStyle: CSSProperties;
+          if (!dims) {
+            innerStyle = { position: 'relative', width: '100%' };
+          } else if (isPerpendicular) {
+            innerStyle = {
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              width: `${(dims.w / dims.h) * 100}%`,
+              height: `${(dims.h / dims.w) * 100}%`,
+              transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+              transformOrigin: 'center center',
+            };
+          } else {
+            innerStyle = {
+              position: 'absolute',
+              inset: 0,
+              transform: `rotate(${rotation}deg)`,
+              transformOrigin: 'center center',
+            };
+          }
+
+          const imgStyle: CSSProperties = dims
+            ? { width: '100%', height: '100%', display: 'block' }
+            : { width: '100%', height: 'auto', display: 'block' };
+
+          return (
+            <div
+              key={img.id}
+              className="mb-8 relative mx-auto"
+              style={wrapperStyle}
+              onClick={() => setActiveImageId(img.id)}
+            >
+              <div style={innerStyle}>
+                {/* Image */}
+                <img
+                  ref={(el) => {
+                    imageRefs.current[img.id] = el;
+                  }}
+                  src={img.url}
+                  alt={`Question ${img.id}`}
+                  className="pointer-events-none select-none"
+                  style={imgStyle}
+                  onLoad={() => handleImageLoad(img.id)}
+                  draggable={false}
+                />
+
+                {/* Canvas Overlay */}
+                <canvas
+                  ref={(el) => {
+                    canvasRefs.current[img.id] = el;
+                  }}
+                  className="absolute top-0 left-0 w-full h-full"
+                  style={{
+                    cursor: tool === 'pen' ? 'crosshair' : 'pointer',
+                    touchAction: 'none',
+                  }}
+                  onMouseDown={(e) => startDrawing(e, img.id)}
+                  onMouseMove={(e) => draw(e, img.id)}
+                  onMouseUp={() => stopDrawing(img.id)}
+                  onMouseLeave={() => stopDrawing(img.id)}
+                  onTouchStart={(e) => startDrawing(e, img.id)}
+                  onTouchMove={(e) => draw(e, img.id)}
+                  onTouchEnd={() => stopDrawing(img.id)}
+                  onTouchCancel={() => stopDrawing(img.id)}
+                />
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* Rotate controls — sit outside the rotating inner so they stay upright */}
+              <div className="absolute top-2 left-2 z-10 flex gap-1">
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageId(img.id);
+                    rotateImage(img.id, 'ccw');
+                  }}
+                  title="Rotate left"
+                  sx={{
+                    background: (t) => t.palette.background.paper,
+                    boxShadow: 1,
+                    '&:hover': { background: (t) => t.palette.action.hover },
+                  }}
+                >
+                  <RotateLeft fontSize="small" />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveImageId(img.id);
+                    rotateImage(img.id, 'cw');
+                  }}
+                  title="Rotate right"
+                  sx={{
+                    background: (t) => t.palette.background.paper,
+                    boxShadow: 1,
+                    '&:hover': { background: (t) => t.palette.action.hover },
+                  }}
+                >
+                  <RotateRight fontSize="small" />
+                </IconButton>
+              </div>
+
+              {/* Active Indicator */}
+              {activeImageId === img.id && (
+                <div className="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-normal z-10">
+                  Active
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {images.length === 0 && (
           <div className="text-center py-12 text-gray-400">

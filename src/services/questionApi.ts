@@ -143,9 +143,12 @@ export const questionApi = baseApi.injectEndpoints({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
-        getTestQuestions: builder.query<QuestionList, { id?: number }>({
-            query: ({ id }) => ({
-                url: `/admin/test/${id}/questions`,
+        getTestQuestions: builder.query<QuestionList, { id?: number; pageIndex?: number; pageSize?: number }>({
+            query: ({ id, pageIndex, pageSize }) => ({
+                url: `/admin/test/${id}/questions?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                })}`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
