@@ -184,7 +184,8 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                 {!collapsed && (openCourse ? <ExpandLess /> : <ExpandMore />)}
                             </ListItemButton>
                         </Tooltip>
-                        <Collapse in={openCourse && !collapsed} timeout="auto" unmountOnExit>
+                    </ListItem>
+                    <Collapse in={openCourse && !collapsed} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding sx={{ pl: 3 }}>
 
                                 <CAN permissions={["add_courses", "edit_courses", "delete_courses", "view_courses"]}>
@@ -268,7 +269,6 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
 
                             </List>
                         </Collapse>
-                    </ListItem>
                 </CAN>
 
                 {/* Test */}
@@ -295,7 +295,8 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                 {!collapsed && (openTest ? <ExpandLess /> : <ExpandMore />)}
                             </ListItemButton>
                         </Tooltip>
-                        <Collapse in={openTest && !collapsed} timeout="auto" unmountOnExit>
+                    </ListItem>
+                    <Collapse in={openTest && !collapsed} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding sx={{ pl: 3 }}>
 
                                 <CAN permissions={["add_questions", "edit_questions", "delete_questions", "view_questions"]}>
@@ -372,7 +373,6 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
 
                             </List>
                         </Collapse>
-                    </ListItem>
                 </CAN>
 
                 {/* Users */}
@@ -470,7 +470,8 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                 {!collapsed && (openTicket ? <ExpandLess /> : <ExpandMore />)}
                             </ListItemButton>
                         </Tooltip>
-                        <Collapse in={openTicket && !collapsed} timeout="auto" unmountOnExit>
+                    </ListItem>
+                    <Collapse in={openTicket && !collapsed} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding sx={{ pl: 3 }}>
                                 <ListItem disablePadding className="menu__item">
                                     <ListItemButton
@@ -495,7 +496,6 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                 </ListItem>
                             </List>
                         </Collapse>
-                    </ListItem>
                 </CAN>
 
                 {/* Discussions */}
@@ -519,7 +519,8 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                             {!collapsed && (openDiscussion ? <ExpandLess /> : <ExpandMore />)}
                         </ListItemButton>
                     </Tooltip>
-                    <Collapse in={openDiscussion && !collapsed} timeout="auto" unmountOnExit>
+                </ListItem>
+                <Collapse in={openDiscussion && !collapsed} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding sx={{ pl: 3 }}>
                             <CAN permissions={["view_discussions", "add_discussions", "edit_discussions", "delete_discussions"]}>
                                 <ListItem disablePadding className="menu__item">
@@ -541,7 +542,6 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                             </CAN>
                         </List>
                     </Collapse>
-                </ListItem>
 
                 {/* Device Reset */}
                 <CAN permissions={["add_reset_requests", "edit_reset_requests", "delete_reset_requests", "view_reset_requests"]}>
@@ -582,7 +582,8 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                 {!collapsed && (openActivityLog ? <ExpandLess /> : <ExpandMore />)}
                             </ListItemButton>
                         </Tooltip>
-                        <Collapse in={openActivityLog && !collapsed} timeout="auto" unmountOnExit>
+                    </ListItem>
+                    <Collapse in={openActivityLog && !collapsed} timeout="auto" unmountOnExit>
                             <List component="div" disablePadding sx={{ pl: 3 }}>
                                 <ListItem disablePadding className="menu__item">
                                     <ListItemButton
@@ -600,7 +601,6 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                                 </ListItem>
                             </List>
                         </Collapse>
-                    </ListItem>
                 </CAN>
 
                 {/* Media */}

@@ -77,6 +77,7 @@ export default function DashboardTransaction() {
             ),
         },
         {
+            id: "course_name",
             header: () => <SortableHeader field="course_name" label="Course Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (

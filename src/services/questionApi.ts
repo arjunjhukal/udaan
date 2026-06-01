@@ -230,9 +230,12 @@ export const questionApi = baseApi.injectEndpoints({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]
         }),
-        getQuestionsListInTest: builder.query<QuestionList, { id?: number, resultId?: number }>({
-            query: ({ id, resultId }) => ({
-                url: `/admin/test/${id}/result/${resultId}/question`,
+        getQuestionsListInTest: builder.query<QuestionList, { id?: number, resultId?: number, pageIndex?: number, pageSize?: number }>({
+            query: ({ id, resultId, pageIndex, pageSize }) => ({
+                url: `/admin/test/${id}/result/${resultId}/question?${buildQueryParams({
+                    page: pageIndex,
+                    page_size: pageSize,
+                })}`,
                 method: "GET",
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Test", id }]

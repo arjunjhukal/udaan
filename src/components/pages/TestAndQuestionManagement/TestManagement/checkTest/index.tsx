@@ -2,11 +2,13 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { Box, Button, Typography, useTheme } from "@mui/material";
 import { Calendar, Timer, UserEdit, UserTag } from "iconsax-reactjs";
+import { useState } from 'react';
 import { useNavigate, useParams } from "react-router-dom";
 import { PATH } from '../../../../../routes/PATH';
 import { useGetQuestionsListInTestQuery } from "../../../../../services/questionApi";
 import { formatDateTime } from '../../../../../utils/dateFormat';
 import { renderHtml } from "../../../../../utils/renderHtml";
+import TablePagination from '../../../../molecules/Table/Pagination';
 
 
 const getAnswerStyle = (isCorrect: boolean, isWrong: boolean, theme: any) => ({
@@ -111,13 +113,18 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 	const navigate = useNavigate();
 	const theme = useTheme();
 	const { id, resultId } = useParams();
+	const [qp, setQp] = useState({ pageIndex: 1, pageSize: 10 });
 	const { data } = useGetQuestionsListInTestQuery({
 		id: Number(id),
-		resultId: Number(resultId)
+		resultId: Number(resultId),
+		pageIndex: qp.pageIndex,
+		pageSize: qp.pageSize,
 	});
 
 	const questions = data?.data?.data ?? [];
-
+	const pagination = data?.data?.pagination;
+	const questionNumber = (index: number) =>
+		(qp.pageIndex - 1) * qp.pageSize + index + 1;
 
 	if (type === "subjective") {
 		return (
@@ -125,6 +132,9 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 				{questions.map((item, index) => (
 					<Box key={item.id}>
 						<Box className="question">
+							<Typography variant="body2" color="text.middle" className="mb-3!">
+								Question {questionNumber(index)}{pagination?.total ? ` of ${pagination.total}` : ''}
+							</Typography>
 							<div className="question flex justify-between items-start flex-wrap gap-4 mb-5!">
 								<Typography variant="subtitle1" color="text.dark" className="lg:max-w-[80%]">
 									{renderHtml(item.question)}
@@ -219,14 +229,23 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 						)}
 					</Box>
 				))}
+				<TablePagination
+					qp={qp}
+					setQp={setQp}
+					totalPages={pagination?.total_pages || 0}
+					totalRecords={pagination?.total}
+				/>
 			</div>
 		);
 	}
 
 	return (
 		<div className="mcq__question__root">
-			{questions.map((item) => (
+			{questions.map((item, index) => (
 				<div className="question mb-8!" key={item.id}>
+					<Typography variant="body2" color="text.middle" className="mb-3!">
+						Question {questionNumber(index)}{pagination?.total ? ` of ${pagination.total}` : ''}
+					</Typography>
 					<Typography variant="subtitle1" color="text.dark" className="mb-5!">
 						{renderHtml(item.question)}
 					</Typography>
@@ -255,6 +274,12 @@ export default function CheckTestPaperRoot({ type }: { type?: string }) {
 					<AnswerStatusBadge type={item.type} />
 				</div>
 			))}
+			<TablePagination
+				qp={qp}
+				setQp={setQp}
+				totalPages={pagination?.total_pages || 0}
+				totalRecords={pagination?.total}
+			/>
 		</div>
 	);
 }

@@ -108,7 +108,7 @@ export default function UdaanTable<T extends object>({
                                 <TableRow key={row.id} className="align-sub!">
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id} className="py-2! px-3! 2xl:px-4! 2xl:py-4!">
-                                            <Typography variant="body2" color="text.dark">
+                                            <Typography component="div" variant="body2" color="text.dark">
                                                 {flexRender(
                                                     cell.column.columnDef.cell,
                                                     cell.getContext()
