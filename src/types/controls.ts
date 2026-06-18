@@ -6,6 +6,8 @@ export interface GlobalDiscount {
 
 export interface AppControls {
 	screen_protection: boolean;
+	auto_enable_screen_protection: boolean;
+	auto_enable_after_minutes: number;
 	maintenance_mode: boolean;
 	global_discount: GlobalDiscount;
 	otp_limit: number;

@@ -1,12 +1,16 @@
 import BuildIcon from "@mui/icons-material/Build";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import SecurityIcon from "@mui/icons-material/Security";
 import SmsIcon from "@mui/icons-material/Sms";
 import {
 	Box,
 	Button,
 	CircularProgress,
+	Divider,
+	MenuItem,
 	OutlinedInput,
 	Paper,
+	Select,
 	Stack,
 	Switch,
 	Typography
@@ -15,6 +19,17 @@ import { useState } from "react";
 import { useGetControlsQuery, useUpdateControlsMutation } from "../../../services/controlsApi";
 import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
+
+const AUTO_ENABLE_DURATIONS: { label: string; value: number }[] = [
+	{ label: "1 minute", value: 1 },
+	{ label: "5 minutes", value: 5 },
+	{ label: "1 hour", value: 60 },
+	{ label: "1 day", value: 1440 },
+	{ label: "7 days", value: 10080 },
+];
+
+const formatDuration = (mins: number) =>
+	AUTO_ENABLE_DURATIONS.find((d) => d.value === mins)?.label ?? `${mins} minute${mins === 1 ? "" : "s"}`;
 
 
 interface ControlCardProps {
@@ -80,10 +95,22 @@ export default function ControlsRoot() {
 	const otpLimit = otpDraft ?? controls?.otp_limit ?? 5;
 
 	// Instant toggle handler for boolean controls
-	const handleToggle = async (key: "screen_protection" | "maintenance_mode", value: boolean) => {
+	const handleToggle = async (
+		key: "screen_protection" | "maintenance_mode" | "auto_enable_screen_protection",
+		value: boolean,
+	) => {
 		try {
 			await updateControls({ [key]: value }).unwrap();
 			dispatch(showToast({ message: "Controls updated", severity: "success" }));
+		} catch {
+			dispatch(showToast({ message: "Failed to update controls", severity: "error" }));
+		}
+	};
+
+	const handleDurationChange = async (value: number) => {
+		try {
+			await updateControls({ auto_enable_after_minutes: value }).unwrap();
+			dispatch(showToast({ message: "Auto re-enable duration updated", severity: "success" }));
 		} catch {
 			dispatch(showToast({ message: "Failed to update controls", severity: "error" }));
 		}
@@ -146,17 +173,97 @@ export default function ControlsRoot() {
 			<Box flex={1} overflow="auto">
 				<div className="flex flex-col gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 ">
 					{/* Screen Protection */}
-					<ControlCard
-						icon={<SecurityIcon fontSize="small" />}
-						title="Screen Protection"
-						description="Block screenshots and screen recording across the mobile app."
-						action={
+					<Paper
+						variant="outlined"
+						sx={{ p: "20px 24px", borderRadius: 2, display: "flex", flexDirection: "column", gap: 2 }}
+					>
+						<Stack direction="row" alignItems="center" justifyContent="space-between" gap={2}>
+							<Stack direction="row" alignItems="center" gap={2}>
+								<Box
+									sx={{
+										width: 44,
+										height: 44,
+										borderRadius: 2,
+										bgcolor: "primary.light",
+										display: "flex",
+										alignItems: "center",
+										justifyContent: "center",
+										color: "primary.main",
+										flexShrink: 0,
+									}}
+								>
+									<SecurityIcon fontSize="small" />
+								</Box>
+								<Box>
+									<Typography variant="subtitle1" fontWeight={600}>
+										Screen Protection
+									</Typography>
+									<Typography variant="body2" color="text.secondary">
+										Block screenshots and screen recording across the mobile app.
+									</Typography>
+								</Box>
+							</Stack>
 							<Switch
 								checked={controls?.screen_protection ?? false}
 								onChange={(e) => handleToggle("screen_protection", e.target.checked)}
 							/>
-						}
-					/>
+						</Stack>
+
+						<Divider />
+
+						<Stack direction="row" alignItems="center" justifyContent="space-between" gap={2}>
+							<Box>
+								<Typography variant="subtitle2" fontWeight={600}>
+									Auto re-enable
+								</Typography>
+								<Typography variant="caption" color="text.secondary">
+									Automatically turn protection back on after it's disabled.
+								</Typography>
+							</Box>
+							<Switch
+								checked={controls?.auto_enable_screen_protection ?? false}
+								onChange={(e) => handleToggle("auto_enable_screen_protection", e.target.checked)}
+							/>
+						</Stack>
+
+						<Stack direction="row" alignItems="center" justifyContent="space-between" gap={2}>
+							<Typography variant="body2" color="text.secondary">
+								Re-enable after
+							</Typography>
+							<Select
+								size="small"
+								value={controls?.auto_enable_after_minutes ?? 5}
+								disabled={!(controls?.auto_enable_screen_protection ?? false)}
+								onChange={(e) => handleDurationChange(Number(e.target.value))}
+								sx={{ minWidth: 140 }}
+							>
+								{AUTO_ENABLE_DURATIONS.map((d) => (
+									<MenuItem key={d.value} value={d.value}>
+										{d.label}
+									</MenuItem>
+								))}
+							</Select>
+						</Stack>
+
+						{!controls?.screen_protection && controls?.auto_enable_screen_protection && (
+							<Stack
+								direction="row"
+								alignItems="center"
+								gap={1}
+								sx={{
+									bgcolor: "warning.light",
+									color: "warning.dark",
+									p: "10px 14px",
+									borderRadius: 1.5,
+								}}
+							>
+								<InfoOutlinedIcon fontSize="small" />
+								<Typography variant="body2">
+									Will auto re-enable after {formatDuration(controls?.auto_enable_after_minutes ?? 5)}.
+								</Typography>
+							</Stack>
+						)}
+					</Paper>
 
 					{/* Maintenance Mode */}
 					<ControlCard
