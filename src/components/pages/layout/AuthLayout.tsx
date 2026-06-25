@@ -7,6 +7,7 @@ export default function AuthLayout() {
 	// Auth pages always have a light background — always use the light logo
 	const logoSrc = themeSettings?.data?.logo_dark_url || "/logo.svg";
 	const brandName = themeSettings?.data?.brand_name || themeSettings?.data?.company_name || "";
+	const loginImageSrc = themeSettings?.data?.login_image_url || "/auth-image.png";
 
 	return (
 		<Box className="lg:grid lg:grid-cols-2 lg:gap-10 2xl:gap-20">
@@ -25,7 +26,7 @@ export default function AuthLayout() {
 					)}
 				</div>
 				<img
-					src="/auth-image.png"
+					src={loginImageSrc}
 					alt=""
 					width={430}
 					height={302}

@@ -1,6 +1,7 @@
 import { Box, Button, Divider, Typography, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PATH } from '../../../routes/PATH';
+import { useGetThemeSettingsQuery } from '../../../services/settingApi';
 import type { CourseProps } from '../../../types/course';
 import Actions from '../../molecules/Action';
 export default function CourseCard({ course, onDelete, onClone }: {
@@ -8,6 +9,8 @@ export default function CourseCard({ course, onDelete, onClone }: {
 }) {
     const theme = useTheme();
     const navigate = useNavigate();
+    const { data: themeSettings } = useGetThemeSettingsQuery();
+    const fallbackImage = themeSettings?.data?.fallback_image_url || "/fallback.png";
 
     return (
         <Box className="course__card rounded-md overflow-hidden"
@@ -16,7 +19,7 @@ export default function CourseCard({ course, onDelete, onClone }: {
             }}
         >
             <div className="course_card_image aspect-347/128 relative">
-                <img src={course.thumbnail_url || "/fallback.png"} alt="Course" className="w-full h-full object-cover" />
+                <img src={course.thumbnail_url || fallbackImage} alt="Course" className="w-full h-full object-cover" />
                 <div className="absolute! top-2.5 right-2.5">
                     <Actions
                         editUrl={PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(course?.id)}

@@ -31,12 +31,16 @@ export interface ThemeSettingProps {
     logo_url?: string;
     logo_dark_url?: string;
     favicon_url?: string;
+    login_image_url?: string;
+    fallback_image_url?: string;
 }
 
 export interface ThemeSettingFormProps extends ThemeSettingProps {
     logo: File | null;
     logo_dark: File | null;
     favicon: File | null;
+    login_image: File | null;
+    fallback_image: File | null;
 }
 
 export interface PhoneItem {
