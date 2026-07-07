@@ -76,9 +76,9 @@ export default function ProfileMenu() {
                         "&:hover": { backgroundColor: theme.palette.action.hover },
                     }}>
                     <div className="flex items-center gap-2">
-                        {user?.profile_url ? (
+                        {user?.thumbnail_url ? (
                             <img
-                                src={user.profile_url}
+                                src={user.thumbnail_url}
                                 alt={`${user?.name} Profile Picture`}
                                 className="user__profile w-7 h-7 rounded-full"
                             />

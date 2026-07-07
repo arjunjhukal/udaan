@@ -130,16 +130,16 @@ export const settingApi = baseApi.injectEndpoints({
             }),
             providesTags: ["EmailTemplate"],
         }),
-        getEmailTemplate: builder.query<
-            GlobalResponse & { data: EmailTemplateProps },
-            { actor: EmailTemplateActor; method: EmailTemplateMethod; template_key: string }
-        >({
-            query: ({ actor, method, template_key }) => ({
-                url: `/admin/settings/email-templates/${template_key}?actor=${actor}&method=${method}`,
-                method: "GET",
-            }),
-            providesTags: ["EmailTemplate"],
-        }),
+        // getEmailTemplate: builder.query<
+        //     GlobalResponse & { data: EmailTemplateProps },
+        //     { actor: EmailTemplateActor; method: EmailTemplateMethod; template_key: string }
+        // >({
+        //     query: ({ actor, method, template_key }) => ({
+        //         url: `/admin/settings/email-templates/${template_key}?actor=${actor}&method=${method}`,
+        //         method: "GET",
+        //     }),
+        //     providesTags: ["EmailTemplate"],
+        // }),
         updateEmailTemplate: builder.mutation<GlobalResponse, EmailTemplateProps>({
             query: ({ actor, method, template_key, ...body }) => ({
                 url: `/admin/settings/email-templates/${template_key}?actor=${actor}&method=${method}`,
@@ -228,7 +228,6 @@ export const {
     useGetLoginTypeSettingQuery,
     useUpdateLoginTypeSettingMutation,
     useGetEmailTemplatesQuery,
-    useGetEmailTemplateQuery,
     useUpdateEmailTemplateMutation,
     useGetZoomAccountsQuery,
     useCreateZoomAccountMutation,

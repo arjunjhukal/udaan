@@ -278,7 +278,7 @@ export default function AllUserTable() {
                 <Link to={PATH.USER_MANAGEMENT.VIEW_USER.ROOT(row.original.id?.toString() || "")}>
                     <Stack direction="row" alignItems="center" gap={1}>
                         <Avatar
-                            src={row.original.profile_url}
+                            src={row.original.thumbnail_url}
                             alt={row.original.name}
                             sx={{ width: 32, height: 32, fontSize: 13, bgcolor: theme.palette.primary.light, color: theme.palette.primary.main }}
                         >

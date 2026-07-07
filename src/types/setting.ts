@@ -108,38 +108,16 @@ export interface LoginTypeSettingProps {
 }
 
 export type EmailTemplateMethod = "email" | "sms";
-export type EmailTemplateActor = "user" | "admin";
+export type EmailTemplateActor = "user";
 
-export const USER_EMAIL_TEMPLATES = [
-    "transaction",
-    "password_reset",
-    "otp",
-    "welcome_email",
-    "device_reset_status",
-    "inactive_state",
-] as const;
-
-export const ADMIN_EMAIL_TEMPLATES = [
-    "transaction",
-    "new_registration",
-    "device_reset_request",
-] as const;
-
-export const USER_SMS_TEMPLATES = [
-    "otp",
-    "device_reset",
-    "transaction",
-] as const;
-
-export const ADMIN_SMS_TEMPLATES = [
-    "new_registration",
-    "device_reset_request",
-] as const;
-
-export type UserEmailTemplateKey = typeof USER_EMAIL_TEMPLATES[number];
-export type AdminEmailTemplateKey = typeof ADMIN_EMAIL_TEMPLATES[number];
-export type UserSmsTemplateKey = typeof USER_SMS_TEMPLATES[number];
-export type AdminSmsTemplateKey = typeof ADMIN_SMS_TEMPLATES[number];
+export const TEMPLATE_VARIABLES: Record<string, string[]> = {
+    transaction: ["user_name", "amount", "transaction_id", "date"],
+    password_reset: ["user_name", "reset_link", "expiry_time"],
+    otp: ["user_name", "otp", "expiry_time"],
+    welcome_email: ["user_name", "login_url"],
+    device_reset_request: ["user_name", "device_name"],
+    inactive_state: ["user_name"],
+};
 
 export const TEMPLATE_VARIABLES: Record<string, string[]> = {
     transaction: ["user_name", "amount", "transaction_id", "date"],

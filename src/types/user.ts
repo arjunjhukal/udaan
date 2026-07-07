@@ -14,7 +14,7 @@ export interface RegisterUserProps {
 	password: string;
 	password_confirmation: string;
 	profile: File | null;
-	profile_url: string;
+	thumbnail_url: string;
 	designation: string;
 	is_suspended?: boolean
 	address?: string;
@@ -36,7 +36,7 @@ export const RegisterUserInitialData = {
 	password: "",
 	password_confirmation: "",
 	profile: null,
-	profile_url: "",
+	thumbnail_url: "",
 	designation: "",
 	dob: null,
 	address: "",

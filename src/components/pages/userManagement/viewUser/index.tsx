@@ -74,7 +74,7 @@ export default function ViewUserRoot() {
                             <Skeleton variant="circular" width={64} height={64} />
                         ) : (
                             <Avatar
-                                src={user?.profile_url || undefined}
+                                src={user?.thumbnail_url || undefined}
                                 sx={{ width: 64, height: 64, fontSize: 24, fontWeight: 700, bgcolor: theme.palette.primary.main, color: theme.palette.primary.contrastText }}
                             >
                                 {user?.name?.charAt(0)?.toUpperCase()}

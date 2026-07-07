@@ -118,8 +118,8 @@ export default function UserManagementForm() {
             if (values.profile) {
                 formData.append("profile", values.profile)
             }
-            if (values.profile_url) {
-                formData.append("profile_url", values.profile_url)
+            if (values.thumbnail_url) {
+                formData.append("thumbnail_url", values.thumbnail_url)
             }
             if (values.live_preview instanceof File) {
                 formData.append("live_preview", values.live_preview)
@@ -234,7 +234,7 @@ export default function UserManagementForm() {
                             <FileDragDrop
                                 onFileChange={handleFileChange}
                                 initialFile={formik.values.profile}
-                                initialPreview={formik.values.profile_url}
+                                initialPreview={formik.values.thumbnail_url}
                                 error={formik.touched.profile && Boolean(formik.errors.profile)}
                                 helperText={formik.touched.profile && formik.errors.profile ? String(formik.errors.profile) : ""}
                             />
