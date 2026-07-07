@@ -30,7 +30,7 @@ export default function TabController<T extends string>({
                 borderBottom: `1px solid ${theme.palette.divider}`,
                 overflowX: "auto",
             }}
-            className={`p-0! flex items-end gap-0 ${size === "sm" ? "mb-3!" : "mb-6!"}`}
+            className={`p-0! flex-none flex items-end gap-0 ${size === "sm" ? "mb-3!" : "mb-6!"}`}
         >
             {tabOptions.map((tab) => (
                 <ListItem

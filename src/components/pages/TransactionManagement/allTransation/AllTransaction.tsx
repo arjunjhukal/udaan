@@ -20,6 +20,7 @@ import TablePagination from '../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../organism/ConfirmationDialog';
 import EmptyRoute from '../../../organism/EmptyRoute';
 import { CourseFilter } from '../../../organism/Filter/CourseFilter';
+import ActiveFilterBar from '../../../organism/ActiveFilterBar';
 import PageHeader from '../../../organism/PageHeader';
 import TableFilter from '../../../organism/TableFilter';
 import TransactionManagementForm from '../TransactionManagementForm';
@@ -59,6 +60,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
         loadingMegaCategory,
         handleCategoryChange,
         handleApplyFilter,
+        appliedPills,
         resetFilters,
         getCategoryFilterParams,
         filterDialogOpen,
@@ -66,7 +68,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
         device,
         status,
         paymentMethod
-    } = useCourseFilter();
+    } = useCourseFilter({ persistOnMount: true, namespace: "transactions" });
 
     const categoryFilter = getCategoryFilterParams();
 
@@ -345,6 +347,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                     onDownload={handleDownload}
                     donwloading={downloading}
                 />
+                <ActiveFilterBar pills={appliedPills} onClearAll={resetFilters} />
             </div>
             {
                 !isLoading && !transactions.length ? <EmptyRoute

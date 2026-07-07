@@ -17,6 +17,7 @@ import SortableHeader from "../../../molecules/SortableHeader";
 import TabController from "../../../molecules/TabController";
 import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
+import ActiveFilterBar from "../../../organism/ActiveFilterBar";
 import EmptyRoute from "../../../organism/EmptyRoute";
 import { CourseFilter } from "../../../organism/Filter/CourseFilter";
 import TableFilter from "../../../organism/TableFilter";
@@ -37,6 +38,7 @@ export default function AllEntrollments() {
         teachers,
         loadingMegaCategory,
         searchTeacher,
+        appliedPills,
         setSearchTeacher,
         handleCategoryChange,
         handleApplyFilter,
@@ -44,7 +46,7 @@ export default function AllEntrollments() {
         getCategoryFilterParams,
         filterDialogOpen,
         setFilterDialogOpen
-    } = useCourseFilter();
+    } = useCourseFilter({ persistOnMount: true, namespace: "enrollments" });
 
     const categoryFilter = getCategoryFilterParams();
 
@@ -323,6 +325,7 @@ export default function AllEntrollments() {
                     setSearch={setSearch}
                     onFilter={activeTab === "course" ? () => setFilterDialogOpen(true) : undefined}
                 />
+                <ActiveFilterBar pills={appliedPills} onClearAll={resetFilters} />
             </div>
             {!isLoading && !activeData.length ? (
                 <EmptyRoute

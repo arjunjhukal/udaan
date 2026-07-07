@@ -17,6 +17,7 @@ import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../../organism/EmptyRoute";
 import { CourseFilter } from "../../../../organism/Filter/CourseFilter";
+import ActiveFilterBar from "../../../../organism/ActiveFilterBar";
 import PageHeader from "../../../../organism/PageHeader";
 import type { LayoutProps } from "../../../../organism/TableFilter";
 import TableFilter from "../../../../organism/TableFilter";
@@ -49,6 +50,7 @@ export default function AllSets() {
         categories,
         subCategories,
         positions,
+        appliedPills,
         loadingMegaCategory,
         handleCategoryChange,
         handleApplyFilter,
@@ -56,7 +58,7 @@ export default function AllSets() {
         getCategoryFilterParams,
         filterDialogOpen,
         setFilterDialogOpen
-    } = useCourseFilter();
+    } = useCourseFilter({ persistOnMount: true, namespace: "sets" });
 
     const categoryFilter = getCategoryFilterParams();
 
@@ -276,7 +278,7 @@ export default function AllSets() {
                     setDays={setDays}
                     handleResetFilter={handleResetFilter}
                 />
-
+                <ActiveFilterBar pills={appliedPills} onClearAll={resetFilters} />
             </div>
             {!isLoading && !tests.length ?
                 <EmptyRoute

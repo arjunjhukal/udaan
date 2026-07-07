@@ -189,6 +189,13 @@ export const questionApi = baseApi.injectEndpoints({
                 responseHandler: (response) => response.blob(),
             }),
         }),
+        downloadTestResults: builder.mutation<Blob & GlobalResponse, { testId: number }>({
+            query: ({ testId }) => ({
+                url: `/admin/test/${testId}/results/download`,
+                method: "GET",
+                responseHandler: (response) => response.blob(),
+            }),
+        }),
         submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string } }>({
             query: ({ id, resultId, body }) => ({
                 url: `/admin/test/${id}/result/${resultId}/feedback`,
@@ -642,6 +649,7 @@ export const {
     useSubmitTestSampleMutation,
     useGetTestSampleQuery,
     useDownloadResultMutation,
+    useDownloadTestResultsMutation,
     useGetAllIndividualTestQuery,
     useCreateBundleMutation,
     useUpdateBundleMutation,

@@ -19,6 +19,7 @@ import TablePagination from "../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../organism/EmptyRoute";
 import { CourseFilter } from "../../../organism/Filter/CourseFilter";
+import ActiveFilterBar from "../../../organism/ActiveFilterBar";
 import PageHeader from "../../../organism/PageHeader";
 import TableFilter from "../../../organism/TableFilter";
 
@@ -44,6 +45,7 @@ export default function AllNotifications() {
         selections,
         loadingMegaCategory,
         handleCategoryChange,
+        appliedPills,
         handleApplyFilter,
         resetFilters,
         filterDialogOpen,
@@ -51,7 +53,7 @@ export default function AllNotifications() {
         status,
         paymentMethod,
         targetAudience
-    } = useCourseFilter();
+    } = useCourseFilter({ persistOnMount: true, namespace: "notifications" });
 
 
     const { sort, handleSortChange } = useServerSort();
@@ -251,6 +253,7 @@ export default function AllNotifications() {
                     setDays={setDays}
                     handleResetFilter={handleResetFilter}
                 />
+                <ActiveFilterBar pills={appliedPills} onClearAll={resetFilters} />
             </div>
             {!isLoading && !notifications.length ?
                 <EmptyRoute

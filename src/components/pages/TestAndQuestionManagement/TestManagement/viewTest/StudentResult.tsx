@@ -4,7 +4,7 @@ import { Repeat } from "iconsax-reactjs";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../../routes/PATH";
-import { useGetListOfStudentSubmittedTestQuery, usePublishTestResultsMutation } from "../../../../../services/questionApi";
+import { useDownloadTestResultsMutation, useGetListOfStudentSubmittedTestQuery, usePublishTestResultsMutation } from "../../../../../services/questionApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import type { StudentSubmitTestProps, TestTypeProps } from "../../../../../types/question";
@@ -47,6 +47,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 		{ skip: !id },
 	);
 	const [publishTestResults] = usePublishTestResultsMutation();
+	const [downloadTestResults, { isLoading: isDownloading }] = useDownloadTestResultsMutation();
 
 	const results = data?.data?.data || [];
 	const pagination = data?.data?.pagination;
@@ -305,6 +306,31 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 		[selectedRows, isAllSelected, isSomeSelected, testType, sort],
 	);
 
+	const handleDownloadResults = async () => {
+		try {
+			const blob = await downloadTestResults({ testId: Number(id) }).unwrap();
+
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement("a");
+
+			a.href = url;
+			a.download = `test-${id}-results.xlsx`;
+			document.body.appendChild(a);
+			a.click();
+
+			a.remove();
+			window.URL.revokeObjectURL(url);
+		}
+		catch (e: any) {
+			dispatch(
+				showToast({
+					message: e?.data?.message || "Unable to download results",
+					severity: "error",
+				}),
+			);
+		}
+	}
+
 	const handleTestResultPublish = async () => {
 		try {
 			const response = await publishTestResults({ id: Number(id) }).unwrap();
@@ -334,6 +360,8 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				handleRoleDelete={() => { }}
 				onFilter={() => { }}
 				onPublish={handleTestResultPublish}
+				onDownload={handleDownloadResults}
+				donwloading={isDownloading}
 			/>
 			{!isLoading && !results.length ? (
 				<EmptyRoute title="No Results Found" />

@@ -18,6 +18,7 @@ import TablePagination from '../../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../../organism/ConfirmationDialog';
 import EmptyRoute from '../../../../organism/EmptyRoute';
 import { CourseFilter } from '../../../../organism/Filter/CourseFilter';
+import ActiveFilterBar from '../../../../organism/ActiveFilterBar';
 import PageHeader from '../../../../organism/PageHeader';
 import TableFilter, { type LayoutProps } from '../../../../organism/TableFilter';
 import TestGridLayout from '../allTest/TestGridLayout';
@@ -46,6 +47,7 @@ export default function AllIndividualTestListing() {
         categories,
         subCategories,
         positions,
+        appliedPills,
         loadingMegaCategory,
         handleCategoryChange,
         handleApplyFilter,
@@ -53,7 +55,7 @@ export default function AllIndividualTestListing() {
         getCategoryFilterParams,
         filterDialogOpen,
         setFilterDialogOpen
-    } = useCourseFilter();
+    } = useCourseFilter({ persistOnMount: true, namespace: "individualtest" });
 
     const categoryFilter = getCategoryFilterParams();
 
@@ -262,6 +264,7 @@ export default function AllIndividualTestListing() {
                     setDays={setDays}
                     handleResetFilter={handleResetFilter}
                 />
+                <ActiveFilterBar pills={appliedPills} onClearAll={resetFilters} />
             </div>
 
             {!isLoading && !tests.length ?

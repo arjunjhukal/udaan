@@ -1,7 +1,7 @@
 import { Add } from "@mui/icons-material";
 import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, FormControlLabel, IconButton, List, ListItem, Stack, Tooltip, Typography } from "@mui/material";
 import type { ColumnDef } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
@@ -21,6 +21,7 @@ import UdaanTable from "../../../../molecules/Table";
 import TablePagination from "../../../../molecules/Table/Pagination";
 import ConfirmationDialog from "../../../../organism/ConfirmationDialog";
 import EmptyRoute from "../../../../organism/EmptyRoute";
+import ActiveFilterBar from "../../../../organism/ActiveFilterBar";
 import { CourseFilter } from "../../../../organism/Filter/CourseFilter";
 import PageHeader from "../../../../organism/PageHeader";
 import type { LayoutProps } from "../../../../organism/TableFilter";
@@ -60,6 +61,7 @@ export default function AllCourse() {
 
     const {
         selections,
+        appliedPills,
         megaCategories,
         categories,
         subCategories,
@@ -74,7 +76,7 @@ export default function AllCourse() {
         getCategoryFilterParams,
         filterDialogOpen,
         setFilterDialogOpen
-    } = useCourseFilter();
+    } = useCourseFilter({ persistOnMount: true, namespace: "allcourse" });
 
     const categoryFilter = getCategoryFilterParams();
 
@@ -97,10 +99,6 @@ export default function AllCourse() {
         sort_by: sort.sort_by,
     });
     const [changeStatus] = useChangeCourseStatusMutation();
-
-    useEffect(() => {
-        resetFilters();
-    }, [])
 
     const [deleteCourse, { isLoading: deleting }] = useDeleteCourseMutation();
 
@@ -329,8 +327,6 @@ export default function AllCourse() {
         },
     ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp, sort])
 
-
-
     return (
         <div className="course__root h-full flex flex-col justify-between">
             <div className="page__top">
@@ -360,6 +356,9 @@ export default function AllCourse() {
                     onFilter={() => setFilterDialogOpen(true)}
                 />
             </div>
+
+            <ActiveFilterBar pills={appliedPills} onClearAll={resetFilters} />
+
             <TabController
                 options={[
                     { label: "All Course", value: "all" },
@@ -401,8 +400,6 @@ export default function AllCourse() {
                     </>
                 )
             }
-
-
             <ConfirmationDialog
                 open={openConfirm}
                 setOpen={setOpenConfirm}
