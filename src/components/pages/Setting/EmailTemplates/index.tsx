@@ -35,8 +35,6 @@ const TAB_OPTIONS: { label: string; value: EmailTemplateMethod }[] = [
     { label: "SMS", value: "sms" },
 ];
 
-// ─── Accordion Item ───────────────────────────────────────────────────────────
-
 interface AccordionItemProps {
     method: EmailTemplateMethod;
     serverData: EmailTemplateProps;
@@ -53,7 +51,6 @@ function TemplateAccordionItem({ method, serverData, expanded, onToggle }: Accor
     const [subject, setSubject] = useState(serverData.subject ?? "");
     const [body, setBody] = useState(serverData.body ?? "");
 
-    // Sync when server data updates (e.g. after a save refetch)
     const synced = useRef(false);
     useEffect(() => {
         if (!synced.current) {
@@ -67,7 +64,6 @@ function TemplateAccordionItem({ method, serverData, expanded, onToggle }: Accor
     const [updateTemplate, { isLoading: isSaving }] = useUpdateEmailTemplateMutation();
     const [toggleTemplate, { isLoading: isToggling }] = useUpdateEmailTemplateMutation();
 
-    // Prefer variables from backend; fall back to frontend map
     const variables = serverData.variables?.length
         ? serverData.variables
         : (TEMPLATE_VARIABLES[serverData.template_key] ?? []);
@@ -102,7 +98,7 @@ function TemplateAccordionItem({ method, serverData, expanded, onToggle }: Accor
                 is_enabled: nextVal,
             }).unwrap();
         } catch (e: any) {
-            setEnabled(!nextVal); // revert on failure
+            setEnabled(!nextVal);
             dispatch(showToast({ message: e?.data?.message || "Unable to update status", severity: "error" }));
         }
     };
