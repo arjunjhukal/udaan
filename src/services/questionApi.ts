@@ -191,7 +191,7 @@ export const questionApi = baseApi.injectEndpoints({
         }),
         downloadTestResults: builder.mutation<Blob & GlobalResponse, { testId: number }>({
             query: ({ testId }) => ({
-                url: `/admin/test/${testId}/results/download`,
+                url: `/admin/test/${testId}/result/download`,
                 method: "GET",
                 responseHandler: (response) => response.blob(),
             }),
