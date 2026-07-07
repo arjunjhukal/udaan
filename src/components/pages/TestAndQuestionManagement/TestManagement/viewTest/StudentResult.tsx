@@ -4,7 +4,7 @@ import { Repeat } from "iconsax-reactjs";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../../routes/PATH";
-import { useDownloadTestResultsMutation, useGetListOfStudentSubmittedTestQuery, usePublishTestResultsMutation } from "../../../../../services/questionApi";
+import { useDownloadResultMutation, useDownloadTestResultsMutation, useGetListOfStudentSubmittedTestQuery, usePublishTestResultsMutation } from "../../../../../services/questionApi";
 import { showToast } from "../../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../../store/hook";
 import type { StudentSubmitTestProps, TestTypeProps } from "../../../../../types/question";
@@ -48,6 +48,8 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 	);
 	const [publishTestResults] = usePublishTestResultsMutation();
 	const [downloadTestResults, { isLoading: isDownloading }] = useDownloadTestResultsMutation();
+	const [downloadResult] = useDownloadResultMutation();
+	const [downloadingResultId, setDownloadingResultId] = useState<number | null>(null);
 
 	const results = data?.data?.data || [];
 	const pagination = data?.data?.pagination;
@@ -276,6 +278,9 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 									),
 								)
 							}
+							onDownload={() =>
+								handleDownloadStudentResult(row.original.id, row.original?.student?.name)
+							}
 						/>
 						{testType === "omr" && (row.original?.attempt_number ?? 1) > 1 && (
 							<Tooltip title="View All Attempts">
@@ -314,7 +319,7 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 			const a = document.createElement("a");
 
 			a.href = url;
-			a.download = `test-${id}-results.xlsx`;
+			a.download = `test-${id}-results.pdf`;
 			document.body.appendChild(a);
 			a.click();
 
@@ -328,6 +333,36 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 					severity: "error",
 				}),
 			);
+		}
+	}
+
+	const handleDownloadStudentResult = async (resultId: number, studentName?: string) => {
+		if (downloadingResultId) return;
+		try {
+			setDownloadingResultId(resultId);
+			const blob = await downloadResult({ testId: Number(id), resultId }).unwrap();
+
+			const url = window.URL.createObjectURL(blob);
+			const a = document.createElement("a");
+
+			a.href = url;
+			a.download = `${studentName || "student"}-result.pdf`;
+			document.body.appendChild(a);
+			a.click();
+
+			a.remove();
+			window.URL.revokeObjectURL(url);
+		}
+		catch (e: any) {
+			dispatch(
+				showToast({
+					message: e?.data?.message || "Unable to download result",
+					severity: "error",
+				}),
+			);
+		}
+		finally {
+			setDownloadingResultId(null);
 		}
 	}
 
