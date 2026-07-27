@@ -109,7 +109,7 @@ export default function AllMediaRoot() {
                 setActiveTab={setCurrentActive}
 
             />
-            <MediaFileDragDrop maxSize={30} type={currentActive} />
+            <MediaFileDragDrop maxSize={100} type={currentActive} />
             <Divider className='my-4!' />
             <div className="flex flex-col h-full justify-between gap-4">
                 <div className="top__wrapper">
