@@ -1,5 +1,5 @@
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionLabelDetailResponse, QuestionLabelFormProps, QuestionLabelList, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
+import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionLabelDetailResponse, QuestionLabelFormProps, QuestionLabelList, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestShareLinkResponse, TestTypeProps } from "../types/question";
 import type { TransactionList } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
@@ -135,6 +135,12 @@ export const questionApi = baseApi.injectEndpoints({
                 }
             }),
             invalidatesTags: [{ type: "Test", id: "LIST" }]
+        }),
+        generateTestShareLink: builder.query<TestShareLinkResponse, { id: number }>({
+            query: ({ id }) => ({
+                url: `/admin/test/${id}/generate-share-link`,
+                method: "GET",
+            }),
         }),
         getTestOverview: builder.query<TestOverviewResponse, { id?: number }>({
             query: ({ id }) => ({
@@ -636,6 +642,7 @@ export const {
     useGetTestByIdQuery,
     useDeleteTestMutation,
     useGetTestOverviewQuery,
+    useLazyGenerateTestShareLinkQuery,
     useGetTestQuestionsQuery,
     useGetListOfStudentSubmittedTestQuery,
     useGetSingleStudentResultQuery,

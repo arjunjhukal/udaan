@@ -149,6 +149,13 @@ export interface TestList {
     }
 }
 
+export interface TestShareLinkResponse {
+    data: {
+        share_link: string;
+    }
+    message: string;
+}
+
 export const testValidationSchema = Yup.object().shape({
     name: Yup.string()
         .trim()

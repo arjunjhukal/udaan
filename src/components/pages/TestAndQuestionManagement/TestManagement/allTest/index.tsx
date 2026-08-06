@@ -4,11 +4,13 @@ import { Add } from 'iconsax-reactjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PATH } from '../../../../../routes/PATH';
-import { useChangeTestStatusMutation, useDeleteTestMutation, useGetAllTestQuery } from '../../../../../services/questionApi';
+import { useChangeTestStatusMutation, useDeleteTestMutation, useGetAllTestQuery, useLazyGenerateTestShareLinkQuery } from '../../../../../services/questionApi';
 import { showToast } from '../../../../../slice/toastSlice';
 import { useAppDispatch } from '../../../../../store/hook';
 import { useCourseFilter } from '../../../../../store/useCourseFilter';
 import type { TestProps, TestTypeProps } from '../../../../../types/question';
+import { getApiErrorMessage } from '../../../../../utils/apiError';
+import { FREE_COURSE_ID } from '../../../../../utils/constants';
 import useServerSort from '../../../../../utils/useServerSort';
 import StatusPill from '../../../../atoms/StatusPill';
 import Actions from '../../../../molecules/Action';
@@ -17,6 +19,7 @@ import TabController from '../../../../molecules/TabController';
 import UdaanTable from '../../../../molecules/Table';
 import TablePagination from '../../../../molecules/Table/Pagination';
 import ConfirmationDialog from '../../../../organism/ConfirmationDialog';
+import ShareLinkDialog from '../../../../organism/Dialog/ShareLinkDialog';
 import EmptyRoute from '../../../../organism/EmptyRoute';
 import { CourseFilter } from '../../../../organism/Filter/CourseFilter';
 import ActiveFilterBar from '../../../../organism/ActiveFilterBar';
@@ -43,6 +46,9 @@ export default function AllTestListing() {
     const [layout, setLayout] = useState<LayoutProps>('table');
     const [openConfirm, setOpenConfirm] = useState(false);
     const [testsToDelete, setTestsToDelete] = useState<string[]>([]);
+    const [sharingTestId, setSharingTestId] = useState<number | null>(null);
+    const [shareLink, setShareLink] = useState<string>("");
+    const [openShare, setOpenShare] = useState(false);
     const [customRange, setCustomRange] = useState({
         startDate: "",
         endDate: ""
@@ -80,6 +86,7 @@ export default function AllTestListing() {
     });
     const [deleteTest, { isLoading: deleting }] = useDeleteTestMutation();
     const [changeStatus] = useChangeTestStatusMutation();
+    const [generateShareLink] = useLazyGenerateTestShareLinkQuery();
 
 
     const tests = data?.data?.data || [];
@@ -156,6 +163,29 @@ export default function AllTestListing() {
             )
         }
     }
+
+    const isFreeCourseTest = (test: TestProps) =>
+        !test.course_ids ? true : test.course_ids.includes(FREE_COURSE_ID);
+
+    const handleShareLink = async (id: number) => {
+        setSharingTestId(id);
+        try {
+            const response = await generateShareLink({ id }).unwrap();
+            const link = response?.data?.share_link;
+            if (!link) throw new Error("Share link is unavailable for this test.");
+            setShareLink(link);
+            setOpenShare(true);
+        } catch (e) {
+            dispatch(
+                showToast({
+                    message: getApiErrorMessage(e, "Unable to generate share link."),
+                    severity: "error",
+                })
+            );
+        } finally {
+            setSharingTestId(null);
+        }
+    };
 
     const columns = useMemo<ColumnDef<TestProps>[]>(() => [
         {
@@ -258,10 +288,12 @@ export default function AllTestListing() {
                     editUrl={PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(Number(row.original.id))}
                     viewUrl={PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(Number(row.original.id))}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
+                    onShare={isFreeCourseTest(row.original) ? () => handleShareLink(Number(row.original.id)) : undefined}
+                    sharing={sharingTestId === Number(row.original.id)}
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp, sort])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, qp, sort, sharingTestId])
 
 
     const handleResetFilter = () => {
@@ -362,6 +394,12 @@ export default function AllTestListing() {
                     <path d="M19.2297 8.14C18.9897 7.89 18.6597 7.75 18.3197 7.75H5.67975C5.33975 7.75 4.99975 7.89 4.76975 8.14C4.53975 8.39 4.40975 8.73 4.42975 9.08L5.04975 19.34C5.15975 20.86 5.29975 22.76 8.78975 22.76H15.2097C18.6997 22.76 18.8398 20.87 18.9497 19.34L19.5697 9.09C19.5897 8.73 19.4597 8.39 19.2297 8.14ZM13.6597 17.75H10.3297C9.91975 17.75 9.57975 17.41 9.57975 17C9.57975 16.59 9.91975 16.25 10.3297 16.25H13.6597C14.0697 16.25 14.4097 16.59 14.4097 17C14.4097 17.41 14.0697 17.75 13.6597 17.75ZM14.4997 13.75H9.49975C9.08975 13.75 8.74975 13.41 8.74975 13C8.74975 12.59 9.08975 12.25 9.49975 12.25H14.4997C14.9097 12.25 15.2497 12.59 15.2497 13C15.2497 13.41 14.9097 13.75 14.4997 13.75Z" fill="#1D82F5" />
                 </svg>
                 )}
+            />
+            <ShareLinkDialog
+                open={openShare}
+                setOpen={setOpenShare}
+                link={shareLink}
+                description="Share this test with anyone — no login required to preview it."
             />
             <CourseFilter
                 open={filterDialogOpen}

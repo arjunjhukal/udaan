@@ -366,6 +366,8 @@
         "unsuspend": "Un Suspend",
         "view_file": "View Attachment",
         "clone": "Clone",
+        "share_link": "Share Link",
+        "generating_link": "Generating Link...",
         "generate_otp": "Generate OTP",
         "publish": "Publish",
         "unpublish": "Unpublish",
