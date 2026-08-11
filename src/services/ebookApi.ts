@@ -27,7 +27,7 @@ export const ebookApi = baseApi.injectEndpoints({
                 });
 
                 return {
-                    url: `/ebook?${params}`,
+                    url: `/admin/ebook?${params}`,
                     method: "GET",
                 };
             },
