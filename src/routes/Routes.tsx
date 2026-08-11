@@ -43,6 +43,10 @@ import EnrollmentRoot from "../components/pages/Enrollments";
 import AllEntrollments from "../components/pages/Enrollments/AllEnrollments";
 import BundleEnrollmentPage from "../components/pages/Enrollments/BundleEnrollment";
 import TestEnrollmentPage from "../components/pages/Enrollments/TestEnrollment";
+import EbookRoot from "../components/pages/EbookManagement";
+import AllEbookRoot from "../components/pages/EbookManagement/allEbook";
+import EbookAssignedUsersRoot from "../components/pages/EbookManagement/assignedUsers";
+import CreateEbookRoot from "../components/pages/EbookManagement/createEbook";
 import GorkhapatraRoot from "../components/pages/Gorkhapatra";
 import AllGorkhapatraRoot from "../components/pages/Gorkhapatra/allGorkhapatra";
 import CreateGorkhapatraRoot from "../components/pages/Gorkhapatra/createGorkhapatra";
@@ -333,6 +337,17 @@ const router = createBrowserRouter([
 					{ path: PATH.NOTIFICATION_MANAGEMENT.ROOT, element: <AllNotificationsRoot /> },
 					{ path: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT, element: <CreateNotificationRoot /> },
 					{ path: PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(), element: <CreateNotificationRoot /> },
+				],
+			},
+			{
+				element: <Unauthorized permissions={["add_ebooks", "edit_ebooks", "delete_ebooks", "view_ebooks"]}>
+					<EbookRoot />
+				</Unauthorized>,
+				children: [
+					{ path: PATH.EBOOK.ROOT, element: <AllEbookRoot /> },
+					{ path: PATH.EBOOK.CREATE_EBOOK.ROOT, element: <CreateEbookRoot /> },
+					{ path: PATH.EBOOK.EDIT_EBOOK.ROOT(), element: <CreateEbookRoot /> },
+					{ path: PATH.EBOOK.ASSIGNED_USERS.ROOT(), element: <EbookAssignedUsersRoot /> },
 				],
 			},
 			{

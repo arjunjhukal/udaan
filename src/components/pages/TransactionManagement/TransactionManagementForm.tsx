@@ -6,6 +6,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import * as Yup from "yup";
 import SearchIcon from "../../../icons/SearchIcon";
 import { useGetAllCourseQuery, useGetCourseByIdQuery } from "../../../services/courseApi";
+import { useGetAllEbookQuery } from "../../../services/ebookApi";
 import { useGetAllBundleQuery, useGetAllIndividualTestQuery } from "../../../services/questionApi";
 import { useAddTransactionMutation, useGetTransactionByIdQuery, useUpdateTransactionByIdMutation } from "../../../services/transactionApi";
 import { useGetAllUserQuery } from "../../../services/userApi";
@@ -14,6 +15,7 @@ import { useAppDispatch } from "../../../store/hook";
 import { useCourseFilter } from "../../../store/useCourseFilter";
 import { paymentOptions } from "../../../types";
 import type { CourseProps } from "../../../types/course";
+import type { EbookProps } from "../../../types/ebook";
 import type { SetProps, TestProps } from "../../../types/question";
 import type { EnrollmentType } from "../../../types/transaction";
 import { TransactionInitialState } from "../../../types/transaction";
@@ -46,6 +48,11 @@ const enrollmentConfig = {
         caption: "(Select a test bundle)",
         placeholder: "Search Bundle",
     },
+    ebook: {
+        label: "Select eBook",
+        caption: "(Select a purchasable eBook)",
+        placeholder: "Search eBook",
+    },
 };
 
 export default function TransactionManagementForm({ open, setOpen, transactionId }: Props) {
@@ -59,15 +66,18 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     const [searchCourse, setSearchCourse] = useState("");
     const [searchTest, setSearchTest] = useState("");
     const [searchBundle, setSearchBundle] = useState("");
+    const [searchEbook, setSearchEbook] = useState("");
 
     const [qp, _setQp] = useState({ pageIndex: 1, pageSize: 3 });
     const [courseQp, setCourseQp] = useState({ pageIndex: 1, pageSize: 10 });
     const [testQp, setTestQp] = useState({ pageIndex: 1, pageSize: 10 });
     const [bundleQp, setBundleQp] = useState({ pageIndex: 1, pageSize: 10 });
+    const [ebookQp, setEbookQp] = useState({ pageIndex: 1, pageSize: 10 });
 
     const [courseList, setCourseList] = useState<CourseProps[]>([]);
     const [testList, setTestList] = useState<TestProps[]>([]);
     const [bundleList, setBundleList] = useState<SetProps[]>([]);
+    const [ebookList, setEbookList] = useState<EbookProps[]>([]);
     const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
 
     const { data: transactionData, isLoading: loadingTransaction } = useGetTransactionByIdQuery(
@@ -86,6 +96,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         if (!transaction) return;
         if (transaction.test_id && transaction.test_id > 0) setEnrollmentType("test");
         else if (transaction.bundle_id && transaction.bundle_id > 0) setEnrollmentType("bundle");
+        else if (transaction.ebook_id && transaction.ebook_id > 0) setEnrollmentType("ebook");
         else setEnrollmentType("course");
     }, [transaction]);
 
@@ -134,6 +145,9 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         bundle_id: enrollmentType === "bundle"
             ? Yup.number().min(1, "Please select a bundle").required("Please select a bundle")
             : Yup.number(),
+        ebook_id: enrollmentType === "ebook"
+            ? Yup.number().min(1, "Please select an eBook").required("Please select an eBook")
+            : Yup.number(),
         subscription_id: isSelectedCourseSubscription
             ? Yup.number().min(1, "Please select a subscription plan").required("Please select a subscription plan")
             : Yup.number(),
@@ -155,6 +169,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
             course_id: transaction.course_id || 0,
             test_id: transaction.test_id || 0,
             bundle_id: transaction.bundle_id || 0,
+            ebook_id: transaction.ebook_id || 0,
             subscription_id: transaction.subscription_id || 0,
             invoice_id: transaction.invoice_id || ``,
             transaction_id: transaction.transaction_id || "",
@@ -183,6 +198,8 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                 formData.append("test_id", String(values.test_id));
             } else if (enrollmentType === "bundle") {
                 formData.append("bundle_id", String(values.bundle_id));
+            } else if (enrollmentType === "ebook") {
+                formData.append("ebook_id", String(values.ebook_id));
             }
 
             if (values.image) {
@@ -222,10 +239,13 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         setEnrollmentType("course");
         setTestList([]);
         setBundleList([]);
+        setEbookList([]);
         setSearchTest("");
         setSearchBundle("");
+        setSearchEbook("");
         setTestQp({ pageIndex: 1, pageSize: 10 });
         setBundleQp({ pageIndex: 1, pageSize: 10 });
+        setEbookQp({ pageIndex: 1, pageSize: 10 });
         setSelectedCourseId(null);
         setOpen(false);
     };
@@ -235,6 +255,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         formik.setFieldValue("course_id", 0);
         formik.setFieldValue("test_id", 0);
         formik.setFieldValue("bundle_id", 0);
+        formik.setFieldValue("ebook_id", 0);
         formik.setFieldValue("subscription_id", 0);
         setSelectedCourseId(null);
         // Don't clear lists — existing data stays visible while fresh data loads.
@@ -242,6 +263,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         setCourseQp(prev => prev.pageIndex !== 1 ? { pageIndex: 1, pageSize: 10 } : prev);
         setTestQp(prev => prev.pageIndex !== 1 ? { pageIndex: 1, pageSize: 10 } : prev);
         setBundleQp(prev => prev.pageIndex !== 1 ? { pageIndex: 1, pageSize: 10 } : prev);
+        setEbookQp(prev => prev.pageIndex !== 1 ? { pageIndex: 1, pageSize: 10 } : prev);
     };
 
     useEffect(() => {
@@ -333,6 +355,9 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
     const { data: bundles, isLoading: loadingBundles } = useGetAllBundleQuery(
         { ...bundleQp, search: searchBundle }
     );
+    const { data: ebooks, isLoading: loadingEbooks } = useGetAllEbookQuery(
+        { ...ebookQp, search: searchEbook, status: "published" }
+    );
 
     useEffect(() => {
         if (!courses?.data?.data) return;
@@ -361,29 +386,47 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
         });
     }, [bundles, bundleQp.pageIndex]);
 
+    useEffect(() => {
+        if (!ebooks?.data?.data) return;
+        setEbookList(prev => {
+            if (ebookQp.pageIndex === 1) return ebooks.data.data;
+            const existingIds = new Set(prev.map(e => e.id));
+            return [...prev, ...ebooks.data.data.filter(e => !existingIds.has(e.id))];
+        });
+    }, [ebooks, ebookQp.pageIndex]);
+
     const hasMoreCourses = calcHasMore(courses?.data?.pagination);
     const hasMoreTests = calcHasMore(tests?.data?.pagination);
     const hasMoreBundles = calcHasMore(bundles?.data?.pagination);
+    const hasMoreEbooks = calcHasMore(ebooks?.data?.pagination);
 
     const fetchMoreCourses = () => { if (hasMoreCourses) setCourseQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 })); };
     const fetchMoreTests = () => { if (hasMoreTests) setTestQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 })); };
     const fetchMoreBundles = () => { if (hasMoreBundles) setBundleQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 })); };
+    const fetchMoreEbooks = () => { if (hasMoreEbooks) setEbookQp(prev => ({ ...prev, pageIndex: prev.pageIndex + 1 })); };
 
     const currentConfig = enrollmentConfig[enrollmentType];
-    const currentSearch = enrollmentType === "course" ? searchCourse : enrollmentType === "test" ? searchTest : searchBundle;
+    const currentSearch = enrollmentType === "course" ? searchCourse
+        : enrollmentType === "test" ? searchTest
+            : enrollmentType === "bundle" ? searchBundle : searchEbook;
     const handleSearchChange = (value: string) => {
         if (enrollmentType === "course") setSearchCourse(value);
         else if (enrollmentType === "test") setSearchTest(value);
-        else setSearchBundle(value);
+        else if (enrollmentType === "bundle") setSearchBundle(value);
+        else setSearchEbook(value);
     };
 
-    const itemListLoading = enrollmentType === "course" ? loadingCourses : enrollmentType === "test" ? loadingTests : loadingBundles;
+    const itemListLoading = enrollmentType === "course" ? loadingCourses
+        : enrollmentType === "test" ? loadingTests
+            : enrollmentType === "bundle" ? loadingBundles : loadingEbooks;
 
     const activeFieldError = enrollmentType === "course"
         ? (formik.touched.course_id && formik.errors.course_id)
         : enrollmentType === "test"
             ? (formik.touched.test_id && formik.errors.test_id)
-            : (formik.touched.bundle_id && formik.errors.bundle_id);
+            : enrollmentType === "bundle"
+                ? (formik.touched.bundle_id && formik.errors.bundle_id)
+                : (formik.touched.ebook_id && formik.errors.ebook_id);
 
     return (
         <Dialog open={open} onClose={handleClose}
@@ -446,6 +489,7 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                     { label: "Course", value: "course" },
                                     { label: "Test", value: "test" },
                                     { label: "Bundle", value: "bundle" },
+                                    { label: "eBook", value: "ebook" },
                                 ]}
                             />
 
@@ -577,6 +621,40 @@ export default function TransactionManagementForm({ open, setOpen, transactionId
                                                                         <Checkbox
                                                                             checked={formik.values.bundle_id === Number(bundle.id ?? 0)}
                                                                             onChange={() => formik.setFieldValue("bundle_id", bundle.id)}
+                                                                            color="primary"
+                                                                        />
+                                                                    }
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </InfiniteScroll>
+                                                )}
+
+                                                {/* eBook list */}
+                                                {enrollmentType === "ebook" && (
+                                                    <InfiniteScroll
+                                                        dataLength={ebookList.length}
+                                                        next={fetchMoreEbooks}
+                                                        hasMore={hasMoreEbooks}
+                                                        scrollableTarget="items__listing"
+                                                        loader={<Box sx={{ textAlign: "center", p: 2 }}><CircularProgress size={22} /></Box>}
+                                                        endMessage={ebookList.length > 0 && (
+                                                            <Typography variant="caption" sx={{ display: "block", textAlign: "center", p: 2 }}>No more items</Typography>
+                                                        )}
+                                                    >
+                                                        <div className="flex flex-col gap-0.5">
+                                                            {ebookList.length === 0 ? (
+                                                                <Box sx={{ p: 3, textAlign: "center" }}>
+                                                                    <Typography variant="body2" color="text.secondary">No items available</Typography>
+                                                                </Box>
+                                                            ) : ebookList.map((ebook) => (
+                                                                <FormControlLabel
+                                                                    key={ebook.id ?? ebook.title}
+                                                                    label={ebook.title}
+                                                                    control={
+                                                                        <Checkbox
+                                                                            checked={formik.values.ebook_id === Number(ebook.id ?? 0)}
+                                                                            onChange={() => formik.setFieldValue("ebook_id", ebook.id)}
                                                                             color="primary"
                                                                         />
                                                                     }

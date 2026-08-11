@@ -3,7 +3,7 @@ import type { GlobalResponse } from "./user";
 
 export type PaymentMethodProps = "esewa" | "khalti" | "cash" | "fonepay"
 export type PaymentStatusProps = "success" | "installment"
-export type EnrollmentType = "course" | "test" | "bundle"
+export type EnrollmentType = "course" | "test" | "bundle" | "ebook"
 
 export interface TransactionPayload {
     id?: number;
@@ -11,6 +11,7 @@ export interface TransactionPayload {
     course_id?: number;
     test_id?: number;
     bundle_id?: number;
+    ebook_id?: number;
     subscription_id: number;
     invoice_id: string;
     transaction_id: string;
@@ -24,6 +25,7 @@ export const TransactionInitialState: TransactionPayload = {
     course_id: 0,
     test_id: 0,
     bundle_id: 0,
+    ebook_id: 0,
     subscription_id: 0,
     invoice_id: "",
     transaction_id: "",
@@ -75,6 +77,7 @@ export interface TransactionDetail {
     course_id?: number;
     test_id?: number;
     bundle_id?: number;
+    ebook_id?: number;
     subscription_id: number;
     invoice_id: string;
     transaction_id: string;

@@ -59,6 +59,8 @@ export const baseApi = createApi({
         "ZoomAccount",
         "QuestionLabel",
         "OmrSetting",
+        "Ebook",
+        "EbookEnrollment",
     ],
     endpoints: () => ({}),
 });

@@ -127,6 +127,9 @@
             "all_tickets": "All Tickets",
             "chats": "Chats",
             "ticket_types": "Ticket Types"
+        },
+        "ebook": {
+            "root": "eBooks"
         }
     },
     "messages": {
@@ -312,6 +315,14 @@
             "ticket_types": {
                 "title": "No Ticket Types",
                 "description": "No ticket types defined yet. Add one above."
+            },
+            "ebook": {
+                "title": "No eBooks Found",
+                "description": "No eBooks available yet. Click the button below to create a new eBook."
+            },
+            "ebook_users": {
+                "title": "No Users Found",
+                "description": "No one has purchased or been assigned this eBook yet."
             }
         },
         "toasts": {
@@ -354,7 +365,8 @@
             "empty": "No comments yet. Be the first to comment.",
             "anonymous": "Unknown User",
             "no_users_found": "No users found"
-        }
+        },
+        "ebook": "eBook"
     },
     "actions": {
         "create": "Create",

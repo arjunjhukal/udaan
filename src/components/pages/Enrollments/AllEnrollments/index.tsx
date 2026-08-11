@@ -5,12 +5,15 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
 import { useGetAllCourseQuery } from "../../../../services/courseApi";
+import { useGetAllEbookQuery } from "../../../../services/ebookApi";
 import { useGetAllBundleQuery, useGetAllIndividualTestQuery } from "../../../../services/questionApi";
 import { useCourseFilter } from "../../../../store/useCourseFilter";
 import type { CourseProps } from "../../../../types/course";
+import type { EbookProps } from "../../../../types/ebook";
 import type { SetProps, TestProps } from "../../../../types/question";
 import type { EnrollmentType } from "../../../../types/transaction";
 import { formatDate } from "../../../../utils/dateFormat";
+import { formatNpr, getEbookPricing } from "../../../../utils/ebookPricing";
 import useServerSort from "../../../../utils/useServerSort";
 import ActionIconVisible from "../../../molecules/Action/ActionIconVisible";
 import SortableHeader from "../../../molecules/SortableHeader";
@@ -68,6 +71,9 @@ export default function AllEntrollments() {
     );
     const { data: bundleData, isLoading: loadingBundles } = useGetAllBundleQuery(
         { ...qp, search, sort_field: sort.sort_field, sort_by: sort.sort_by },
+    );
+    const { data: ebookData, isLoading: loadingEbooks } = useGetAllEbookQuery(
+        { ...qp, search, status: "published", categoryFilter: { ...categoryFilter }, sort_field: sort.sort_field, sort_by: sort.sort_by },
     );
 
     useEffect(() => {
@@ -296,17 +302,97 @@ export default function AllEntrollments() {
         },
     ], [navigate, qp, sort]);
 
-    const isLoading = activeTab === "course" ? loadingCourses : activeTab === "test" ? loadingTests : loadingBundles;
+    // ── eBook columns ───────────────────────────────────────────────────────
+    const ebookColumns = useMemo<ColumnDef<EbookProps>[]>(() => [
+        {
+            header: () => (
+                <Stack sx={{ gap: "10px" }}>
+                    <Checkbox color="primary" />
+                    <Typography fontWeight={500}>S.No.</Typography>
+                </Stack>
+            ),
+            accessorKey: "sno",
+            cell: ({ row }) => (
+                <Stack sx={{ gap: "10px" }}>
+                    <Checkbox color="primary" />
+                    <Typography fontWeight={500}>{(qp.pageIndex - 1) * qp.pageSize + row.index + 1}</Typography>
+                </Stack>
+            ),
+            size: 80,
+        },
+        {
+            header: () => <SortableHeader field="title" label="eBook Title" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            accessorKey: "title",
+            cell: ({ row }) => (
+                <Tooltip title={row.original.title} arrow>
+                    <Typography fontWeight={500} variant="subtitle1" className="line-clamp-1">
+                        {row.original.title || "N/A"}
+                    </Typography>
+                </Tooltip>
+            ),
+        },
+        {
+            header: () => <SortableHeader field="is_downloadable" label="Downloadable" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            accessorKey: "is_downloadable",
+            cell: ({ row }) => (
+                <Typography fontWeight={500}>{row.original.is_downloadable ? "Yes" : "No"}</Typography>
+            ),
+        },
+        {
+            header: () => <SortableHeader field="price" label="Price" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            accessorKey: "price",
+            cell: ({ row }) => {
+                const pricing = getEbookPricing(row.original);
+                return <Typography fontWeight={500}>{pricing.isFree ? "Free" : formatNpr(pricing.salePrice)}</Typography>;
+            },
+        },
+        {
+            header: () => <SortableHeader field="purchased_count" label="Purchased" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            accessorKey: "purchased_count",
+            cell: ({ row }) => <Typography>{row.original.purchased_count ?? 0}</Typography>,
+        },
+        {
+            header: () => <SortableHeader field="assigned_count" label="Assigned" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            accessorKey: "assigned_count",
+            cell: ({ row }) => <Typography>{row.original.assigned_count ?? 0}</Typography>,
+        },
+        {
+            header: () => <SortableHeader field="created_at" label="Created Date" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            accessorKey: "created_at",
+            cell: ({ row }) => (
+                <Typography fontWeight={500}>{formatDate(row.original?.created_at || "")}</Typography>
+            ),
+        },
+        {
+            header: "Actions",
+            accessorKey: "actions",
+            cell: ({ row }) => (
+                <ActionIconVisible
+                    onView={() => navigate(PATH.EBOOK.ASSIGNED_USERS.ROOT(Number(row.original.id)))}
+                />
+            ),
+        },
+    ], [navigate, qp, sort]);
+
+    const isLoading = activeTab === "course" ? loadingCourses
+        : activeTab === "test" ? loadingTests
+            : activeTab === "bundle" ? loadingBundles : loadingEbooks;
     const courses = courseData?.data?.data || [];
     const tests = testData?.data?.data || [];
     const bundles = bundleData?.data?.data || [];
-    const activeData = activeTab === "course" ? courses : activeTab === "test" ? tests : bundles;
+    const ebooks = ebookData?.data?.data || [];
+    const activeData = activeTab === "course" ? courses
+        : activeTab === "test" ? tests
+            : activeTab === "bundle" ? bundles : ebooks;
     const totalPages =
         activeTab === "course" ? courseData?.data?.pagination?.total_pages || 0
             : activeTab === "test" ? testData?.data?.pagination?.total_pages || 0
-                : bundleData?.data?.pagination?.total_pages || 0;
+                : activeTab === "bundle" ? bundleData?.data?.pagination?.total_pages || 0
+                    : ebookData?.data?.pagination?.total_pages || 0;
 
-    const emptyLabel = activeTab === "course" ? "course" : activeTab === "test" ? "test" : "bundle";
+    const emptyLabel = activeTab === "course" ? "course"
+        : activeTab === "test" ? "test"
+            : activeTab === "bundle" ? "bundle" : "eBook";
 
     return (
         <div className="all__enrollment__root">
@@ -318,12 +404,13 @@ export default function AllEntrollments() {
                         { label: t("messages.course") || "Course", value: "course" },
                         { label: t("messages.test") || "Test", value: "test" },
                         { label: t("messages.bundle") || "Bundle", value: "bundle" },
+                        { label: t("messages.ebook") || "eBook", value: "ebook" },
                     ]}
                 />
                 <TableFilter
                     search={search}
                     setSearch={setSearch}
-                    onFilter={activeTab === "course" ? () => setFilterDialogOpen(true) : undefined}
+                    onFilter={activeTab === "course" || activeTab === "ebook" ? () => setFilterDialogOpen(true) : undefined}
                 />
                 <ActiveFilterBar pills={appliedPills} onClearAll={resetFilters} />
             </div>
@@ -343,6 +430,9 @@ export default function AllEntrollments() {
                         )}
                         {activeTab === "bundle" && (
                             <UdaanTable data={bundles} columns={bundleColumns} loading={loadingBundles} />
+                        )}
+                        {activeTab === "ebook" && (
+                            <UdaanTable data={ebooks} columns={ebookColumns} loading={loadingEbooks} />
                         )}
                     </Box>
                     <TablePagination qp={qp} setQp={setQp} totalPages={totalPages} />
