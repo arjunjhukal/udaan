@@ -3,6 +3,7 @@ import { CloseCircle } from "iconsax-reactjs";
 import { useGetTransactionByIdQuery } from "../../../../services/transactionApi";
 import type { TransactionCourseStatus } from "../../../../types/transaction";
 import { formatDateForDisplay } from "../../../../utils/dateFormat";
+import { getModuleLabel } from "../../../../utils/moduleLabel";
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
     return (
@@ -39,6 +40,7 @@ export default function TransactionDetailDialog({ id, onClose }: { id: number | 
     const imageFilename = tx?.image_url ? tx.image_url.split("/").pop() ?? "image.png" : null;
     const courseAccess = courseAccessLabel(tx?.course_status);
     const paymentStatus = paymentStatusLabel(tx?.status);
+    const moduleLabel = getModuleLabel(tx?.module_type);
 
     return (
         <Dialog open={id !== null} onClose={onClose} maxWidth="xs" fullWidth>
@@ -77,12 +79,12 @@ export default function TransactionDetailDialog({ id, onClose }: { id: number | 
                             </>
                         )}
 
-                        <SectionHeader title="Course Purchased" />
+                        <SectionHeader title={`${moduleLabel} Purchased`} />
                         <Divider sx={{ mb: 0.5 }} />
-                        <InfoRow label="Course Name" value={tx.name || "—"} />
+                        <InfoRow label={`${moduleLabel} Name`} value={tx.name || "—"} />
                         <Divider />
                         <InfoRow
-                            label="Course Access"
+                            label={`${moduleLabel} Access`}
                             value={
                                 <Chip
                                     size="small"

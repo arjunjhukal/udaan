@@ -40,6 +40,7 @@ export interface TransactionResponse extends TransactionPayload {
     name: string;
     added_by: string;
     course_name: string;
+    module_type?: EnrollmentType;
     email: string;
     contact: string;
     created_at: string;
@@ -56,6 +57,7 @@ export interface TransactionList {
 export interface TransactionProps {
     id: number;
     name: string;
+    module_type?: EnrollmentType;
     payment_method: string;
     purchased_date: string;
     amount_paid: number;
@@ -85,6 +87,7 @@ export interface TransactionDetail {
     status: string;
     image_url?: string | null;
     name?: string;
+    module_type?: EnrollmentType;
     amount_paid?: number;
     purchased_date?: string;
     course_status?: TransactionCourseStatus;
