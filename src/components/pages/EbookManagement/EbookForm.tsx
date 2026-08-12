@@ -35,6 +35,7 @@ const validationSchema = (isEdit: boolean) => Yup.object().shape({
         .min(3, "Title must be at least 3 characters")
         .max(200, "Title must not exceed 200 characters"),
     author: Yup.string().max(150, "Author must not exceed 150 characters"),
+    publisher: Yup.string().max(150, "Publisher must not exceed 150 characters"),
     description: Yup.string()
         .required("Description is required")
         .min(10, "Description must be at least 10 characters"),
@@ -90,6 +91,7 @@ export default function EbookForm() {
             ...ebook,
             price: ebook.price?.toString() ?? "",
             author: ebook.author ?? "",
+            publisher: ebook.publisher ?? "",
             published_date: ebook.published_date ? dayjs(ebook.published_date).format("YYYY-MM-DD") : "",
             discount: Number(ebook.discount ?? 0),
             is_downloadable: Boolean(ebook.is_downloadable),
@@ -246,7 +248,7 @@ export default function EbookForm() {
                         )}
                     </div>
 
-                    <div className="flex flex-col 2xl:grid 2xl:grid-cols-2 gap-4 lg:gap-6 mb-6">
+                    <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6 mb-6">
                         <div className="input__field">
                             <InputLabel>Author</InputLabel>
                             <OutlinedInput
@@ -260,6 +262,21 @@ export default function EbookForm() {
                             />
                             {formik.touched.author && formik.errors.author && (
                                 <FormHelperText error sx={{ mt: 0.5 }}>{formik.errors.author}</FormHelperText>
+                            )}
+                        </div>
+                        <div className="input__field">
+                            <InputLabel>Publisher</InputLabel>
+                            <OutlinedInput
+                                fullWidth
+                                name="publisher"
+                                placeholder="Enter the publisher name"
+                                value={formik.values.publisher}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.publisher && Boolean(formik.errors.publisher)}
+                            />
+                            {formik.touched.publisher && formik.errors.publisher && (
+                                <FormHelperText error sx={{ mt: 0.5 }}>{formik.errors.publisher}</FormHelperText>
                             )}
                         </div>
                         <div className="input__field">

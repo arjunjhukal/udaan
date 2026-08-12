@@ -155,9 +155,11 @@ export default function AllEbookRoot() {
                                 {row.original.title || "N/A"}
                             </Typography>
                         </Tooltip>
-                        {row.original.author ? (
+                        {row.original.author || row.original.publisher ? (
                             <Typography variant="caption" color="text.middle" className="line-clamp-1">
-                                by {row.original.author}
+                                {[row.original.author && `by ${row.original.author}`, row.original.publisher]
+                                    .filter(Boolean)
+                                    .join(" · ")}
                             </Typography>
                         ) : null}
                     </div>
