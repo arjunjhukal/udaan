@@ -149,11 +149,18 @@ export default function AllEbookRoot() {
                             className="w-10 h-10 rounded-md object-cover shrink-0"
                         />
                     ) : null}
-                    <Tooltip title={row.original.title} arrow>
-                        <Typography fontWeight={500} variant="subtitle1" className="line-clamp-1">
-                            {row.original.title || "N/A"}
-                        </Typography>
-                    </Tooltip>
+                    <div className="min-w-0">
+                        <Tooltip title={row.original.title} arrow>
+                            <Typography fontWeight={500} variant="subtitle1" className="line-clamp-1">
+                                {row.original.title || "N/A"}
+                            </Typography>
+                        </Tooltip>
+                        {row.original.author ? (
+                            <Typography variant="caption" color="text.middle" className="line-clamp-1">
+                                by {row.original.author}
+                            </Typography>
+                        ) : null}
+                    </div>
                 </Stack>
             ),
         },

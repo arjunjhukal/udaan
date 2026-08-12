@@ -4,6 +4,8 @@ export const createEbookFormData = (values: EbookProps): FormData => {
     const formData = new FormData();
 
     formData.append("title", values.title);
+    formData.append("author", values.author || "");
+    formData.append("published_date", values.published_date || "");
     formData.append("description", values.description);
     formData.append("status", values.status);
     formData.append("is_downloadable", values.is_downloadable ? "1" : "0");

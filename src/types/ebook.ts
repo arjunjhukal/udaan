@@ -8,6 +8,8 @@ export type EbookStatus = "draft" | "published";
 export interface EbookProps {
     id?: number;
     title: string;
+    author: string;
+    published_date: string;
     description: string;
     price: string;
     discount: number;
@@ -32,6 +34,8 @@ export interface EbookProps {
 
 export const ebookInitialState: EbookProps = {
     title: "",
+    author: "",
+    published_date: "",
     description: "",
     price: "",
     discount: 0,

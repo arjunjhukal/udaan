@@ -1,4 +1,5 @@
 import { Autocomplete, Checkbox, Divider, FormControlLabel, FormHelperText, InputLabel, OutlinedInput, TextField, Typography } from "@mui/material";
+import dayjs from "dayjs";
 import { useFormik } from "formik";
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
@@ -14,6 +15,7 @@ import type { DiscountTypeProps } from "../../../types/course";
 import { ebookInitialState, type EbookProps } from "../../../types/ebook";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { createEbookFormData } from "../../../utils/ebookFormData";
+import MakuraDatePicker from "../../atoms/MakuraDatePicker";
 import TextEditor from "../../atoms/TextEditor";
 import FileDragDrop from "../../molecules/FileDragDrop";
 import FooterAction from "../../molecules/FooterAction";
@@ -32,6 +34,7 @@ const validationSchema = (isEdit: boolean) => Yup.object().shape({
         .required("eBook title is required")
         .min(3, "Title must be at least 3 characters")
         .max(200, "Title must not exceed 200 characters"),
+    author: Yup.string().max(150, "Author must not exceed 150 characters"),
     description: Yup.string()
         .required("Description is required")
         .min(10, "Description must be at least 10 characters"),
@@ -86,6 +89,8 @@ export default function EbookForm() {
             ...ebookInitialState,
             ...ebook,
             price: ebook.price?.toString() ?? "",
+            author: ebook.author ?? "",
+            published_date: ebook.published_date ? dayjs(ebook.published_date).format("YYYY-MM-DD") : "",
             discount: Number(ebook.discount ?? 0),
             is_downloadable: Boolean(ebook.is_downloadable),
             thumbnail: null,
@@ -239,6 +244,35 @@ export default function EbookForm() {
                         {formik.touched.title && formik.errors.title && (
                             <FormHelperText error sx={{ mt: 0.5 }}>{formik.errors.title}</FormHelperText>
                         )}
+                    </div>
+
+                    <div className="flex flex-col 2xl:grid 2xl:grid-cols-2 gap-4 lg:gap-6 mb-6">
+                        <div className="input__field">
+                            <InputLabel>Author</InputLabel>
+                            <OutlinedInput
+                                fullWidth
+                                name="author"
+                                placeholder="Enter the author name"
+                                value={formik.values.author}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                error={formik.touched.author && Boolean(formik.errors.author)}
+                            />
+                            {formik.touched.author && formik.errors.author && (
+                                <FormHelperText error sx={{ mt: 0.5 }}>{formik.errors.author}</FormHelperText>
+                            )}
+                        </div>
+                        <div className="input__field">
+                            <InputLabel>Published Date</InputLabel>
+                            <MakuraDatePicker
+                                value={formik.values.published_date ? dayjs(formik.values.published_date) : null}
+                                onChange={(newValue) =>
+                                    formik.setFieldValue("published_date", newValue ? newValue.format("YYYY-MM-DD") : "")
+                                }
+                                maxDate={dayjs()}
+                                placeholder="Select published date"
+                            />
+                        </div>
                     </div>
 
                     <div className="flex flex-col 2xl:grid 2xl:grid-cols-2 gap-4 lg:gap-6">
