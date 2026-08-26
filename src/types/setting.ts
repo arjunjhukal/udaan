@@ -119,14 +119,6 @@ export const TEMPLATE_VARIABLES: Record<string, string[]> = {
     inactive_state: ["user_name"],
 };
 
-export const TEMPLATE_VARIABLES: Record<string, string[]> = {
-    transaction: ["user_name", "amount", "transaction_id", "date"],
-    password_reset: ["user_name", "reset_link", "expiry_time"],
-    otp: ["user_name", "otp", "expiry_time"],
-    welcome_email: ["user_name", "login_url"],
-    device_reset_request: ["user_name", "device_name"],
-    inactive_state: ["user_name"],
-};
 export interface EmailTemplateProps {
     actor: EmailTemplateActor;
     method: EmailTemplateMethod;
