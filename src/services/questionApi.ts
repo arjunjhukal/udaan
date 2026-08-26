@@ -195,11 +195,18 @@ export const questionApi = baseApi.injectEndpoints({
                 responseHandler: (response) => response.blob(),
             }),
         }),
-        downloadTestResults: builder.mutation<Blob & GlobalResponse, { testId: number }>({
-            query: ({ testId }) => ({
-                url: `/admin/test/${testId}/result/download`,
+        downloadTestResults: builder.mutation<{ blob: Blob; filename?: string }, { testId: number; format?: "pdf" | "xlsx" | "csv" }>({
+            query: ({ testId, format }) => ({
+                url: `/admin/test/${testId}/result/download${format ? `?format=${format}` : ""}`,
                 method: "GET",
-                responseHandler: (response) => response.blob(),
+                responseHandler: async (response) => {
+                    if (!response.ok) {
+                        try { return await response.json(); } catch { return {}; }
+                    }
+                    const cd = response.headers.get("content-disposition") ?? "";
+                    const filename = cd.match(/filename="(.+?)"/)?.[1];
+                    return { blob: await response.blob(), filename };
+                },
             }),
         }),
         submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string } }>({
