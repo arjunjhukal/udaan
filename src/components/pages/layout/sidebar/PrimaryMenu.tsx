@@ -644,6 +644,26 @@ export default function PrimaryMenu({ collapsed = false }: PrimaryMenuProps) {
                     </ListItem>
                 </CAN>
 
+                {/* eBooks */}
+                <CAN permissions={["add_ebooks", "edit_ebooks", "delete_ebooks", "view_ebooks"]}>
+                    <ListItem disablePadding className="menu__item">
+                        <Tooltip title={collapsed ? t("menus.ebook.root") : ""} placement="right" arrow>
+                            <ListItemButton
+                                onClick={() => navigate(PATH.EBOOK.ROOT)}
+                                className={location.pathname.startsWith(PATH.EBOOK.ROOT) ? "active" : ""}
+                                sx={btnSx}
+                            >
+                                <ListItemIcon sx={iconSx}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
+                                        <path d="M13.8337 11.0417V1.66667C13.8337 1.11438 13.386 0.666668 12.8337 0.666668H4.16699C2.51014 0.666668 1.16699 2.00981 1.16699 3.66667V11.3333C1.16699 12.9902 2.51014 14.3333 4.16699 14.3333H12.8337C13.386 14.3333 13.8337 13.8856 13.8337 13.3333V13.0417M13.8337 11.0417H4.16699C3.24652 11.0417 2.50033 11.7879 2.50033 12.7083C2.50033 13.6288 3.24652 14.375 4.16699 14.375M13.8337 11.0417V13.0417M4.83366 4H10.167" stroke="#9CA3B0" strokeLinecap="round" strokeLinejoin="round" />
+                                    </svg>
+                                </ListItemIcon>
+                                {!collapsed && <ListItemText primary={t("menus.ebook.root")} />}
+                            </ListItemButton>
+                        </Tooltip>
+                    </ListItem>
+                </CAN>
+
                 {/* Gorkhapatra */}
                 <CAN permissions={["add_gorkhapatras", "edit_gorkhapatras", "delete_gorkhapatras", "view_gorkhapatras"]}>
                     <ListItem disablePadding className="menu__item">

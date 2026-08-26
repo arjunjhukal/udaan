@@ -30,19 +30,29 @@ interface TableFilterProps {
     assignToCourse?: () => void;
     setDays?: React.Dispatch<React.SetStateAction<number | null>>;
     handleResetFilter?: () => void;
-    onDownload?: () => void;
+    onDownload?: (format?: string) => void;
+    downloadFormats?: Array<{ label: string; format: string }>;
     onStatusChange?: () => void;
     donwloading?: boolean;
     redirectUrl?: string;
     onAssignMarks?: () => void;
 }
 export default function TableFilter({
-    search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter, onDownload, donwloading, redirectUrl,
+    search, setSearch, selectedRows, handleRoleDelete, onFilter, layout, categoryLayout, title, setLayout, onPublish, customRange, setCustomRange, assignToCourse, setDays, handleResetFilter, onDownload, downloadFormats, donwloading, redirectUrl,
     onStatusChange, onAssignMarks,
 }: TableFilterProps) {
     const theme = useTheme();
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLButtonElement | null>(null);
+    const [downloadMenuOpen, setDownloadMenuOpen] = useState(false);
+    const downloadAnchorRef = useRef<HTMLButtonElement | null>(null);
+
+    const handleDownloadMenuClose = (event: Event | React.SyntheticEvent) => {
+        if (downloadAnchorRef.current && downloadAnchorRef.current.contains(event.target as HTMLElement)) {
+            return;
+        }
+        setDownloadMenuOpen(false);
+    };
 
     const handleToggle = () => setOpen((prev) => !prev);
 
@@ -334,11 +344,60 @@ export default function TableFilter({
                             </Typography>
                         </Button>
                     )}
-                    {onDownload ? <Button onClick={onDownload} disabled={donwloading} startIcon={donwloading ? <CircularProgress size={16} color="inherit" /> : <Download sx={{ color: (theme) => theme.palette.primary.black }} />} sx={{
-                        border: `1px solid ${theme.palette.separator.dark}`
-                    }} className="py-2.5! px-3.5! rounded-md!">
-                        <Typography variant="subtitle1" color="text.dark">{donwloading ? "Downloading..." : "Download"}</Typography>
-                    </Button> : ""}
+                    {onDownload ? (
+                        <>
+                            <Button
+                                ref={downloadAnchorRef}
+                                onClick={() => {
+                                    if (downloadFormats && downloadFormats.length > 0) {
+                                        setDownloadMenuOpen((prev) => !prev);
+                                    } else {
+                                        onDownload();
+                                    }
+                                }}
+                                disabled={donwloading}
+                                startIcon={donwloading ? <CircularProgress size={16} color="inherit" /> : <Download sx={{ color: (theme) => theme.palette.primary.black }} />}
+                                sx={{ border: `1px solid ${theme.palette.separator.dark}` }}
+                                className="py-2.5! px-3.5! rounded-md!"
+                            >
+                                <Typography variant="subtitle1" color="text.dark">{donwloading ? "Downloading..." : "Download"}</Typography>
+                            </Button>
+                            {downloadFormats && downloadFormats.length > 0 && (
+                                <Popper
+                                    open={downloadMenuOpen}
+                                    anchorEl={downloadAnchorRef.current}
+                                    transition
+                                    placement="bottom-end"
+                                    disablePortal
+                                    sx={{ zIndex: 10 }}
+                                >
+                                    {({ TransitionProps }) => (
+                                        <Grow {...TransitionProps}>
+                                            <Paper elevation={3}>
+                                                <ClickAwayListener onClickAway={handleDownloadMenuClose}>
+                                                    <List className="min-w-[180px] p-2!">
+                                                        {downloadFormats.map((opt) => (
+                                                            <ListItem key={opt.format} className="menu__item action__item">
+                                                                <ListItemButton
+                                                                    sx={{ m: 0, border: "none" }}
+                                                                    onClick={() => {
+                                                                        setDownloadMenuOpen(false);
+                                                                        onDownload(opt.format);
+                                                                    }}
+                                                                >
+                                                                    <ListItemText primary={opt.label} />
+                                                                </ListItemButton>
+                                                            </ListItem>
+                                                        ))}
+                                                    </List>
+                                                </ClickAwayListener>
+                                            </Paper>
+                                        </Grow>
+                                    )}
+                                </Popper>
+                            )}
+                        </>
+                    ) : ""}
                     {onStatusChange ? <Button
                         disabled={selectedRows!.size === 0}
                         onClick={onStatusChange} startIcon={<Status />} sx={{

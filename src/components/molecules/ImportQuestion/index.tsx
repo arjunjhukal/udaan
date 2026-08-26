@@ -1,5 +1,6 @@
-import { Box, FormControlLabel, FormHelperText, InputLabel, LinearProgress, OutlinedInput, Radio, Typography, useTheme } from "@mui/material";
+import { Box, Button, Dialog, DialogContent, FormControlLabel, FormHelperText, InputLabel, LinearProgress, OutlinedInput, Radio, Typography, useTheme } from "@mui/material";
 import { useFormik } from "formik";
+import { Edit2 } from "iconsax-reactjs";
 import { useCallback, useState } from "react";
 import { useDropzone, type Accept } from "react-dropzone";
 import * as Yup from "yup";
@@ -8,12 +9,26 @@ import { showToast } from "../../../slice/toastSlice";
 import { useAppDispatch } from "../../../store/hook";
 import type { QuestionProps } from "../../../types/question";
 import { renderHtml } from "../../../utils/renderHtml";
+import QuestionManagementForm from "../../pages/TestAndQuestionManagement/QuestionManagement/QuestionManagementForm";
 import FooterAction from "../FooterAction";
 
 interface MediaFileDragDropProps {
     maxSize?: number;
     onClose: () => void;
 }
+
+const normalizeQuestion = (question: QuestionProps): QuestionProps => ({
+    ...question,
+    points: question.points ?? 0,
+    question_type: question.question_type ?? "mcq",
+    megacategory_id: question.megacategory_id ?? null,
+    has_image_in_option: question.has_image_in_option ?? false,
+    options: question.options?.map((option) => ({
+        id: option.id ?? null,
+        option: option.option,
+        is_correct: option.is_correct ?? false
+    })) ?? []
+});
 
 export default function ImportQuestion({
     maxSize = 2,
@@ -23,6 +38,7 @@ export default function ImportQuestion({
     const dispatch = useAppDispatch();
     const [uploadMedia, { isLoading }] = useUploadQuestionPaperMutation();
     const [questions, setQuestions] = useState<QuestionProps[]>([]);
+    const [editIndex, setEditIndex] = useState<number | null>(null);
     const [_isDragging, setIsDragging] = useState(false);
 
     const getAcceptTypes = (): Accept => ({
@@ -37,7 +53,7 @@ export default function ImportQuestion({
             const response = await uploadMedia({ body: formData }).unwrap();
 
             if (response.data?.length) {
-                setQuestions((prev) => [...prev, ...response.data])
+                setQuestions((prev) => [...prev, ...response.data.map(normalizeQuestion)])
             }
 
             dispatch(
@@ -81,19 +97,8 @@ export default function ImportQuestion({
     const [saveQuestions, { isLoading: saving }] = useSaveUploadedQuestionsMutation();
 
     const formik = useFormik({
-        enableReinitialize: true,
         initialValues: {
-            title: "",
-            questions: questions.map(q => ({
-                id: q.id,
-                question: q.question,
-                question_type: q.question_type,
-                options: q.options.map(opt => ({
-                    id: opt.id,
-                    option: opt.option,
-                    is_correct: opt.is_correct
-                })),
-            })),
+            title: ""
         },
         validationSchema: Yup.object().shape({
             title: Yup.string()
@@ -104,13 +109,28 @@ export default function ImportQuestion({
         }),
         onSubmit: async (values) => {
             try {
-                const response = await saveQuestions({ title: values.title, question: values.questions }).unwrap();
+                const response = await saveQuestions({
+                    title: values.title,
+                    question: questions.map((question) => ({
+                        id: question.id,
+                        question: question.question,
+                        question_type: question.question_type,
+                        points: question.points,
+                        megacategory_id: question.megacategory_id,
+                        has_image_in_option: question.has_image_in_option,
+                        options: question.options.map((option) => ({
+                            id: option.id,
+                            option: option.option,
+                            is_correct: option.is_correct
+                        }))
+                    }))
+                }).unwrap();
 
                 dispatch(showToast({
                     message: response?.message || "Questions saved successfully",
                     severity: "success"
                 }));
-                
+
                 onClose();
             }
             catch (e: any) {
@@ -125,11 +145,26 @@ export default function ImportQuestion({
     });
 
     const handleCorrectAnswerChange = (questionIndex: number, optionIndex: number) => {
-        const updatedOptions = formik.values.questions[questionIndex].options.map((opt, idx) => ({
-            ...opt,
-            is_correct: idx === optionIndex
-        }));
-        formik.setFieldValue(`questions.${questionIndex}.options`, updatedOptions);
+        setQuestions((prev) =>
+            prev.map((question, index) =>
+                index === questionIndex
+                    ? {
+                        ...question,
+                        options: question.options.map((option, idx) => ({
+                            ...option,
+                            is_correct: idx === optionIndex
+                        }))
+                    }
+                    : question
+            )
+        );
+    };
+
+    const handleQuestionSave = (values: QuestionProps) => {
+        setQuestions((prev) =>
+            prev.map((question, index) => (index === editIndex ? normalizeQuestion(values) : question))
+        );
+        setEditIndex(null);
     };
 
     const renderOption = (option: any, questionIndex: number, optionIndex: number, isCorrect: boolean, isUserWrong?: boolean) => {
@@ -148,7 +183,7 @@ export default function ImportQuestion({
 
         return (
             <Box
-                key={option.option + option.id}
+                key={optionIndex}
                 className="rounded-lg p-3 col-span-1 flex items-center gap-1"
                 sx={{ border: `1px solid ${borderColor}`, backgroundColor: bgColor }}
             >
@@ -195,7 +230,6 @@ export default function ImportQuestion({
                 {isLoading ?
                     <LinearProgress sx={{ width: "100%", height: 4 }} />
                     :
-
                     ""}
             </Box>
 
@@ -204,50 +238,99 @@ export default function ImportQuestion({
 
 
     return (
-        <form onSubmit={formik.handleSubmit} className="h-full overflow-hidden">
-            <Box
-                className="flex flex-col justify-start items-start gap-3 p-3  rounded-lg  overflow-auto"
+        <>
+            <form onSubmit={formik.handleSubmit} className="h-full overflow-hidden">
+                <Box
+                    className="flex flex-col justify-start items-start gap-3 p-3  rounded-lg  overflow-auto"
+                    sx={{
+                        height: "calc(100% - 150px)"
+                    }}
+                >
+                    <div className="input__field w-full mb-2">
+                        <InputLabel className="required">Group Title</InputLabel>
+                        <OutlinedInput
+                            fullWidth
+                            name="title"
+                            value={formik.values.title}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            placeholder="Enter a title to group these questions (e.g. Chapter 1 – Algebra)"
+                            error={formik.touched.title && Boolean(formik.errors.title)}
+                        />
+                        {formik.touched.title && formik.errors.title && (
+                            <FormHelperText error sx={{ mt: 0.5 }}>
+                                {formik.errors.title}
+                            </FormHelperText>
+                        )}
+                    </div>
+
+                    {questions.map((question, questionIndex) => (
+                        <Box className="question__box w-full pb-4 mb-4 lg:pb-8 lg:mb-8 border-b last:border-b-0 last:mb-0 last:pb-0" key={questionIndex} sx={{ borderColor: (theme) => theme.palette.separator.dark }}>
+                            <div className="flex justify-between items-center mb-6">
+                                <Typography variant="body2">Question {questionIndex + 1} of {questions.length}</Typography>
+                                <Button
+                                    size="small"
+                                    color="primary"
+                                    className="gap-1! items-center!"
+                                    startIcon={<Edit2 size={18} />}
+                                    onClick={() => setEditIndex(questionIndex)}
+                                >
+                                    <Typography variant="subtitle2">Edit Question</Typography>
+                                </Button>
+                            </div>
+                            <Typography variant="subtitle1" className="mb-2!">{renderHtml(question.question)}</Typography>
+                            {question.question_type === "subjective" ? (
+                                <Typography variant="body2" color="text.secondary">
+                                    Subjective — {question.points} mark(s)
+                                </Typography>
+                            ) : (
+                                <div className="flex flex-col gap-4 md:grid md:grid-cols-2 w-full">
+                                    {question.options.map((option: any, optionIndex: number) =>
+                                        renderOption(option, questionIndex, optionIndex, option.is_correct)
+                                    )}
+                                </div>
+                            )}
+                        </Box>
+                    ))}
+                </Box>
+                <FooterAction
+                    handleConfirmationChange={onClose}
+                    isLoading={saving}
+                    replaceLabel="Verify & Submit"
+                />
+            </form>
+
+            <Dialog
+                open={editIndex !== null}
+                onClose={() => setEditIndex(null)}
                 sx={{
-                    height: "calc(100% - 150px)"
+                    "& .MuiPaper-root": {
+                        minWidth: {
+                            md: "664px",
+                            xl: "1266px"
+                        },
+                        height: "90vh",
+                        overflow: "hidden"
+                    },
                 }}
             >
-                <div className="input__field w-full mb-2">
-                    <InputLabel className="required">Group Title</InputLabel>
-                    <OutlinedInput
-                        fullWidth
-                        name="title"
-                        value={formik.values.title}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        placeholder="Enter a title to group these questions (e.g. Chapter 1 – Algebra)"
-                        error={formik.touched.title && Boolean(formik.errors.title)}
-                    />
-                    {formik.touched.title && formik.errors.title && (
-                        <FormHelperText error sx={{ mt: 0.5 }}>
-                            {formik.errors.title}
-                        </FormHelperText>
+                <DialogContent
+                    sx={{ background: theme.palette.primary.contrastText }}
+                    className="h-full overflow-hidden"
+                >
+                    {editIndex !== null && (
+                        <QuestionManagementForm
+                            open
+                            setOpen={(value) => {
+                                if (!value) setEditIndex(null);
+                            }}
+                            editData={questions[editIndex]}
+                            onSave={handleQuestionSave}
+                            submitLabel="Save Changes"
+                        />
                     )}
-                </div>
-
-                {formik.values.questions.length ? formik.values.questions.map((question, questionIndex) => (
-                    <Box className="question__box w-full pb-4 mb-4 lg:pb-8 lg:mb-8 border-b last:border-b-0 last:mb-0 last:pb-0" key={question.id} sx={{ borderColor: (theme) => theme.palette.separator.dark }}>
-                        <div className="flex justify-between items-center">
-                            <Typography className="mb-6!" variant="body2">Question {questionIndex + 1} of {questions?.length}</Typography>
-                        </div>
-                        <Typography variant="subtitle1" className="mb-2!">{renderHtml(question.question)}</Typography>
-                        <div className="flex flex-col gap-4 md:grid md:grid-cols-2 w-full">
-                            {question.options.map((option: any, optionIndex: number) => {
-                                return renderOption(option, questionIndex, optionIndex, option.is_correct);
-                            })}
-                        </div>
-                    </Box>
-                )) : ""}
-            </Box>
-            <FooterAction
-                handleConfirmationChange={onClose}
-                isLoading={saving}
-                replaceLabel="Verify & Submit"
-            />
-        </form>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }

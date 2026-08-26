@@ -1,5 +1,5 @@
 import type { CategoryFilterParams, QueryParams } from "../types";
-import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionLabelDetailResponse, QuestionLabelFormProps, QuestionLabelList, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestTypeProps } from "../types/question";
+import type { OmrFormatList, OmrFormatProps, OmrList, OMRType, QuestionLabelDetailResponse, QuestionLabelFormProps, QuestionLabelList, QuestionList, QuestionProps, QuestionTypeProps, SetList, SetProps, StudentSubmitTestList, StudentSubmitTestProps, TestList, TestOverviewResponse, TestProps, TestShareLinkResponse, TestTypeProps } from "../types/question";
 import type { TransactionList } from "../types/transaction";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
@@ -136,6 +136,12 @@ export const questionApi = baseApi.injectEndpoints({
             }),
             invalidatesTags: [{ type: "Test", id: "LIST" }]
         }),
+        generateTestShareLink: builder.query<TestShareLinkResponse, { id: number }>({
+            query: ({ id }) => ({
+                url: `/admin/test/${id}/generate-share-link`,
+                method: "GET",
+            }),
+        }),
         getTestOverview: builder.query<TestOverviewResponse, { id?: number }>({
             query: ({ id }) => ({
                 url: `/admin/test/${id}/overview`,
@@ -189,11 +195,18 @@ export const questionApi = baseApi.injectEndpoints({
                 responseHandler: (response) => response.blob(),
             }),
         }),
-        downloadTestResults: builder.mutation<Blob & GlobalResponse, { testId: number }>({
-            query: ({ testId }) => ({
-                url: `/admin/test/${testId}/results/download`,
+        downloadTestResults: builder.mutation<{ blob: Blob; filename?: string }, { testId: number; format?: "pdf" | "xlsx" | "csv" }>({
+            query: ({ testId, format }) => ({
+                url: `/admin/test/${testId}/result/download${format ? `?format=${format}` : ""}`,
                 method: "GET",
-                responseHandler: (response) => response.blob(),
+                responseHandler: async (response) => {
+                    if (!response.ok) {
+                        try { return await response.json(); } catch { return {}; }
+                    }
+                    const cd = response.headers.get("content-disposition") ?? "";
+                    const filename = cd.match(/filename="(.+?)"/)?.[1];
+                    return { blob: await response.blob(), filename };
+                },
             }),
         }),
         submitTestFeedback: builder.mutation<GlobalResponse, { id?: number, resultId?: number, body: { feedback: string } }>({
@@ -636,6 +649,7 @@ export const {
     useGetTestByIdQuery,
     useDeleteTestMutation,
     useGetTestOverviewQuery,
+    useLazyGenerateTestShareLinkQuery,
     useGetTestQuestionsQuery,
     useGetListOfStudentSubmittedTestQuery,
     useGetSingleStudentResultQuery,

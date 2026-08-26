@@ -30,3 +30,10 @@ export interface GorkhapatraList {
         pagination: Pagination;
     }
 }
+
+export interface GorkhapatraShareLinkResponse {
+    data: {
+        share_link: string;
+    }
+    message: string;
+}

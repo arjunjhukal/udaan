@@ -1,5 +1,5 @@
 import type { QueryParams } from "../types";
-import type { GorkhapatraList, GorkhapatraProps, GorkhapatraTypes } from "../types/gorkhapatra";
+import type { GorkhapatraList, GorkhapatraProps, GorkhapatraShareLinkResponse, GorkhapatraTypes } from "../types/gorkhapatra";
 import type { GlobalResponse } from "../types/user";
 import { buildQueryParams } from "../utils/buildQueryParams";
 import { baseApi } from "./baseApi";
@@ -70,6 +70,12 @@ export const gorkhapatraApi = baseApi.injectEndpoints({
             }),
             providesTags: (_result, _error, { id }) => [{ type: "Gorkhapatra", id }],
         }),
+        generateGorkhapatraShareLink: builder.query<GorkhapatraShareLinkResponse, { id: number }>({
+            query: ({ id }) => ({
+                url: `/admin/gorkhapatra/${id}/generate-share-link`,
+                method: "GET",
+            }),
+        }),
         changeGorkhapatraStauts: builder.mutation<GlobalResponse, { body: number[] }>({
             query: ({ body }) => ({
                 url: `/admin/gorkhapatra/status`,
@@ -89,5 +95,6 @@ export const {
     useEditGorkhapatraMutation,
     useDeleteGorkhapatraMutation,
     useGetGorkhapatraByIdQuery,
-    useChangeGorkhapatraStautsMutation
+    useChangeGorkhapatraStautsMutation,
+    useLazyGenerateGorkhapatraShareLinkQuery
 } = gorkhapatraApi;

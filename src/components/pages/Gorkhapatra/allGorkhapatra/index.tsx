@@ -4,10 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { PATH } from "../../../../routes/PATH";
-import { useChangeGorkhapatraStautsMutation, useDeleteGorkhapatraMutation, useGetAllGorkhapatraQuery } from "../../../../services/gorkhapatraApi";
+import { useChangeGorkhapatraStautsMutation, useDeleteGorkhapatraMutation, useGetAllGorkhapatraQuery, useLazyGenerateGorkhapatraShareLinkQuery } from "../../../../services/gorkhapatraApi";
 import { showToast } from "../../../../slice/toastSlice";
 import { useAppDispatch } from "../../../../store/hook";
 import type { GorkhapatraProps } from "../../../../types/gorkhapatra";
+import { getApiErrorMessage } from "../../../../utils/apiError";
 import { formatDate } from "../../../../utils/dateFormat";
 import { renderHtml } from "../../../../utils/renderHtml";
 import { getPublishedStatus, type PublishedStatus } from "../../../../utils/statusMap";
@@ -20,6 +21,7 @@ import UdaanTable from "../../../molecules/Table";
 import TablePagination from "../../../molecules/Table/Pagination";
 import GorkhapatraCard from "../../../organism/Cards/GorkhapatraCard";
 import ConfirmationDialog from "../../../organism/ConfirmationDialog";
+import ShareLinkDialog from "../../../organism/Dialog/ShareLinkDialog";
 import EmptyRoute from "../../../organism/EmptyRoute";
 import PageHeader from "../../../organism/PageHeader";
 import type { LayoutProps } from "../../../organism/TableFilter";
@@ -39,6 +41,9 @@ export default function AllGorkhapatraRoot() {
     })
     const [openConfirm, setOpenConfirm] = useState(false);
     const [gorkhapatraToDelete, setGorkhapatraToDelete] = useState<string[]>([]);
+    const [sharingGorkhapatraId, setSharingGorkhapatraId] = useState<number | null>(null);
+    const [shareLink, setShareLink] = useState<string>("");
+    const [openShare, setOpenShare] = useState(false);
     const [layout, setLayout] = useState<LayoutProps>("table");
     const [customRange, setCustomRange] = useState({
         startDate: "",
@@ -68,6 +73,7 @@ export default function AllGorkhapatraRoot() {
 
     const [deleteGorkhapatra, { isLoading: deleting }] = useDeleteGorkhapatraMutation();
     const [changeStatus] = useChangeGorkhapatraStautsMutation();
+    const [generateShareLink] = useLazyGenerateGorkhapatraShareLinkQuery();
 
     const gorkhapatras = data?.data?.data || []
     const pagination = data?.data?.pagination;
@@ -154,6 +160,26 @@ export default function AllGorkhapatraRoot() {
             )
         }
     }
+
+    const handleShareLink = async (id: number) => {
+        setSharingGorkhapatraId(id);
+        try {
+            const response = await generateShareLink({ id }).unwrap();
+            const link = response?.data?.share_link;
+            if (!link) throw new Error("Share link is unavailable for this gorkhapatra.");
+            setShareLink(link);
+            setOpenShare(true);
+        } catch (e) {
+            dispatch(
+                showToast({
+                    message: getApiErrorMessage(e, "Unable to generate share link."),
+                    severity: "error",
+                })
+            );
+        } finally {
+            setSharingGorkhapatraId(null);
+        }
+    };
 
     const columns = useMemo<ColumnDef<GorkhapatraProps>[]>(() => [
         {
@@ -258,10 +284,12 @@ export default function AllGorkhapatraRoot() {
                     editUrl={row.original.id != null ? PATH.GORKHAPATRA.EDIT_GORKHAPATRA.ROOT(row.original.id) : undefined}
                     viewUrl={row.original.id != null ? PATH.GORKHAPATRA.EDIT_GORKHAPATRA.ROOT(row.original.id) : undefined}
                     onDelete={() => openDeleteConfirmation([row.original.id?.toString() || ""])}
+                    onShare={row.original.id != null ? () => handleShareLink(Number(row.original.id)) : undefined}
+                    sharing={sharingGorkhapatraId === row.original.id}
                 />
             ),
         },
-    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp, sort])
+    ], [selectedRows, isAllSelected, isSomeSelected, deleting, navigate, qp, sort, sharingGorkhapatraId])
 
 
     const handleResetFilter = () => {
@@ -348,6 +376,13 @@ export default function AllGorkhapatraRoot() {
                     </>
                 )
             }
+            <ShareLinkDialog
+                open={openShare}
+                setOpen={setOpenShare}
+                link={shareLink}
+                title="Share Gorkhapatra"
+                description="Anyone with this link can open this gorkhapatra."
+            />
             <ConfirmationDialog
                 open={openConfirm}
                 setOpen={setOpenConfirm}

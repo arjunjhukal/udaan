@@ -48,6 +48,8 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 	);
 	const [publishTestResults] = usePublishTestResultsMutation();
 	const [downloadTestResults, { isLoading: isDownloading }] = useDownloadTestResultsMutation();
+	// const [downloadResult] = useDownloadResultMutation();
+	// const [downloadingResultId, setDownloadingResultId] = useState<number | null>(null);
 
 	const results = data?.data?.data || [];
 	const pagination = data?.data?.pagination;
@@ -276,6 +278,9 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 									),
 								)
 							}
+						// onDownload={() =>
+						// 	handleDownloadStudentResult(row.original.id, row.original?.student?.name)
+						// }
 						/>
 						{testType === "omr" && (row.original?.attempt_number ?? 1) > 1 && (
 							<Tooltip title="View All Attempts">
@@ -306,15 +311,16 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 		[selectedRows, isAllSelected, isSomeSelected, testType, sort],
 	);
 
-	const handleDownloadResults = async () => {
+	const handleDownloadResults = async (format?: string) => {
 		try {
-			const blob = await downloadTestResults({ testId: Number(id) }).unwrap();
+			const fmt = (format as "pdf" | "xlsx" | "csv" | undefined) ?? "pdf";
+			const { blob, filename } = await downloadTestResults({ testId: Number(id), format: fmt }).unwrap();
 
 			const url = window.URL.createObjectURL(blob);
 			const a = document.createElement("a");
 
 			a.href = url;
-			a.download = `test-${id}-results.xlsx`;
+			a.download = filename || `test-${id}-results.${fmt}`;
 			document.body.appendChild(a);
 			a.click();
 
@@ -330,6 +336,36 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 			);
 		}
 	}
+
+	// const handleDownloadStudentResult = async (resultId: number, studentName?: string) => {
+	// 	if (downloadingResultId) return;
+	// 	try {
+	// 		setDownloadingResultId(resultId);
+	// 		const blob = await downloadResult({ testId: Number(id), resultId }).unwrap();
+
+	// 		const url = window.URL.createObjectURL(blob);
+	// 		const a = document.createElement("a");
+
+	// 		a.href = url;
+	// 		a.download = `${studentName || "student"}-result.pdf`;
+	// 		document.body.appendChild(a);
+	// 		a.click();
+
+	// 		a.remove();
+	// 		window.URL.revokeObjectURL(url);
+	// 	}
+	// 	catch (e: any) {
+	// 		dispatch(
+	// 			showToast({
+	// 				message: e?.data?.message || "Unable to download result",
+	// 				severity: "error",
+	// 			}),
+	// 		);
+	// 	}
+	// 	finally {
+	// 		setDownloadingResultId(null);
+	// 	}
+	// }
 
 	const handleTestResultPublish = async () => {
 		try {
@@ -361,6 +397,11 @@ export default function StudentResult({ id, testType }: { id: string; testType?:
 				onFilter={() => { }}
 				onPublish={handleTestResultPublish}
 				onDownload={handleDownloadResults}
+				downloadFormats={[
+					{ label: "PDF", format: "pdf" },
+					{ label: "Excel (.xlsx)", format: "xlsx" },
+					{ label: "CSV", format: "csv" },
+				]}
 				donwloading={isDownloading}
 			/>
 			{!isLoading && !results.length ? (

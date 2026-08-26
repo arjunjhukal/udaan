@@ -11,7 +11,7 @@ import {
     Typography
 } from "@mui/material";
 import { useFormik } from "formik";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import * as Yup from "yup";
 import { useGetAllMegaCategoryQuery } from "../../../../services/categoryApi";
 import { useEditOrCreateQuestionMutation } from "../../../../services/questionApi";
@@ -26,6 +26,8 @@ export interface Props {
     open: boolean;
     setOpen: (newValue: boolean) => void;
     editData?: QuestionProps | null;
+    onSave?: (values: QuestionProps) => void;
+    submitLabel?: string;
 }
 
 const questionTypes = [
@@ -33,13 +35,13 @@ const questionTypes = [
     { label: "Subjective", value: "subjective" }
 ];
 
-const questionValidationSchema = Yup.object().shape({
+const buildQuestionValidationSchema = (requireMegaCategory: boolean) => Yup.object().shape({
     question_type: Yup.string()
         .oneOf(["mcq", "subjective"], "Invalid question type")
         .required("Question type is required"),
-    megacategory_id: Yup.number()
-        .nullable()
-        .required("Mega category is required"),
+    megacategory_id: requireMegaCategory
+        ? Yup.number().nullable().required("Mega category is required")
+        : Yup.number().nullable(),
     points: Yup.number().when("question_type", {
         is: "subjective",
         then: (schema) =>
@@ -74,7 +76,7 @@ const questionValidationSchema = Yup.object().shape({
         otherwise: (schema) => schema.notRequired()
     })
 });
-export default function QuestionManagementForm({ setOpen, editData }: Props) {
+export default function QuestionManagementForm({ setOpen, editData, onSave, submitLabel }: Props) {
     const dispatch = useAppDispatch();
     const { data } = useGetAllMegaCategoryQuery();
     const megaCategories = data?.data || [];
@@ -83,12 +85,21 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
 
     const isEditMode = Boolean(editData?.id);
 
+    const validationSchema = useMemo(
+        () => buildQuestionValidationSchema(!onSave),
+        [onSave]
+    );
 
     const formik = useFormik<QuestionProps>({
         initialValues: editData || QuestionInitialState,
-        validationSchema: questionValidationSchema,
+        validationSchema,
         enableReinitialize: true,
         onSubmit: async (values) => {
+            if (onSave) {
+                onSave(values);
+                setOpen(false);
+                return;
+            }
             try {
                 const response = await createOrUpdateQuestion({ body: values }).unwrap();
                 dispatch(
@@ -406,12 +417,12 @@ export default function QuestionManagementForm({ setOpen, editData }: Props) {
                 isLoading={isLoading}
                 isEditMode={isEditMode}
                 isUpdating={isLoading}
-                replaceLabel={isEditMode ? isLoading
+                replaceLabel={submitLabel ?? (isEditMode ? isLoading
                     ? "Updating Question..."
                     : "Update Question"
                     : isLoading
                         ? "Creating Question..."
-                        : "Create Question"}
+                        : "Create Question")}
             />
         </form>
     );

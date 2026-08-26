@@ -239,6 +239,20 @@ export const PATH = {
 				id ? `/notification-management/${id}` : "/notification-management/:id",
 		},
 	},
+	EBOOK: {
+		ROOT: "/ebooks",
+		CREATE_EBOOK: {
+			ROOT: "/ebooks/create",
+		},
+		EDIT_EBOOK: {
+			ROOT: (id?: number) =>
+				id ? `/ebooks/${id}/edit` : "/ebooks/:id/edit",
+		},
+		ASSIGNED_USERS: {
+			ROOT: (id?: number) =>
+				id ? `/ebooks/${id}/users` : "/ebooks/:id/users",
+		},
+	},
 	GORKHAPATRA: {
 		ROOT: "/gorkhapatra",
 		CREATE_GORKHAPATRA: {

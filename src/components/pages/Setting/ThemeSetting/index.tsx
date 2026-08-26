@@ -23,9 +23,13 @@ export default function ThemeSettingRoot() {
             logo_url: data?.data?.logo_url || "",
             logo_dark_url: data?.data?.logo_dark_url || "",
             favicon_url: data?.data?.favicon_url || "",
+            login_image_url: data?.data?.login_image_url || "",
+            fallback_image_url: data?.data?.fallback_image_url || "",
             logo: null,
             logo_dark: null,
             favicon: null,
+            login_image: null,
+            fallback_image: null,
         },
         enableReinitialize: true,
         onSubmit: async (values) => {
@@ -40,6 +44,10 @@ export default function ThemeSettingRoot() {
             else if (values.logo_dark_url) fd.append("logo_dark_url", values.logo_dark_url);
             if (values.favicon) fd.append("favicon", values.favicon);
             else if (values.favicon_url) fd.append("favicon_url", values.favicon_url);
+            if (values.login_image) fd.append("login_image", values.login_image);
+            else if (values.login_image_url) fd.append("login_image_url", values.login_image_url);
+            if (values.fallback_image) fd.append("fallback_image", values.fallback_image);
+            else if (values.fallback_image_url) fd.append("fallback_image_url", values.fallback_image_url);
 
             try {
                 const response = await updateTheme(fd).unwrap();
@@ -142,6 +150,30 @@ export default function ThemeSettingRoot() {
                     onFileChange={(f) => {
                         formik.setFieldValue("favicon", f);
                         if (!f) formik.setFieldValue("favicon_url", "");
+                    }}
+                />
+
+                {/* Login Image */}
+                <FileDragDrop
+                    label="Login Image"
+                    initialPreview={formik.values.login_image_url}
+                    helperText="Displayed on the login screen — JPG or PNG recommended"
+                    maxSize={5}
+                    onFileChange={(f) => {
+                        formik.setFieldValue("login_image", f);
+                        if (!f) formik.setFieldValue("login_image_url", "");
+                    }}
+                />
+
+                {/* Fallback Image */}
+                <FileDragDrop
+                    label="Fallback Image"
+                    initialPreview={formik.values.fallback_image_url}
+                    helperText="Shown when other images fail to load — JPG or PNG recommended"
+                    maxSize={5}
+                    onFileChange={(f) => {
+                        formik.setFieldValue("fallback_image", f);
+                        if (!f) formik.setFieldValue("fallback_image_url", "");
                     }}
                 />
             </div>

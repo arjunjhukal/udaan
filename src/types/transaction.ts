@@ -3,7 +3,7 @@ import type { GlobalResponse } from "./user";
 
 export type PaymentMethodProps = "esewa" | "khalti" | "cash" | "fonepay"
 export type PaymentStatusProps = "success" | "installment"
-export type EnrollmentType = "course" | "test" | "bundle"
+export type EnrollmentType = "course" | "test" | "bundle" | "ebook"
 
 export interface TransactionPayload {
     id?: number;
@@ -11,6 +11,7 @@ export interface TransactionPayload {
     course_id?: number;
     test_id?: number;
     bundle_id?: number;
+    ebook_id?: number;
     subscription_id: number;
     invoice_id: string;
     transaction_id: string;
@@ -24,6 +25,7 @@ export const TransactionInitialState: TransactionPayload = {
     course_id: 0,
     test_id: 0,
     bundle_id: 0,
+    ebook_id: 0,
     subscription_id: 0,
     invoice_id: "",
     transaction_id: "",
@@ -38,6 +40,7 @@ export interface TransactionResponse extends TransactionPayload {
     name: string;
     added_by: string;
     course_name: string;
+    module_type?: EnrollmentType;
     email: string;
     contact: string;
     created_at: string;
@@ -54,6 +57,7 @@ export interface TransactionList {
 export interface TransactionProps {
     id: number;
     name: string;
+    module_type?: EnrollmentType;
     payment_method: string;
     purchased_date: string;
     amount_paid: number;
@@ -75,6 +79,7 @@ export interface TransactionDetail {
     course_id?: number;
     test_id?: number;
     bundle_id?: number;
+    ebook_id?: number;
     subscription_id: number;
     invoice_id: string;
     transaction_id: string;
@@ -82,6 +87,7 @@ export interface TransactionDetail {
     status: string;
     image_url?: string | null;
     name?: string;
+    module_type?: EnrollmentType;
     amount_paid?: number;
     purchased_date?: string;
     course_status?: TransactionCourseStatus;

@@ -12,8 +12,8 @@ import {
     Popper,
     useTheme
 } from "@mui/material";
-import { ArrangeHorizontal, Copy, Send, Slash } from "iconsax-reactjs";
-import { useRef, useState } from "react";
+import { ArrangeHorizontal, Copy, Send, Share, Slash } from "iconsax-reactjs";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 import { showAttachment } from "../../../slice/attachmentSlice";
@@ -30,12 +30,14 @@ interface Props {
     onClone?: () => void;
     onGenerateOtp?: () => void;
     onStatus?: () => void;
+    onShare?: () => void;
+    sharing?: boolean;
     userStatus?: boolean;
     file?: string;
     courseStatus?: "published" | "draft"
 }
 
-export default function Actions({ onEdit, onDelete, onView, deleting = false, onSuspend, userStatus, file, onClone, onGenerateOtp, onStatus, courseStatus, viewUrl, editUrl }: Props) {
+export default function Actions({ onEdit, onDelete, onView, deleting = false, onSuspend, userStatus, file, onClone, onGenerateOtp, onStatus, onShare, sharing = false, courseStatus, viewUrl, editUrl }: Props) {
     const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const anchorRef = useRef<HTMLButtonElement | null>(null);
@@ -55,6 +57,12 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
         action();
         setOpen(false);
     };
+
+    const wasSharing = useRef(false);
+    useEffect(() => {
+        if (wasSharing.current && !sharing) setOpen(false);
+        wasSharing.current = sharing;
+    }, [sharing]);
 
     return (
         <Box>
@@ -243,6 +251,17 @@ export default function Actions({ onEdit, onDelete, onView, deleting = false, on
                                                 {courseStatus === "draft" ? <Send size={20} color={theme.palette.separator.darker} /> : <Slash size={20} color={theme.palette.separator.darker} />}
                                             </ListItemIcon>
                                             <ListItemText primary={courseStatus === "draft" ? t("actions.publish") : t("actions.unpublish")} />
+                                        </ListItemButton>
+                                    </ListItem> : ""}
+                                    {onShare ? <ListItem className="menu__item action__item">
+                                        <ListItemButton disabled={sharing} sx={{
+                                            m: 0,
+                                            border: "none"
+                                        }} onClick={onShare}>
+                                            <ListItemIcon>
+                                                <Share size={20} color={theme.palette.separator.darker} />
+                                            </ListItemIcon>
+                                            <ListItemText primary={sharing ? t("actions.generating_link") : t("actions.share_link")} />
                                         </ListItemButton>
                                     </ListItem> : ""}
                                     {file ? <ListItem className="menu__item action__item view__item">

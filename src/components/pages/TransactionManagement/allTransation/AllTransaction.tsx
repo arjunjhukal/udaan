@@ -11,6 +11,7 @@ import { useCourseFilter } from '../../../../store/useCourseFilter';
 import { DeviceFilter, paymentOptions, StatusFilter, type DeviceType, type Status } from '../../../../types';
 import type { EnrollmentType, TransactionResponse } from '../../../../types/transaction';
 import { formatDate } from '../../../../utils/dateFormat';
+import { getModuleNameLabel } from '../../../../utils/moduleLabel';
 import useServerSort from '../../../../utils/useServerSort';
 import Actions from '../../../molecules/Action';
 import SortableHeader from '../../../molecules/SortableHeader';
@@ -198,7 +199,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
             ),
         },
         {
-            header: () => <SortableHeader field="course_name" label={enrollmentType === "course" ? "Course Name" : enrollmentType === "test" ? "Test Name" : "Bundle Name"} activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            header: () => <SortableHeader field="course_name" label={getModuleNameLabel(enrollmentType)} activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "course_name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.course_name} arrow>
@@ -332,6 +333,7 @@ export default function AllTransaction({ open, setOpen }: Props) {
                         { label: "Course", value: "course" },
                         { label: "Test", value: "test" },
                         { label: "Bundle", value: "bundle" },
+                        { label: "eBook", value: "ebook" },
                     ]}
                 />
                 <TableFilter

@@ -7,6 +7,7 @@ import { useGetAllUserTransacionsQuery } from "../../../../services/transactionA
 import { useGetUserTransactionAnalyticsQuery, useGetUserTransactionPaymentMethodsQuery } from "../../../../services/userApi";
 import type { TransactionProps } from "../../../../types/transaction";
 import { formatDateForDisplay } from "../../../../utils/dateFormat";
+import { getModuleLabel } from "../../../../utils/moduleLabel";
 import { getTransactionStatus } from "../../../../utils/statusMap";
 import useServerSort from "../../../../utils/useServerSort";
 import ActionIconVisible from "../../../molecules/Action/ActionIconVisible";
@@ -49,7 +50,7 @@ export default function UserTransactions() {
             ),
         },
         {
-            header: () => <SortableHeader field="name" label="Course Name" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            header: () => <SortableHeader field="name" label="Purchased Item" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
             accessorKey: "name",
             cell: ({ row }) => (
                 <Tooltip title={row.original.name} arrow>
@@ -57,6 +58,13 @@ export default function UserTransactions() {
                         {row.original.name || "N/A"}
                     </Typography>
                 </Tooltip>
+            ),
+        },
+        {
+            header: () => <SortableHeader field="module_type" label="Type" activeField={sort.sort_field} activeOrder={sort.sort_by} onSortChange={onSort} />,
+            accessorKey: "module_type",
+            cell: ({ row }) => (
+                <Typography variant="subtitle1">{getModuleLabel(row.original.module_type)}</Typography>
             ),
         },
         {
