@@ -1,266 +1,233 @@
+import { lazy, Suspense, type ReactNode } from "react";
+import { Box, CircularProgress } from "@mui/material";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-// Pages & Layouts
-import App from "../App";
-import LiveAnalyticsPage from "../components/pages/LiveAnalytics";
-import CategoryManagementRoot from "../components/pages/CategoryManagement";
-import AllCategories from "../components/pages/CategoryManagement/allCategory";
-
-import ActivityRoot from "../components/pages/ActivityLog";
-import ArchivedLogs from "../components/pages/ActivityLog/ArchivedLogs";
-import ContentManagementRoot from "../components/pages/ContentManagement";
-import HomeScreens from "../components/pages/ContentManagement/HomeScreens";
-import BannerRoot from "../components/pages/ContentManagement/HomeScreens/Banner";
-import FeaturedCourseRoot from "../components/pages/ContentManagement/HomeScreens/FeaturedCourse";
-import WelcomePopupRoot from "../components/pages/ContentManagement/HomeScreens/WelcomePopup";
-import OnBoardingScreenRoot from "../components/pages/ContentManagement/OnBoardingScreen";
-import PagesRoot from "../components/pages/ContentManagement/Pages";
-import PageCreationForm from "../components/pages/ContentManagement/Pages/PageCreationForm";
-import SplashScreenRoot from "../components/pages/ContentManagement/SplashScreen";
-import ControlsRoot from "../components/pages/Controls";
-import CourseManagementRoot from "../components/pages/CourseManagement/Course";
-import AllCourse from "../components/pages/CourseManagement/Course/allCourse";
-import CourseAnalyticsRootLayout from "../components/pages/CourseManagement/Course/analytics";
-import CreateCourseRoot from "../components/pages/CourseManagement/Course/createCourse";
-import CourseMedia from "../components/pages/CourseManagement/Course/createCourse/CourseMedia";
-import CourseCurriculumForm from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum";
-import CourseTest from "../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Test";
-import LiveClassRoot from "../components/pages/CourseManagement/LiveClass";
-import AllLiveClass from "../components/pages/CourseManagement/LiveClass/allLiveClass";
-import CreateLiveClassRoot from "../components/pages/CourseManagement/LiveClass/createLiveClass";
-import SetRoot from "../components/pages/CourseManagement/Sets";
-import AllSets from "../components/pages/CourseManagement/Sets/AllSets";
-import CreateSet from "../components/pages/CourseManagement/Sets/CreateSet";
-import QuizManagementRoot from "../components/pages/CourseManagement/quiz";
-import AllQuizes from "../components/pages/CourseManagement/quiz/allQuiz";
-import DeviceResetManagementRoot from "../components/pages/DeviceResetManagement";
-import DeviceResetDetailPage from "../components/pages/DeviceResetManagement/DeviceResetDetailPage";
-import DiscussionManagementRoot from "../components/pages/DiscussionManagement";
-import DiscussionDetail from "../components/pages/DiscussionManagement/DiscussionDetail";
-import DiscussionForm from "../components/pages/DiscussionManagement/DiscussionForm";
-import AllDiscussions from "../components/pages/DiscussionManagement/allDiscussions";
-import EnrollmentRoot from "../components/pages/Enrollments";
-import AllEntrollments from "../components/pages/Enrollments/AllEnrollments";
-import BundleEnrollmentPage from "../components/pages/Enrollments/BundleEnrollment";
-import TestEnrollmentPage from "../components/pages/Enrollments/TestEnrollment";
-import EbookRoot from "../components/pages/EbookManagement";
-import AllEbookRoot from "../components/pages/EbookManagement/allEbook";
-import EbookAssignedUsersRoot from "../components/pages/EbookManagement/assignedUsers";
-import CreateEbookRoot from "../components/pages/EbookManagement/createEbook";
-import GorkhapatraRoot from "../components/pages/Gorkhapatra";
-import AllGorkhapatraRoot from "../components/pages/Gorkhapatra/allGorkhapatra";
-import CreateGorkhapatraRoot from "../components/pages/Gorkhapatra/createGorkhapatra";
-import MediaManagementRoot from "../components/pages/MediaManagement";
-import AllMediaRoot from "../components/pages/MediaManagement/allMedia";
-import ModerationManagementRoot from "../components/pages/ModerationManagement";
-import WordModeration from "../components/pages/ModerationManagement/WordModeration";
-import NotificationRoot from "../components/pages/NotificationManagement";
-import AllNotificationsRoot from "../components/pages/NotificationManagement/allNotification";
-import CreateNotificationRoot from "../components/pages/NotificationManagement/createNotification";
-import RoleManagementRoot from "../components/pages/RoleManagement";
-import AllRoles from "../components/pages/RoleManagement/allRoles";
-import CreateRoleRoot from "../components/pages/RoleManagement/createRole";
-import AppSettingRoot from "../components/pages/Setting/AppSetting";
-import ChangePassword from "../components/pages/Setting/ChangePassword";
-import LinkedDevices from "../components/pages/Setting/LinkedDevices";
-import ProfilePageRoot from "../components/pages/Setting/Profile";
-import EsewaSettingRoot from "../components/pages/Setting/ApiSetting/Esewa";
-import KhaltiSettingRoot from "../components/pages/Setting/ApiSetting/Khalti";
-import SmsGatewayRoot from "../components/pages/Setting/ApiSetting/SmsGateway";
-import ZoomSettingRoot from "../components/pages/Setting/ApiSetting/Zoom";
-import CourseSettingRoot from "../components/pages/Setting/CourseSetting";
-import OmrSettingRoot from "../components/pages/Setting/OmrSetting";
-import EmailTemplatesRoot from "../components/pages/Setting/EmailTemplates";
-import LoginTypeRoot from "../components/pages/Setting/LoginType";
-import SiteInfoRoot from "../components/pages/Setting/SiteInfo";
-import SmtpSettingRoot from "../components/pages/Setting/Smtp";
-import SettingRoot from "../components/pages/Setting";
-import SubscriptionManagementRoot from "../components/pages/SubscriptionManagement";
-import TestAndQuestionManagementRoot from "../components/pages/TestAndQuestionManagement";
-import OmrSheetRoot from "../components/pages/TestAndQuestionManagement/OmrSheets";
-import OmrFormatForm from "../components/pages/TestAndQuestionManagement/OmrSheets/OmrFormatForm";
-import AllOmrSheets from "../components/pages/TestAndQuestionManagement/OmrSheets/allOmr";
-import AllOmrFormats from "../components/pages/TestAndQuestionManagement/OmrSheets/allOmrFormat";
-import QuestionManagementRoot from "../components/pages/TestAndQuestionManagement/QuestionManagement";
-import TestManagementRoot from "../components/pages/TestAndQuestionManagement/TestManagement";
-import AllIndividualTestListing from "../components/pages/TestAndQuestionManagement/TestManagement/allIndividualTest";
-import SingleStudentSingleQuestion from "../components/pages/TestAndQuestionManagement/TestManagement/checkSinlgeQuestion";
-import QuestionAnswerLisitingLayout from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest/Layout";
-import SingleStudentAnswerLayout from "../components/pages/TestAndQuestionManagement/TestManagement/checkTest/SingleStudentAnswerLayout";
-import CreatTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/createTest";
-import ResultRoot from "../components/pages/TestAndQuestionManagement/TestManagement/result";
-import ViewTestRoot from "../components/pages/TestAndQuestionManagement/TestManagement/viewTest";
-import TicketManagementRoot from "../components/pages/TicketManagement";
-import TicketTypes from "../components/pages/TicketManagement/TicketTypes";
-import AllTickets from "../components/pages/TicketManagement/allTickets";
-import TicketChats from "../components/pages/TicketManagement/chats";
-import TicketChatPage from "../components/pages/TicketManagement/chats/TicketChatPage";
-import TransactionManagementRoot from "../components/pages/TransactionManagement";
-import AllTransactionRoot from "../components/pages/TransactionManagement/allTransation";
-import AuthRoot from "../components/pages/auth";
-import Login from "../components/pages/auth/login";
-import NotFound from "../components/pages/layout/NotFound";
-import SingleFormAuthLayout from "../components/pages/layout/SingleFormAuthLayout";
-import AllPositions from "../components/pages/positionManagement/allPositions";
-import UserManagementRoot from "../components/pages/userManagement";
-import AllUsers from "../components/pages/userManagement/allUsers";
-import CreateUser from "../components/pages/userManagement/createUser";
-import ViewUserRoot from "../components/pages/userManagement/viewUser";
-import ProfileTab from "../components/pages/userManagement/viewUser/tabs/ProfileTab";
-import CoursesTab from "../components/pages/userManagement/viewUser/tabs/CoursesTab";
-import TransactionsTab from "../components/pages/userManagement/viewUser/tabs/TransactionsTab";
-import DeviceRequestsTab from "../components/pages/userManagement/viewUser/tabs/DeviceRequestsTab";
-import PerformanceTab from "../components/pages/userManagement/viewUser/tabs/PerformanceTab";
-import UserLoginHistory from "../components/pages/userManagement/viewUser/UserLoginHistory";
-import UserActivityHistory from "../components/pages/userManagement/viewUser/UserActivityHistory";
 import { PATH } from "./PATH";
 import Private from "./Private";
 import Unauthorized from "./Unauthorized";
-import QuestionLabelsRoot from "../components/pages/TestAndQuestionManagement/QuestionLabels";
-import QuestionLabelDetail from "../components/pages/TestAndQuestionManagement/QuestionLabels/detail";
+
+function RouteFallback() {
+  return (
+    <Box className="w-full flex items-center justify-center" sx={{ minHeight: "60vh" }}>
+      <CircularProgress size={32} />
+    </Box>
+  );
+}
+
+const S = (node: ReactNode) => <Suspense fallback={<RouteFallback />}>{node}</Suspense>;
+
+const App = lazy(() => import("../App"));
+const LiveAnalyticsPage = lazy(() => import("../components/pages/LiveAnalytics"));
+const CategoryManagementRoot = lazy(() => import("../components/pages/CategoryManagement"));
+const AllCategories = lazy(() => import("../components/pages/CategoryManagement/allCategory"));
+
+const ActivityRoot = lazy(() => import("../components/pages/ActivityLog"));
+const ArchivedLogs = lazy(() => import("../components/pages/ActivityLog/ArchivedLogs"));
+const ContentManagementRoot = lazy(() => import("../components/pages/ContentManagement"));
+const HomeScreens = lazy(() => import("../components/pages/ContentManagement/HomeScreens"));
+const BannerRoot = lazy(() => import("../components/pages/ContentManagement/HomeScreens/Banner"));
+const FeaturedCourseRoot = lazy(() => import("../components/pages/ContentManagement/HomeScreens/FeaturedCourse"));
+const WelcomePopupRoot = lazy(() => import("../components/pages/ContentManagement/HomeScreens/WelcomePopup"));
+const OnBoardingScreenRoot = lazy(() => import("../components/pages/ContentManagement/OnBoardingScreen"));
+const PagesRoot = lazy(() => import("../components/pages/ContentManagement/Pages"));
+const PageCreationForm = lazy(() => import("../components/pages/ContentManagement/Pages/PageCreationForm"));
+const SplashScreenRoot = lazy(() => import("../components/pages/ContentManagement/SplashScreen"));
+const ControlsRoot = lazy(() => import("../components/pages/Controls"));
+const CourseManagementRoot = lazy(() => import("../components/pages/CourseManagement/Course"));
+const AllCourse = lazy(() => import("../components/pages/CourseManagement/Course/allCourse"));
+const CourseAnalyticsRootLayout = lazy(() => import("../components/pages/CourseManagement/Course/analytics"));
+const CreateCourseRoot = lazy(() => import("../components/pages/CourseManagement/Course/createCourse"));
+const CourseMedia = lazy(() => import("../components/pages/CourseManagement/Course/createCourse/CourseMedia"));
+const CourseCurriculumForm = lazy(() => import("../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Curriculum"));
+const CourseTest = lazy(() => import("../components/pages/CourseManagement/Course/createCourse/CourseSubFields/Test"));
+const LiveClassRoot = lazy(() => import("../components/pages/CourseManagement/LiveClass"));
+const AllLiveClass = lazy(() => import("../components/pages/CourseManagement/LiveClass/allLiveClass"));
+const CreateLiveClassRoot = lazy(() => import("../components/pages/CourseManagement/LiveClass/createLiveClass"));
+const SetRoot = lazy(() => import("../components/pages/CourseManagement/Sets"));
+const AllSets = lazy(() => import("../components/pages/CourseManagement/Sets/AllSets"));
+const CreateSet = lazy(() => import("../components/pages/CourseManagement/Sets/CreateSet"));
+const QuizManagementRoot = lazy(() => import("../components/pages/CourseManagement/quiz"));
+const AllQuizes = lazy(() => import("../components/pages/CourseManagement/quiz/allQuiz"));
+const DeviceResetManagementRoot = lazy(() => import("../components/pages/DeviceResetManagement"));
+const DeviceResetDetailPage = lazy(() => import("../components/pages/DeviceResetManagement/DeviceResetDetailPage"));
+const DiscussionManagementRoot = lazy(() => import("../components/pages/DiscussionManagement"));
+const DiscussionDetail = lazy(() => import("../components/pages/DiscussionManagement/DiscussionDetail"));
+const DiscussionForm = lazy(() => import("../components/pages/DiscussionManagement/DiscussionForm"));
+const AllDiscussions = lazy(() => import("../components/pages/DiscussionManagement/allDiscussions"));
+const EnrollmentRoot = lazy(() => import("../components/pages/Enrollments"));
+const AllEntrollments = lazy(() => import("../components/pages/Enrollments/AllEnrollments"));
+const BundleEnrollmentPage = lazy(() => import("../components/pages/Enrollments/BundleEnrollment"));
+const TestEnrollmentPage = lazy(() => import("../components/pages/Enrollments/TestEnrollment"));
+const EbookRoot = lazy(() => import("../components/pages/EbookManagement"));
+const AllEbookRoot = lazy(() => import("../components/pages/EbookManagement/allEbook"));
+const EbookAssignedUsersRoot = lazy(() => import("../components/pages/EbookManagement/assignedUsers"));
+const CreateEbookRoot = lazy(() => import("../components/pages/EbookManagement/createEbook"));
+const GorkhapatraRoot = lazy(() => import("../components/pages/Gorkhapatra"));
+const AllGorkhapatraRoot = lazy(() => import("../components/pages/Gorkhapatra/allGorkhapatra"));
+const CreateGorkhapatraRoot = lazy(() => import("../components/pages/Gorkhapatra/createGorkhapatra"));
+const MediaManagementRoot = lazy(() => import("../components/pages/MediaManagement"));
+const AllMediaRoot = lazy(() => import("../components/pages/MediaManagement/allMedia"));
+const ModerationManagementRoot = lazy(() => import("../components/pages/ModerationManagement"));
+const WordModeration = lazy(() => import("../components/pages/ModerationManagement/WordModeration"));
+const NotificationRoot = lazy(() => import("../components/pages/NotificationManagement"));
+const AllNotificationsRoot = lazy(() => import("../components/pages/NotificationManagement/allNotification"));
+const CreateNotificationRoot = lazy(() => import("../components/pages/NotificationManagement/createNotification"));
+const RoleManagementRoot = lazy(() => import("../components/pages/RoleManagement"));
+const AllRoles = lazy(() => import("../components/pages/RoleManagement/allRoles"));
+const CreateRoleRoot = lazy(() => import("../components/pages/RoleManagement/createRole"));
+const AppSettingRoot = lazy(() => import("../components/pages/Setting/AppSetting"));
+const ChangePassword = lazy(() => import("../components/pages/Setting/ChangePassword"));
+const LinkedDevices = lazy(() => import("../components/pages/Setting/LinkedDevices"));
+const ProfilePageRoot = lazy(() => import("../components/pages/Setting/Profile"));
+const EsewaSettingRoot = lazy(() => import("../components/pages/Setting/ApiSetting/Esewa"));
+const KhaltiSettingRoot = lazy(() => import("../components/pages/Setting/ApiSetting/Khalti"));
+const SmsGatewayRoot = lazy(() => import("../components/pages/Setting/ApiSetting/SmsGateway"));
+const ZoomSettingRoot = lazy(() => import("../components/pages/Setting/ApiSetting/Zoom"));
+const CourseSettingRoot = lazy(() => import("../components/pages/Setting/CourseSetting"));
+const OmrSettingRoot = lazy(() => import("../components/pages/Setting/OmrSetting"));
+const EmailTemplatesRoot = lazy(() => import("../components/pages/Setting/EmailTemplates"));
+const LoginTypeRoot = lazy(() => import("../components/pages/Setting/LoginType"));
+const SiteInfoRoot = lazy(() => import("../components/pages/Setting/SiteInfo"));
+const SmtpSettingRoot = lazy(() => import("../components/pages/Setting/Smtp"));
+const SettingRoot = lazy(() => import("../components/pages/Setting"));
+const SubscriptionManagementRoot = lazy(() => import("../components/pages/SubscriptionManagement"));
+const TestAndQuestionManagementRoot = lazy(() => import("../components/pages/TestAndQuestionManagement"));
+const OmrSheetRoot = lazy(() => import("../components/pages/TestAndQuestionManagement/OmrSheets"));
+const OmrFormatForm = lazy(() => import("../components/pages/TestAndQuestionManagement/OmrSheets/OmrFormatForm"));
+const AllOmrSheets = lazy(() => import("../components/pages/TestAndQuestionManagement/OmrSheets/allOmr"));
+const AllOmrFormats = lazy(() => import("../components/pages/TestAndQuestionManagement/OmrSheets/allOmrFormat"));
+const QuestionManagementRoot = lazy(() => import("../components/pages/TestAndQuestionManagement/QuestionManagement"));
+const TestManagementRoot = lazy(() => import("../components/pages/TestAndQuestionManagement/TestManagement"));
+const AllIndividualTestListing = lazy(() => import("../components/pages/TestAndQuestionManagement/TestManagement/allIndividualTest"));
+const SingleStudentSingleQuestion = lazy(() => import("../components/pages/TestAndQuestionManagement/TestManagement/checkSinlgeQuestion"));
+const QuestionAnswerLisitingLayout = lazy(() => import("../components/pages/TestAndQuestionManagement/TestManagement/checkTest/Layout"));
+const SingleStudentAnswerLayout = lazy(() => import("../components/pages/TestAndQuestionManagement/TestManagement/checkTest/SingleStudentAnswerLayout"));
+const CreatTestRoot = lazy(() => import("../components/pages/TestAndQuestionManagement/TestManagement/createTest"));
+const ResultRoot = lazy(() => import("../components/pages/TestAndQuestionManagement/TestManagement/result"));
+const ViewTestRoot = lazy(() => import("../components/pages/TestAndQuestionManagement/TestManagement/viewTest"));
+const TicketManagementRoot = lazy(() => import("../components/pages/TicketManagement"));
+const TicketTypes = lazy(() => import("../components/pages/TicketManagement/TicketTypes"));
+const AllTickets = lazy(() => import("../components/pages/TicketManagement/allTickets"));
+const TicketChats = lazy(() => import("../components/pages/TicketManagement/chats"));
+const TicketChatPage = lazy(() => import("../components/pages/TicketManagement/chats/TicketChatPage"));
+const TransactionManagementRoot = lazy(() => import("../components/pages/TransactionManagement"));
+const AllTransactionRoot = lazy(() => import("../components/pages/TransactionManagement/allTransation"));
+const AuthRoot = lazy(() => import("../components/pages/auth"));
+const Login = lazy(() => import("../components/pages/auth/login"));
+const NotFound = lazy(() => import("../components/pages/layout/NotFound"));
+const SingleFormAuthLayout = lazy(() => import("../components/pages/layout/SingleFormAuthLayout"));
+const AllPositions = lazy(() => import("../components/pages/positionManagement/allPositions"));
+const UserManagementRoot = lazy(() => import("../components/pages/userManagement"));
+const AllUsers = lazy(() => import("../components/pages/userManagement/allUsers"));
+const CreateUser = lazy(() => import("../components/pages/userManagement/createUser"));
+const ViewUserRoot = lazy(() => import("../components/pages/userManagement/viewUser"));
+const ProfileTab = lazy(() => import("../components/pages/userManagement/viewUser/tabs/ProfileTab"));
+const CoursesTab = lazy(() => import("../components/pages/userManagement/viewUser/tabs/CoursesTab"));
+const TransactionsTab = lazy(() => import("../components/pages/userManagement/viewUser/tabs/TransactionsTab"));
+const DeviceRequestsTab = lazy(() => import("../components/pages/userManagement/viewUser/tabs/DeviceRequestsTab"));
+const PerformanceTab = lazy(() => import("../components/pages/userManagement/viewUser/tabs/PerformanceTab"));
+const UserLoginHistory = lazy(() => import("../components/pages/userManagement/viewUser/UserLoginHistory"));
+const UserActivityHistory = lazy(() => import("../components/pages/userManagement/viewUser/UserActivityHistory"));
+const QuestionLabelsRoot = lazy(() => import("../components/pages/TestAndQuestionManagement/QuestionLabels"));
+const QuestionLabelDetail = lazy(() => import("../components/pages/TestAndQuestionManagement/QuestionLabels/detail"));
 
 const router = createBrowserRouter([
 	{
-		element: <AuthRoot />,
+		element: S(<AuthRoot />),
 		children: [
 			{
 				path: PATH.AUTH.LOGIN.ROOT,
-				element: (
+				element: S(
 					<SingleFormAuthLayout>
 						<Login requirePassword={true} />
 					</SingleFormAuthLayout>
 				),
 			},
-
 		],
 	},
 
-	// 🔒 PRIVATE MODULE
 	{
 		element: <Private />,
 		children: [
+			{ index: true, path: "/", element: S(<App />) },
+			{ path: PATH.DASHBOARD.ROOT, element: S(<App />) },
+			{ path: PATH.LIVE_ANALYTICS.ROOT, element: S(<LiveAnalyticsPage />) },
 			{
-				index: true,
-				path: "/",
-				element: <App />,
-			},
-			{
-				path: PATH.DASHBOARD.ROOT,
-				element: <App />,
-			},
-			{
-				path: PATH.LIVE_ANALYTICS.ROOT,
-				element: <LiveAnalyticsPage />,
-			},
-			{
-				element: <Unauthorized permissions={["add_courses", "edit_courses", "delete_courses", "view_courses"]}><CourseManagementRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_courses", "edit_courses", "delete_courses", "view_courses"]}><CourseManagementRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.COURSE_MANAGEMENT.COURSES.ROOT, element: <AllCourse /> },
-					{ path: PATH.COURSE_MANAGEMENT.COURSES.CREATE_COURSE.ROOT, element: <CreateCourseRoot /> },
+					{ path: PATH.COURSE_MANAGEMENT.COURSES.ROOT, element: S(<AllCourse />) },
+					{ path: PATH.COURSE_MANAGEMENT.COURSES.CREATE_COURSE.ROOT, element: S(<CreateCourseRoot />) },
 					{
-						path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(), element: <CreateCourseRoot />,
+						path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.ROOT(),
+						element: S(<CreateCourseRoot />),
 						children: [
-							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.CURRICULUM.ROOT(), element: <CourseCurriculumForm /> },
-							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.VIDEOS.ROOT(), element: <CourseMedia type="videos" /> },
-							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.NOTES.ROOT(), element: <CourseMedia type="notes" /> },
-							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.AUDIOS.ROOT(), element: <CourseMedia type="audios" /> },
-							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.TEST.ROOT(), element: <CourseTest /> },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.CURRICULUM.ROOT(), element: S(<CourseCurriculumForm />) },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.VIDEOS.ROOT(), element: S(<CourseMedia type="videos" />) },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.NOTES.ROOT(), element: S(<CourseMedia type="notes" />) },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.AUDIOS.ROOT(), element: S(<CourseMedia type="audios" />) },
+							{ path: PATH.COURSE_MANAGEMENT.COURSES.EDIT_COURSE.TEST.ROOT(), element: S(<CourseTest />) },
 						]
 					},
-					{ path: PATH.COURSE_MANAGEMENT.COURSES.ANALYTICS.ROOT(), element: <CourseAnalyticsRootLayout /> },
+					{ path: PATH.COURSE_MANAGEMENT.COURSES.ANALYTICS.ROOT(), element: S(<CourseAnalyticsRootLayout />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_enrollments", "edit_enrollments", "delete_enrollments", "view_enrollments"]} >
-					<EnrollmentRoot />
-				</Unauthorized>,
+				element: S(<Unauthorized permissions={["add_enrollments", "edit_enrollments", "delete_enrollments", "view_enrollments"]}><EnrollmentRoot /></Unauthorized>),
 				children: [
-					{ path: "/enrollment", element: <AllEntrollments /> },
-					{ path: PATH.ENROLLMENT.TEST_ANALYTICS.ROOT(), element: <TestEnrollmentPage /> },
-					{ path: PATH.ENROLLMENT.BUNDLE_ANALYTICS.ROOT(), element: <BundleEnrollmentPage /> },
+					{ path: "/enrollment", element: S(<AllEntrollments />) },
+					{ path: PATH.ENROLLMENT.TEST_ANALYTICS.ROOT(), element: S(<TestEnrollmentPage />) },
+					{ path: PATH.ENROLLMENT.BUNDLE_ANALYTICS.ROOT(), element: S(<BundleEnrollmentPage />) },
 				]
 			},
 			{
-				element: <Unauthorized permissions={["add_live_classes", "edit_live_classes", "delete_live_classes", "view_live_classes"]}> <LiveClassRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_live_classes", "edit_live_classes", "delete_live_classes", "view_live_classes"]}><LiveClassRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT, element: <AllLiveClass /> },
-					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT, element: <CreateLiveClassRoot /> },
-					{
-						path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(),
-						element: <CreateLiveClassRoot />,
-
-					},
+					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.ROOT, element: S(<AllLiveClass />) },
+					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.CREATE_LIVE_CLASS.ROOT, element: S(<CreateLiveClassRoot />) },
+					{ path: PATH.COURSE_MANAGEMENT.LIVE_CLASSES.EDIT_LIVE_CLASS.ROOT(), element: S(<CreateLiveClassRoot />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_omr_sheets", "edit_omr_sheets", "delete_omr_sheets", "view_omr_sheets"]}><OmrSheetRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_omr_sheets", "edit_omr_sheets", "delete_omr_sheets", "view_omr_sheets"]}><OmrSheetRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.OMR.ROOT, element: <AllOmrSheets /> },
-					{ path: PATH.OMR.FORMAT.ROOT, element: <AllOmrFormats /> },
-					{ path: PATH.OMR.FORMAT.CREATE.ROOT, element: <OmrFormatForm /> },
-					{ path: PATH.OMR.FORMAT.EDIT.ROOT(), element: <OmrFormatForm /> },
+					{ path: PATH.OMR.ROOT, element: S(<AllOmrSheets />) },
+					{ path: PATH.OMR.FORMAT.ROOT, element: S(<AllOmrFormats />) },
+					{ path: PATH.OMR.FORMAT.CREATE.ROOT, element: S(<OmrFormatForm />) },
+					{ path: PATH.OMR.FORMAT.EDIT.ROOT(), element: S(<OmrFormatForm />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_bundles", "edit_bundles", "delete_bundles", "view_bundles"]}><SetRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_bundles", "edit_bundles", "delete_bundles", "view_bundles"]}><SetRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.SET.ROOT, element: <AllSets /> },
-					{ path: PATH.SET.CREATE_SET.ROOT, element: <CreateSet /> },
-					{ path: PATH.SET.EDIT_SET.ROOT(), element: <CreateSet /> },
+					{ path: PATH.SET.ROOT, element: S(<AllSets />) },
+					{ path: PATH.SET.CREATE_SET.ROOT, element: S(<CreateSet />) },
+					{ path: PATH.SET.EDIT_SET.ROOT(), element: S(<CreateSet />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_quizes", "edit_quizes", "delete_quizes", "view_quizes"]}><QuizManagementRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_quizes", "edit_quizes", "delete_quizes", "view_quizes"]}><QuizManagementRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.COURSE_MANAGEMENT.QUIZ.ROOT, element: <AllQuizes /> },
+					{ path: PATH.COURSE_MANAGEMENT.QUIZ.ROOT, element: S(<AllQuizes />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_questions", "edit_questions", "delete_questions", "view_questions", "add_tests", "edit_tests", "delete_tests", "view_tests"]}><TestAndQuestionManagementRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_questions", "edit_questions", "delete_questions", "view_questions", "add_tests", "edit_tests", "delete_tests", "view_tests"]}><TestAndQuestionManagementRoot /></Unauthorized>),
 				children: [
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT, element: S(<QuestionManagementRoot />) },
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.QUESTION_LABELS.ROOT, element: S(<QuestionLabelsRoot />) },
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.QUESTION_LABELS.DETAIL.ROOT(), element: S(<QuestionLabelDetail />) },
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT, element: S(<TestManagementRoot />) },
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.INDIVIDUAL_TEST.ROOT, element: S(<AllIndividualTestListing />) },
+					{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(), element: S(<CreatTestRoot />) },
 					{
-						path: PATH.TEST_QUESTION_MANAGEMENT.QUESTIONS.ROOT,
-						element: <QuestionManagementRoot />,
-					},
-					{
-						path: PATH.TEST_QUESTION_MANAGEMENT.QUESTION_LABELS.ROOT,
-						element: <QuestionLabelsRoot />,
-					},
-					{
-						path: PATH.TEST_QUESTION_MANAGEMENT.QUESTION_LABELS.DETAIL.ROOT(),
-						element: <QuestionLabelDetail />,
-					},
-					{
-						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.ROOT,
-						element: <TestManagementRoot />,
-					},
-					{
-						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.INDIVIDUAL_TEST.ROOT,
-						element: <AllIndividualTestListing />,
-					},
-					{
-						path: PATH.TEST_QUESTION_MANAGEMENT.TEST.EDIT_TEST.ROOT(),
-						element: <CreatTestRoot />,
-					},
-					{
-						element: <ResultRoot />,
+						element: S(<ResultRoot />),
 						children: [
+							{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(), element: S(<ViewTestRoot />) },
 							{
-								path: PATH.TEST_QUESTION_MANAGEMENT.TEST.VIEW_TEST.ROOT(),
-								element: <ViewTestRoot />,
-							},
-							{
-								element: <SingleStudentAnswerLayout />,
+								element: S(<SingleStudentAnswerLayout />),
 								children: [
-									{
-										path: PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.ROOT(),
-										element: <QuestionAnswerLisitingLayout />
-
-									},
-									{
-										path: PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.CHECK_SUBJECTIVE_QUESTION.ROOT(),
-										element: <SingleStudentSingleQuestion />,
-									},
+									{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.ROOT(), element: S(<QuestionAnswerLisitingLayout />) },
+									{ path: PATH.TEST_QUESTION_MANAGEMENT.TEST.CHECK_PAPER.CHECK_SUBJECTIVE_QUESTION.ROOT(), element: S(<SingleStudentSingleQuestion />) },
 								]
 							},
 						],
@@ -268,195 +235,164 @@ const router = createBrowserRouter([
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_roles", "edit_roles", "delete_roles", "view_roles"]}>
-					<RoleManagementRoot />
-				</Unauthorized>,
+				element: S(<Unauthorized permissions={["add_roles", "edit_roles", "delete_roles", "view_roles"]}><RoleManagementRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.ROLES.ROOT, element: <AllRoles /> },
-					{ path: PATH.ROLES.CREATE_ROLE.ROOT, element: <CreateRoleRoot /> },
-					{ path: PATH.ROLES.EDIT_ROLE.ROOT(), element: <CreateRoleRoot /> },
+					{ path: PATH.ROLES.ROOT, element: S(<AllRoles />) },
+					{ path: PATH.ROLES.CREATE_ROLE.ROOT, element: S(<CreateRoleRoot />) },
+					{ path: PATH.ROLES.EDIT_ROLE.ROOT(), element: S(<CreateRoleRoot />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_users", "edit_users", "delete_users", "view_users"]}><UserManagementRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_users", "edit_users", "delete_users", "view_users"]}><UserManagementRoot /></Unauthorized>),
 				children: [
-					{ index: true, path: PATH.USER_MANAGEMENT.ROOT, element: <AllUsers /> },
-					{ path: PATH.USER_MANAGEMENT.CREATE_USER.ROOT, element: <CreateUser /> },
-					{ path: PATH.USER_MANAGEMENT.EDIT_USER.ROOT(), element: <CreateUser /> },
+					{ index: true, path: PATH.USER_MANAGEMENT.ROOT, element: S(<AllUsers />) },
+					{ path: PATH.USER_MANAGEMENT.CREATE_USER.ROOT, element: S(<CreateUser />) },
+					{ path: PATH.USER_MANAGEMENT.EDIT_USER.ROOT(), element: S(<CreateUser />) },
 					{
 						path: PATH.USER_MANAGEMENT.VIEW_USER.ROOT(),
-						element: <ViewUserRoot />,
+						element: S(<ViewUserRoot />),
 						children: [
-							{ index: true, element: <ProfileTab /> },
-							{ path: "profile", element: <ProfileTab /> },
-							{ path: "courses", element: <CoursesTab /> },
-							{ path: "transactions", element: <TransactionsTab /> },
-							{ path: "device-requests", element: <DeviceRequestsTab /> },
-							{ path: "performance", element: <PerformanceTab /> },
-							{ path: "login-history", element: <UserLoginHistory /> },
-							{ path: "activity-history", element: <UserActivityHistory /> },
+							{ index: true, element: S(<ProfileTab />) },
+							{ path: "profile", element: S(<ProfileTab />) },
+							{ path: "courses", element: S(<CoursesTab />) },
+							{ path: "transactions", element: S(<TransactionsTab />) },
+							{ path: "device-requests", element: S(<DeviceRequestsTab />) },
+							{ path: "performance", element: S(<PerformanceTab />) },
+							{ path: "login-history", element: S(<UserLoginHistory />) },
+							{ path: "activity-history", element: S(<UserActivityHistory />) },
 						],
 					},
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_categories", "edit_categories", "delete_categories", "view_categories", "add_positions", "edit_positions", "delete_positions", "view_positions"]}
-				> <CategoryManagementRoot /></Unauthorized >,
+				element: S(<Unauthorized permissions={["add_categories", "edit_categories", "delete_categories", "view_categories", "add_positions", "edit_positions", "delete_positions", "view_positions"]}><CategoryManagementRoot /></Unauthorized>),
 				children: [
 					{
 						path: PATH.CATEGORY_LEVEL_MANAGEMENT.CATEGORY.ROOT,
-						element: <Unauthorized permissions={["add_categories", "edit_categories", "delete_categories", "view_categories"]}>
-							<AllCategories />
-						</Unauthorized>
+						element: S(<Unauthorized permissions={["add_categories", "edit_categories", "delete_categories", "view_categories"]}><AllCategories /></Unauthorized>),
 					},
 					{
-						path: PATH.CATEGORY_LEVEL_MANAGEMENT.LEVEL_POSITION.ROOT, element:
-							<Unauthorized permissions={["add_positions", "edit_positions", "delete_positions", "view_positions"]}>
-								<AllPositions />
-							</Unauthorized>
+						path: PATH.CATEGORY_LEVEL_MANAGEMENT.LEVEL_POSITION.ROOT,
+						element: S(<Unauthorized permissions={["add_positions", "edit_positions", "delete_positions", "view_positions"]}><AllPositions /></Unauthorized>),
 					},
 				],
 			},
 			{
 				path: PATH.SUBSCRIPTION_PLAN_MANAGEMENT.ROOT,
-				element: <Unauthorized permissions={["add_subscriptions", "edit_subscriptions", "delete_subscriptions", "view_subscriptions"]}> <SubscriptionManagementRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_subscriptions", "edit_subscriptions", "delete_subscriptions", "view_subscriptions"]}><SubscriptionManagementRoot /></Unauthorized>),
 			},
 			{
-				element:
-					<Unauthorized permissions={["add_transactions", "edit_transactions", "delete_transactions", "view_transactions"]}> <TransactionManagementRoot />
-					</Unauthorized>,
+				element: S(<Unauthorized permissions={["add_transactions", "edit_transactions", "delete_transactions", "view_transactions"]}><TransactionManagementRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.TRANSACTION_MANAGEMENT.ROOT, element: <AllTransactionRoot /> },
+					{ path: PATH.TRANSACTION_MANAGEMENT.ROOT, element: S(<AllTransactionRoot />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_notifications", "edit_notifications", "delete_notifications", "view_notifications"]}>
-					<NotificationRoot />
-				</Unauthorized>,
+				element: S(<Unauthorized permissions={["add_notifications", "edit_notifications", "delete_notifications", "view_notifications"]}><NotificationRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.NOTIFICATION_MANAGEMENT.ROOT, element: <AllNotificationsRoot /> },
-					{ path: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT, element: <CreateNotificationRoot /> },
-					{ path: PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(), element: <CreateNotificationRoot /> },
+					{ path: PATH.NOTIFICATION_MANAGEMENT.ROOT, element: S(<AllNotificationsRoot />) },
+					{ path: PATH.NOTIFICATION_MANAGEMENT.CREATE_NOTIFICATION.ROOT, element: S(<CreateNotificationRoot />) },
+					{ path: PATH.NOTIFICATION_MANAGEMENT.EDIT_NOTIFICATION.ROOT(), element: S(<CreateNotificationRoot />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_ebooks", "edit_ebooks", "delete_ebooks", "view_ebooks"]}>
-					<EbookRoot />
-				</Unauthorized>,
+				element: S(<Unauthorized permissions={["add_ebooks", "edit_ebooks", "delete_ebooks", "view_ebooks"]}><EbookRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.EBOOK.ROOT, element: <AllEbookRoot /> },
-					{ path: PATH.EBOOK.CREATE_EBOOK.ROOT, element: <CreateEbookRoot /> },
-					{ path: PATH.EBOOK.EDIT_EBOOK.ROOT(), element: <CreateEbookRoot /> },
-					{ path: PATH.EBOOK.ASSIGNED_USERS.ROOT(), element: <EbookAssignedUsersRoot /> },
+					{ path: PATH.EBOOK.ROOT, element: S(<AllEbookRoot />) },
+					{ path: PATH.EBOOK.CREATE_EBOOK.ROOT, element: S(<CreateEbookRoot />) },
+					{ path: PATH.EBOOK.EDIT_EBOOK.ROOT(), element: S(<CreateEbookRoot />) },
+					{ path: PATH.EBOOK.ASSIGNED_USERS.ROOT(), element: S(<EbookAssignedUsersRoot />) },
 				],
 			},
 			{
-				element: <Unauthorized permissions={["add_gorkhapatras", "edit_gorkhapatras", "delete_gorkhapatras", "view_gorkhapatras"]}>
-					<GorkhapatraRoot />
-				</Unauthorized>,
+				element: S(<Unauthorized permissions={["add_gorkhapatras", "edit_gorkhapatras", "delete_gorkhapatras", "view_gorkhapatras"]}><GorkhapatraRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.GORKHAPATRA.ROOT, element: <AllGorkhapatraRoot /> },
-					{ path: PATH.GORKHAPATRA.CREATE_GORKHAPATRA.ROOT, element: <CreateGorkhapatraRoot /> },
-					{ path: PATH.GORKHAPATRA.EDIT_GORKHAPATRA.ROOT(), element: <CreateGorkhapatraRoot /> },
+					{ path: PATH.GORKHAPATRA.ROOT, element: S(<AllGorkhapatraRoot />) },
+					{ path: PATH.GORKHAPATRA.CREATE_GORKHAPATRA.ROOT, element: S(<CreateGorkhapatraRoot />) },
+					{ path: PATH.GORKHAPATRA.EDIT_GORKHAPATRA.ROOT(), element: S(<CreateGorkhapatraRoot />) },
 				],
 			},
 			{
 				path: "/content-management",
-				element: <Unauthorized permissions={["add_contents", "edit_contents", "delete_contents", "view_contents"]}> <ContentManagementRoot /></Unauthorized>,
+				element: S(<Unauthorized permissions={["add_contents", "edit_contents", "delete_contents", "view_contents"]}><ContentManagementRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.CONTENT_MANAGEMENT.SPLASH_SCREEN.ROOT, element: <SplashScreenRoot /> },
-					{ path: PATH.CONTENT_MANAGEMENT.ONBOARDING_SCREEN.ROOT, element: <OnBoardingScreenRoot /> },
+					{ path: PATH.CONTENT_MANAGEMENT.SPLASH_SCREEN.ROOT, element: S(<SplashScreenRoot />) },
+					{ path: PATH.CONTENT_MANAGEMENT.ONBOARDING_SCREEN.ROOT, element: S(<OnBoardingScreenRoot />) },
 					{
-						path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.ROOT, element: <HomeScreens />, children: [
-							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.WELCOME_POPUP.ROOT, element: <WelcomePopupRoot /> },
-							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.BANNER.ROOT, element: <BannerRoot /> },
-							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.FEATURED_COURSE.ROOT, element: <FeaturedCourseRoot /> },
+						path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.ROOT, element: S(<HomeScreens />), children: [
+							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.WELCOME_POPUP.ROOT, element: S(<WelcomePopupRoot />) },
+							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.BANNER.ROOT, element: S(<BannerRoot />) },
+							{ path: PATH.CONTENT_MANAGEMENT.HOME_SCREEN.FEATURED_COURSE.ROOT, element: S(<FeaturedCourseRoot />) },
 						]
 					},
-					{ path: PATH.CONTENT_MANAGEMENT.PAGES.ROOT, element: <PagesRoot /> },
-					{ path: PATH.CONTENT_MANAGEMENT.PAGES.CREATE_PAGE.ROOT, element: <PageCreationForm /> },
-					{ path: PATH.CONTENT_MANAGEMENT.PAGES.EDIT_PAGE.ROOT(), element: <PageCreationForm /> },
+					{ path: PATH.CONTENT_MANAGEMENT.PAGES.ROOT, element: S(<PagesRoot />) },
+					{ path: PATH.CONTENT_MANAGEMENT.PAGES.CREATE_PAGE.ROOT, element: S(<PageCreationForm />) },
+					{ path: PATH.CONTENT_MANAGEMENT.PAGES.EDIT_PAGE.ROOT(), element: S(<PageCreationForm />) },
 				]
 			},
 			{
 				path: PATH.SETTINGS.ROOT,
-				element: (
-					<Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}>
-						<SettingRoot />
-					</Unauthorized>
-				),
+				element: S(<Unauthorized permissions={["add_settings", "edit_settings", "delete_settings", "view_settings"]}><SettingRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.SETTINGS.SYSTEM.PROFILE.ROOT, element: <ProfilePageRoot /> },
-					{ path: PATH.SETTINGS.SYSTEM.CHANGE_PASSWORD.ROOT, element: <ChangePassword /> },
-					{ path: PATH.SETTINGS.SYSTEM.SITE_INFO.ROOT, element: <SiteInfoRoot /> },
-					{ path: PATH.SETTINGS.SYSTEM.SMTP.ROOT, element: <SmtpSettingRoot /> },
-					{ path: PATH.SETTINGS.SYSTEM.GENERAL.ROOT, element: <AppSettingRoot /> },
-					{ path: PATH.SETTINGS.SYSTEM.LINKED_DEVICE.ROOT, element: <LinkedDevices /> },
-					{ path: PATH.SETTINGS.SYSTEM.EMAIL_TEMPLATES.ROOT, element: <EmailTemplatesRoot /> },
-					{ path: PATH.SETTINGS.SYSTEM.COURSE_SETTING.ROOT, element: <CourseSettingRoot /> },
-					{ path: PATH.SETTINGS.SYSTEM.LOGIN_TYPE.ROOT, element: <LoginTypeRoot /> },
-					{ path: PATH.SETTINGS.API.ZOOM.ROOT, element: <ZoomSettingRoot /> },
-					{ path: PATH.SETTINGS.API.ESEWA.ROOT, element: <EsewaSettingRoot /> },
-					{ path: PATH.SETTINGS.API.KHALTI.ROOT, element: <KhaltiSettingRoot /> },
-					{ path: PATH.SETTINGS.API.SMS_GATEWAY.ROOT, element: <SmsGatewayRoot /> },
-					{ path: PATH.SETTINGS.SYSTEM.CONTROLS.ROOT, element: <ControlsRoot /> },
-					{ path: PATH.SETTINGS.SYSTEM.OMR_SETTING.ROOT, element: <OmrSettingRoot /> },
+					{ path: PATH.SETTINGS.SYSTEM.PROFILE.ROOT, element: S(<ProfilePageRoot />) },
+					{ path: PATH.SETTINGS.SYSTEM.CHANGE_PASSWORD.ROOT, element: S(<ChangePassword />) },
+					{ path: PATH.SETTINGS.SYSTEM.SITE_INFO.ROOT, element: S(<SiteInfoRoot />) },
+					{ path: PATH.SETTINGS.SYSTEM.SMTP.ROOT, element: S(<SmtpSettingRoot />) },
+					{ path: PATH.SETTINGS.SYSTEM.GENERAL.ROOT, element: S(<AppSettingRoot />) },
+					{ path: PATH.SETTINGS.SYSTEM.LINKED_DEVICE.ROOT, element: S(<LinkedDevices />) },
+					{ path: PATH.SETTINGS.SYSTEM.EMAIL_TEMPLATES.ROOT, element: S(<EmailTemplatesRoot />) },
+					{ path: PATH.SETTINGS.SYSTEM.COURSE_SETTING.ROOT, element: S(<CourseSettingRoot />) },
+					{ path: PATH.SETTINGS.SYSTEM.LOGIN_TYPE.ROOT, element: S(<LoginTypeRoot />) },
+					{ path: PATH.SETTINGS.API.ZOOM.ROOT, element: S(<ZoomSettingRoot />) },
+					{ path: PATH.SETTINGS.API.ESEWA.ROOT, element: S(<EsewaSettingRoot />) },
+					{ path: PATH.SETTINGS.API.KHALTI.ROOT, element: S(<KhaltiSettingRoot />) },
+					{ path: PATH.SETTINGS.API.SMS_GATEWAY.ROOT, element: S(<SmsGatewayRoot />) },
+					{ path: PATH.SETTINGS.SYSTEM.CONTROLS.ROOT, element: S(<ControlsRoot />) },
+					{ path: PATH.SETTINGS.SYSTEM.OMR_SETTING.ROOT, element: S(<OmrSettingRoot />) },
 				],
 			},
+			{ path: PATH.ACTIVITY_LOG.ROOT, element: S(<ActivityRoot />) },
+			{ path: PATH.ACTIVITY_LOG.ARCHIVED.ROOT, element: S(<ArchivedLogs />) },
 			{
-				path: PATH.ACTIVITY_LOG.ROOT,
-				element: <ActivityRoot />
-			},
-			{
-				path: PATH.ACTIVITY_LOG.ARCHIVED.ROOT,
-				element: <ArchivedLogs />
-			},
-			{
-				element: <MediaManagementRoot />,
+				element: S(<MediaManagementRoot />),
 				children: [
-					{ path: PATH.MEDIA_MANAGEMENT.ROOT, element: <AllMediaRoot /> },
+					{ path: PATH.MEDIA_MANAGEMENT.ROOT, element: S(<AllMediaRoot />) },
 				]
 			},
 			{
-				element: <Unauthorized permissions={["view_discussions", "add_discussions", "edit_discussions", "delete_discussions", "hide_discussions"]}>
-					<DiscussionManagementRoot />
-				</Unauthorized>,
+				element: S(<Unauthorized permissions={["view_discussions", "add_discussions", "edit_discussions", "delete_discussions", "hide_discussions"]}><DiscussionManagementRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.DISCUSSION.ROOT, element: <AllDiscussions /> },
-					{ path: PATH.DISCUSSION.CREATE.ROOT, element: <DiscussionForm /> },
-					{ path: PATH.DISCUSSION.DETAIL.ROOT(), element: <DiscussionDetail /> },
-					{ path: PATH.DISCUSSION.EDIT.ROOT(), element: <DiscussionForm /> },
+					{ path: PATH.DISCUSSION.ROOT, element: S(<AllDiscussions />) },
+					{ path: PATH.DISCUSSION.CREATE.ROOT, element: S(<DiscussionForm />) },
+					{ path: PATH.DISCUSSION.DETAIL.ROOT(), element: S(<DiscussionDetail />) },
+					{ path: PATH.DISCUSSION.EDIT.ROOT(), element: S(<DiscussionForm />) },
 				],
 			},
 			{
-				element: <ModerationManagementRoot />,
+				element: S(<ModerationManagementRoot />),
 				children: [
-					{ path: PATH.MODERATION.ROOT, element: <WordModeration /> },
+					{ path: PATH.MODERATION.ROOT, element: S(<WordModeration />) },
 				],
 			},
 			{
-				element: <DeviceResetManagementRoot />,
+				element: S(<DeviceResetManagementRoot />),
 				children: [
-					{ path: PATH.DEVICE_RESET.ROOT, element: <DeviceResetDetailPage /> },
-					{ path: PATH.DEVICE_RESET.DETAIL.ROOT(), element: <DeviceResetDetailPage /> },
+					{ path: PATH.DEVICE_RESET.ROOT, element: S(<DeviceResetDetailPage />) },
+					{ path: PATH.DEVICE_RESET.DETAIL.ROOT(), element: S(<DeviceResetDetailPage />) },
 				],
 			},
 			{
-				element: (
-					<Unauthorized permissions={["add_tickets", "edit_tickets", "delete_tickets", "view_tickets"]}>
-						<TicketManagementRoot />
-					</Unauthorized>
-				),
+				element: S(<Unauthorized permissions={["add_tickets", "edit_tickets", "delete_tickets", "view_tickets"]}><TicketManagementRoot /></Unauthorized>),
 				children: [
-					{ path: PATH.TICKET.ALL_TICKETS.ROOT, element: <AllTickets /> },
+					{ path: PATH.TICKET.ALL_TICKETS.ROOT, element: S(<AllTickets />) },
 					{
 						path: PATH.TICKET.CHATS.ROOT,
-						element: <TicketChats />,
+						element: S(<TicketChats />),
 						children: [
-							{ path: PATH.TICKET.CHAT_DETAIL.ROOT(), element: <TicketChatPage /> },
+							{ path: PATH.TICKET.CHAT_DETAIL.ROOT(), element: S(<TicketChatPage />) },
 						],
 					},
-					{ path: PATH.TICKET.TICKET_TYPES.ROOT, element: <TicketTypes /> },
+					{ path: PATH.TICKET.TICKET_TYPES.ROOT, element: S(<TicketTypes />) },
 				],
 			},
 		],
@@ -464,7 +400,7 @@ const router = createBrowserRouter([
 
 	{
 		path: "*",
-		element: <NotFound />,
+		element: S(<NotFound />),
 	},
 ]);
 
