@@ -6,11 +6,13 @@ import { createRoot } from "react-dom/client";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import { Provider } from "react-redux";
 import "./App.css";
+import AppErrorBoundary from "./components/organism/ErrorBoundary/AppErrorBoundary.tsx";
 import PreviewPDF from "./components/organism/Dialog/PreviewPDF.tsx";
 import Toast from "./components/organism/Toast/index.tsx";
 import GlobalRoutes from "./routes/Routes.tsx";
 import { store } from "./store/store.ts";
 import UdaanThemeProvider from "./ThemeProvider.tsx";
+import { installStaleChunkGuard } from "./utils/lazyRetry.ts";
 i18n
 	.use(HttpApi)
 	.use(LanguageDetector)
@@ -32,6 +34,8 @@ i18n
 		keySeparator: ".",
 	});
 
+installStaleChunkGuard();
+
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<Provider store={store}>
@@ -39,11 +43,13 @@ createRoot(document.getElementById("root")!).render(
 			<I18nextProvider i18n={i18n}>
 				<Suspense fallback={<div>Loading...</div>}>
 					<UdaanThemeProvider>
-						{/* <ScreenProtectionGate> */}
-						<GlobalRoutes />
-						<Toast />
-						<PreviewPDF />
-						{/* </ScreenProtectionGate> */}
+						<AppErrorBoundary>
+							{/* <ScreenProtectionGate> */}
+							<GlobalRoutes />
+							<Toast />
+							<PreviewPDF />
+							{/* </ScreenProtectionGate> */}
+						</AppErrorBoundary>
 					</UdaanThemeProvider>
 				</Suspense>
 			</I18nextProvider>
