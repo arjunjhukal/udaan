@@ -180,7 +180,7 @@ export default function DeviceResetDetailPage({ userIdOverride }: Props = {}) {
 			<Divider className="mb-4!" />
 
 			{/* Timeline list */}
-			<Box flex={1} className="lg:overflow-auto" sx={{ px: 0.5 }}>
+			<Box flex={1} minHeight={0} className="lg:overflow-auto" sx={{ px: 0.5 }}>
 				{timelineFetching && !timeline ? (
 					<Box display="flex" justifyContent="center" py={4}>
 						<CircularProgress size={24} />

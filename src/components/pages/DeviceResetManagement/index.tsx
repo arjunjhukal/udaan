@@ -1,14 +1,15 @@
 import { Box, Button, CircularProgress, Divider, IconButton, InputAdornment, OutlinedInput, Stack, Typography } from "@mui/material";
 import { CloseCircle, HamburgerMenu } from "iconsax-reactjs";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
+import { useInfiniteScroll } from "../../../hooks/useInfiniteScroll";
 import SearchIcon from "../../../icons/SearchIcon";
 import { PATH } from "../../../routes/PATH";
 import { useGetResetRequestAnalyticsQuery, useGetResetRequestsQuery } from "../../../services/deviceResetApi";
+import type { DeviceResetRequestProps } from "../../../types/deviceReset";
 import EmptyRoute from "../../organism/EmptyRoute";
 import PageHeader from "../../organism/PageHeader";
 import DeviceResetAnalyticsBar from "./components/DeviceResetAnalyticsBar";
-import ListPager from "./components/ListPager";
 import UserResetCard from "./components/UserResetCard";
 
 const PAGE_SIZE = 20;
@@ -20,6 +21,7 @@ export default function DeviceResetManagementRoot() {
 	const [search, setSearch] = useState("");
 	const [debouncedSearch, setDebouncedSearch] = useState("");
 	const [page, setPage] = useState(1);
+	const [loadedPages, setLoadedPages] = useState<Record<number, DeviceResetRequestProps[]>>({});
 	const [openDrawer, setOpenDrawer] = useState(false);
 	const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -30,12 +32,15 @@ export default function DeviceResetManagementRoot() {
 		return () => { if (searchTimerRef.current) clearTimeout(searchTimerRef.current); };
 	}, [search]);
 
-	// Reset to page 1 when search changes
+	// Start a fresh stack of pages whenever the search changes
 	useEffect(() => {
 		setPage(1);
+		setLoadedPages({});
 	}, [debouncedSearch]);
 
-	const { data, isFetching } = useGetResetRequestsQuery({
+	// currentData, not data — `data` holds the previous page's rows while the
+	// next one is in flight, which would file them under the wrong page number.
+	const { currentData, isFetching } = useGetResetRequestsQuery({
 		pageIndex: page,
 		pageSize: PAGE_SIZE,
 		search: debouncedSearch,
@@ -43,19 +48,33 @@ export default function DeviceResetManagementRoot() {
 
 	const { data: analyticsData, isLoading: analyticsLoading } = useGetResetRequestAnalyticsQuery({});
 
-	const requests = data?.data?.data;
-	const pagination = data?.data?.pagination;
-	const totalPages = pagination?.total_pages ?? 0;
+	// Keyed by page so a refetch (e.g. after approving a request) replaces that
+	// page's rows instead of appending a duplicate copy of them.
+	useEffect(() => {
+		const rows = currentData?.data?.data;
+		if (!rows) return;
+		setLoadedPages((prev) => ({ ...prev, [page]: rows }));
+	}, [currentData, page]);
+
+	const requests = useMemo(
+		() =>
+			Object.keys(loadedPages)
+				.map(Number)
+				.sort((a, b) => a - b)
+				.flatMap((pageNumber) => loadedPages[pageNumber]),
+		[loadedPages]
+	);
+
+	const pagination = currentData?.data?.pagination;
+	const hasMore = pagination ? pagination.current_page < pagination.total_pages : false;
 	const activeUserId = userId ? Number(userId) : null;
 	const hasSearch = debouncedSearch.trim().length > 0;
 
-	// Reviewing requests can shrink the result set out from under the current page
-	useEffect(() => {
-		if (totalPages > 0 && page > totalPages) setPage(totalPages);
-	}, [totalPages, page]);
+	const loadMore = useCallback(() => setPage((p) => p + 1), []);
+	const sentinelRef = useInfiniteScroll(loadMore, hasMore && !isFetching);
 
 	useEffect(() => {
-		if (!userId && requests && requests.length > 0) {
+		if (!userId && requests.length > 0) {
 			navigate(PATH.DEVICE_RESET.DETAIL.ROOT(requests[0].user_id), { replace: true });
 		}
 	}, [requests, userId, navigate]);
@@ -67,7 +86,7 @@ export default function DeviceResetManagementRoot() {
 
 	// Only a genuinely empty inbox takes over the page — a search that matches
 	// nothing must keep the search box on screen so the admin can undo it.
-	const showEmptyState = !hasSearch && !isFetching && requests?.length === 0;
+	const showEmptyState = !hasSearch && !isFetching && Boolean(currentData) && requests.length === 0;
 
 	return (
 		<Box display="flex" flexDirection="column" height="100%" className="overflow-auto lg:overflow-hidden">
@@ -165,23 +184,31 @@ export default function DeviceResetManagementRoot() {
 									sx={{ gap: "8px", mb: 1.5, p: "8px 12px", bgcolor: "primary.contrastText" }}
 								/>
 
-								<Box id="user-list-scroll" flex={1} height="100%" overflow="auto" pr={0.5}>
-									{isFetching && !requests ? (
+								<Box flex={1} minHeight={0} overflow="auto" pr={0.5}>
+									{requests.length > 0 ? (
+										<>
+											{requests.map((req) => (
+												<UserResetCard
+													key={req.user_id}
+													request={req}
+													active={activeUserId === req.user_id}
+													onClick={() => {
+														navigate(PATH.DEVICE_RESET.DETAIL.ROOT(req.user_id));
+														setOpenDrawer(false);
+													}}
+												/>
+											))}
+											<Box ref={sentinelRef} sx={{ height: 1 }} />
+											{isFetching && (
+												<Box display="flex" justifyContent="center" py={2}>
+													<CircularProgress size={20} />
+												</Box>
+											)}
+										</>
+									) : isFetching ? (
 										<Box display="flex" justifyContent="center" py={4}>
 											<CircularProgress size={22} />
 										</Box>
-									) : requests && requests.length > 0 ? (
-										requests.map((req) => (
-											<UserResetCard
-												key={req.user_id}
-												request={req}
-												active={activeUserId === req.user_id}
-												onClick={() => {
-													navigate(PATH.DEVICE_RESET.DETAIL.ROOT(req.user_id));
-													setOpenDrawer(false);
-												}}
-											/>
-										))
 									) : (
 										<Box textAlign="center" py={4}>
 											<Typography variant="body2" color="text.secondary" mb={hasSearch ? 1.5 : 0}>
@@ -195,13 +222,6 @@ export default function DeviceResetManagementRoot() {
 										</Box>
 									)}
 								</Box>
-
-								<ListPager
-									page={page}
-									totalPages={totalPages}
-									totalRecords={pagination?.total}
-									onChange={setPage}
-								/>
 							</Box>
 
 							{/* Right panel */}
