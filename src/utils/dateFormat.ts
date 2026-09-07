@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 /**
  * Formats a date to "DDth Month, YYYY" format
  * Examples: "12th August, 2023", "1st January, 2024", "23rd December, 2025"
@@ -145,4 +147,23 @@ export function formatDateTime(date: string | Date | number | null | undefined):
         console.error('Error formatting date-time:', error);
         return '';
     }
+}
+
+/**
+ * Formats a date with a date-fns pattern, returning a dash for missing or
+ * unparseable values instead of throwing.
+ */
+export function formatDatePattern(
+    date: string | Date | number | null | undefined,
+    pattern: string
+): string {
+    if (!date) return '-';
+
+    const dateObj = new Date(date);
+
+    if (isNaN(dateObj.getTime())) {
+        return '-';
+    }
+
+    return format(dateObj, pattern);
 }

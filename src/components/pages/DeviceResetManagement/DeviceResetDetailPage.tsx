@@ -3,12 +3,12 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import { Avatar, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams } from "react-router-dom";
 import { useGetResetRequestTimelineQuery, useGetResetRequestUserInfoQuery } from "../../../services/deviceResetApi";
-import type { DeviceResetSingleRequest } from "../../../types/deviceReset";
+import { getInitials } from "../../../utils/getInitials";
 import TabController from "../../molecules/TabController";
 import DashboardAnalyticsCard from "../../organism/Cards/DashboardAnalyticsCard";
+import ListPager from "./components/ListPager";
 import RequestTimelineItem from "./components/RequestTimelineItem";
 
 const STATUS_TABS = [
@@ -29,7 +29,6 @@ export default function DeviceResetDetailPage({ userIdOverride }: Props = {}) {
 	const userId = userIdOverride !== undefined ? String(userIdOverride) : paramUserId;
 	const [statusTab, setStatusTab] = useState("");
 	const [page, setPage] = useState(1);
-	const [allTimeline, setAllTimeline] = useState<DeviceResetSingleRequest[]>([]);
 
 	const uid = Number(userId);
 
@@ -38,37 +37,23 @@ export default function DeviceResetDetailPage({ userIdOverride }: Props = {}) {
 		{ skip: !userId }
 	);
 
-	const { data: timelineData, isLoading: timelineLoading } = useGetResetRequestTimelineQuery(
+	const { data: timelineData, isFetching: timelineFetching } = useGetResetRequestTimelineQuery(
 		{ userId: uid, status: statusTab, pageSize: PAGE_SIZE, pageIndex: page },
 		{ skip: !userId }
 	);
 
-	// Reset to page 1 when user or status filter changes
 	useEffect(() => {
 		setPage(1);
-		setAllTimeline([]);
 	}, [uid, statusTab]);
 
-	// Accumulate timeline pages
-	useEffect(() => {
-		if (!timelineData?.data?.data) return;
-		if (page === 1) {
-			setAllTimeline(timelineData.data.data);
-		} else {
-			setAllTimeline((prev) => [...prev, ...timelineData.data.data]);
-		}
-	}, [timelineData, page]);
-
+	const timeline = timelineData?.data?.data;
 	const timelinePagination = timelineData?.data?.pagination;
-	const hasMore = timelinePagination
-		? timelinePagination.current_page < timelinePagination.total_pages
-		: false;
+	const totalPages = timelinePagination?.total_pages ?? 0;
 
-	// Called after approve/reject to reset the accumulated list
-	const handleReviewSuccess = () => {
-		setPage(1);
-		setAllTimeline([]);
-	};
+	// Reviewing a request can shrink the result set out from under the current page
+	useEffect(() => {
+		if (totalPages > 0 && page > totalPages) setPage(totalPages);
+	}, [totalPages, page]);
 
 	if (!userId) {
 		return (
@@ -100,12 +85,7 @@ export default function DeviceResetDetailPage({ userIdOverride }: Props = {}) {
 		);
 	}
 
-	const initials = info?.name
-		?.split(" ")
-		.map((n: string) => n[0])
-		.slice(0, 2)
-		.join("")
-		.toUpperCase();
+	const initials = getInitials(info.name);
 
 	return (
 		<Box
@@ -128,7 +108,7 @@ export default function DeviceResetDetailPage({ userIdOverride }: Props = {}) {
 						</Avatar>
 						<Box>
 							<Typography variant="h6" fontWeight={500}>
-								{info.name}
+								{info.name || "Unnamed user"}
 							</Typography>
 							<Typography variant="caption" color="text.secondary">
 								UD-{info.user_id}
@@ -200,42 +180,36 @@ export default function DeviceResetDetailPage({ userIdOverride }: Props = {}) {
 			<Divider className="mb-4!" />
 
 			{/* Timeline list */}
-			<Box id="timeline-scroll" flex={1} className="lg:overflow-auto" sx={{ px: 0.5 }}>
-				{timelineLoading && allTimeline.length === 0 ? (
+			<Box flex={1} className="lg:overflow-auto" sx={{ px: 0.5 }}>
+				{timelineFetching && !timeline ? (
 					<Box display="flex" justifyContent="center" py={4}>
 						<CircularProgress size={24} />
 					</Box>
-				) : allTimeline.length === 0 ? (
+				) : timeline && timeline.length > 0 ? (
+					timeline.map((req, idx) => (
+						<RequestTimelineItem
+							key={req.id}
+							request={req}
+							user={{ id: info.user_id, name: info.name }}
+							userId={info.user_id}
+							isLast={idx === timeline.length - 1}
+						/>
+					))
+				) : (
 					<Box textAlign="center" py={6}>
 						<Typography variant="body2" color="text.secondary">
 							No requests found
 						</Typography>
 					</Box>
-				) : (
-					<InfiniteScroll
-						dataLength={allTimeline.length}
-						next={() => setPage((p) => p + 1)}
-						hasMore={hasMore}
-						scrollableTarget="timeline-scroll"
-						loader={
-							<Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-								<CircularProgress size={20} />
-							</Box>
-						}
-					>
-						{allTimeline.map((req, idx) => (
-							<RequestTimelineItem
-								key={req.id}
-								request={req}
-								user={{ id: info.user_id, name: info.name }}
-								userId={info.user_id}
-								isLast={idx === allTimeline.length - 1}
-								onReviewSuccess={handleReviewSuccess}
-							/>
-						))}
-					</InfiniteScroll>
 				)}
 			</Box>
+
+			<ListPager
+				page={page}
+				totalPages={totalPages}
+				totalRecords={timelinePagination?.total}
+				onChange={setPage}
+			/>
 		</Box>
 	);
 }

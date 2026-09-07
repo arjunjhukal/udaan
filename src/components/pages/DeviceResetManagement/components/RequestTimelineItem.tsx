@@ -1,8 +1,8 @@
 import { Box, Chip, IconButton, Stack, Typography, useTheme } from "@mui/material";
-import { format } from "date-fns";
 import { Clock, CloseCircle, TickCircle } from "iconsax-reactjs";
 import { useState } from "react";
 import type { DeviceResetSingleRequest } from "../../../../types/deviceReset";
+import { formatDatePattern } from "../../../../utils/dateFormat";
 import type { StatusVariant } from "../../../../utils/statusMap";
 import { RequestStatusColor } from "../../../../utils/statusMap";
 import RequestDetailDialog from "./RequestDetailDialog";
@@ -10,10 +10,9 @@ import ReviewActions from "./ReviewActions";
 
 interface Props {
 	request: DeviceResetSingleRequest;
-	user: { id: number; name: string };
+	user: { id: number; name: string | null };
 	userId: number;
 	isLast: boolean;
-	onReviewSuccess?: () => void;
 }
 
 const STATUS_ICON: Record<StatusVariant, React.ReactNode> = {
@@ -24,7 +23,7 @@ const STATUS_ICON: Record<StatusVariant, React.ReactNode> = {
 	primary: <Clock />,
 };
 
-export default function RequestTimelineItem({ request, user, userId, isLast, onReviewSuccess }: Props) {
+export default function RequestTimelineItem({ request, user, userId, isLast }: Props) {
 	const theme = useTheme();
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const variant = RequestStatusColor(request.status);
@@ -79,7 +78,7 @@ export default function RequestTimelineItem({ request, user, userId, isLast, onR
 						</Box>
 						<Stack direction="row" gap={1} alignItems="center">
 							<Typography variant="caption" color="text.secondary" sx={{ whiteSpace: "nowrap" }}>
-								{format(new Date(request.created_at), "MMM d, yyyy")}
+								{formatDatePattern(request.created_at, "MMM d, yyyy")}
 							</Typography>
 							<Chip
 								label={request.status}
@@ -123,7 +122,7 @@ export default function RequestTimelineItem({ request, user, userId, isLast, onR
 					</Box>
 
 					{request.status === "pending" && (
-						<ReviewActions requestId={request.id} userId={userId} onSuccess={onReviewSuccess} />
+						<ReviewActions requestId={request.id} userId={userId} />
 					)}
 				</Box>
 			</Stack>
@@ -134,7 +133,6 @@ export default function RequestTimelineItem({ request, user, userId, isLast, onR
 				request={request}
 				user={user}
 				userId={userId}
-				onReviewSuccess={onReviewSuccess}
 			/>
 		</>
 	);

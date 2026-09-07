@@ -10,8 +10,8 @@ import {
 	Typography,
 	useTheme,
 } from "@mui/material";
-import { format } from "date-fns";
 import type { DeviceResetSingleRequest } from "../../../../types/deviceReset";
+import { formatDatePattern } from "../../../../utils/dateFormat";
 import { RequestStatusColor } from "../../../../utils/statusMap";
 import ReviewActions from "./ReviewActions";
 
@@ -19,9 +19,8 @@ interface Props {
 	open: boolean;
 	onClose: () => void;
 	request: DeviceResetSingleRequest;
-	user: { id: number; name: string };
+	user: { id: number; name: string | null };
 	userId: number;
-	onReviewSuccess?: () => void;
 }
 
 function DetailField({ label, value }: { label: string; value: React.ReactNode }) {
@@ -37,7 +36,7 @@ function DetailField({ label, value }: { label: string; value: React.ReactNode }
 	);
 }
 
-export default function RequestDetailDialog({ open, onClose, request, user, userId, onReviewSuccess }: Props) {
+export default function RequestDetailDialog({ open, onClose, request, user, userId }: Props) {
 	const theme = useTheme();
 	const variant = RequestStatusColor(request.status);
 
@@ -62,11 +61,11 @@ export default function RequestDetailDialog({ open, onClose, request, user, user
 
 			<DialogContent sx={{ pt: 0 }}>
 				<Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 2.5, mb: 2 }}>
-					<DetailField label="Full Name" value={user.name} />
+					<DetailField label="Full Name" value={user.name || "—"} />
 					<DetailField label="User - ID" value={`UID${user.id}`} />
 					<DetailField
 						label="Submitted"
-						value={format(new Date(request.created_at), "do MMM, yyyy")}
+						value={formatDatePattern(request.created_at, "do MMM, yyyy")}
 					/>
 					<DetailField label="Old Token" value={request.old_token ?? "—"} />
 					<DetailField label="New Token" value={request.new_token ?? "—"} />
@@ -111,7 +110,7 @@ export default function RequestDetailDialog({ open, onClose, request, user, user
 				{request.status === "pending" && (
 					<>
 						<Divider sx={{ mb: 2 }} />
-						<ReviewActions requestId={request.id} userId={userId} onSuccess={() => { onClose(); onReviewSuccess?.(); }} />
+						<ReviewActions requestId={request.id} userId={userId} onSuccess={onClose} />
 					</>
 				)}
 			</DialogContent>

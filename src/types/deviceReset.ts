@@ -3,7 +3,7 @@ import type { Pagination } from "./roleAndPermission";
 export type DeviceRequestStatus = "pending" | "approved" | "rejected";
 export interface DeviceResetRequestProps {
     user_id: number;
-    name: string;
+    name: string | null;
     thumbnail_url: string | null;
     request_count: number;
     updated_at: string;
@@ -20,8 +20,8 @@ export interface DeviceResetRequestList {
 export interface DeviceResetSingleRequest {
     id: number;
     code: string;
-    device_name: string;
-    device_type: string;
+    device_name: string | null;
+    device_type: string | null;
     reason: string;
     situation: string;
     status: DeviceRequestStatus;
@@ -58,7 +58,7 @@ export interface DeviceResetAnalytics {
             pending: number
         };
         platform_breakdown: {
-            platform: string; count: number; percentage: number
+            platform: string | null; count: number; percentage: number
         }[];
     };
 }

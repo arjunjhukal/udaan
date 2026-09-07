@@ -1,6 +1,7 @@
 import { Avatar, Box, Stack, Typography } from "@mui/material";
-import { format } from "date-fns";
 import type { DeviceResetRequestProps } from "../../../../types/deviceReset";
+import { formatDatePattern } from "../../../../utils/dateFormat";
+import { getInitials } from "../../../../utils/getInitials";
 
 interface Props {
 	request: DeviceResetRequestProps;
@@ -9,12 +10,7 @@ interface Props {
 }
 
 export default function UserResetCard({ request, onClick, active = false }: Props) {
-	const initials = request.name
-		.split(" ")
-		.map((n) => n[0])
-		.slice(0, 2)
-		.join("")
-		.toUpperCase();
+	const initials = getInitials(request.name);
 
 	return (
 		<Box
@@ -57,13 +53,13 @@ export default function UserResetCard({ request, onClick, active = false }: Prop
 					<div className="requesting__user">
 
 						<Typography variant="h5" fontWeight={500} noWrap>
-							{request.name}
+							{request.name || "Unnamed user"}
 						</Typography>
 						<Typography variant="subtitle2" fontWeight={400}>
 							UD-{request.user_id}
 						</Typography>
 						<Typography variant="caption" fontWeight={300} className="mt-1!">
-							Last: {format(new Date(request.updated_at), "MMM d, yyyy")}
+							Last: {formatDatePattern(request.updated_at, "MMM d, yyyy")}
 						</Typography>
 					</div>
 

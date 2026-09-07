@@ -9,7 +9,7 @@ interface PlatformConfigItem {
 }
 
 interface Props {
-	breakdown: { platform: string; count: number; percentage: number }[];
+	breakdown: { platform: string | null; count: number; percentage: number }[];
 }
 
 export default function PlatformBreakdown({ breakdown }: Props) {
@@ -48,11 +48,12 @@ export default function PlatformBreakdown({ breakdown }: Props) {
 		},
 	};
 
-	function getPlatformConfigItem(platform: string): PlatformConfigItem {
-		const key = platform.toLowerCase();
+	function getPlatformConfigItem(platform: string | null): PlatformConfigItem {
+		const name = platform || "Unknown";
+		const key = name.toLowerCase();
 		return (
 			platformConfig[key] ?? {
-				label: platform.charAt(0).toUpperCase() + platform.slice(1),
+				label: name.charAt(0).toUpperCase() + name.slice(1),
 				color: "#059467",
 				icon: (
 					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -203,7 +204,7 @@ export default function PlatformBreakdown({ breakdown }: Props) {
 					{breakdown.map((item) => {
 						const cfg = getPlatformConfigItem(item.platform);
 						return (
-							<Box key={item.platform}>
+							<Box key={item.platform ?? "unknown"}>
 								<Stack direction="row" alignItems="center" justifyContent="space-between" mb={0.5}>
 									<Stack direction="row" alignItems="center" gap={1}>
 										{cfg.icon}
